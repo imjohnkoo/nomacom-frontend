@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DS Primary color override: cyan palette */
+:root {
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22d3ee;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #0891b2;
+  --color-primary-700: #0e7490;
+  --color-primary-800: #155e75;
+  --color-primary-900: #164e63;
+}
+
+/* Nanum Square Neo Variable Font */
+@font-face {
+  font-family: 'NanumSquareNeo';
+  font-weight: 100 900;
+  src: url('/fonts/NanumSquareNeo-Variable.woff') format('woff');
+}
+
+/* Pretendard Variable Font */
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 100 900;
+  src: url('/fonts/PretendardVariable.woff2') format('woff2');
+}
+
+/* Base styles */
+html,
+body {
+  font-family: 'NanumSquareNeo', 'Pretendard', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

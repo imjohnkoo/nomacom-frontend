@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+  --font-sans: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui,
+    Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
+    'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+/* Mobile shell - desktop framing */
+.mobile-shell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-device {
+  width: 100%;
+  height: 100%;
+  max-width: 430px;
+  background-color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+@media (min-width: 481px) {
+  body {
+    background-color: #e8e8e8;
+  }
+
+  .mobile-shell {
+    padding: 24px 0;
+  }
+
+  .mobile-device {
+    max-height: min(932px, calc(100vh - 48px));
+    border-radius: 44px;
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.08),
+      0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Hide scrollbar for mobile app feel */
+.mobile-device ::-webkit-scrollbar {
+  display: none;
+}
+
+.mobile-device * {
+  scrollbar-width: none;
+}

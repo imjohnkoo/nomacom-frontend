@@ -1,0 +1,9 @@
+/* Import design tokens */
+@import '@imjohnkoo/design-tokens/css';
+
+/* Base reset for components */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

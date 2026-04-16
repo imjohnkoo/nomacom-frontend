@@ -1,0 +1,38 @@
+{
+  "name": "@imjohnkoo/design-tokens",
+  "version": "0.3.0",
+  "description": "Nomacom shared design tokens - colors, typography, spacing, shadows",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imjohnkoo/nomacom-frontend.git",
+    "directory": "packages/design-tokens"
+  },
+  "type": "module",
+  "main": "./dist/js/index.js",
+  "types": "./dist/js/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/js/index.js",
+      "types": "./dist/js/index.d.ts"
+    },
+    "./css": "./dist/css/tokens.css",
+    "./json": "./dist/json/tokens.json",
+    "./src/*.json": "./src/*.json"
+  },
+  "files": [
+    "dist",
+    "src/*.json"
+  ],
+  "scripts": {
+    "build": "tsx src/build.ts",
+    "clean": "rm -rf dist",
+    "dev": "tsx watch src/build.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}

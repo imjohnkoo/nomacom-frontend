@@ -1,0 +1,41 @@
+# Build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+.turbo
+*.tsbuildinfo
+
+# Dependencies
+node_modules
+
+# Yarn Berry (keep releases + patches + plugins, ignore runtime/cache)
+.yarn/*
+!.yarn/releases
+!.yarn/patches
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Claude
+.claude/*
+
+# Storage
+storage/

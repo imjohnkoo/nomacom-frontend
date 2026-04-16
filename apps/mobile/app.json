@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "nomacom-mobile",
+    "slug": "nomacom-mobile",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "scheme": "nomacommobile",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nomacom.mobile"
+    },
+    "android": {
+      "package": "com.nomacom.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
