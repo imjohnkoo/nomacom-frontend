@@ -7,21 +7,13 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@imjohnkoo/design-tokens": "workspace:*",
     "@imjohnkoo/design-vue": "workspace:*",
-    "drizzle-orm": "^0.45.1",
     "nuxt": "^4.4.2",
-    "postgres": "^3.4.8",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.31.10"
   }
 }
