@@ -16,22 +16,22 @@ Nomacom 프론트엔드 프로젝트들을 통합한 Yarn 4 + Turborepo monorepo
 
 ### Packages (`packages/*`)
 
-| 이름 | 역할 |
-|---|---|
-| `@imjohnkoo/design-tokens` | 토큰 JSON → CSS 변수 + JS 상수 빌드 (tsx 스크립트) |
-| `@imjohnkoo/design-vue` | Vue 3 컴포넌트 라이브러리. Vite lib build + `vite-plugin-dts` |
+| 이름                       | 역할                                                                    |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `@imjohnkoo/design-tokens` | 토큰 JSON → CSS 변수 + JS 상수 빌드 (tsx 스크립트)                      |
+| `@imjohnkoo/design-vue`    | Vue 3 컴포넌트 라이브러리. Vite lib build + `vite-plugin-dts`           |
 | `@imjohnkoo/design-mobile` | React Native 컴포넌트. `tsc --noEmit` 타입 체크만 수행, src 직접 export |
 
 ### Apps (`apps/*`)
 
-| 이름 | 프레임워크 | 참고 |
-|---|---|---|
-| `nomacom-admin` | Nuxt 4 | `app/` 디렉토리 구조, `server/` 에 Nitro API + Drizzle schema |
-| `nomacom-client` | Nuxt 4 | Nuxt 3 → 4 마이그레이션됨. `app/` 로 이동, server 코드는 상대 경로 import |
-| `nomacom-mobile` | Expo SDK 55 (RN 0.83, React 19.2) | Expo Router v7, `src/app/` 루트. Metro 는 SDK 52+ 부터 monorepo 자동 설정 (config 없음). iOS eSIM 설치는 Apple Universal Link 사용 — MVNO 라 CoreTelephony entitled API 경로는 불가. |
-| `design-showcase` | Vite + Vue | 디자인 시스템 개발용. vite.config 에서 source alias 사용 |
-| `design-demo`, `design-demo-webapp` | Vite + Vue | 디자인 시스템 데모 |
-| `design-storybook-mobile` | Storybook | React Native Web 기반 |
+| 이름                                | 프레임워크                        | 참고                                                                                                                                                                                 |
+| ----------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `nomacom-admin`                     | Nuxt 4                            | `app/` 디렉토리 구조, `server/` 에 Nitro API + Drizzle schema                                                                                                                        |
+| `nomacom-client`                    | Nuxt 4                            | Nuxt 3 → 4 마이그레이션됨. `app/` 로 이동, server 코드는 상대 경로 import                                                                                                            |
+| `nomacom-mobile`                    | Expo SDK 55 (RN 0.83, React 19.2) | Expo Router v7, `src/app/` 루트. Metro 는 SDK 52+ 부터 monorepo 자동 설정 (config 없음). iOS eSIM 설치는 Apple Universal Link 사용 — MVNO 라 CoreTelephony entitled API 경로는 불가. |
+| `design-showcase`                   | Vite + Vue                        | 디자인 시스템 개발용. vite.config 에서 source alias 사용                                                                                                                             |
+| `design-demo`, `design-demo-webapp` | Vite + Vue                        | 디자인 시스템 데모                                                                                                                                                                   |
+| `design-storybook-mobile`           | Storybook                         | React Native Web 기반                                                                                                                                                                |
 
 ## Turbo 파이프라인
 
@@ -86,10 +86,72 @@ yarn workspace @imjohnkoo/design-vue dev   # watch 빌드
 
 엄격히 하려면 각 앱에 해당 peer 의존성을 명시적으로 추가 가능.
 
+## 추가 컨텍스트 (필요 시 로드)
+
+monorepo 공유 도메인/운영 룰은 `.claude/rules/` 아래에 분리:
+
+- `.claude/rules/turbo.md` — Turbo 의존 그래프 + 커맨드 상세
+- `.claude/rules/claude-code-assets.md` — Skills/Hooks 카탈로그 + Vendoring 정책
+- `.claude/rules/deployment.md` — CodeDeploy 배포 흐름, path filter, 브랜치 전략 결정 가이드 **(m8-frontend 패턴 포팅 — target state 청사진, 실 자산은 weekly A 트랙에서 부트스트랩 중)**
+- `.claude/rules/ssm-paths.md` — SSM Parameter Store 경로 + Secret naming 원칙 **(STUB — A-1 audit 결과로 채움)**
+
+m8-frontend 에서 미포팅: `design-system-publish.md` (C 트랙 결정 후 추가 검토), `notion-workflow.md` (nomacom 개발 워크플로우는 Notion 비사용으로 결정).
+
+앱 내부 컨텍스트:
+
+- `apps/admin/CLAUDE.md` — admin 도메인 + dual DB 구조 (admin DB / eSIM 메인 DB) + 현재 미완 사항
+- `apps/client/CLAUDE.md` — eSIM 발급 4-step 흐름 + Maya API + Nuxt 4 마이그 결과 반영
+- `apps/mobile/CLAUDE.md` — 추후 작성 (B 트랙 mobile 부트스트랩과 함께)
+
+앱별 `.claude/rules/` 는 도메인이 충분히 굳기 전까지는 신설하지 않음 — 루트 `.claude/rules/` 단일 보관 (분리 결정 게이트: Phase 3 쿠팡 진입 이후 코드 폭증 또는 admin/client 도메인 명확 분리 시점).
+
+## Documentation 위치 규칙
+
+> **`docs/` 는 `.gitignore`** (m8-frontend 와 동일). 로컬 전용 internal 문서. 커밋/push 되지 않으며 팀원 간에는 별도로 공유.
+
+| 문서 종류                      | 위치                                                   | 예시                                            |
+| ------------------------------ | ------------------------------------------------------ | ----------------------------------------------- |
+| 모노리포 전체 장기 계획        | `docs/<topic>-plan.md`                                 | `docs/ds-1.0-roadmap.md`                        |
+| 크로스앱 RFC 제안              | `docs/proposals/<topic>-proposal.md`                   | `docs/proposals/2026-05-18-deploy-bootstrap.md` |
+| admin 전용 RFC                 | `docs/proposals/admin/YYYY-MM-DD-<topic>-proposal.md`  | —                                               |
+| client 전용 RFC                | `docs/proposals/client/YYYY-MM-DD-<topic>-proposal.md` | —                                               |
+| mobile 전용 RFC                | `docs/proposals/mobile/YYYY-MM-DD-<topic>-proposal.md` | —                                               |
+| 모노리포 단기 PR 단위 계획     | `docs/plans/YYYY-MM-DD-<topic>.md`                     | —                                               |
+| app-specific 단기 PR 단위 계획 | `docs/plans/<app-name>/YYYY-MM-DD-<topic>.md`          | —                                               |
+| 주간 업무 계획                 | `docs/plans/weekly/current-week.html` + archive        | (현재 운영 중)                                  |
+
+**원칙**:
+
+- `apps/*/docs/` 생성 금지. 실수로 만들어졌으면 루트 `docs/` 로 이동
+- 날짜 prefix 는 ISO `YYYY-MM-DD`
+- stale 메타 주석 금지 (예: "git에 커밋되지 않음" 같은 문구 — gitignore 상태와 괴리 발생)
+
+## Hooks & 권한
+
+- `.claude/settings.json` — committed 권한 화이트리스트 + hook 등록 (단, `.claude/*` 자체가 `.gitignore`)
+  - **PostToolUse (Edit|Write|MultiEdit)**: prettier 자동 포맷 (.vue/.ts/.tsx/.css 등)
+  - **PreToolUse (Bash)**: prod push / force push / `git reset --hard` / `aws ssm put|delete` 차단
+- 차단된 명령은 `.claude/hooks/guard-prod-push.sh` 참조. 우회 필요 시 사용자 명시 승인 받기.
+
+## 부트스트랩 skill (m8-frontend 패턴 포팅)
+
+- `nomacomfe-prod-push-check` — prod push 전 8-phase pre-flight (build/typecheck/tests/paths-filter/migration/DS bump/dev sync/CI 확인)
+- `nomacomfe-finish-branch` — worktree 작업 완료 → 검증 + merge/PR 옵션 + worktree 정리
+
+> 두 skill 모두 **A 트랙 (배포 인프라 부트스트랩) 완료 후 본격 의미**. 그 전까지는 Phase 7 (dev sync), Phase 8 (CI 확인) 등이 NO-OP 또는 N/A.
+
 ## 비포함 범위 (후속 작업)
 
-- GitHub Actions 워크플로우 (`admin-production.yml`, `client-production.yml` 등)
-- Dockerfile, AWS CodeDeploy `appspec.yml`, `deploy/scripts/`
-- AWS SSM Parameter Store 연동
-- 원본 디렉토리 (`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) 아카이브 혹은 삭제
-- `@imjohnkoo/design-*` npm 배포 파이프라인 유지 여부 결정
+| 항목                                                                                           | 상태                                     | 관련 트랙                        |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------- | -------------------------------- |
+| GitHub Actions 워크플로우 (`admin-production.yml`, `client-production.yml`)                    | 미구축                                   | weekly A-2b                      |
+| Dockerfile (`apps/admin/Dockerfile`, `apps/client/Dockerfile`)                                 | 미구축                                   | weekly A-2a                      |
+| AWS CodeDeploy `appspec.yml` + `deploy/scripts/`                                               | 미구축                                   | weekly A-2c                      |
+| AWS SSM Parameter Store 연동 + 실제 경로 audit                                                 | STUB 단계 (`.claude/rules/ssm-paths.md`) | weekly A-1 / A-2c                |
+| 원본 디렉토리 (`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) 아카이브/삭제 | 결정 미정                                | weekly A-5 / C-3                 |
+| `@imjohnkoo/design-*` 배포 파이프라인 (GitHub Packages or npm)                                 | 정책 미정                                | weekly C-1                       |
+| `design-system-publish.md` rule 포팅                                                           | C-1 결정 후                              | —                                |
+| `apps/admin/CLAUDE.md` + `apps/client/CLAUDE.md`                                               | 작성 완료 (2026-05-19)                   | —                                |
+| `apps/mobile/CLAUDE.md`                                                                        | 미작성                                   | weekly B 트랙과 함께              |
+| `apps/*/.claude/rules/` 도메인 분리                                                            | 보류 (도메인 굳을 때)                    | —                                |
+| mobile EAS 배포 흐름 정의                                                                      | 미시작                                   | weekly B 트랙 차주 이후          |

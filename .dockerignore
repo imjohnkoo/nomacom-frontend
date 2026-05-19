@@ -1,9 +1,44 @@
+# Build context optimization for Docker.
+# Mirror of .gitignore minus secrets (which shouldn't be in repo anyway).
+
+# Node / build outputs
 node_modules
-.git
 .nuxt
 .output
+.nitro
+.data
+.cache
 .turbo
-.claude
+dist
+*.tsbuildinfo
+
+# VCS / IDE
+.git
 .idea
+.fleet
+.DS_Store
+
+# Logs
 *.log
 logs
+
+# Yarn Berry runtime/cache (releases/patches/plugins/sdks/versions stay tracked)
+.yarn/cache
+.yarn/install-state.gz
+.yarn/build-state.yml
+.pnp.*
+
+# Local env / secrets
+.env
+.env.*
+
+# Local-only docs (per CLAUDE.md "Documentation 위치 규칙")
+docs/
+
+# Claude assets (not needed inside image)
+.claude
+
+# Storage / mobile (not part of admin/client web image)
+storage/
+apps/mobile/
+packages/design-mobile/

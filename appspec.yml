@@ -1,0 +1,18 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /app/nomacom-frontend
+permissions:
+  - object: /app
+    pattern: '**'
+    owner: ubuntu
+    group: ubuntu
+hooks:
+  BeforeInstall:
+    - location: deploy/scripts/before_deploy.sh
+      runas: ubuntu
+  AfterInstall:
+    - location: deploy/scripts/after_deploy.sh
+      runas: ubuntu
