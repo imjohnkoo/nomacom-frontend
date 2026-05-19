@@ -1,30 +1,19 @@
 <script setup lang="ts">
-const sampleOrderId = ref('');
-const router = useRouter();
-
-const navigateToVerify = () => {
-  if (sampleOrderId.value) {
-    router.push(`/verify/${sampleOrderId.value}`);
-  }
-};
+const healthEndpoint = '/api/health'
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center p-8">
-    <div class="flex flex-col items-center gap-y-6 text-center">
-      <img src="~/assets/icons/esimmany-logo.png" alt="eSIMMany" class="h-20 object-contain" />
-      <h1 class="text-2xl font-bold text-gray-800">eSIMMany</h1>
-      <p class="text-gray-600">eSIM QR코드 발급 서비스</p>
-
-      <form class="mt-8 flex w-full flex-col gap-y-4" @submit.prevent="navigateToVerify">
-        <NFormField label="주문번호 입력">
-          <NInput v-model="sampleOrderId" placeholder="주문번호를 입력하세요" />
-        </NFormField>
-
-        <NButton type="submit" variant="primary" size="lg" full-width :disabled="!sampleOrderId">
-          주문 확인하기
-        </NButton>
-      </form>
+  <div class="flex min-h-screen flex-col items-center justify-center p-8 text-center">
+    <div class="flex flex-col items-center gap-y-4">
+      <NLogo variant="kor" size="lg" />
+      <span class="inline-block rounded bg-red-100 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-red-600">
+        staging
+      </span>
+      <h1 class="text-lg font-semibold text-gray-800">Nomacom Client</h1>
+      <p class="text-sm text-gray-600">이 화면은 배포 파이프라인 검증용 깡통 빌드입니다.</p>
+      <p class="mt-4 text-xs text-gray-500">
+        Health endpoint: <a :href="healthEndpoint" class="text-cyan-600 hover:underline">{{ healthEndpoint }}</a>
+      </p>
     </div>
   </div>
 </template>

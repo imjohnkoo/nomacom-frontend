@@ -4,34 +4,23 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --dotenv .env.local",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@heroicons/vue": "^2.2.0",
     "@imjohnkoo/design-tokens": "workspace:*",
     "@imjohnkoo/design-vue": "workspace:*",
-    "@nuxtjs/tailwindcss": "6.12.0",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/nuxt": "^14.1.0",
-    "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0",
-    "dayjs": "^1.11.19",
-    "drizzle-orm": "^0.45.1",
     "nuxt": "^4.4.2",
     "pinia": "^3.0.4",
-    "postgres": "^3.4.8",
-    "qrcode-vue3": "^1.7.1",
     "vue": "^3.5.30",
-    "vue-router": "^4.5.1",
-    "vue-tailwind-datepicker": "^1.7.4"
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.10"
+    "@tailwindcss/vite": "^4",
+    "tailwindcss": "^4"
   }
 }

@@ -1,0 +1,47 @@
+name: client-production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [prod]
+    paths:
+      - 'apps/client/**'
+      - 'packages/design-tokens/**'
+      - 'packages/design-vue/**'
+      - 'deploy/scripts/**'
+      - 'appspec.yml'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/client-production.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.PROD_DOCKER_ID }}
+          password: ${{ secrets.PROD_DOCKER_PW }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: .
+          file: apps/client/Dockerfile
+          tags: imjohnkoo/nomacom-client:prod
+
+      - name: Trigger CodeDeploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-northeast-2
+          COMMIT_SHA: ${{ github.sha }}
+        run: aws deploy create-deployment --application-name nomacom-client --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name prod --github-location repository=imjohnkoo/nomacom-frontend,commitId="$COMMIT_SHA"

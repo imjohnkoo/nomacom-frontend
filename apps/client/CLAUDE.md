@@ -1,160 +1,102 @@
-# CLAUDE.md — nomacom-client-nuxt3
+# CLAUDE.md (apps/client)
 
-> eSIMMany: eSIM QR code issuance web app for Naver Smart Store customers
+> ESIMmany (이심마니): eSIM QR code issuance web app for Naver Smart Store customers — **현재는 깡통 빌드 (배포 파이프라인 검증용)**
 
-## Project Overview
+## Current Status (2026-05-19)
 
-**Service Name**: eSIMMany (이심매니)
-**Purpose**: A B2C mobile web app where customers who purchased eSIM products from Naver Smart Store can verify their order, select usage start date/time/country, generate eSIMs via Maya API, and receive QR codes for installation.
-**Target Users**: Korean consumers (mobile-first, fixed 400px max-width layout)
-**UI Language**: Korean only
+**배포 파이프라인 검증용 깡통 빌드** 상태. 4-step 유저 흐름 (verify → details → select-date → view), Maya API 연동, DB 접근, Pinia stores, 모든 도메인 컴포넌트가 제거됨.
 
-## Tech Stack
+남은 것:
 
-| Layer | Technology | Notes |
-|-------|-----------|-------|
-| Framework | Nuxt 3.17+ | SSR + Server Routes |
-| Frontend | Vue 3 Composition API | `<script setup>` pattern |
-| Styling | TailwindCSS | NanumSquareNeo, Pretendard fonts |
-| UI Components | HeadlessUI, HeroIcons | Listbox, Modal, etc. |
-| State | Pinia | Options API style store |
-| DB | PostgreSQL + Drizzle ORM | `postgres` driver (not pg) |
-| External API | Maya API | eSIM provisioning (Basic Auth) |
-| Date | date-fns, date-fns-tz, dayjs | Timezone conversion is critical |
-| QR | qrcode-vue3 | activation_code → QR rendering |
-| Package Manager | Yarn 1.x | Uses `yarn.lock` |
+- `app/pages/index.vue` — staging 카드 (DS `NLogo` 사용)
+- `app/app.vue` — 400px 고정 너비 레이아웃 골격
+- `app/assets/css/main.css` — Tailwind 4 + 폰트 (NanumSquareNeo / Pretendard) 유지
+- `server/api/health.get.ts` — `/api/health`
+- DS / Tailwind / Pinia / VueUse 통합 유지 (재도입 마찰 최소화)
 
-## Core User Flow (4 Steps)
+이전 코드 (verify/activate API, Maya client, Drizzle schema, 4-step pages, 8 popups) 는 git history (commit `2202458` 시점) 에 보존. CodeDeploy 1회 성공 후 단계적 복원.
 
-```
-1. /verify/{orderId}       → Identity verification with name + phone number
-2. /details/{orderId}      → Select eSIM product from order list
-3. /select-date/{orderId}  → Choose start country/date/time → Create eSIM via Maya API
-4. /view/{orderId}         → Display QR code + download + manual installation codes
-```
+## Tech Stack (현재 유효)
 
-Orders with already-issued eSIMs skip from details directly to view.
+| Layer         | Technology                                          | Notes                                                   |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------- |
+| Framework     | Nuxt 4.4+                                           | SSR + Nitro                                             |
+| Styling       | Tailwind 4 (`@tailwindcss/vite`)                    | NanumSquareNeo / Pretendard                             |
+| Design System | `@imjohnkoo/design-vue`, `@imjohnkoo/design-tokens` | workspace deps + `style.css` import + `build.transpile` |
+| State         | Pinia (`@pinia/nuxt`)                               | (현재 store 없음, 미래용으로 모듈만 유지)               |
+| Composables   | `@vueuse/nuxt`                                      | (auto import)                                           |
+| DB            | (제거)                                              | 부활 시 PostgreSQL + Drizzle 재도입 예정                |
+| Maya API      | (제거)                                              | 부활 시 server/utils/maya-api 재도입                    |
+| Tests         | 미도입                                              |                                                         |
+| Deployment    | AWS CodeDeploy + SSM + CloudFront                   | 깡통 검증 완료 (`d3un5i1lmp1eem.cloudfront.net` 예정)   |
 
-## Directory Structure
+## Directory Structure (현재)
 
 ```
-nomacom-client-nuxt3/
-├── app.vue                        # Root: fixed 400px width layout
-├── pages/                         # File-based routing (4 pages)
-│   ├── index.vue                  # Landing page with direct order ID input
-│   ├── verify/[orderId].vue       # Step 1: Identity verification
-│   ├── details/[orderId].vue      # Step 2: Product selection
-│   ├── select-date/[orderId].vue  # Step 3: Date/time selection + activation
-│   └── view/[orderId].vue         # Step 4: QR code display
-├── components/popup/              # 8 modal components
-├── composables/useApi.ts          # API calls (verifyOrder, activateOrder)
-├── stores/order.ts                # Pinia: orders[], singleOrder
-├── types/                         # TypeScript interfaces
-│   ├── order.ts                   # Order, Esim types
-│   └── api.ts                     # Request/Response types
-├── utils/                         # Client utilities (date, formatter)
+apps/client/
+├── app/
+│   ├── app.vue                       # 400px 고정 너비 frame
+│   ├── assets/
+│   │   ├── css/{main.css, animations.css}
+│   │   ├── fonts/                    # NanumSquareNeo, Pretendard
+│   │   ├── icons/                    # (도메인 자산 — 부활 시 사용)
+│   │   └── images/
+│   └── pages/index.vue               # staging 카드
 ├── server/
-│   ├── api/v1/
-│   │   ├── verify.post.ts         # POST /api/v1/verify
-│   │   └── activate.post.ts       # POST /api/v1/activate
-│   ├── db/
-│   │   ├── schema.ts              # Drizzle schema (orders, esims, planTypes, plans)
-│   │   └── index.ts               # DB connection (singleton pattern)
-│   └── utils/                     # Server utilities (maya-api, auth, date, string)
-├── assets/                        # Fonts, icons, background images
-└── public/                        # Static files (duplicate images with assets/)
-```
-
-## Data Model (Drizzle Schema)
-
-```
-orders (PK: productOrderId)
-  ├── orderId, productOrderStatus, lastChangedType
-  ├── productName, productOption, quantity, totalPaymentAmount
-  ├── customerName, customerPhoneNumber, customerId, customerEmail
-  ├── receiverName, receiverPhoneNumber
-  ├── cancel/return related fields
-  └── 1:N → esims
-
-esims (PK: esimId = iccid)
-  ├── Maya API response fields (apn, smdpAddress, activationCode, manualCode, etc.)
-  └── FK: orderId → orders.productOrderId
-
-planTypes (PK: planTypeId)
-  ├── Plan display info (kr/eng names, data type/limit, country lists)
-  ├── Maya API fields (uid, policyId, dataQuotaMb, validityDays)
-  └── 1:N → plans
-
-plans (PK: planId, auto-increment)
-  ├── User input (startDate, startTime, startTimeZone, startCountry)
-  ├── Computed values (timeToBeActivatedInUTC, timeToBeActivatedInLocal)
-  ├── FK: esimId → esims.esimId
-  └── FK: planTypeId → planTypes.planTypeId
+│   └── api/health.get.ts             # /api/health
+├── public/                           # favicon, fonts, icons (assets/ 와 중복 — 기술 부채)
+├── Dockerfile                        # multi-stage (tokens → vue → client)
+├── nuxt.config.ts                    # DS + Tailwind 4 + Pinia + VueUse
+├── package.json                      # name: nomacom-client
+└── tsconfig.json
 ```
 
 ## API Endpoints
 
-### POST /api/v1/verify
-- **Input**: `{ fullName, phoneNumber, orderId, productOrderId? }`
-- **Behavior**: Query orders by orderId → check cancellation status → join planType → respond with esims
-- **Response**: `{ verified, cancelled?, details?: OrderDetails[] }`
+| 경로          | 메서드 | 동작                                                         |
+| ------------- | ------ | ------------------------------------------------------------ |
+| `/api/health` | GET    | `{ status: 'ok', app: 'nomacom-client', commit, timestamp }` |
 
-### POST /api/v1/activate
-- **Input**: Order info + start date/time/timezone/country
-- **Behavior**: Validate order → create eSIMs via Maya API (loop by quantity) → save to DB (esim + plan)
-- **Response**: `{ verified, details: [OrderDetails] }` (includes created eSIMs)
+## 환경 변수
 
-## External API Integration
+깡통 단계에서는 필수 env 없음. 컨테이너 부팅에 DB / Maya API 키 필요 없음.
 
-### Maya API (eSIM Provisioning)
-- **Auth**: Basic Auth (clientId:clientSecret → Base64)
-- **Endpoints**: `{MAYA_API_ENDPOINT}/esim` (POST: create, GET /{iccid}: retrieve)
-- **Key Response Fields**: iccid, activation_code, smdp_address, manual_code
+운영 기능 재도입 시 `/nomacom/shared/maya/*`, `/nomacom/shared/db/*`, `/nomacom/client/*` SSM 경로 사용 (`after_deploy.sh` 가 주입). 상세는 `.claude/rules/ssm-paths.md`.
 
-## Environment Variables
-
-```env
-DATABASE_URL=postgres://user:password@host:5432/esimmany
-MAYA_API_ENDPOINT=https://api.maya.net/connectivity/v1
-MAYA_API_CLIENT_ID=xxx
-MAYA_API_CLIENT_SECRET=xxx
-```
-
-Exposed via runtimeConfig as server-only values. Only `apiBase` is public.
-
-## Code Conventions
-
-1. **ESLint + Prettier**: single quotes, semicolons, 100 char width, ES5 trailing commas
-2. **Vue**: `<script setup lang="ts">` + `<template>` order, Composition API
-3. **Server**: Nuxt server utils auto-import, `defineEventHandler`, `createError()` for errors
-4. **DB**: `useDB()` singleton, Drizzle relational queries (`db.query.*.findMany/findFirst`)
-5. **Types**: Interfaces defined separately in server/api and types/ (duplication exists, consolidation needed)
-6. **Fonts**: NanumSquareNeo (primary), Pretendard (secondary)
-7. **Colors**: cyan-600 primary palette, vtd-primary (cyan palette for datepicker)
-
-## Commands
+## Key Commands
 
 ```bash
-yarn install          # Install dependencies
-yarn dev              # Dev server (--dotenv .env.local)
-yarn build            # Production build
-yarn preview          # Preview build
-yarn lint             # ESLint
-yarn format           # Prettier
+yarn workspace nomacom-client dev          # dev server
+yarn workspace nomacom-client build        # production build
+
+# Turbo (design-tokens + design-vue 의존 자동 처리)
+yarn turbo run dev --filter=nomacom-client
+yarn turbo run build --filter=nomacom-client
+
+# Docker
+docker build -f apps/client/Dockerfile -t nomacom-client:test .
+docker run -p 3000:3000 nomacom-client:test
 ```
 
-## Known Issues / Technical Debt
+## 향후 작업 (memo — 깡통 복원 단계)
 
-1. **Duplicate images in assets/ and public/**: Identical images exist in both `assets/icons` and `public/icons`
-2. **Type duplication**: Interfaces in `server/api/` files and `types/` directory are defined separately
-3. **Incomplete error handling**: No rollback logic when Maya API fails during activation
-4. **Hardcoded delays**: 3-second `setTimeout` for UX loading animations in verify/select-date
-5. **No authentication**: Access controlled only by order ID + name/phone (no login system)
-6. **No structured logging**: Only `console.error` used, no structured logging implementation
-7. **No tests**: No unit/integration/E2E test files exist
+1. DB / Drizzle / postgres 재도입 + `server/db/schema.ts` (eSIM 메인 DB)
+2. Maya API client + `server/utils/maya-api.ts` + Basic auth
+3. 4-step pages 복원 (verify / details / select-date / view)
+4. 8 popup 컴포넌트 + Pinia order store
+5. `runtimeConfig` 에 DATABASE*URL / MAYA_API*\* 키 복원 + `after_deploy.sh` 의 NUXT*PUBLIC* alias 매핑
 
-## Project Status
+각 단계는 별 PR. 사이 시점에도 prod 배포 가능 상태 유지.
 
-- **Branch**: `init-config` (default branch, 2 commits)
-- **Stage**: Early development (WiP)
-- **Legacy reference**: `.claude/skills/m8-project.md` contains M8 Messaging Client guidelines from a previous project. Architecture/patterns are referenceable, but domain logic differs from eSIMMany.
+## Maya B2B 정책 (도메인 부활 시 주의)
+
+ESIMmany 는 Maya B2B 리셀러로 **자체 정책 통제 가능**. Maya B2C 공식 문서를 fallback 진실로 간주 금지. 메모리 `maya_b2b_policy_control` 참조 — 회선 ON 시점 활성화, 24h 갱신, 소진 후 속도 선택 (128/500/1000 kbps) 등 자체 설정.
+
+## 관련 문서
+
+- 루트 `CLAUDE.md` — monorepo 구성, Turbo, Nuxt 4 마이그 노트
+- `.claude/rules/deployment.md` — CodeDeploy + GHA + CloudFront 흐름
+- `.claude/rules/ssm-paths.md` — SSM 경로 (확정)
+- `apps/admin/CLAUDE.md` — 동일 패턴의 admin 깡통 빌드
+- memory: `maya_b2b_policy_control` — 도메인 복원 시 진실 기준
+- memory: `future_mobile_app_esim_install` — mobile 앱 Universal Link 흐름

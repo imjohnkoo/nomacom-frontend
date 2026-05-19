@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'NanumSquareNeo', 'Pretendard', sans-serif;
+  --font-nanum-neo: 'NanumSquareNeo', sans-serif;
+  --font-pretendard: 'Pretendard', sans-serif;
+}
 
 /* DS Primary color override: cyan palette */
 :root {
@@ -34,22 +38,4 @@
 html,
 body {
   font-family: 'NanumSquareNeo', 'Pretendard', sans-serif;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
 }

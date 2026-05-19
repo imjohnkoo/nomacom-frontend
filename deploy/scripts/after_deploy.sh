@@ -74,11 +74,22 @@ case "${APP_NAME}" in
     ;;
 
   nomacom-client)
-    # TODO (A-4): NUXT_PUBLIC_ alias 매핑 (m8 client 패턴 참고).
-    # nomacom-client 의 runtimeConfig.public 키 확정 후 채울 것.
-    # 현재는 admin 과 동일한 단순 실행만 유지.
-    echo "client case 는 A-4 에서 NUXT_PUBLIC_ alias 매핑과 함께 완성 — 일단 부팅 거부"
-    exit 1
+    # 깡통 빌드: runtimeConfig 미사용. 도메인 로직 부활 시 NUXT_PUBLIC_ alias 매핑 추가.
+    docker run \
+      --publish 3000:3000 \
+      --restart always \
+      --detach \
+      --name "${APP_NAME}" \
+      --env-file "$ENV_FILE" \
+      --log-driver json-file \
+      --log-opt max-size=10m \
+      --log-opt max-file=10 \
+      --health-cmd="node -e 'process.exit(0)'" \
+      --health-interval=10s \
+      --health-timeout=5s \
+      --health-retries=3 \
+      --health-start-period=30s \
+      imjohnkoo/"${APP_NAME}":prod
     ;;
 esac
 
