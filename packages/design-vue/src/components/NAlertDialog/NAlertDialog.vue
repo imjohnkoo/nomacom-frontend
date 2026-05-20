@@ -7,7 +7,15 @@
       <Transition name="n-alert-dialog-content">
         <DialogContent v-if="open" class="n-alert-dialog__content">
           <DialogClose v-if="closable" class="n-alert-dialog__close" aria-label="Close">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
               <line x1="4" y1="4" x2="12" y2="12" />
               <line x1="12" y1="4" x2="4" y2="12" />
             </svg>
@@ -16,24 +24,59 @@
             <div v-if="$slots.icon" class="n-alert-dialog__icon">
               <slot name="icon" />
             </div>
-            <div :class="['n-alert-dialog__icon-default', `n-alert-dialog__icon-default--${color}`]" v-else-if="!$slots.icon">
-              <svg v-if="color === 'error' || color === 'warning'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div
+              :class="['n-alert-dialog__icon-default', `n-alert-dialog__icon-default--${color}`]"
+              v-else-if="!$slots.icon"
+            >
+              <svg
+                v-if="color === 'error' || color === 'warning'"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <svg v-else-if="color === 'success'" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                v-else-if="color === 'success'"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="9 12 11.5 14.5 16 10" />
               </svg>
-              <svg v-else width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg
+                v-else
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="16" x2="12" y2="12" />
                 <line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
             </div>
             <DialogTitle v-if="title" class="n-alert-dialog__title">{{ title }}</DialogTitle>
-            <DialogDescription v-if="description" class="n-alert-dialog__description">{{ description }}</DialogDescription>
+            <DialogDescription v-if="description" class="n-alert-dialog__description">{{
+              description
+            }}</DialogDescription>
             <slot />
           </div>
           <div v-if="$slots.actions" class="n-alert-dialog__actions">
@@ -85,7 +128,9 @@ const open = defineModel<boolean>({ default: false })
   position: fixed;
   inset: 0;
   z-index: var(--zIndex-modal-backdrop, 1040);
-  background-color: rgb(0 0 0 / 0.5);
+  background-color: rgba(17, 17, 17, 0.32);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .n-alert-dialog__content {
@@ -95,15 +140,17 @@ const open = defineModel<boolean>({ default: false })
   transform: translate(-50%, -50%);
   z-index: var(--zIndex-modal, 1050);
   width: 90vw;
-  max-width: 380px;
-  border-radius: var(--radius-xl, 0.75rem);
+  max-width: 280px;
+  border-radius: var(--radius-3xl, 1.5rem);
   background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
+  box-shadow: var(--shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
   font-family: var(--font-fontFamily-sans, sans-serif);
   overflow: hidden;
 }
 
-.n-alert-dialog__content:focus { outline: none; }
+.n-alert-dialog__content:focus {
+  outline: none;
+}
 
 .n-alert-dialog__close {
   position: absolute;
@@ -131,21 +178,23 @@ const open = defineModel<boolean>({ default: false })
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: var(--spacing-8, 2rem) var(--spacing-6, 1.5rem) var(--spacing-6, 1.5rem);
+  gap: 14px;
+  padding: 44px 24px 8px;
 }
 
 .n-alert-dialog__icon {
-  margin-bottom: var(--spacing-3, 0.75rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .n-alert-dialog__icon-default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: var(--radius-full, 9999px);
-  margin-bottom: var(--spacing-3, 0.75rem);
 }
 
 .n-alert-dialog__icon-default--error {
@@ -166,7 +215,7 @@ const open = defineModel<boolean>({ default: false })
 }
 .n-alert-dialog__icon-default--primary {
   background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-500, #6239FF);
+  color: var(--color-primary-500, #6239ff);
 }
 .n-alert-dialog__icon-default--neutral {
   background-color: var(--color-neutral-100, #f5f5f5);
@@ -175,36 +224,57 @@ const open = defineModel<boolean>({ default: false })
 
 .n-alert-dialog__title {
   margin: 0;
-  font-size: var(--font-fontSize-lg, 1.125rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
+  font-size: 17px;
+  font-weight: var(--font-fontWeight-bold, 700);
   color: var(--color-neutral-900, #171717);
   line-height: 1.4;
 }
 
 .n-alert-dialog__description {
-  margin-top: var(--spacing-1, 0.25rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  margin-top: -6px;
+  font-size: 13px;
   color: var(--color-neutral-500, #737373);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .n-alert-dialog__actions {
   display: flex;
-  justify-content: center;
-  gap: var(--spacing-3, 0.75rem);
-  padding: 0 var(--spacing-6, 1.5rem) var(--spacing-6, 1.5rem);
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 24px 24px;
+}
+
+.n-alert-dialog__actions > * {
+  width: 100%;
 }
 
 /* Transitions */
 .n-alert-dialog-backdrop-enter-active,
-.n-alert-dialog-backdrop-leave-active { transition: opacity 200ms ease; }
+.n-alert-dialog-backdrop-leave-active {
+  transition: opacity 200ms ease;
+}
 .n-alert-dialog-backdrop-enter-from,
-.n-alert-dialog-backdrop-leave-to { opacity: 0; }
+.n-alert-dialog-backdrop-leave-to {
+  opacity: 0;
+}
 
 .n-alert-dialog-content-enter-active,
-.n-alert-dialog-content-leave-active { transition: opacity 200ms ease, transform 200ms ease; }
-.n-alert-dialog-content-enter-from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-.n-alert-dialog-content-leave-to { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+.n-alert-dialog-content-leave-active {
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+.n-alert-dialog-content-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+.n-alert-dialog-content-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.95);
+}
 .n-alert-dialog-content-enter-to,
-.n-alert-dialog-content-leave-from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.n-alert-dialog-content-leave-from {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
 </style>

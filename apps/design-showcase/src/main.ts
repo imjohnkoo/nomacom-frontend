@@ -5,6 +5,7 @@ import App from './App.vue'
 import './style.css'
 
 import OverviewView from './views/OverviewView.vue'
+import EsimmanyView from './views/EsimmanyView.vue'
 import ElementsView from './views/ElementsView.vue'
 import FormView from './views/FormView.vue'
 import FeedbackView from './views/FeedbackView.vue'
@@ -15,6 +16,7 @@ import AdminView from './views/AdminView.vue'
 
 const routes = [
   { path: '/', name: 'Overview', component: OverviewView },
+  { path: '/esimmany', name: 'Esimmany', component: EsimmanyView },
   { path: '/elements', name: 'Elements', component: ElementsView },
   { path: '/form', name: 'Form', component: FormView },
   { path: '/feedback', name: 'Feedback', component: FeedbackView },

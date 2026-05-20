@@ -15,7 +15,10 @@
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
-          :class="['showcase-nav__link', { 'showcase-nav__link--active': $route.path === item.path }]"
+          :class="[
+            'showcase-nav__link',
+            { 'showcase-nav__link--active': $route.path === item.path },
+          ]"
         >
           {{ item.label }}
         </router-link>
@@ -31,6 +34,7 @@
 <script setup lang="ts">
 const navItems = [
   { path: '/', label: 'Overview' },
+  { path: '/esimmany', label: 'Esimmany Patterns' },
   { path: '/elements', label: 'Elements' },
   { path: '/form', label: 'Form' },
   { path: '/feedback', label: 'Feedback' },

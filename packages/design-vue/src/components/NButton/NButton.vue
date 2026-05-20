@@ -29,7 +29,7 @@
 <script setup lang="ts">
 export interface NButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   disabled?: boolean
   loading?: boolean
   fullWidth?: boolean
@@ -93,16 +93,29 @@ function handleClick(event: MouseEvent) {
   font-size: var(--font-fontSize-lg, 1.125rem);
 }
 
+/* CTA 사이즈 — sticky 하단 보라 그림자 포함, 토스풍 */
+.n-button--xl {
+  height: 56px;
+  padding: 0 var(--spacing-6, 1.5rem);
+  font-size: 16px;
+  font-weight: var(--font-fontWeight-semibold, 600);
+  border-radius: var(--radius-2xl, 1rem);
+}
+
+.n-button--xl.n-button--primary {
+  box-shadow: var(--shadow-cta-brand, 0 10px 24px -10px rgba(98, 57, 255, 0.5));
+}
+
 /* --- Variants --- */
 .n-button--primary {
-  background-color: var(--color-primary-600, #5530e6);
+  background-color: var(--color-primary-500, #6239ff);
   color: var(--color-neutral-0, #ffffff);
 }
 .n-button--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-700, #4826cc);
+  background-color: var(--color-primary-600, #5025e8);
 }
 .n-button--primary:active:not(:disabled) {
-  background-color: var(--color-primary-800, #3b1db3);
+  background-color: var(--color-primary-700, #3f1cc0);
 }
 
 .n-button--secondary {
