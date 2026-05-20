@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>08 · Coverage · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .cv-wrap {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .cv-map {
+        background: linear-gradient(135deg, #f1edff, #fff);
+        border-radius: 16px;
+        padding: 18px 18px 14px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--color-primary-100);
+      }
+      .cv-map__inner {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1183 / 1015;
+      }
+      .cv-map__img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .cv-pin {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        width: 9px;
+        height: 9px;
+        background: var(--color-primary-600);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 3px rgba(98, 57, 255, 0.25),
+          0 0 0 1px rgba(255, 255, 255, 0.8);
+      }
+      .cv-pin--big {
+        width: 12px;
+        height: 12px;
+        background: var(--color-primary-700);
+        box-shadow:
+          0 0 0 4px rgba(98, 57, 255, 0.3),
+          0 0 0 1px rgba(255, 255, 255, 0.9);
+      }
+      .cv-pin span {
+        position: absolute;
+        left: 14px;
+        top: -8px;
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--color-primary-900);
+        background: rgba(255, 255, 255, 0.92);
+        padding: 2px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+        letter-spacing: -0.01em;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .cv-pin--right span {
+        left: auto;
+        right: 14px;
+      }
+      .cv-map__cap {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        text-align: center;
+      }
+      .cv-map__cap b {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+      .cv-map__credit {
+        margin-top: 4px;
+        font-size: 9.5px;
+        color: var(--color-neutral-400);
+        text-align: center;
+      }
+
+      .cv-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .cv-card {
+        padding: 18px 20px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 14px;
+      }
+      .cv-card__head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .cv-card__flag {
+        font-size: 26px;
+        line-height: 1;
+      }
+      .cv-card__h {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+      }
+      .cv-card__h small {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--color-primary-700);
+        background: var(--color-primary-50);
+        padding: 1px 7px;
+        border-radius: 9999px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .cv-card__brands {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .cv-card__brand {
+        padding: 4px 10px;
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-800);
+        border-radius: 9999px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .cv-card__cities {
+        font-size: 12px;
+        color: var(--color-neutral-600);
+        line-height: 1.7;
+      }
+      .cv-card__cities b {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+
+      .cv-note {
+        margin-top: 14px;
+        padding: 12px 16px;
+        background: var(--color-neutral-50);
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--color-neutral-600);
+        line-height: 1.65;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">08</span>
+        <span class="dev-toolbar__title">Coverage</span>
+        <span class="dev-toolbar__hint">지도 (Wikimedia) + 국가별 카드 · Maya 공식 carrier</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-08-coverage">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Coverage</span>
+        <h2 class="section__title">이베리아 반도 전체 커버</h2>
+        <p class="section__lede">
+          스페인·포르투갈 주요 도시 + 외곽까지<br />
+          현지 1티어 통신망에 자동 연결됩니다.
+        </p>
+
+        <div class="cv-wrap">
+          <!-- 좌측: 지도 + 마커 -->
+          <div class="cv-map">
+            <div class="cv-map__inner">
+              <img
+                src="../assets/maps/iberia-themed.svg"
+                alt="이베리아 반도 지도 — 스페인·포르투갈"
+                class="cv-map__img"
+              />
+              <!-- 스페인 도시 -->
+              <span class="cv-pin cv-pin--big" style="left: 51%; top: 53%">
+                <span>마드리드</span>
+              </span>
+              <span class="cv-pin" style="left: 72%; top: 42%">
+                <span>바르셀로나</span>
+              </span>
+              <span class="cv-pin cv-pin--right" style="left: 41%; top: 72%">
+                <span>세비야</span>
+              </span>
+              <span class="cv-pin" style="left: 69%; top: 56%">
+                <span>발렌시아</span>
+              </span>
+              <span class="cv-pin cv-pin--right" style="left: 50%; top: 74%">
+                <span>그라나다</span>
+              </span>
+              <span class="cv-pin" style="left: 48%; top: 80%">
+                <span>말라가</span>
+              </span>
+              <!-- 포르투갈 도시 -->
+              <span class="cv-pin cv-pin--right" style="left: 24%; top: 63%">
+                <span>리스본</span>
+              </span>
+              <span class="cv-pin cv-pin--right" style="left: 26%; top: 48%">
+                <span>포르토</span>
+              </span>
+            </div>
+            <div class="cv-map__cap"><b>2개국 · 1티어 통신사 4개</b> 자동 연결</div>
+            <div class="cv-map__credit">지도 © Wikimedia Commons (CC BY-SA)</div>
+          </div>
+
+          <!-- 우측: 국가별 카드 -->
+          <div class="cv-info">
+            <div class="cv-card">
+              <div class="cv-card__head">
+                <span class="cv-card__flag">🇪🇸</span>
+                <span class="cv-card__h">스페인<small>3G · 4G LTE · 5G</small></span>
+              </div>
+              <div class="cv-card__brands">
+                <span class="cv-card__brand">Vodafone</span>
+                <span class="cv-card__brand">Orange</span>
+              </div>
+              <div class="cv-card__cities">
+                <b>마드리드</b> · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가
+              </div>
+            </div>
+            <div class="cv-card">
+              <div class="cv-card__head">
+                <span class="cv-card__flag">🇵🇹</span>
+                <span class="cv-card__h">포르투갈<small>3G · 4G LTE · 5G</small></span>
+              </div>
+              <div class="cv-card__brands">
+                <span class="cv-card__brand">NOS</span>
+                <span class="cv-card__brand">MEO</span>
+              </div>
+              <div class="cv-card__cities">
+                <b>리스본</b> · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="cv-note">
+          현지 도착 시 가장 강한 신호의 1티어 통신사로 자동 연결 · Maya 공식 라우팅
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

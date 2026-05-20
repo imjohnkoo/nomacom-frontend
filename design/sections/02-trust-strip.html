@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>02 · Trust strip · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .trust {
+        padding: 32px 60px;
+        background: #fff;
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .trust__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+      }
+      .trust__item {
+        padding: 4px 18px;
+        position: relative;
+        text-align: center;
+      }
+      .trust__item + .trust__item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 14%;
+        bottom: 14%;
+        width: 1px;
+        background: var(--color-neutral-200);
+      }
+      .trust__value {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--color-neutral-900);
+        font-variant-numeric: tabular-nums;
+      }
+      .trust__value small {
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.55;
+        margin-left: 2px;
+      }
+      .trust__value .star {
+        color: #f59e0b;
+        margin-right: 3px;
+      }
+      .trust__label {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        letter-spacing: -0.005em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">02</span>
+        <span class="dev-toolbar__title">Trust strip</span>
+        <span class="dev-toolbar__hint">누적 판매 · 별점 · 재구매 · 발급시간</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="02-trust-strip">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="trust" id="export-target">
+        <div class="trust__grid">
+          <div class="trust__item">
+            <div class="trust__value">
+              18,000<small>+</small><span class="placeholder">예시</span>
+            </div>
+            <div class="trust__label">누적 판매</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__value">
+              <span class="star">★</span>4.8<span class="placeholder">예시</span>
+            </div>
+            <div class="trust__label">네이버 별점</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__value">31<small>%</small><span class="placeholder">예시</span></div>
+            <div class="trust__label">재구매율</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__value">28<small>초</small></div>
+            <div class="trust__label">평균 발급 시간</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

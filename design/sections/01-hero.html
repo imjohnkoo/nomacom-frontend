@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>01 · Hero · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .hero {
+        position: relative;
+        padding: 56px 60px 64px;
+        background:
+          radial-gradient(circle at 80% 0%, rgba(167, 139, 255, 0.5) 0%, transparent 55%),
+          radial-gradient(circle at 0% 80%, rgba(80, 37, 232, 0.6) 0%, transparent 50%),
+          linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        overflow: hidden;
+      }
+      .hero__nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+      .hero__brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .hero__brand-mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        color: var(--color-primary-500);
+        font-weight: 900;
+        font-size: 13px;
+      }
+      .hero__nav-meta {
+        font-size: 12px;
+        opacity: 0.7;
+        letter-spacing: 0.04em;
+      }
+      .hero__row {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 36px;
+        align-items: center;
+      }
+      .hero__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+      .hero__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px 7px 9px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .hero__badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+      }
+      .hero__badge--star {
+        background: #fff;
+        color: #171717;
+        gap: 5px;
+      }
+      .hero__badge--star::before {
+        content: '★';
+        color: #f59e0b;
+        font-size: 13px;
+      }
+      .hero__title {
+        font-size: 50px;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.05;
+        margin: 0 0 16px;
+      }
+      .hero__title small {
+        display: block;
+        font-size: 21px;
+        font-weight: 600;
+        opacity: 0.78;
+        letter-spacing: -0.015em;
+        margin-bottom: 8px;
+      }
+      .hero__sub {
+        font-size: 15.5px;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.82);
+        margin: 0 0 22px;
+      }
+      .hero__price {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 12px 18px;
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: var(--radius-xl);
+        margin-bottom: 22px;
+      }
+      .hero__price-strike {
+        text-decoration: line-through;
+        opacity: 0.55;
+        font-size: 13px;
+      }
+      .hero__price-now {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .hero__price-now small {
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.7;
+        margin-left: 2px;
+      }
+      .hero__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hero__chip {
+        padding: 7px 13px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+
+      .phone {
+        position: relative;
+        margin: 0 auto;
+        width: 240px;
+        height: 480px;
+        background: #fff;
+        border-radius: 36px;
+        padding: 14px;
+        box-shadow:
+          0 0 0 6px rgba(255, 255, 255, 0.18),
+          0 30px 60px -20px rgba(0, 0, 0, 0.55);
+      }
+      .phone__screen {
+        height: 100%;
+        background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+        border-radius: 24px;
+        padding: 22px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        color: var(--color-neutral-900);
+      }
+      .phone__pill {
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 9px;
+        color: var(--color-neutral-400);
+        margin-bottom: 4px;
+      }
+      .phone__status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+        font-size: 9.5px;
+        font-weight: 700;
+        border-radius: var(--radius-full);
+      }
+      .phone__status::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--color-success-500);
+      }
+      .phone__h {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: -0.015em;
+      }
+      .phone__qr {
+        margin-top: 4px;
+        width: 132px;
+        height: 132px;
+        background:
+          conic-gradient(
+              from 0deg at 50% 50%,
+              #171717 25%,
+              transparent 0 50%,
+              #171717 0 75%,
+              transparent 0
+            )
+            0 0 / 18px 18px,
+          #fff;
+        border: 2px solid var(--color-neutral-900);
+        border-radius: 14px;
+        padding: 8px;
+        position: relative;
+      }
+      .phone__qr::after {
+        content: '';
+        position: absolute;
+        inset: 50% 50% auto auto;
+        transform: translate(50%, -50%);
+        width: 30px;
+        height: 30px;
+        background: var(--color-primary-500);
+        border-radius: 6px;
+        box-shadow: 0 0 0 4px #fff;
+      }
+      .phone__cta {
+        margin-top: auto;
+        align-self: stretch;
+        background: var(--color-neutral-900);
+        color: #fff;
+        text-align: center;
+        padding: 11px 0;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">01</span>
+        <span class="dev-toolbar__title">Hero</span>
+        <span class="dev-toolbar__hint">상품명 · 가격 · 폰 mockup</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="01-hero">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <header class="hero" id="export-target">
+        <div class="hero__nav">
+          <div class="hero__brand">
+            <span class="hero__brand-mark">e</span>
+            <span>esimmany · 이심마니</span>
+          </div>
+          <div class="hero__nav-meta">NAVER SMART STORE · eSIM</div>
+        </div>
+
+        <div class="hero__row">
+          <div>
+            <div class="hero__badges">
+              <span class="hero__badge hero__badge--star"
+                >4.8<span class="placeholder">예시</span></span
+              >
+              <span class="hero__badge">
+                <span class="hero__badge-dot"></span>
+                한국 고객센터
+              </span>
+            </div>
+            <h1 class="hero__title">
+              <small>일본 데이터 무제한</small>
+              7일이면 충분해요
+            </h1>
+            <p class="hero__sub">
+              네이버에서 결제하고, 주문번호 하나로 발급받는 가장 쉬운 eSIM.<br />
+              시작 일시를 미리 예약해 두면 비행기에서 내리는 순간 바로 켜집니다.
+            </p>
+            <div class="hero__price">
+              <span class="hero__price-strike">12,900원</span>
+              <span class="hero__price-now"
+                >9,900원<small> 부터</small></span
+              >
+              <span class="placeholder">가격 예시</span>
+            </div>
+            <div class="hero__chips">
+              <span class="hero__chip">매일 2GB 고속</span>
+              <span class="hero__chip">소진 후 무제한 (저속)</span>
+              <span class="hero__chip">테더링 가능</span>
+              <span class="hero__chip">즉시 발급</span>
+            </div>
+          </div>
+
+          <div class="phone">
+            <div class="phone__screen">
+              <div class="phone__pill">
+                <span>9:41</span>
+                <span>●●● 5G</span>
+              </div>
+              <div class="phone__status">발급 완료</div>
+              <div class="phone__h">QR 코드가<br />준비됐어요</div>
+              <div class="phone__qr"></div>
+              <div class="phone__cta">QR 코드 다운로드</div>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

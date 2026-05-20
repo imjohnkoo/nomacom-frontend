@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reviews 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      .sect { padding: 48px 60px; }
+      .sect .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-500); margin-bottom: 10px; display: inline-block; }
+      .sect h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .sect .lede { font-size: 13.5px; color: var(--color-neutral-500); margin: 0 0 24px; line-height: 1.6; max-width: 540px; }
+
+      /* ─── 공용 ─── */
+      .stars { color: #f59e0b; letter-spacing: 1.5px; }
+      .placeholder-img { background: linear-gradient(135deg, #c7b6ff, #6239ff); aspect-ratio: 1 / 1; border-radius: 12px; display: grid; place-items: center; color: rgba(255,255,255,0.85); font-size: 11px; font-weight: 600; }
+      .placeholder-img--2 { background: linear-gradient(135deg, #fde68a, #f59e0b); }
+      .placeholder-img--3 { background: linear-gradient(135deg, #bbf7d0, #22c55e); }
+      .placeholder-img--4 { background: linear-gradient(135deg, #bae6fd, #0ea5e9); }
+
+      /* ─── A: 현재 — 보라 hero + 5 quote + 사진 4 ─── */
+      .a-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 26px 28px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 20px; margin-bottom: 22px; }
+      .a-hero__score { display: flex; flex-direction: column; justify-content: center; }
+      .a-hero__stars { font-size: 22px; letter-spacing: 4px; color: #fbbf24; line-height: 1; margin-bottom: 10px; }
+      .a-hero__value { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+      .a-hero__sub { margin-top: 6px; font-size: 13px; opacity: 0.78; }
+      .a-hero__brk { display: flex; flex-direction: column; gap: 6px; font-size: 12px; justify-content: center; }
+      .a-hero__row { display: grid; grid-template-columns: 30px 1fr 48px; align-items: center; gap: 10px; }
+      .a-hero__bar { height: 6px; background: rgba(255,255,255,0.18); border-radius: 9999px; overflow: hidden; }
+      .a-hero__fill { height: 100%; background: #fbbf24; border-radius: 9999px; }
+      .a-hero__pct { text-align: right; font-variant-numeric: tabular-nums; opacity: 0.85; }
+      .a-quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 18px; }
+      .a-quote { padding: 18px 20px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 14px; }
+      .a-quote--span { grid-column: span 2; }
+      .a-quote .stars { font-size: 13px; margin-bottom: 8px; }
+      .a-quote p { font-size: 13.5px; line-height: 1.7; margin: 0 0 10px; color: var(--color-neutral-800); }
+      .a-quote__meta { font-size: 11.5px; color: var(--color-neutral-500); }
+      .a-quote__meta b { color: var(--color-neutral-800); font-size: 12.5px; font-weight: 700; }
+      .a-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+      /* ─── B: 1 메인 + 4 thumbnail ─── */
+      .b-wrap { display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px; }
+      .b-main { padding: 32px; background: linear-gradient(135deg, #f1edff, #fff); border-radius: 18px; border: 1px solid var(--color-primary-100); display: flex; flex-direction: column; justify-content: center; }
+      .b-main .stars { font-size: 16px; margin-bottom: 10px; }
+      .b-main__q { font-size: 18px; line-height: 1.6; font-weight: 600; margin: 0 0 14px; color: var(--color-neutral-900); letter-spacing: -0.01em; }
+      .b-main__author { display: flex; align-items: center; gap: 10px; }
+      .b-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary-200); color: var(--color-primary-700); display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+      .b-meta { font-size: 12px; color: var(--color-neutral-500); }
+      .b-meta b { display: block; font-size: 13px; color: var(--color-neutral-900); }
+      .b-side { display: flex; flex-direction: column; gap: 8px; }
+      .b-thumb { padding: 12px 14px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 10px; }
+      .b-thumb .stars { font-size: 11px; margin-bottom: 4px; }
+      .b-thumb p { font-size: 11.5px; line-height: 1.5; margin: 0 0 4px; color: var(--color-neutral-700); }
+      .b-thumb__meta { font-size: 10.5px; color: var(--color-neutral-400); }
+
+      /* ─── C: 통계 강조 + 짧은 quote 3 ─── */
+      .c-stats { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; padding: 32px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 20px; margin-bottom: 18px; }
+      .c-big { text-align: center; }
+      .c-big__stars { font-size: 18px; letter-spacing: 3px; color: #fbbf24; margin-bottom: 6px; }
+      .c-big__val { font-size: 56px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+      .c-big__sub { margin-top: 6px; font-size: 12px; opacity: 0.7; }
+      .c-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: center; }
+      .c-stat { text-align: center; }
+      .c-stat__v { font-size: 22px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+      .c-stat__v small { font-size: 12px; opacity: 0.65; }
+      .c-stat__l { margin-top: 6px; font-size: 11px; opacity: 0.7; }
+      .c-short { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .c-short-card { padding: 14px 16px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; }
+      .c-short-card .stars { font-size: 11px; margin-bottom: 6px; }
+      .c-short-card p { font-size: 12px; line-height: 1.55; margin: 0 0 6px; color: var(--color-neutral-700); }
+      .c-short__meta { font-size: 10.5px; color: var(--color-neutral-400); }
+
+      /* ─── D: 사진 grid 메인 ─── */
+      .d-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 16px; }
+      .d-quotes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .d-line { padding: 12px 16px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 10px; font-size: 12px; line-height: 1.55; }
+      .d-line .stars { font-size: 11px; }
+      .d-line__txt { color: var(--color-neutral-800); margin: 4px 0; }
+      .d-line__meta { font-size: 10.5px; color: var(--color-neutral-400); }
+      .d-summary { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 12px; margin-bottom: 16px; font-size: 13px; }
+      .d-summary .stars { font-size: 16px; }
+
+      /* ─── E: 카드 그리드 (3 column) ─── */
+      .e-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .e-card { padding: 20px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 14px; }
+      .e-card .stars { font-size: 13px; margin-bottom: 10px; }
+      .e-card p { font-size: 12.5px; line-height: 1.65; margin: 0 0 14px; color: var(--color-neutral-700); }
+      .e-card__author { display: flex; align-items: center; gap: 10px; }
+      .e-card__avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-100); color: var(--color-primary-700); display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+      .e-card__meta { font-size: 11px; color: var(--color-neutral-500); }
+      .e-card__meta b { display: block; font-size: 12px; color: var(--color-neutral-800); font-weight: 700; }
+      .e-summary { margin-bottom: 16px; font-size: 13px; color: var(--color-neutral-600); }
+      .e-summary b { color: var(--color-neutral-900); font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Reviews 5종 비교 (디자인 × 콘텐츠)</h1>
+      <p>각 variation 마다 디자인·시그널 다름 (실 후기 확보 전 placeholder)</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ═══ A · 현재 — 보라 hero + 5 quote + 4 photos ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              디자인 보라 hero + 5 quote + 4 photos (현재)
+              <small>장기·테더링·CS·가족·노매드 시그널 — 정보 풍부</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>A</code><em>L2·L3 시그널</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Reviews</span>
+            <h2>스페인·포르투갈로 떠난 분들</h2>
+            <p class="lede">실제 구매하신 분들의 후기 (스마트스토어에서 더 보기)</p>
+            <div class="a-hero">
+              <div class="a-hero__score">
+                <div class="a-hero__stars">★★★★★</div>
+                <div class="a-hero__value">4.8</div>
+                <div class="a-hero__sub">2,847개 후기 기준</div>
+              </div>
+              <div class="a-hero__brk">
+                <div class="a-hero__row"><span>5★</span><div class="a-hero__bar"><div class="a-hero__fill" style="width:84%"></div></div><span class="a-hero__pct">84%</span></div>
+                <div class="a-hero__row"><span>4★</span><div class="a-hero__bar"><div class="a-hero__fill" style="width:11%"></div></div><span class="a-hero__pct">11%</span></div>
+                <div class="a-hero__row"><span>3★</span><div class="a-hero__bar"><div class="a-hero__fill" style="width:3%"></div></div><span class="a-hero__pct">3%</span></div>
+                <div class="a-hero__row"><span>2★</span><div class="a-hero__bar"><div class="a-hero__fill" style="width:1%"></div></div><span class="a-hero__pct">1%</span></div>
+                <div class="a-hero__row"><span>1★</span><div class="a-hero__bar"><div class="a-hero__fill" style="width:1%"></div></div><span class="a-hero__pct">1%</span></div>
+              </div>
+            </div>
+            <div class="a-quotes">
+              <div class="a-quote a-quote--span">
+                <div class="stars">★★★★★</div>
+                <p>"마드리드 → 리스본 4박씩 도느라 8일권 샀는데 국경 넘어도 같은 eSIM 그대로 잡혀서 편했어요. 매일 테더링으로 노트북 업무도 속도 한 번도 안 떨어졌고요."</p>
+                <div class="a-quote__meta"><b>김** 님</b> 남유럽 7일 매일 2GB · 2026-03</div>
+              </div>
+              <div class="a-quote">
+                <div class="stars">★★★★★</div>
+                <p>"포르투 한 달 워홀로 머무는데 30GB 종량제로 충분. 30일 정확히 끝나니까 자동 연장 걱정 없어서 깔끔."</p>
+                <div class="a-quote__meta"><b>박** 님</b> 종량제 30GB · 2026-02</div>
+              </div>
+              <div class="a-quote">
+                <div class="stars">★★★★★</div>
+                <p>"바르셀로나에서 신호가 약한 곳에서 잠깐 헤맸는데, 카카오톡 한국어 상담으로 30초 만에 해결."</p>
+                <div class="a-quote__meta"><b>이** 님</b> 5일 매일 1GB · 2026-04</div>
+              </div>
+              <div class="a-quote">
+                <div class="stars">★★★★☆</div>
+                <p>"그라나다·세비야 일주일 영상 스트리밍·사진 업로드 끊김 없이. 일행 셋이서 테더링 같이 썼는데도 속도 안 떨어졌어요."</p>
+                <div class="a-quote__meta"><b>최** 님</b> 7일 매일 2GB · 2026-03</div>
+              </div>
+              <div class="a-quote">
+                <div class="stars">★★★★★</div>
+                <p>"부모님 모시고 스페인·포르투갈 10일 패키지였는데, 한 번 발급으로 두 나라 다 커버."</p>
+                <div class="a-quote__meta"><b>정** 님</b> 10일 매일 2GB · 2026-02</div>
+              </div>
+            </div>
+            <div class="a-photos">
+              <div class="placeholder-img">사진 후기</div>
+              <div class="placeholder-img placeholder-img--2">사진 후기</div>
+              <div class="placeholder-img placeholder-img--3">사진 후기</div>
+              <div class="placeholder-img placeholder-img--4">사진 후기</div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ B · 1 메인 + 4 thumbnail ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              디자인 1 메인 + 4 thumbnail
+              <small>가장 강력한 quote 메인 + 보조 4개 · 한 화면에 모두</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>B</code><em>1 메인 강조</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Reviews</span>
+            <h2>실제로 다녀온 분들의 한 마디</h2>
+            <p class="lede">★ 4.8 · 2,847개 후기 (스마트스토어 평균)</p>
+            <div class="b-wrap">
+              <div class="b-main">
+                <div class="stars">★★★★★</div>
+                <p class="b-main__q">"마드리드 → 리스본 4박씩 도느라 8일권 샀는데, 국경 넘어도 같은 eSIM 그대로 잡혀서 편했어요. 매일 테더링으로 노트북 업무도 속도 한 번도 안 떨어졌고요."</p>
+                <div class="b-main__author">
+                  <div class="b-avatar">김</div>
+                  <div class="b-meta">
+                    <b>김** 님</b>
+                    남유럽 7일 매일 2GB · 2026-03
+                  </div>
+                </div>
+              </div>
+              <div class="b-side">
+                <div class="b-thumb">
+                  <div class="stars">★★★★★</div>
+                  <p>"포르투 한 달 워홀로 머무는데 30GB 종량제로 충분, 30일 정확히 끝나니 깔끔."</p>
+                  <div class="b-thumb__meta">박** 님 · 종량제 30GB</div>
+                </div>
+                <div class="b-thumb">
+                  <div class="stars">★★★★★</div>
+                  <p>"바르셀로나 신호 약한 곳, 카카오톡 한국어 상담 30초 만에 해결."</p>
+                  <div class="b-thumb__meta">이** 님 · 5일 1GB</div>
+                </div>
+                <div class="b-thumb">
+                  <div class="stars">★★★★☆</div>
+                  <p>"그라나다 일주일 영상 스트리밍·사진 업로드 끊김 없이."</p>
+                  <div class="b-thumb__meta">최** 님 · 7일 2GB</div>
+                </div>
+                <div class="b-thumb">
+                  <div class="stars">★★★★★</div>
+                  <p>"부모님 모시고 10일, 한 번 발급으로 두 나라 커버."</p>
+                  <div class="b-thumb__meta">정** 님 · 10일 2GB</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ C · 통계 강조 + 짧은 quote 3 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              디자인 통계 강조 + 3 짧은 quote
+              <small>큰 별점 + 3 stat (재구매·누적·1티어) · 사회적 증거 강력</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>C</code><em>통계 + 사회 증거</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Trusted by</span>
+            <h2>2,847명이 4.8★ 평가</h2>
+            <p class="lede">실제 구매하신 분들의 평점·재구매율·후기.</p>
+            <div class="c-stats">
+              <div class="c-big">
+                <div class="c-big__stars">★★★★★</div>
+                <div class="c-big__val">4.8</div>
+                <div class="c-big__sub">스마트스토어 평균</div>
+              </div>
+              <div class="c-stat-grid">
+                <div class="c-stat">
+                  <div class="c-stat__v">2,847<small>+</small></div>
+                  <div class="c-stat__l">누적 후기</div>
+                </div>
+                <div class="c-stat">
+                  <div class="c-stat__v">31<small>%</small></div>
+                  <div class="c-stat__l">재구매율</div>
+                </div>
+                <div class="c-stat">
+                  <div class="c-stat__v">84<small>%</small></div>
+                  <div class="c-stat__l">5★ 비율</div>
+                </div>
+              </div>
+            </div>
+            <div class="c-short">
+              <div class="c-short-card">
+                <div class="stars">★★★★★</div>
+                <p>"국경 넘어도 같은 eSIM, 테더링 끊김 없이."</p>
+                <div class="c-short__meta">김** · 7일 2GB</div>
+              </div>
+              <div class="c-short-card">
+                <div class="stars">★★★★★</div>
+                <p>"카카오톡 한국어 상담 30초 응답."</p>
+                <div class="c-short__meta">이** · 5일 1GB</div>
+              </div>
+              <div class="c-short-card">
+                <div class="stars">★★★★★</div>
+                <p>"30일 종량제 워홀 완벽."</p>
+                <div class="c-short__meta">박** · 30GB</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ D · 사진 grid 메인 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              디자인 사진 grid 메인
+              <small>큰 사진 8장 + 한 줄 quote · visual heavy</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>D</code><em>사진 후기 중심</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Real photos</span>
+            <h2>여행지에서 보내주신 사진</h2>
+            <p class="lede">실제 사용 후기 + 현지 사진 (placeholder).</p>
+            <div class="d-summary">
+              <span class="stars">★★★★★</span>
+              <b>4.8</b> · 2,847개 후기 · 84% 5★
+            </div>
+            <div class="d-photos">
+              <div class="placeholder-img">마드리드</div>
+              <div class="placeholder-img placeholder-img--2">바르셀로나</div>
+              <div class="placeholder-img placeholder-img--3">리스본</div>
+              <div class="placeholder-img placeholder-img--4">포르토</div>
+              <div class="placeholder-img placeholder-img--2">그라나다</div>
+              <div class="placeholder-img placeholder-img--3">세비야</div>
+              <div class="placeholder-img placeholder-img--4">알가르브</div>
+              <div class="placeholder-img">신트라</div>
+            </div>
+            <div class="d-quotes" style="margin-top: 14px;">
+              <div class="d-line">
+                <div class="stars">★★★★★</div>
+                <div class="d-line__txt">"국경 넘어도 같은 eSIM 그대로"</div>
+                <div class="d-line__meta">김** · 7일 2GB</div>
+              </div>
+              <div class="d-line">
+                <div class="stars">★★★★★</div>
+                <div class="d-line__txt">"테더링 4명 같이 써도 빵빵"</div>
+                <div class="d-line__meta">최** · 7일 2GB</div>
+              </div>
+              <div class="d-line">
+                <div class="stars">★★★★★</div>
+                <div class="d-line__txt">"30GB 종량제로 워홀 한 달 완벽"</div>
+                <div class="d-line__meta">박** · 종량제 30GB</div>
+              </div>
+              <div class="d-line">
+                <div class="stars">★★★★★</div>
+                <div class="d-line__txt">"카카오톡 30초 응답 안심"</div>
+                <div class="d-line__meta">이** · 5일 1GB</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ E · 카드 그리드 3 column ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              디자인 3 column 카드
+              <small>균등한 6 quote · 구조 단순 · 빠른 스캔</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>E</code><em>균등 카드</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Reviews</span>
+            <h2>실제 후기 6편</h2>
+            <p class="e-summary"><b>★ 4.8</b> · 2,847개 후기 · 84% 5★ — 스마트스토어 평균</p>
+            <div class="e-grid">
+              <div class="e-card">
+                <div class="stars">★★★★★</div>
+                <p>"마드리드 → 리스본 국경 넘어도 같은 eSIM 그대로 잡혀서 편했어요. 테더링 노트북 업무 OK."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">김</div>
+                  <div class="e-card__meta"><b>김** 님</b>7일 2GB · 2026-03</div>
+                </div>
+              </div>
+              <div class="e-card">
+                <div class="stars">★★★★★</div>
+                <p>"포르투 워홀 한 달 30GB 종량제로 충분. 30일 정확히 끝나니 자동 연장 걱정 없음."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">박</div>
+                  <div class="e-card__meta"><b>박** 님</b>종량제 30GB · 2026-02</div>
+                </div>
+              </div>
+              <div class="e-card">
+                <div class="stars">★★★★★</div>
+                <p>"바르셀로나에서 신호 약한 데 카카오톡 한국어 상담 30초 만에 해결."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">이</div>
+                  <div class="e-card__meta"><b>이** 님</b>5일 1GB · 2026-04</div>
+                </div>
+              </div>
+              <div class="e-card">
+                <div class="stars">★★★★☆</div>
+                <p>"그라나다·세비야 일주일 영상 스트리밍·사진 업로드 끊김 없이."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">최</div>
+                  <div class="e-card__meta"><b>최** 님</b>7일 2GB · 2026-03</div>
+                </div>
+              </div>
+              <div class="e-card">
+                <div class="stars">★★★★★</div>
+                <p>"부모님 모시고 스페인·포르투갈 10일, 한 번 발급으로 두 나라 커버."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">정</div>
+                  <div class="e-card__meta"><b>정** 님</b>10일 2GB · 2026-02</div>
+                </div>
+              </div>
+              <div class="e-card">
+                <div class="stars">★★★★★</div>
+                <p>"발급 카카오톡으로 1분 만에 오고, 출국 전 미리 설치해 두니까 편했어요."</p>
+                <div class="e-card__author">
+                  <div class="e-card__avatar">윤</div>
+                  <div class="e-card__meta"><b>윤** 님</b>3일 2GB · 2026-04</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>

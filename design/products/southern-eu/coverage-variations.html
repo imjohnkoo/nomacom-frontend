@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coverage 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      .sect { padding: 48px 60px; }
+      .sect .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-500); margin-bottom: 10px; display: inline-block; }
+      .sect h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .sect .lede { font-size: 13.5px; color: var(--color-neutral-500); margin: 0 0 24px; line-height: 1.6; max-width: 540px; }
+
+      /* ─── A: 현재 — 검정 통신사 strip 2 + 12 도시 grid ─── */
+      .a-net { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--color-neutral-900); color: #fff; border-radius: 16px; margin-bottom: 10px; }
+      .a-net:last-of-type { margin-bottom: 22px; }
+      .a-net__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-300); }
+      .a-net__brands { display: flex; gap: 10px; flex: 1; flex-wrap: wrap; }
+      .a-pill { padding: 5px 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 9999px; font-size: 12.5px; font-weight: 700; }
+      .a-tags { display: flex; gap: 6px; }
+      .a-tag { padding: 3px 9px; background: var(--color-primary-500); color: #fff; border-radius: 9999px; font-size: 10.5px; font-weight: 700; }
+      .a-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+      .a-city { padding: 14px 8px 12px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; text-align: center; font-size: 13px; font-weight: 600; color: var(--color-neutral-700); white-space: nowrap; }
+      .a-city__flag { display: block; font-size: 22px; margin-bottom: 4px; line-height: 1; }
+      .a-city__net { margin-top: 3px; font-size: 10.5px; font-weight: 600; color: var(--color-neutral-400); }
+
+      /* ─── B: 지도 (Wikimedia SVG) + 카드 ─── */
+      .b-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .b-map { background: linear-gradient(135deg, #f1edff, #fff); border-radius: 16px; padding: 18px 18px 14px; display: flex; flex-direction: column; border: 1px solid var(--color-primary-100); }
+      .b-map__inner { position: relative; width: 100%; aspect-ratio: 1183 / 1015; }
+      .b-map__img { width: 100%; height: 100%; display: block; }
+      .b-map__pin { position: absolute; transform: translate(-50%, -50%); width: 9px; height: 9px; background: var(--color-primary-600); border-radius: 50%; box-shadow: 0 0 0 3px rgba(98, 57, 255, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8); }
+      .b-map__pin--big { width: 12px; height: 12px; background: var(--color-primary-700); box-shadow: 0 0 0 4px rgba(98, 57, 255, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.9); }
+      .b-map__pin span { position: absolute; left: 14px; top: -8px; font-size: 9.5px; font-weight: 800; color: var(--color-primary-900); background: rgba(255, 255, 255, 0.92); padding: 2px 6px; border-radius: 4px; white-space: nowrap; letter-spacing: -0.01em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+      .b-map__pin--right span { left: auto; right: 14px; }
+      .b-map__cap { margin-top: 10px; font-size: 12px; color: var(--color-neutral-500); text-align: center; }
+      .b-map__cap b { color: var(--color-neutral-900); font-weight: 700; }
+      .b-map__credit { margin-top: 4px; font-size: 9.5px; color: var(--color-neutral-400); text-align: center; }
+      .b-map__credit a { color: inherit; }
+      .b-info { display: flex; flex-direction: column; gap: 12px; }
+      .b-info-card { padding: 16px 18px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; }
+      .b-info-card__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+      .b-info-card__flag { font-size: 24px; }
+      .b-info-card__h { font-size: 14px; font-weight: 800; color: var(--color-neutral-900); }
+      .b-info-card__h small { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--color-primary-700); background: var(--color-primary-50); padding: 1px 7px; border-radius: 9999px; margin-left: 6px; vertical-align: middle; }
+      .b-info-card__brands { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+      .b-info-card__brand { padding: 3px 8px; background: var(--color-neutral-100); color: var(--color-neutral-700); border-radius: 9999px; font-size: 11px; font-weight: 700; }
+      .b-info-card__cities { font-size: 11.5px; color: var(--color-neutral-500); line-height: 1.55; }
+
+      /* ─── C: 좌우 분할 (스페인 좌 / 포르투갈 우) ─── */
+      .c-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .c-col { padding: 24px; border-radius: 16px; border: 1px solid var(--color-neutral-200); }
+      .c-col--es { background: linear-gradient(180deg, #fef3c7 0%, #fff 50%); border-color: #fcd34d; }
+      .c-col--pt { background: linear-gradient(180deg, #fee2e2 0%, #fff 50%); border-color: #fecaca; }
+      .c-col__head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+      .c-col__flag { font-size: 28px; line-height: 1; }
+      .c-col__name { font-size: 18px; font-weight: 800; letter-spacing: -0.015em; }
+      .c-col__sub { font-size: 12px; color: var(--color-neutral-500); margin: 0 0 14px; }
+      .c-col__brands { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+      .c-col__brand { padding: 4px 10px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 9999px; font-size: 12px; font-weight: 700; color: var(--color-neutral-800); }
+      .c-col__cities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+      .c-col__city { padding: 10px 8px; background: #fff; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 600; color: var(--color-neutral-700); }
+      .c-col__city small { display: block; font-size: 9.5px; color: var(--color-neutral-400); margin-top: 1px; font-weight: 500; }
+
+      /* ─── D: Hero 큰 + 도시 chip ─── */
+      .d-hero { padding: 32px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 18px; margin-bottom: 14px; }
+      .d-hero__top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+      .d-hero__h { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+      .d-hero__tags { display: flex; gap: 6px; }
+      .d-hero__tag { padding: 4px 10px; background: rgba(255, 255, 255, 0.18); border-radius: 9999px; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; }
+      .d-hero__brands { display: flex; flex-wrap: wrap; gap: 8px; }
+      .d-hero__brand { padding: 6px 14px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 9999px; font-size: 13px; font-weight: 700; }
+      .d-hero__brand span { font-size: 11px; opacity: 0.65; margin-right: 6px; }
+      .d-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+      .d-chip { padding: 6px 14px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 9999px; font-size: 12.5px; font-weight: 600; color: var(--color-neutral-700); white-space: nowrap; }
+      .d-chip__flag { margin-right: 4px; }
+
+      /* ─── E: 컴팩트 한 줄 통신사 + 도시 2 줄 ─── */
+      .e-net { padding: 14px 20px; background: var(--color-neutral-900); color: #fff; border-radius: 12px; display: flex; align-items: center; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+      .e-net__label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-300); }
+      .e-net__brands { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; }
+      .e-pill { padding: 4px 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 9999px; font-size: 12px; font-weight: 700; }
+      .e-row { padding: 12px 16px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; display: flex; align-items: center; gap: 14px; }
+      .e-row + .e-row { margin-top: 8px; }
+      .e-row__flag { font-size: 22px; line-height: 1; flex-shrink: 0; }
+      .e-row__name { font-size: 13px; font-weight: 800; color: var(--color-neutral-900); min-width: 80px; }
+      .e-row__cities { flex: 1; font-size: 12px; color: var(--color-neutral-600); line-height: 1.6; }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Coverage 5종 비교 · 남유럽</h1>
+      <p>스페인·포르투갈 통신사 + 도시 어떻게 노출할지</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ═══ A · 현재 — 검정 strip 2 + 12 도시 grid ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              현재 — 검정 strip 2 + 12 도시 grid (6 column)
+              <small>스페인 / 포르투갈 각 통신사 strip · 12 도시 + 5G/LTE</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>A</code><em>strip + grid</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Coverage</span>
+            <h2>스페인·포르투갈 전국 어디서나</h2>
+            <p class="lede">마드리드·바르셀로나·리스본·포르토 등 주요 도시 + 안달루시아·알가르브 외곽까지 1티어 통신망 자동 연결.</p>
+            <div class="a-net">
+              <span class="a-net__label">🇪🇸 스페인</span>
+              <div class="a-net__brands">
+                <span class="a-pill">Vodafone</span>
+                <span class="a-pill">Orange</span>
+              </div>
+              <div class="a-tags"><span class="a-tag">5G</span><span class="a-tag">LTE</span><span class="a-tag">3G</span></div>
+            </div>
+            <div class="a-net">
+              <span class="a-net__label">🇵🇹 포르투갈</span>
+              <div class="a-net__brands">
+                <span class="a-pill">NOS</span>
+                <span class="a-pill">MEO</span>
+              </div>
+              <div class="a-tags"><span class="a-tag">5G</span><span class="a-tag">LTE</span><span class="a-tag">3G</span></div>
+            </div>
+            <div class="a-grid">
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>마드리드<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>바르셀로나<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>세비야<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>발렌시아<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>그라나다<div class="a-city__net">LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇪🇸</span>말라가<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>리스본<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>포르토<div class="a-city__net">5G·LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>신트라<div class="a-city__net">LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>코임브라<div class="a-city__net">LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>알가르브<div class="a-city__net">LTE</div></div>
+              <div class="a-city"><span class="a-city__flag">🇵🇹</span>파티마<div class="a-city__net">LTE</div></div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ B · 지도 + 카드 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              지도 일러스트 + 국가별 카드
+              <small>좌측 이베리아 지도 (SVG) + 우측 스페인·포르투갈 카드 2개</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>B</code><em>지도 시각화</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Coverage map</span>
+            <h2>이베리아 반도 전체 커버</h2>
+            <p class="lede">스페인·포르투갈 주요 도시 + 외곽까지 1티어 통신망 자동 연결.</p>
+            <div class="b-wrap">
+              <div class="b-map">
+                <div class="b-map__inner">
+                  <img src="assets/maps/iberia-themed.svg" alt="이베리아 반도 지도" class="b-map__img" />
+                  <!-- 스페인 도시 (마드리드 메인) -->
+                  <span class="b-map__pin b-map__pin--big" style="left: 51%; top: 53%;"><span>마드리드</span></span>
+                  <span class="b-map__pin" style="left: 72%; top: 42%;"><span>바르셀로나</span></span>
+                  <span class="b-map__pin b-map__pin--right" style="left: 41%; top: 72%;"><span>세비야</span></span>
+                  <span class="b-map__pin" style="left: 69%; top: 56%;"><span>발렌시아</span></span>
+                  <span class="b-map__pin b-map__pin--right" style="left: 50%; top: 74%;"><span>그라나다</span></span>
+                  <span class="b-map__pin" style="left: 48%; top: 80%;"><span>말라가</span></span>
+                  <!-- 포르투갈 도시 -->
+                  <span class="b-map__pin b-map__pin--right" style="left: 24%; top: 63%;"><span>리스본</span></span>
+                  <span class="b-map__pin b-map__pin--right" style="left: 26%; top: 48%;"><span>포르토</span></span>
+                </div>
+                <div class="b-map__cap"><b>2개국 · 12 도시</b> 자동 연결</div>
+                <div class="b-map__credit">지도 © OpenStreetMap · Wikimedia (CC BY-SA)</div>
+              </div>
+              <div class="b-info">
+                <div class="b-info-card">
+                  <div class="b-info-card__head">
+                    <span class="b-info-card__flag">🇪🇸</span>
+                    <span class="b-info-card__h">스페인<small>3G · 4G LTE · 5G</small></span>
+                  </div>
+                  <div class="b-info-card__brands">
+                    <span class="b-info-card__brand">Vodafone</span>
+                    <span class="b-info-card__brand">Orange</span>
+                  </div>
+                  <div class="b-info-card__cities">
+                    마드리드 · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가
+                  </div>
+                </div>
+                <div class="b-info-card">
+                  <div class="b-info-card__head">
+                    <span class="b-info-card__flag">🇵🇹</span>
+                    <span class="b-info-card__h">포르투갈<small>3G · 4G LTE · 5G</small></span>
+                  </div>
+                  <div class="b-info-card__brands">
+                    <span class="b-info-card__brand">NOS</span>
+                    <span class="b-info-card__brand">MEO</span>
+                  </div>
+                  <div class="b-info-card__cities">
+                    리스본 · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ C · 좌우 분할 (국가별 박스) ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              좌우 분할 — 국가별 박스
+              <small>스페인 노랑 / 포르투갈 빨강 톤 · 국가 정체성 강조</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>C</code><em>국가 톤</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Coverage</span>
+            <h2>두 나라, 각자의 색깔로.</h2>
+            <p class="lede">스페인·포르투갈 1티어 통신사 + 주요 도시.</p>
+            <div class="c-split">
+              <div class="c-col c-col--es">
+                <div class="c-col__head">
+                  <span class="c-col__flag">🇪🇸</span>
+                  <span class="c-col__name">스페인</span>
+                </div>
+                <p class="c-col__sub">5G · LTE 자동 연결 · 6 도시</p>
+                <div class="c-col__brands">
+                  <span class="c-col__brand">Vodafone</span>
+                  <span class="c-col__brand">Orange</span>
+                </div>
+                <div class="c-col__cities">
+                  <div class="c-col__city">마드리드<small>5G·LTE</small></div>
+                  <div class="c-col__city">바르셀로나<small>5G·LTE</small></div>
+                  <div class="c-col__city">세비야<small>5G·LTE</small></div>
+                  <div class="c-col__city">발렌시아<small>5G·LTE</small></div>
+                  <div class="c-col__city">그라나다<small>LTE</small></div>
+                  <div class="c-col__city">말라가<small>5G·LTE</small></div>
+                </div>
+              </div>
+              <div class="c-col c-col--pt">
+                <div class="c-col__head">
+                  <span class="c-col__flag">🇵🇹</span>
+                  <span class="c-col__name">포르투갈</span>
+                </div>
+                <p class="c-col__sub">5G · LTE 자동 연결 · 6 도시</p>
+                <div class="c-col__brands">
+                  <span class="c-col__brand">NOS</span>
+                  <span class="c-col__brand">MEO</span>
+                </div>
+                <div class="c-col__cities">
+                  <div class="c-col__city">리스본<small>5G·LTE</small></div>
+                  <div class="c-col__city">포르토<small>5G·LTE</small></div>
+                  <div class="c-col__city">신트라<small>LTE</small></div>
+                  <div class="c-col__city">코임브라<small>LTE</small></div>
+                  <div class="c-col__city">알가르브<small>LTE</small></div>
+                  <div class="c-col__city">파티마<small>LTE</small></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ D · Hero 보라 + chip ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              Hero 보라 큰 카드 + 도시 chip
+              <small>통신사 강조 hero + 12 도시 chip cluster</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>D</code><em>통신사 강조</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Coverage</span>
+            <h2>1티어 통신사 자동 연결</h2>
+            <p class="lede">현지에 도착하면 자동으로 Vodafone·Movistar 등 메이저 망에 접속됩니다.</p>
+            <div class="d-hero">
+              <div class="d-hero__top">
+                <h3 class="d-hero__h">스페인 · 포르투갈 Maya 라우팅 1티어 4개</h3>
+                <div class="d-hero__tags">
+                  <span class="d-hero__tag">5G</span>
+                  <span class="d-hero__tag">LTE</span>
+                  <span class="d-hero__tag">3G</span>
+                </div>
+              </div>
+              <div class="d-hero__brands">
+                <span class="d-hero__brand"><span>🇪🇸</span>Vodafone</span>
+                <span class="d-hero__brand"><span>🇪🇸</span>Orange</span>
+                <span class="d-hero__brand"><span>🇵🇹</span>NOS</span>
+                <span class="d-hero__brand"><span>🇵🇹</span>MEO</span>
+              </div>
+            </div>
+            <div class="d-chips">
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>마드리드</span>
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>바르셀로나</span>
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>세비야</span>
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>발렌시아</span>
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>그라나다</span>
+              <span class="d-chip"><span class="d-chip__flag">🇪🇸</span>말라가</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>리스본</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>포르토</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>신트라</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>코임브라</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>알가르브</span>
+              <span class="d-chip"><span class="d-chip__flag">🇵🇹</span>파티마</span>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ E · 컴팩트 한 줄 통신사 + 2 row 도시 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              컴팩트 — 통신사 1줄 + 도시 2 row
+              <small>가장 작은 footprint · 빠른 스캔</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>E</code><em>컴팩트</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Coverage</span>
+            <h2>이베리아 어디서나.</h2>
+            <p class="lede">스페인·포르투갈 1티어 통신사 자동 연결.</p>
+            <div class="e-net">
+              <span class="e-net__label">통신사</span>
+              <div class="e-net__brands">
+                <span class="e-pill">🇪🇸 Vodafone</span>
+                <span class="e-pill">🇪🇸 Orange</span>
+                <span class="e-pill">🇵🇹 NOS</span>
+                <span class="e-pill">🇵🇹 MEO</span>
+              </div>
+            </div>
+            <div class="e-row">
+              <span class="e-row__flag">🇪🇸</span>
+              <span class="e-row__name">스페인</span>
+              <div class="e-row__cities">마드리드 · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가</div>
+            </div>
+            <div class="e-row">
+              <span class="e-row__flag">🇵🇹</span>
+              <span class="e-row__name">포르투갈</span>
+              <div class="e-row__cities">리스본 · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마</div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>

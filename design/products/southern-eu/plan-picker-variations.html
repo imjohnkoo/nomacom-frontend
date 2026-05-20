@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Plan picker 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body {
+        background: #ededf2;
+      }
+      .page-top {
+        padding: 36px 28px 12px;
+        text-align: center;
+      }
+      .page-top h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .page-top p {
+        font-size: 14px;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+      .variant-stack {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 24px 0 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .variant {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+      .variant__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--color-neutral-100);
+        background: var(--color-neutral-50);
+      }
+      .variant__label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .variant__letter {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 15px;
+        display: grid;
+        place-items: center;
+      }
+      .variant__title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+      }
+      .variant__title small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        margin-top: 1px;
+      }
+      .variant__pick {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+      }
+      .variant__pick code {
+        font-family: var(--font-mono);
+        background: var(--color-neutral-100);
+        color: var(--color-primary-700);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .variant__canvas {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* ──────────────────────────────────────
+         공통 Plan UI 컴포넌트
+         ────────────────────────────────────── */
+      .plan-section {
+        padding: 48px 60px;
+      }
+      .plan-section h2 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      .plan-section .lede {
+        font-size: 13.5px;
+        color: var(--color-neutral-500);
+        margin: 0 0 24px;
+        line-height: 1.6;
+      }
+      .badge-best {
+        background: var(--color-warning-500);
+        color: #fff;
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 9999px;
+        letter-spacing: 0.04em;
+      }
+      .badge-long {
+        background: var(--color-info-500);
+        color: #fff;
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 9999px;
+        letter-spacing: 0.04em;
+      }
+      .badge-trial {
+        background: var(--color-neutral-200);
+        color: var(--color-neutral-700);
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 800;
+        border-radius: 9999px;
+      }
+
+      /* ──────────────────────────────────────
+         A — 현재 베이스라인 (구조大: 토글+슬라이더+카드+그리드)
+         ────────────────────────────────────── */
+      .baseline-summary {
+        padding: 32px 60px;
+        background: var(--color-neutral-50);
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--color-neutral-600);
+        text-align: center;
+      }
+      .baseline-summary b {
+        color: var(--color-neutral-900);
+      }
+      .baseline-summary a {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 14px;
+        background: var(--color-primary-500);
+        color: #fff;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      /* ──────────────────────────────────────
+         B — 풀 그리드 (모든 옵션 한눈에)
+         ────────────────────────────────────── */
+      .full-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .opt-card {
+        padding: 14px 12px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 12px;
+        text-align: center;
+        position: relative;
+      }
+      .opt-card--best {
+        border-color: var(--color-warning-300, #fcd34d);
+        background: #fffbeb;
+      }
+      .opt-card--long {
+        border-color: var(--color-info-200, #bae6fd);
+        background: #f0f9ff;
+      }
+      .opt-card__days {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+      }
+      .opt-card__data {
+        margin-top: 2px;
+        font-size: 11px;
+        color: var(--color-neutral-500);
+      }
+      .opt-card__price {
+        margin-top: 8px;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        font-variant-numeric: tabular-nums;
+      }
+      .opt-card__price small {
+        font-size: 10px;
+        font-weight: 500;
+        opacity: 0.6;
+        margin-left: 2px;
+      }
+      .opt-card__perday {
+        margin-top: 2px;
+        font-size: 10.5px;
+        color: var(--color-neutral-400);
+      }
+      .opt-card__badge {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .group-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--color-neutral-800);
+        margin: 20px 0 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid var(--color-neutral-200);
+      }
+      .group-title:first-child {
+        margin-top: 0;
+      }
+
+      /* ──────────────────────────────────────
+         C — 좌우 분할 (무제한 vs 종량제 동시 비교)
+         ────────────────────────────────────── */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .split__col {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--color-neutral-200);
+        background: #fff;
+      }
+      .split__col--unlimited {
+        background: linear-gradient(180deg, #f1edff 0%, #fff 50%);
+      }
+      .split__col--quantity {
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 50%);
+      }
+      .split__h {
+        font-size: 16px;
+        font-weight: 800;
+        margin: 0 0 4px;
+      }
+      .split__sub {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        margin: 0 0 16px;
+      }
+      .split__row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-100);
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 6px;
+        align-items: center;
+      }
+      .split__row b {
+        font-weight: 700;
+        color: var(--color-neutral-900);
+      }
+      .split__row .p {
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+      }
+
+      /* ──────────────────────────────────────
+         D — 매트릭스 (행=기간, 열=데이터)
+         ────────────────────────────────────── */
+      .matrix {
+        overflow-x: auto;
+      }
+      table.mx {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+      }
+      table.mx th,
+      table.mx td {
+        padding: 11px 12px;
+        text-align: center;
+        border-bottom: 1px solid var(--color-neutral-100);
+        font-variant-numeric: tabular-nums;
+      }
+      table.mx thead th {
+        background: var(--color-neutral-50);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-neutral-600);
+      }
+      table.mx tbody th {
+        text-align: left;
+        font-weight: 700;
+        background: var(--color-neutral-50);
+        color: var(--color-neutral-700);
+        font-size: 12.5px;
+      }
+      .mx-best {
+        background: #fffbeb;
+        color: var(--color-warning-700);
+        font-weight: 800;
+      }
+      .mx-long {
+        background: #f0f9ff;
+        color: var(--color-info-700);
+        font-weight: 800;
+      }
+      .mx-future {
+        color: var(--color-neutral-400);
+        font-style: italic;
+      }
+
+      /* ──────────────────────────────────────
+         E — BEST 강조 + 더보기 (단순 미니멀)
+         ────────────────────────────────────── */
+      .best-hero {
+        background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        padding: 36px 40px;
+        border-radius: 18px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: center;
+      }
+      .best-hero__tag {
+        display: inline-block;
+        background: var(--color-warning-500);
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
+      .best-hero__name {
+        font-size: 22px;
+        font-weight: 800;
+        margin: 0 0 6px;
+      }
+      .best-hero__sub {
+        font-size: 13.5px;
+        opacity: 0.78;
+        margin: 0;
+        line-height: 1.6;
+      }
+      .best-hero__price {
+        text-align: right;
+      }
+      .best-hero__price-now {
+        font-size: 32px;
+        font-weight: 800;
+      }
+      .best-hero__price-now small {
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.7;
+        margin-left: 4px;
+      }
+      .best-hero__price-perday {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 2px;
+      }
+      .more-list {
+        margin-top: 18px;
+        background: var(--color-neutral-50);
+        border-radius: 12px;
+        padding: 16px 20px;
+      }
+      .more-list__title {
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        color: var(--color-neutral-700);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .more-list__title::after {
+        content: '▾';
+        font-size: 11px;
+        opacity: 0.5;
+      }
+      .more-list__items {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        font-size: 12.5px;
+      }
+      .more-list__item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--color-neutral-100);
+      }
+      .more-list__item b {
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-900);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Plan picker 5종 비교</h1>
+      <p>스페인·포르투갈 무제한 14옵션 + 종량제 7옵션 + 60·90일 신규 — 어떻게 노출할지</p>
+    </div>
+
+    <div class="variant-stack">
+      <!-- A — 현재 베이스라인 (요약 표시) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              현재 베이스라인 (토글 + 슬라이더 + 카드 + 그리드)
+              <small>구조 복잡 · 단계별 의사결정 흐름</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>A</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <div class="baseline-summary">
+              현재 03 plan-picker 가 이 구조입니다 (이미 적용됨).<br />
+              <b>무제한·종량제 토글</b> → <b>슬라이더 1~30일</b> + <b>데이터 토글 1GB/2GB</b> →
+              <b>예시 카드</b> → <b>60·90일 카드</b> → <b>종량제 7옵션 그리드</b>.<br />
+              세로 약 2,400px. 정보 풍부하지만 스크롤 길고 의사결정 단계 많음.
+              <br />
+              <a href="sections/03-plan-picker.html" target="_blank">원본 페이지 열기 →</a>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- B — 풀 그리드 (모든 옵션 한눈에) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              풀 그리드 (모든 옵션 한눈에)
+              <small>21 카드 그리드 · 토글·슬라이더 없음 · 즉각 비교</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>B</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="plan-section">
+              <h2>무제한 · 종량제 — 21개 옵션</h2>
+              <p class="lede">
+                매일 한도 무제한 (1GB / 2GB) 또는 30일 총량 종량제 (1~30GB) 중 선택. 가격은 즉시할인 적용.
+              </p>
+
+              <div class="group-title">매일 1GB + 500Kbps 무제한</div>
+              <div class="full-grid">
+                <div class="opt-card">
+                  <div class="opt-card__days">1일</div>
+                  <div class="opt-card__data">매일 1GB</div>
+                  <div class="opt-card__price">3,600<small>원</small></div>
+                  <div class="opt-card__perday">3,600 / 일</div>
+                </div>
+                <div class="opt-card">
+                  <div class="opt-card__days">3일</div>
+                  <div class="opt-card__data">매일 1GB</div>
+                  <div class="opt-card__price">6,300<small>원</small></div>
+                  <div class="opt-card__perday">2,100 / 일</div>
+                </div>
+                <div class="opt-card">
+                  <div class="opt-card__days">7일</div>
+                  <div class="opt-card__data">매일 1GB</div>
+                  <div class="opt-card__price">12,500<small>원</small></div>
+                  <div class="opt-card__perday">1,786 / 일</div>
+                </div>
+                <div class="opt-card opt-card--long">
+                  <span class="opt-card__badge"><span class="badge-long">장기체류</span></span>
+                  <div class="opt-card__days">30일</div>
+                  <div class="opt-card__data">매일 1GB</div>
+                  <div class="opt-card__price">37,100<small>원</small></div>
+                  <div class="opt-card__perday">1,237 / 일</div>
+                </div>
+              </div>
+
+              <div class="group-title">매일 2GB + 500Kbps 무제한 🔥</div>
+              <div class="full-grid">
+                <div class="opt-card">
+                  <div class="opt-card__days">1일</div>
+                  <div class="opt-card__data">매일 2GB</div>
+                  <div class="opt-card__price">4,700<small>원</small></div>
+                  <div class="opt-card__perday">4,700 / 일</div>
+                </div>
+                <div class="opt-card opt-card--best">
+                  <span class="opt-card__badge"><span class="badge-best">BEST</span></span>
+                  <div class="opt-card__days">7일</div>
+                  <div class="opt-card__data">매일 2GB</div>
+                  <div class="opt-card__price">18,500<small>원</small></div>
+                  <div class="opt-card__perday">2,643 / 일</div>
+                </div>
+                <div class="opt-card">
+                  <div class="opt-card__days">15일</div>
+                  <div class="opt-card__data">매일 2GB</div>
+                  <div class="opt-card__price">30,900<small>원</small></div>
+                  <div class="opt-card__perday">2,060 / 일</div>
+                </div>
+                <div class="opt-card opt-card--long">
+                  <span class="opt-card__badge"><span class="badge-long">장기체류</span></span>
+                  <div class="opt-card__days">30일</div>
+                  <div class="opt-card__data">매일 2GB</div>
+                  <div class="opt-card__price">51,200<small>원</small></div>
+                  <div class="opt-card__perday">1,707 / 일</div>
+                </div>
+              </div>
+
+              <div class="group-title">종량제 (30일 총량)</div>
+              <div class="full-grid">
+                <div class="opt-card">
+                  <div class="opt-card__days">3GB</div>
+                  <div class="opt-card__data">30일 총량</div>
+                  <div class="opt-card__price">8,700<small>원</small></div>
+                  <div class="opt-card__perday">2,900 / GB</div>
+                </div>
+                <div class="opt-card opt-card--best">
+                  <span class="opt-card__badge"><span class="badge-best">BEST</span></span>
+                  <div class="opt-card__days">10GB</div>
+                  <div class="opt-card__data">30일 총량</div>
+                  <div class="opt-card__price">22,100<small>원</small></div>
+                  <div class="opt-card__perday">2,210 / GB</div>
+                </div>
+                <div class="opt-card">
+                  <div class="opt-card__days">20GB</div>
+                  <div class="opt-card__data">30일 총량</div>
+                  <div class="opt-card__price">37,700<small>원</small></div>
+                  <div class="opt-card__perday">1,885 / GB</div>
+                </div>
+                <div class="opt-card opt-card--long">
+                  <span class="opt-card__badge"><span class="badge-long">노매드</span></span>
+                  <div class="opt-card__days">30GB</div>
+                  <div class="opt-card__data">30일 총량</div>
+                  <div class="opt-card__price">53,900<small>원</small></div>
+                  <div class="opt-card__perday">1,797 / GB</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- C — 좌우 분할 (무제한 vs 종량제) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              좌우 분할 — 무제한 vs 종량제 동시 비교
+              <small>한 화면에 두 SKU · 의사결정 직관적</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>C</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="plan-section">
+              <h2>무제한 vs 종량제 — 어떻게 다른가요?</h2>
+              <p class="lede">
+                짧은 일정 = 무제한 / 장기·다국가 = 종량제 / 워홀·노매드 = 60·90일 무제한 추천.
+              </p>
+              <div class="split">
+                <div class="split__col split__col--unlimited">
+                  <div class="split__h">🌐 무제한</div>
+                  <div class="split__sub">매일 정해진 양 + 소진 후 500Kbps 무제한</div>
+                  <div class="split__row">
+                    <span><b>1일 1GB</b></span><span class="p">3,600원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>7일 매일 2GB</b> <span class="badge-best">BEST</span></span><span class="p">18,500원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>15일 매일 2GB</b></span><span class="p">30,900원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>30일 매일 1GB</b> <span class="badge-long">장기</span></span><span class="p">37,100원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>60일</b> 🎒 워홀</span><span class="p">~70,000원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>90일</b> ✈️ 노매드</span><span class="p">~99,000원</span>
+                  </div>
+                </div>
+                <div class="split__col split__col--quantity">
+                  <div class="split__h">📊 종량제</div>
+                  <div class="split__sub">30일 동안 총량 자유 사용 · 소진 시 끝</div>
+                  <div class="split__row">
+                    <span><b>1GB</b> / 30일</span><span class="p">4,600원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>3GB</b> / 30일</span><span class="p">8,700원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>7GB</b> / 30일</span><span class="p">15,900원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>10GB</b> / 30일 <span class="badge-best">BEST</span></span><span class="p">22,100원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>20GB</b> / 30일</span><span class="p">37,700원</span>
+                  </div>
+                  <div class="split__row">
+                    <span><b>30GB</b> / 30일 <span class="badge-long">노매드</span></span><span class="p">53,900원</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- D — 매트릭스 (기간 × 데이터) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              매트릭스 (기간 × 데이터)
+              <small>정보 밀도 ↑ · 한눈에 모든 조합 가격 비교</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>D</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="plan-section">
+              <h2>전체 옵션 매트릭스</h2>
+              <p class="lede">
+                행 = 사용 일수 / 열 = 매일 데이터 · 종량제 / 셀 = 즉시할인 적용가
+              </p>
+              <div class="matrix">
+                <table class="mx">
+                  <thead>
+                    <tr>
+                      <th>일수</th>
+                      <th>매일 1GB</th>
+                      <th>매일 2GB</th>
+                      <th>종량제 (30일 총량)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>1일</th>
+                      <td>3,600</td>
+                      <td>4,700</td>
+                      <td rowspan="6">
+                        <span class="mx-best">10GB · 22,100원 BEST</span><br />
+                        <small style="opacity:0.7;">3·5·7GB / 20·30GB 선택 가능</small>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>3일</th>
+                      <td>6,300</td>
+                      <td>10,200</td>
+                    </tr>
+                    <tr>
+                      <th>5일</th>
+                      <td>10,200</td>
+                      <td>14,200</td>
+                    </tr>
+                    <tr>
+                      <th>7일</th>
+                      <td>12,500</td>
+                      <td class="mx-best">18,500 BEST</td>
+                    </tr>
+                    <tr>
+                      <th>15일</th>
+                      <td>20,500</td>
+                      <td>30,900</td>
+                    </tr>
+                    <tr>
+                      <th>30일</th>
+                      <td class="mx-long">37,100 장기</td>
+                      <td class="mx-long">51,200 장기</td>
+                    </tr>
+                    <tr>
+                      <th>🎒 60일</th>
+                      <td class="mx-future">~70,000</td>
+                      <td class="mx-future">~95,000</td>
+                      <td class="mx-future">—</td>
+                    </tr>
+                    <tr>
+                      <th>✈️ 90일</th>
+                      <td class="mx-future">~99,000</td>
+                      <td class="mx-future">~138,000</td>
+                      <td class="mx-future">—</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- E — BEST 강조 + 더보기 (단순) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              BEST 강조 + 더보기 (미니멀)
+              <small>1주일 BEST 카드 한 개 강조 + 나머지 expand</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>E</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="plan-section">
+              <h2>가장 많이 선택하는 옵션</h2>
+              <p class="lede">
+                대부분 1주일 매일 2GB 로 충분합니다. 다른 일수·종량제는 아래에서 선택.
+              </p>
+              <div class="best-hero">
+                <div>
+                  <span class="best-hero__tag">BEST 🔥</span>
+                  <h3 class="best-hero__name">7일 · 매일 2GB</h3>
+                  <p class="best-hero__sub">
+                    스페인·포르투갈 한 SIM · 500Kbps 무제한 저속 · 테더링 OK
+                  </p>
+                </div>
+                <div class="best-hero__price">
+                  <div class="best-hero__price-now">18,500<small>원</small></div>
+                  <div class="best-hero__price-perday">1일 평균 2,643원</div>
+                </div>
+              </div>
+
+              <div class="more-list">
+                <div class="more-list__title">다른 옵션 더 보기 (20+)</div>
+                <div class="more-list__items">
+                  <div class="more-list__item"><span>1일 1GB</span><b>3,600</b></div>
+                  <div class="more-list__item"><span>3일 2GB</span><b>10,200</b></div>
+                  <div class="more-list__item"><span>5일 2GB</span><b>14,200</b></div>
+                  <div class="more-list__item"><span>15일 2GB</span><b>30,900</b></div>
+                  <div class="more-list__item"><span>30일 2GB</span><b>51,200</b></div>
+                  <div class="more-list__item"><span>30일 1GB</span><b>37,100</b></div>
+                  <div class="more-list__item"><span>10GB 종량</span><b>22,100</b></div>
+                  <div class="more-list__item"><span>30GB 종량</span><b>53,900</b></div>
+                  <div class="more-list__item"><span>🎒 60일</span><b>~70,000</b></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+    </div>
+  </body>
+</html>

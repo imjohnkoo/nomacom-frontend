@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>06 · Plan at a glance · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        background: var(--color-neutral-900);
+        color: #fff;
+        border-radius: var(--radius-3xl);
+        overflow: hidden;
+      }
+      .stat {
+        padding: 32px 24px;
+        position: relative;
+      }
+      .stat + .stat {
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .stat__label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--color-primary-300);
+        margin-bottom: 12px;
+      }
+      .stat__value {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+      }
+      .stat__value small {
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.6;
+        margin-left: 3px;
+      }
+      .stat__hint {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--color-neutral-400);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">06</span>
+        <span class="dev-toolbar__title">Plan at a glance</span>
+        <span class="dev-toolbar__hint">4 stats: 기간 · 고속 · 저속 · 테더링</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="06-stats">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Plan at a glance</span>
+        <h2 class="section__title">상품 한눈에 보기</h2>
+        <p class="section__lede">
+          매일 2GB 고속 데이터를 7일 동안 사용하실 수 있어요. 소진 후에도 카카오톡 · 지도는 충분히
+          쓸 수 있도록 저속으로 계속 연결됩니다.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__label">사용 기간</div>
+            <div class="stat__value">7<small>일</small></div>
+            <div class="stat__hint">활성화 시점부터</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">매일 고속</div>
+            <div class="stat__value">2<small>GB / 일</small></div>
+            <div class="stat__hint">현지 자정 초기화</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">소진 후</div>
+            <div class="stat__value">무제한<small>저속</small></div>
+            <div class="stat__hint">메신저 · 지도 OK</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">테더링</div>
+            <div class="stat__value">가능</div>
+            <div class="stat__hint">일행과 함께 사용</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

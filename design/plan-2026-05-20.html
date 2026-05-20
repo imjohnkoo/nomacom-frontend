@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>eSIM 상세페이지 통합 구성안 v3 · 2026-05-20</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+
+    <style>
+      :root {
+        --color-primary-50: #f1edff;
+        --color-primary-100: #e3dbff;
+        --color-primary-200: #c7b6ff;
+        --color-primary-300: #a78bff;
+        --color-primary-500: #6239ff;
+        --color-primary-600: #5025e8;
+        --color-primary-700: #3f1cc0;
+        --color-primary-900: #1f0c6e;
+
+        --color-neutral-0: #ffffff;
+        --color-neutral-50: #fafafa;
+        --color-neutral-100: #f5f5f5;
+        --color-neutral-200: #e5e5e5;
+        --color-neutral-300: #d4d4d4;
+        --color-neutral-400: #a3a3a3;
+        --color-neutral-500: #737373;
+        --color-neutral-600: #525252;
+        --color-neutral-700: #404040;
+        --color-neutral-800: #262626;
+        --color-neutral-900: #171717;
+
+        --color-success-50: #f0fdf4;
+        --color-success-500: #22c55e;
+        --color-success-700: #15803d;
+        --color-warning-50: #fffbeb;
+        --color-warning-500: #f59e0b;
+        --color-warning-700: #b45309;
+        --color-error-50: #fef2f2;
+        --color-error-500: #ef4444;
+        --color-error-700: #b91c1c;
+        --color-info-50: #f0f9ff;
+        --color-info-500: #0ea5e9;
+        --color-info-700: #0369a1;
+
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 1rem;
+        --radius-full: 9999px;
+
+        --font-sans:
+          'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono:
+          'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-sans);
+        color: var(--color-neutral-800);
+        background: #f0f0f5;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.65;
+      }
+
+      /* --------------------------------------------------------------
+         Layout — two column (TOC sidebar + main)
+         -------------------------------------------------------------- */
+      .shell {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 32px 28px 80px;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 36px;
+        align-items: start;
+      }
+
+      .toc {
+        position: sticky;
+        top: 32px;
+        font-size: 13px;
+      }
+      .toc__title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-neutral-400);
+        margin: 0 0 12px;
+      }
+      .toc ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: toc;
+      }
+      .toc li {
+        counter-increment: toc;
+      }
+      .toc a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: var(--color-neutral-600);
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 120ms ease, color 120ms ease;
+        line-height: 1.45;
+      }
+      .toc a::before {
+        content: counter(toc, decimal-leading-zero);
+        display: inline-block;
+        width: 22px;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-400);
+        font-weight: 700;
+      }
+      .toc a:hover {
+        background: #fff;
+        color: var(--color-primary-700);
+      }
+
+      /* --------------------------------------------------------------
+         Main paper
+         -------------------------------------------------------------- */
+      .paper {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        padding: 56px 64px 72px;
+        max-width: 940px;
+      }
+
+      .doc-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 11.5px;
+        font-weight: 600;
+        background: var(--color-primary-50);
+        color: var(--color-primary-700);
+        letter-spacing: -0.005em;
+      }
+      .badge--neutral {
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-700);
+      }
+      .badge--success {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .badge--warning {
+        background: var(--color-warning-50);
+        color: var(--color-warning-700);
+      }
+      .badge--error {
+        background: var(--color-error-50);
+        color: var(--color-error-700);
+      }
+
+      h1.doc-title {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin: 0 0 14px;
+        color: var(--color-neutral-900);
+      }
+
+      .doc-sub {
+        font-size: 15px;
+        color: var(--color-neutral-500);
+        margin: 0 0 36px;
+      }
+      .doc-sub b {
+        color: var(--color-neutral-700);
+        font-weight: 600;
+      }
+
+      h2 {
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 56px 0 16px;
+        scroll-margin-top: 24px;
+        color: var(--color-neutral-900);
+      }
+      h2 .num {
+        display: inline-block;
+        min-width: 36px;
+        color: var(--color-primary-500);
+        font-variant-numeric: tabular-nums;
+      }
+
+      h3 {
+        font-size: 16px;
+        font-weight: 800;
+        margin: 28px 0 10px;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin: 0 0 14px;
+        font-size: 14.5px;
+        color: var(--color-neutral-700);
+      }
+      ul,
+      ol {
+        margin: 0 0 14px;
+        padding-left: 22px;
+      }
+      li {
+        margin: 4px 0;
+        font-size: 14.5px;
+        color: var(--color-neutral-700);
+      }
+      strong {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        background: var(--color-neutral-100);
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--color-primary-700);
+      }
+      .strike {
+        text-decoration: line-through;
+        color: var(--color-neutral-400);
+      }
+
+      /* Callouts */
+      blockquote.callout {
+        margin: 18px 0;
+        padding: 18px 22px;
+        background: var(--color-primary-50);
+        border-left: 3px solid var(--color-primary-500);
+        border-radius: 10px;
+        color: var(--color-neutral-800);
+        font-size: 14.5px;
+        line-height: 1.75;
+      }
+      blockquote.callout p {
+        margin: 0;
+      }
+      blockquote.callout strong {
+        color: var(--color-primary-700);
+      }
+      blockquote.callout--warn {
+        background: var(--color-warning-50);
+        border-left-color: var(--color-warning-500);
+      }
+      blockquote.callout--warn strong {
+        color: var(--color-warning-700);
+      }
+      blockquote.callout--error {
+        background: var(--color-error-50);
+        border-left-color: var(--color-error-500);
+      }
+      blockquote.callout--error strong {
+        color: var(--color-error-700);
+      }
+
+      .note {
+        padding: 12px 16px;
+        border-radius: 10px;
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        font-size: 13px;
+        color: var(--color-neutral-600);
+        margin: 16px 0;
+      }
+      .note strong {
+        color: var(--color-neutral-800);
+      }
+
+      /* Tables */
+      .table-wrap {
+        margin: 16px 0 18px;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+      thead th {
+        text-align: left;
+        background: var(--color-neutral-50);
+        color: var(--color-neutral-600);
+        font-weight: 700;
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--color-neutral-200);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      tbody td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--color-neutral-100);
+        color: var(--color-neutral-700);
+        vertical-align: top;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover td {
+        background: var(--color-neutral-50);
+      }
+      td.center {
+        text-align: center;
+      }
+      td.num {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+      td.row-label {
+        font-weight: 700;
+        color: var(--color-neutral-900);
+        background: var(--color-neutral-50);
+      }
+
+      /* Priority pills */
+      .pri {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 9px;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .pri::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+      .pri--red {
+        background: #fef2f2;
+        color: #b91c1c;
+      }
+      .pri--red::before {
+        background: #ef4444;
+      }
+      .pri--yellow {
+        background: var(--color-warning-50);
+        color: var(--color-warning-700);
+      }
+      .pri--yellow::before {
+        background: var(--color-warning-500);
+      }
+      .pri--green {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .pri--green::before {
+        background: var(--color-success-500);
+      }
+
+      /* Section card list (14 sections v3 spec) */
+      .sec-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px 0 8px;
+      }
+      .sec {
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 14px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .sec.is-rewrite {
+        border-color: var(--color-warning-200, #fcd34d);
+      }
+      .sec.is-restructure {
+        border-color: var(--color-primary-200);
+      }
+      .sec.is-fact-error {
+        border-color: var(--color-error-200, #fecaca);
+      }
+      .sec__head {
+        display: grid;
+        grid-template-columns: 52px 1fr auto;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        background: var(--color-neutral-50);
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .sec.is-rewrite .sec__head {
+        background: var(--color-warning-50);
+      }
+      .sec.is-restructure .sec__head {
+        background: var(--color-primary-50);
+      }
+      .sec.is-fact-error .sec__head {
+        background: var(--color-error-50);
+      }
+      .sec__num {
+        font-size: 22px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-400);
+        text-align: center;
+      }
+      .sec.is-rewrite .sec__num {
+        color: var(--color-warning-700);
+      }
+      .sec.is-restructure .sec__num {
+        color: var(--color-primary-500);
+      }
+      .sec.is-fact-error .sec__num {
+        color: var(--color-error-700);
+      }
+      .sec__name {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.015em;
+      }
+      .sec__name small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        margin-top: 2px;
+      }
+      .sec__tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .sec-tag {
+        padding: 3px 9px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border-radius: var(--radius-full);
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-600);
+      }
+      .sec-tag--copy {
+        background: var(--color-info-50);
+        color: var(--color-info-700);
+      }
+      .sec-tag--struct {
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+      }
+      .sec-tag--keep {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .sec-tag--error {
+        background: var(--color-error-50);
+        color: var(--color-error-700);
+      }
+      .sec__body {
+        padding: 16px 20px 18px;
+      }
+      .sec__body p {
+        margin: 0 0 8px;
+        font-size: 13.5px;
+      }
+      .diff {
+        margin: 8px 0 0;
+        font-size: 12.5px;
+        line-height: 1.7;
+      }
+      .diff dt {
+        font-weight: 700;
+        color: var(--color-neutral-600);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 10px 0 4px;
+      }
+      .diff dd {
+        margin: 0;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      .diff dd.old {
+        background: var(--color-error-50);
+        color: var(--color-error-700);
+        text-decoration: line-through;
+        text-decoration-color: rgba(185, 28, 28, 0.4);
+      }
+      .diff dd.new {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .diff dd + dd {
+        margin-top: 4px;
+      }
+
+      /* Phase pill row */
+      .phases {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .phase {
+        padding: 18px 18px 16px;
+        border-radius: 14px;
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+      }
+      .phase__head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .phase__num {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 12px;
+        display: grid;
+        place-items: center;
+      }
+      .phase__title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+      }
+      .phase__body {
+        font-size: 13px;
+        color: var(--color-neutral-600);
+      }
+      .phase__body ul {
+        margin: 4px 0 0;
+        padding-left: 16px;
+      }
+      .phase__body li {
+        font-size: 12.5px;
+        line-height: 1.7;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid var(--color-neutral-200);
+        margin: 36px 0;
+      }
+      .doc-foot {
+        font-size: 12px;
+        color: var(--color-neutral-400);
+        margin-top: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <!-- =========================================================
+           Sidebar TOC
+           ========================================================= -->
+      <nav class="toc">
+        <p class="toc__title">목차</p>
+        <ol>
+          <li><a href="#s0">작업 원칙</a></li>
+          <li><a href="#s1">v2 결정 → 5/19 적용</a></li>
+          <li><a href="#s2">14섹션 v3 사양</a></li>
+          <li><a href="#s3">디자인 패치 리스트</a></li>
+          <li><a href="#s4">명백한 오류 정정</a></li>
+          <li><a href="#s5">Open Questions</a></li>
+          <li><a href="#s6">실행 플랜</a></li>
+          <li><a href="#s7">참고 / 이력</a></li>
+        </ol>
+      </nav>
+
+      <!-- =========================================================
+           Main paper
+           ========================================================= -->
+      <main class="paper">
+        <div class="doc-meta">
+          <span class="badge">v3 통합안</span>
+          <span class="badge badge--neutral">2026-05-20</span>
+          <span class="badge badge--warning">John 리뷰 대기</span>
+        </div>
+
+        <h1 class="doc-title">
+          esimmany 상세페이지 통합 구성안 v3<br />
+          <small style="font-size: 17px; font-weight: 600; color: var(--color-neutral-500); letter-spacing: -0.005em;"
+            >디자인 골격 (5/19) × 카피·정책 (4/19 v2)</small
+          >
+        </h1>
+
+        <p class="doc-sub">
+          4/19 에 확정된 <b>B 포지셔닝 · L2+L3 하이브리드</b> 카피·정책을, 5/19 에 작업된
+          <b>14섹션 design 골격</b> 위에 얹는 통합본. 5/19 design 의 가짜 카피·placeholder 수치는
+          전부 v2 결정값으로 덮어쓴다. 본 문서는 디자인 패치 작업 (HTML 수정) 의 사양서.
+        </p>
+
+        <blockquote class="callout">
+          <p>
+            <strong>John 지시 (2026-05-20):</strong> "내용은 4/19 진행분 기준. 5/19는 전체 디자인을
+            우선시. 5/19 카피·데이터는 다 가짜로 채워넣은 것."
+          </p>
+        </blockquote>
+
+        <!-- =========================================================
+             §0 작업 원칙
+             ========================================================= -->
+        <h2 id="s0"><span class="num">00</span>작업 원칙</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 22%">영역</th>
+                <th style="width: 22%">출처</th>
+                <th>비고</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>섹션 분해 (14개)</strong></td>
+                <td>5/19 design</td>
+                <td>v2 의 12섹션 구조를 5/19 14섹션 골격으로 교체</td>
+              </tr>
+              <tr>
+                <td><strong>시각 디자인 / 컴포넌트</strong></td>
+                <td>5/19 design + tokens.css</td>
+                <td>Primary <code>#6239ff</code> · Pretendard · 페이지 폭 860px · radius·shadow 토큰</td>
+              </tr>
+              <tr>
+                <td><strong>카피 · 메시지</strong></td>
+                <td>4/19 v2</td>
+                <td>5/19 placeholder 카피는 v2 카피로 일괄 교체</td>
+              </tr>
+              <tr>
+                <td><strong>정책 · 결정</strong></td>
+                <td>4/19 v2</td>
+                <td>시작일시 UI 제거 / 24시간 갱신 / 호환기기 v2 조사</td>
+              </tr>
+              <tr>
+                <td><strong>차별화 angle</strong></td>
+                <td>4/19 v2</td>
+                <td>L2 (장기체류) + L3 (고데이터 · 테더링) + 노매드 30일×3GB 번들</td>
+              </tr>
+              <tr>
+                <td><strong>실데이터 (Q1~Q12)</strong></td>
+                <td>placeholder 유지</td>
+                <td>디자인·레이아웃·카피 검수 우선. PNG 출력 전 일괄 교체.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- =========================================================
+             §1 v2 결정 → 5/19 적용 매트릭스
+             ========================================================= -->
+        <h2 id="s1"><span class="num">01</span>v2 결정 → 5/19 design 적용 매트릭스</h2>
+
+        <p>4/19 v2 의 핵심 결정 10개를 5/19 design 의 어느 섹션에 어떻게 반영할지 매핑.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 38px">#</th>
+                <th style="width: 24%">v2 결정</th>
+                <th style="width: 28%">5/19 design 현 상태</th>
+                <th>적용 조치</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>D1</strong></td>
+                <td><strong>개통시작일 UI 제거</strong> (Maya Q3) — 설치 후 회선 OFF/ON 방식</td>
+                <td>
+                  Hero · Why(05) · How it works(09) step 3 · Comparison(10) · FAQ Q1 · Reviews
+                  후기까지 <strong>6개 섹션에 박힘</strong>
+                </td>
+                <td>
+                  6개 섹션 카피 전면 재작성. 차별화는 <em>"테더링 OK / 한국 CS / 출국 전 미리 설치
+                  가능"</em> 으로 대체
+                </td>
+              </tr>
+              <tr>
+                <td><strong>D2</strong></td>
+                <td><strong>사용 시작 시점부터 24시간 단위 갱신</strong> (Maya Q2)</td>
+                <td>Stats(06) "현지 자정 초기화" / FAQ "매일 자정마다 충전"</td>
+                <td>Stats hint · FAQ 답변 v2 Q2 카피로 교체</td>
+              </tr>
+              <tr>
+                <td><strong>D3</strong></td>
+                <td><strong>소진 후 속도 128 / 500 / 1000 kbps TBD</strong> (Maya Q7)</td>
+                <td>Hero · Stats · FAQ 모두 "무제한 저속" 단정</td>
+                <td>
+                  <em>"소진 후 저속 (속도 확인 중)"</em> 으로 표기. Maya Q7 확정값 들어오면 교체
+                </td>
+              </tr>
+              <tr>
+                <td><strong>D4</strong></td>
+                <td><strong>호환기기 v2 상세조사</strong></td>
+                <td>
+                  Compatibility(11) S20·S21·S22·S23 OK / Pixel 4~8 무경고 / S25·Z Flip&Fold 6·7
+                  누락
+                </td>
+                <td>
+                  칩 전부 교체 + 최상단 빨간 경고 박스 신규. v2 §⑦ 목록 그대로 적용
+                </td>
+              </tr>
+              <tr>
+                <td><strong>D5</strong></td>
+                <td><strong>수치 최소화 + 확실한 fact 3개로 대체</strong></td>
+                <td>Trust strip(02) "18,000+ · 4.8★ · 31% · 28초" 전부 placeholder</td>
+                <td>
+                  "카카오톡 1분 발급 · 24시간 자동 발송 · 24시간 단위 갱신 · 1~30일 자유 선택" 으로
+                  교체. 실수치 확보 시 토글 보존
+                </td>
+              </tr>
+              <tr>
+                <td><strong>D6</strong></td>
+                <td><strong>유심사 정면 가격승부 회피</strong></td>
+                <td>
+                  Hero crossed-out 12,900→9,900 / Comparison(10) "타사 eSIM 15,000 vs 13,500" /
+                  Plan picker OFF%
+                </td>
+                <td>
+                  Hero 크로스아웃 제거. Comparison "타사 eSIM" → "일반 eSIM" + 가격 row 제거 후
+                  정책 통제 row 신설
+                </td>
+              </tr>
+              <tr>
+                <td><strong>D7</strong></td>
+                <td>
+                  <strong>옵션표 뱃지 4분류</strong> (BEST VALUE / 장기체류 / 가성비 / 체험용)
+                </td>
+                <td>Plan picker(03) "7일 인기" 단일 뱃지 + 매일 2GB 고정</td>
+                <td>6 tier 그리드 유지하되 뱃지 4분류로 교체. 데이터량 옵션 안내 picker-note</td>
+              </tr>
+              <tr>
+                <td><strong>D8</strong></td>
+                <td><strong>L2·L3 시그널 후기 선별</strong></td>
+                <td>Reviews(07) 5 인용 중 "시간 예약 편함" 시그널이 2개</td>
+                <td>5 인용 전부 교체. 장기체류 · 테더링 · 노매드 · 한국 CS · 가족 시그널로 재배치</td>
+              </tr>
+              <tr>
+                <td><strong>D9</strong></td>
+                <td>
+                  <strong>차별화 angle 신설</strong> (테더링 특화 30일권 / 디지털 노매드 30일×3GB)
+                </td>
+                <td>5/19 에 별도 angle 섹션 없음. Final CTA(14) "출국 전 단 1분" 만 강조</td>
+                <td>Final CTA(14) 또는 Trust strip(02) 부근에 카피 통합. 별도 신규 섹션 불요</td>
+              </tr>
+              <tr>
+                <td><strong>D10</strong></td>
+                <td><strong>FAQ Q1~Q10</strong> (Maya B2B 정책 통제 반영)</td>
+                <td>FAQ(13) 12 항목 (5/19 자체 작성)</td>
+                <td>v2 Q1~Q10 으로 일괄 교체 + 5/19 보존 항목 (QR 분실 / 여러 개) 2개 = 12개</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- =========================================================
+             §2 14섹션 v3 사양
+             ========================================================= -->
+        <h2 id="s2"><span class="num">02</span>14섹션 v3 사양</h2>
+
+        <p>
+          섹션 카드 색은 변경 강도를 시각화: <span class="sec-tag sec-tag--keep">유지</span>
+          <span class="sec-tag sec-tag--copy">카피만</span>
+          <span class="sec-tag sec-tag--struct">구조+카피</span>
+          <span class="sec-tag sec-tag--error">오류 정정</span>
+        </p>
+
+        <div class="sec-list">
+          <!-- 01 Hero -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">01</div>
+              <div>
+                <div class="sec__name">
+                  Hero
+                  <small>보라 그래디언트 · 폰 mockup · 가격 · 칩 (v2 §①)</small>
+                </div>
+              </div>
+              <div class="sec__tags">
+                <span class="sec-tag sec-tag--copy">카피</span>
+              </div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>메인 (50px)</dt>
+                <dd class="old">일본 데이터 무제한 / 7일이면 충분해요</dd>
+                <dd class="new">일본 eSIM · 데이터 넉넉히, 길게</dd>
+                <dt>eyebrow (작은 영문)</dt>
+                <dd class="old">일본 데이터 무제한</dd>
+                <dd class="new">유심 교체 스트레스 제로</dd>
+                <dt>서브 (15.5px)</dt>
+                <dd class="old">
+                  네이버에서 결제하고, 주문번호 하나로 발급받는 가장 쉬운 eSIM. 시작 일시를 미리
+                  예약해 두면 비행기에서 내리는 순간 바로 켜집니다.
+                </dd>
+                <dd class="new">
+                  2GB · 3GB · 5GB 매일 선택 · 1~30일 자유 · 테더링 OK / 카카오톡 1분 발급 · 24시간
+                  자동 발송
+                </dd>
+                <dt>가격 블록</dt>
+                <dd class="old">12,900원 (취소선) → 9,900원~ (23% OFF)</dd>
+                <dd class="new">
+                  크로스아웃 제거. 단가만 표시 "9,900원~ (가격 예시)" 또는 블록 자체 제거 후 "1일
+                  평균 1,929원" 1일 환산 안내로
+                </dd>
+                <dt>4 칩 (hero__chip)</dt>
+                <dd class="old">
+                  매일 2GB 고속 · 소진 후 무제한 (저속) · 테더링 가능 · 즉시 발급
+                </dd>
+                <dd class="new">
+                  매일 2~5GB 선택 · 소진 후 저속 (확인 중) · 테더링 가능 · 카카오톡 1~2분 발급
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 02 Trust strip -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">02</div>
+              <div>
+                <div class="sec__name">
+                  Trust strip
+                  <small>4 column 수치 strip (v2 §④ 상단 + D5)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <p>
+                v2 D5 "수치 최소화 + fact 3개" 권고 적용. 실 수치 확보 시 옵션 토글 보존.
+              </p>
+              <dl class="diff">
+                <dt>4 column 값 · 라벨</dt>
+                <dd class="old">
+                  18,000+ 누적 판매 · ★ 4.8 별점 · 31% 재구매율 · 28초 평균 발급
+                </dd>
+                <dd class="new">
+                  카카오톡 1분 / 발급 채널 · 24시간 / 자동 발송 · 24시간 / 갱신 단위 · 1~30일 /
+                  자유 선택
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 03 Plan picker -->
+          <div class="sec is-restructure">
+            <div class="sec__head">
+              <div class="sec__num">03</div>
+              <div>
+                <div class="sec__name">
+                  Plan picker
+                  <small>1~30일 슬라이더 + 예시 + 6 tier (v2 §③ · D7)</small>
+                </div>
+              </div>
+              <div class="sec__tags">
+                <span class="sec-tag sec-tag--struct">구조+카피</span>
+              </div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>타이틀</dt>
+                <dd class="old">1일부터 30일까지 / 여행 일정에 정확히 맞춰요</dd>
+                <dd class="new">
+                  매일 데이터 · 일수 자유 선택 / 장기 체류일수록 1일 평균이 내려가요 (L2 신호)
+                </dd>
+                <dt>예시 callout</dt>
+                <dd class="old">7일 · 매일 2GB / 17,500원 → 13,500원 (23% OFF)</dd>
+                <dd class="new">15일 · 매일 3GB 예시로 교체 (L2 노출). OFF% 제거. 1일 평균만 표기</dd>
+                <dt>6 tier 뱃지 4분류 (D7)</dt>
+                <dd class="new">
+                  1일 2GB · <span style="background: var(--color-neutral-200); padding: 1px 6px; border-radius: 4px; color: var(--color-neutral-700); font-size: 11px;">체험용</span>
+                  | 3·5·7일 2GB · <span style="background: var(--color-warning-500); padding: 1px 6px; border-radius: 4px; color: #fff; font-size: 11px;">BEST VALUE</span>
+                  | <strong>15·30일 3GB</strong> · <span style="background: var(--color-info-500); padding: 1px 6px; border-radius: 4px; color: #fff; font-size: 11px;">장기체류</span>
+                </dd>
+                <dt>picker-note</dt>
+                <dd class="new">
+                  500MB · 1GB · 2GB · 3GB 매일 데이터 옵션을 스마트스토어 옵션에서 선택. 데이터 ↑
+                  일수 ↑ 일수록 1일 평균가 ↓
+                </dd>
+              </dl>
+              <p style="margin-top: 12px; font-size: 12.5px; color: var(--color-neutral-500);">
+                💡 구조 변경 여지: 슬라이더 위에 <strong>데이터량 토글 (500MB / 1GB / 2GB / 3GB)</strong>
+                추가 vs picker-note 텍스트 안내만 — 디자인 작업 시 확정.
+              </p>
+            </div>
+          </div>
+
+          <!-- 04 Payment benefits -->
+          <div class="sec">
+            <div class="sec__head">
+              <div class="sec__num">04</div>
+              <div>
+                <div class="sec__name">
+                  Payment benefits
+                  <small>네이버페이 · 카카오 · 토스 · 무이자 (v2 신규 — 유지)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--keep">미니 조정</span></div>
+            </div>
+            <div class="sec__body">
+              <p>5/19 골격·카피 거의 그대로. footnote 1줄만 추가.</p>
+              <dl class="diff">
+                <dt>footnote 추가</dt>
+                <dd class="new">
+                  ※ 네이버 스마트스토어 결제 시 자동 적용. 별도 신청 불요. (한국 결제 신뢰 강화)
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 05 Why ESIMmany -->
+          <div class="sec is-restructure">
+            <div class="sec__head">
+              <div class="sec__num">05</div>
+              <div>
+                <div class="sec__name">
+                  Why ESIMmany
+                  <small>3 benefit → 4 benefit (D1 · v2 §② 핵심 셀링포인트)</small>
+                </div>
+              </div>
+              <div class="sec__tags">
+                <span class="sec-tag sec-tag--struct">구조+카피</span>
+              </div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>3 benefit (5/19)</dt>
+                <dd class="old">
+                  ① 한국어 고객센터 (lead) · ② 결제 즉시 발급 · ③ 시작 일시 예약 (D1 → 삭제 필요)
+                </dd>
+                <dt>4 benefit (v3)</dt>
+                <dd class="new">
+                  ① <strong>한국어 고객센터</strong> (lead) — 카카오톡 한국어 상담, 발급 오류 즉시
+                  대응
+                </dd>
+                <dd class="new">
+                  ② <strong>카카오톡 1~2분 발급</strong> — 24시간 자동, 야간·주말 OK (v2 fact)
+                </dd>
+                <dd class="new">
+                  ③ <strong>테더링 · 업로드 지원</strong> — 업무 기기 · 콘텐츠 업로드 · 스트리밍
+                  (L3 신호)
+                </dd>
+                <dd class="new">
+                  ④ <strong>기존 번호 유지</strong> — 듀얼심으로 한국 번호 수신 (카카오톡 · 문자)
+                </dd>
+              </dl>
+              <p style="margin-top: 12px; font-size: 12.5px; color: var(--color-neutral-500);">
+                💡 그리드 <code>repeat(3, 1fr)</code> → <code>repeat(4, 1fr)</code> 또는 2×2 재배치
+                필요. lead 카드 1개 (보라) + 일반 3개.
+              </p>
+            </div>
+          </div>
+
+          <!-- 06 Stats -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">06</div>
+              <div>
+                <div class="sec__name">
+                  Plan at a glance (검정 4 stats)
+                  <small>D2 + D3 + 단일 SKU 가정 제거</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>사용 기간</dt>
+                <dd class="old">7일 / 활성화 시점부터</dd>
+                <dd class="new">선택 일수 / 1~30일 자유 선택</dd>
+                <dt>매일 고속</dt>
+                <dd class="old">2GB/일 / 현지 자정 초기화 (D2 ✕)</dd>
+                <dd class="new">2~5GB / 일 · hint: 사용 시작 시점부터 24시간 단위 (D2 ✓)</dd>
+                <dt>소진 후</dt>
+                <dd class="old">무제한 저속 / 메신저·지도 OK (D3 ✕)</dd>
+                <dd class="new">저속 (속도 확인 중) / hint: 메신저·지도 가능 (D3 ✓)</dd>
+                <dt>테더링</dt>
+                <dd class="old">가능 / 일행과 함께 사용</dd>
+                <dd class="new">가능 / 노트북 · 업무 기기 연결 (L3 신호)</dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 07 Reviews -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">07</div>
+              <div>
+                <div class="sec__name">
+                  Reviews
+                  <small>5 인용 전부 L2 · L3 · CS · 가족 시그널로 (D8)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <p>5/19 의 4.8★ 카드 / 5 quote / 사진 grid 골격 유지. 5 인용만 전부 교체.</p>
+              <ol style="font-size: 13px; line-height: 1.7; color: var(--color-neutral-700);">
+                <li>
+                  <span class="badge badge--success">장기·테더링</span> "도쿄 2주 체류하면서 매일
+                  테더링으로 업무했는데 속도 한 번도 안 떨어졌어요" (15일권 · 2026-03)
+                </li>
+                <li>
+                  <span class="badge">노매드</span> "워홀 30일권 썼는데 자동 갱신 없이 깔끔하게
+                  끝나서 좋았어요" (30일권 3GB · 2026-02)
+                </li>
+                <li>
+                  <span class="badge badge--warning">한국 CS</span> "현지에서 신호 약한 데서
+                  카카오톡으로 물어봤더니 30초 만에 답와서 해결" (5일권 · 2026-04)
+                </li>
+                <li>
+                  <span class="badge badge--success">테더링</span> "오사카·교토 일주일 돌면서
+                  스트리밍·사진 업로드 끊김 없이" (7일권 2GB · 2026-03)
+                </li>
+                <li>
+                  <span class="badge badge--neutral">L1 가족</span> "부모님 모시고 갔는데 셋팅 한
+                  번에 끝. 카카오톡으로 미리 발급받아 두니 안심" (5일권 · 2026-02)
+                </li>
+              </ol>
+              <p style="margin-top: 10px; font-size: 12.5px; color: var(--color-neutral-500);">
+                상단 4.8★ / 2,847개 후기 breakdown 은 placeholder 유지. Q2 실 별점 미확보 시
+                <code>reviews__hero</code> 블록 자체 삭제 옵션 보존.
+              </p>
+            </div>
+          </div>
+
+          <!-- 08 Coverage -->
+          <div class="sec">
+            <div class="sec__head">
+              <div class="sec__num">08</div>
+              <div>
+                <div class="sec__name">
+                  Coverage
+                  <small>12 도시 + Softbank · KDDI au (v2 신규 — 유지)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--keep">변경 없음</span></div>
+            </div>
+            <div class="sec__body">
+              <p>일본 파일럿 기준 적합. Q8 로고 라이선스 확정은 별도 트랙.</p>
+            </div>
+          </div>
+
+          <!-- 09 How it works -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">09</div>
+              <div>
+                <div class="sec__name">
+                  How it works
+                  <small>4 step · step 3 "시작 일시" 제거 (D1)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>Step 3</dt>
+                <dd class="old">시작 일시 선택 (10초) — "현지 시간 기준 사용 시작 일시와 국가 선택"</dd>
+                <dd class="new">QR 코드 받기 (10초) — "카카오톡으로 받은 링크에서 QR 다운로드"</dd>
+                <dt>Step 4</dt>
+                <dd class="old">QR 코드 등록 (1분) — "비행기에서 켜지면 자동 활성화"</dd>
+                <dd class="new">
+                  QR 스캔 → 회선 OFF 유지 → 현지 도착 후 회선 ON (1분) — "출국 전 미리 설치 가능,
+                  회선 ON 시점부터 데이터 시작"
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 10 Comparison -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">10</div>
+              <div>
+                <div class="sec__name">
+                  Comparison
+                  <small>5 컬럼 비교표 · D6 + D1 정리</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>컬럼 헤더</dt>
+                <dd class="old">통신사 로밍 · 포켓 WiFi · 타사 eSIM · ESIMmany</dd>
+                <dd class="new">통신사 로밍 · 포켓 WiFi · 일반 eSIM · ESIMmany (정면승부 회피)</dd>
+                <dt>Row 1</dt>
+                <dd class="old">7일 데이터 비용 (35,000 / 28,000 / 15,000 / 13,500)</dd>
+                <dd class="new">데이터 정책 통제 (통신사 정책 / 통신사 정책 / 일률 / 자체 정책 통제)</dd>
+                <dt>Row 4</dt>
+                <dd class="old">시작 일시 예약 (자동 / 불가 / 대체로 불가 / 분 단위 선택) (D1 ✕)</dd>
+                <dd class="new">매일 데이터 갱신 (복잡 / N/A / 일률 / 24시간 단위 명확) (D2)</dd>
+                <dt>Lede</dt>
+                <dd class="old">일본 7일 여행 기준 동일 조건 비교. 가격은 평균치…</dd>
+                <dd class="new">같은 일본 일정 기준, 사용 경험 관점 비교 (가격 면책 불요)</dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 11 Compatibility -->
+          <div class="sec is-fact-error">
+            <div class="sec__head">
+              <div class="sec__num">11</div>
+              <div>
+                <div class="sec__name">
+                  Compatibility
+                  <small>🔴 명백한 오류 + 구조 변경 (D4 · v2 §⑦)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--error">오류</span><span class="sec-tag sec-tag--struct">구조</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>iPhone 카드 칩</dt>
+                <dd class="old">XS·XR / 11 / 12 / 13 / 14 / 15 / SE 2·3 — 16e · 17 누락</dd>
+                <dd class="new">
+                  XS·XR / 11·12·13·14·15 (Plus·Pro·mini) / <strong>16e</strong> /
+                  <strong>17 전 모델 (17 Air = eSIM 전용)</strong> / SE 2·3 / iPad Pro 11·12.9 /
+                  iPad Air 3+ · mini 5+
+                </dd>
+                <dt>🔴 Galaxy 칩 (사실 오류)</dt>
+                <dd class="old">
+                  S20 · S21 · S22 · S23 / Note 20 / Z Flip 3·4·5 / Z Fold 3·4·5 / Pixel 4·5·6·7·8
+                </dd>
+                <dd class="new">
+                  <strong>국내</strong>: S23·S24·<strong>S25 (Edge 포함)</strong> / Z Flip·Fold
+                  <strong>4~7</strong> / A35·A54·A55 / 탭 S9+ &nbsp;|&nbsp;
+                  <strong>해외판</strong> (IMEI 등록 필요): Z Flip·Fold 1~7 해외판, S20~S25
+                  International/US
+                </dd>
+                <dt>🔴 신규 — 별도 경고 카드: Pixel</dt>
+                <dd class="new">
+                  <strong>한국 정식 유통 없음 — 해외 구매 기기만 가능.</strong> 미국판 Pixel 7
+                  이후 일부 eSIM 전용. 한국 통신사 IMEI 등록 필요
+                </dd>
+                <dt>신규 — 샤오미 (Mi Korea 공식)</dt>
+                <dd class="new">14T / 14T Pro / 15 Pro / 15 Ultra</dd>
+                <dt>신규 — 최상단 빨간 경고 박스</dt>
+                <dd class="new">
+                  🔴 갤럭시 S22 이하 국내판 eSIM 미탑재 / 중국 본토 iPhone = 17 Air만 가능 /
+                  홍콩·마카오 iPhone 일부 모델만 가능 / 통신사 잠금 기기 불가
+                </dd>
+                <dt>"확인하기 →" CTA</dt>
+                <dd class="new">카카오톡 @esimmany 채널 문의로 변경 (v2 §⑧)</dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 12 Refund -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">12</div>
+              <div>
+                <div class="sec__name">
+                  Refund policy
+                  <small>3 카드 (success · warn · error) · v2 §⑪</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>카드 2 (warn)</dt>
+                <dd class="old">QR 등록 후 · 미사용 / 개별 검토 ("통신망 사 정책")</dd>
+                <dd class="new">
+                  QR 발급 후 · 미설치 / 수수료 [TBD C-1] 차감 환불 — ESIMmany 자체 정책으로 부분
+                  환불 가능
+                </dd>
+                <dt>카드 3 (error) — 미세 조정</dt>
+                <dd class="new">
+                  사용 시작 (= QR 설치 시점) 후 환불 불가. 명확화
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 13 FAQ -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">13</div>
+              <div>
+                <div class="sec__name">
+                  FAQ
+                  <small>12 항목 v2 Q1~Q10 + 5/19 보존 2개 (D10)</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width: 36px">#</th>
+                      <th style="width: 50%">Q (v3)</th>
+                      <th>출처</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>eSIM은 언제 받을 수 있나요?</td><td>v2 Q1</td></tr>
+                    <tr><td>2</td><td><strong>데이터 갱신 기준은 언제인가요?</strong> (사용 시작 24h)</td><td>v2 Q2 · D2</td></tr>
+                    <tr><td>3</td><td><strong>설치는 언제 하면 되나요?</strong> (회선 OFF/ON)</td><td>v2 Q3 · D1</td></tr>
+                    <tr><td>4</td><td>전화 · 문자 사용 가능한가요?</td><td>v2 Q4</td></tr>
+                    <tr><td>5</td><td>사용량은 어떻게 확인하나요?</td><td>v2 Q5 + 5/19 보존</td></tr>
+                    <tr><td>6</td><td>테더링 (핫스팟) 되나요?</td><td>v2 Q6</td></tr>
+                    <tr><td>7</td><td><strong>데이터 다 쓰면 어떻게 되나요?</strong> (저속 TBD)</td><td>v2 Q7 · D3</td></tr>
+                    <tr><td>8</td><td>환불은 가능한가요?</td><td>v2 Q8</td></tr>
+                    <tr><td>9</td><td>30일까지 연속 사용 가능? (L2)</td><td>v2 Q9 신규</td></tr>
+                    <tr><td>10</td><td>테더링 속도 제한 있나요? (L3)</td><td>v2 Q10 신규</td></tr>
+                    <tr><td>11</td><td>QR 코드 잃어버렸어요. 재발급되나요?</td><td>5/19 보존</td></tr>
+                    <tr><td>12</td><td>한 사람이 여러 개 사도 되나요?</td><td>5/19 보존</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style="font-size: 12.5px; color: var(--color-neutral-500);">
+                5/19 의 APN / 데이터 안 잡힘 / eSIM 삭제 / 일본 외 사용 질문은 13~14항목으로 늘릴지
+                여부 디자인 작업 시 결정.
+              </p>
+            </div>
+          </div>
+
+          <!-- 14 Final CTA -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">14</div>
+              <div>
+                <div class="sec__name">
+                  Final CTA + Trust badges + 사업자 정보
+                  <small>v2 §⑫ + D9 차별화 angle 흡수</small>
+                </div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>final__h</dt>
+                <dd class="old">출국 전 단 1분. / 지금 발급받으세요.</dd>
+                <dd class="new">여행도, 워홀도, 30일 노매드도. / 일본 eSIM 하나면 끝. (D9 angle)</dd>
+                <dt>final__p</dt>
+                <dd class="old">
+                  이미 18,000명 이상이 ESIMmany 로 일본 여행을 떠났어요. / 네이버 스마트스토어에서
+                  검색해 보세요.
+                </dd>
+                <dd class="new">
+                  카카오톡 1분 발급 · 한국어 CS · 테더링 OK · 1~30일 자유 선택. 네이버
+                  스마트스토어에서 만나요.
+                </dd>
+                <dt>trust badge strip · 사업자 footer</dt>
+                <dd class="new">placeholder 유지. Q10 · Q11 확정 시 교체. KICC = 네이버 결제 중복 시 행 삭제 검토.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             §3 디자인 패치 리스트
+             ========================================================= -->
+        <h2 id="s3"><span class="num">03</span>디자인 패치 리스트</h2>
+
+        <p>
+          v3 승인 후 <code>design/sections/*.html</code> 14개 파일에 적용할 변경을 단순화한 목록.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 32%">파일</th>
+                <th style="width: 18%">변경 강도</th>
+                <th>핵심 변경</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>01-hero.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>메인·서브 v2 카피, 크로스아웃 제거, 4 칩 교체</td>
+              </tr>
+              <tr>
+                <td><code>02-trust-strip.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>4 column 값·라벨을 v2 fact 3+1로 교체</td>
+              </tr>
+              <tr>
+                <td><code>03-plan-picker.html</code></td>
+                <td><span class="sec-tag sec-tag--struct">구조+카피</span></td>
+                <td>예시 7일→15일·3GB, 6 tier 뱃지 4분류, picker-note 데이터 옵션 안내</td>
+              </tr>
+              <tr>
+                <td><code>04-payment-benefits.html</code></td>
+                <td><span class="sec-tag sec-tag--keep">미니</span></td>
+                <td>footnote 1줄 추가</td>
+              </tr>
+              <tr>
+                <td><code>05-why.html</code></td>
+                <td><span class="sec-tag sec-tag--struct">구조+카피</span></td>
+                <td>3 benefit → 4 benefit (시작 일시 제거, 테더링·기존 번호 추가)</td>
+              </tr>
+              <tr>
+                <td><code>06-stats.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>4 stat 일반화 + "현지 자정" → "24시간 단위" (D2)</td>
+              </tr>
+              <tr>
+                <td><code>07-reviews.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>인용 5개 전부 시간 예약 제거, L2·L3·CS·가족 시그널로</td>
+              </tr>
+              <tr>
+                <td><code>08-coverage.html</code></td>
+                <td><span class="sec-tag sec-tag--keep">유지</span></td>
+                <td>변경 없음 (Q8 로고 라이선스 별도 트랙)</td>
+              </tr>
+              <tr>
+                <td><code>09-how-it-works.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>step 3 "시작 일시" → "QR 코드 받기", step 4 회선 OFF/ON 명시</td>
+              </tr>
+              <tr>
+                <td><code>10-comparison.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>"타사" → "일반", 가격 row → 정책 통제, 시작 일시 row → 24h 갱신</td>
+              </tr>
+              <tr style="background: var(--color-error-50);">
+                <td><code>11-compatibility.html</code></td>
+                <td><span class="sec-tag sec-tag--error">오류 정정</span> <span class="sec-tag sec-tag--struct">구조</span></td>
+                <td>경고박스 신규, 칩 전부 교체, Galaxy·Pixel 카드 분리·경고, CTA 카카오톡</td>
+              </tr>
+              <tr>
+                <td><code>12-refund.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>카드 2 "통신망 사 정책" → "자체 정책 / 수수료 차감"</td>
+              </tr>
+              <tr>
+                <td><code>13-faq.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>12항목 v2 Q1~Q10 + 5/19 보존 2개로 재구성</td>
+              </tr>
+              <tr>
+                <td><code>14-final-cta.html</code></td>
+                <td><span class="sec-tag sec-tag--copy">카피</span></td>
+                <td>h2·p v2 차별화 angle로. 신뢰배지·footer placeholder 유지</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p style="font-size: 13px; color: var(--color-neutral-500);">
+          <strong>요약</strong>: 카피만 9개 / 카피+구조 3개 (03, 05, 11) / 변경 없음 1개 (08) /
+          미니 1개 (04).
+        </p>
+
+        <!-- =========================================================
+             §4 명백한 오류 정정
+             ========================================================= -->
+        <h2 id="s4"><span class="num">04</span>명백한 오류 / 위험 시그널</h2>
+
+        <blockquote class="callout callout--error">
+          <p>
+            <strong>🔴 사실 오류 (PNG 출력 전 필수 수정)</strong> — 고객 컴플레인 · 환불 분쟁 직결
+          </p>
+        </blockquote>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px"></th>
+                <th style="width: 32%">위치</th>
+                <th style="width: 28%">5/19 현재</th>
+                <th>정정</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pri pri--red">사실</span></td>
+                <td><code>11-compatibility.html:189</code></td>
+                <td>"S20 · S21 · S22 · S23"</td>
+                <td>S22 이하 국내판 eSIM HW 미탑재 — 칩에서 제거 + 경고박스 명시</td>
+              </tr>
+              <tr>
+                <td><span class="pri pri--red">사실</span></td>
+                <td><code>11-compatibility.html:193</code></td>
+                <td>"Pixel 4·5·6·7·8"</td>
+                <td>한국 정식 유통 없음 — 별도 경고 카드로 분리, 해외 구매만 가능 명시</td>
+              </tr>
+              <tr>
+                <td><span class="pri pri--yellow">정책</span></td>
+                <td>01-hero · 06-stats · 13-faq</td>
+                <td>"소진 후 무제한 저속" 단정</td>
+                <td>"확인 중" 또는 Maya Q7 확정값 (D3)</td>
+              </tr>
+              <tr>
+                <td><span class="pri pri--yellow">정책</span></td>
+                <td>06-stats hint · 13-faq</td>
+                <td>"현지 자정 초기화"</td>
+                <td>사용 시작 시점부터 24시간 단위 (D2 — Maya 설정 일치 확인 필요)</td>
+              </tr>
+              <tr>
+                <td><span class="pri pri--yellow">정책</span></td>
+                <td>01-hero · 05-why · 07-reviews · 09-how-it-works · 10-comparison · 13-faq</td>
+                <td>"시작 일시 예약" 차별화 angle</td>
+                <td>전부 제거 + 회선 OFF/ON 으로 대체 (D1)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p style="font-size: 13px; color: var(--color-neutral-500);">
+          <span class="pri pri--red">사실</span> = 사실 오류 (고객 컴플레인·환불 분쟁 직결) /
+          <span class="pri pri--yellow">정책</span> = 운영·Maya 설정과 일치 필요
+        </p>
+
+        <!-- =========================================================
+             §5 Open Questions
+             ========================================================= -->
+        <h2 id="s5"><span class="num">05</span>Open Questions — 실데이터 확보</h2>
+
+        <p>
+          5/19 plan §7 Q1~Q12 + 4/19 v2 §6 C-1 체크리스트 통합. PNG 출력 전 일괄 교체 또는
+          노출 안 함 결정 필요.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px">#</th>
+                <th style="width: 30%">항목</th>
+                <th style="width: 18%">현재</th>
+                <th>확보 경로</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Q1</strong></td><td>누적 판매 건수</td><td>18,000+ placeholder</td><td>구글시트 주문 합계 (John)</td></tr>
+              <tr><td><strong>Q2</strong></td><td>네이버 별점</td><td>4.8 placeholder</td><td>스마트스토어 통계 (John)</td></tr>
+              <tr><td><strong>Q3</strong></td><td>재구매율</td><td>31% placeholder</td><td>구글시트 동일 고객 재주문 (미정 시 미노출)</td></tr>
+              <tr><td><strong>Q4</strong></td><td>플랜 가격 (일수 × 데이터)</td><td>placeholder</td><td>구글시트 가격표 (John)</td></tr>
+              <tr><td><strong>Q5</strong></td><td>결제 혜택 카드사</td><td>placeholder</td><td>스마트스토어 = 네이버 결제 / 외부 카드사 적용 가능 여부</td></tr>
+              <tr><td><strong>Q6</strong></td><td>후기 5건 (실 vs 가상)</td><td>가상 인용</td><td>스마트스토어 동의 후기 확보 또는 가상 표기</td></tr>
+              <tr><td><strong>Q7</strong></td><td>호환기기 v2 조사</td><td>✅ 확정</td><td><code>조사/기기목록_v2_상세조사.md</code></td></tr>
+              <tr><td><strong>Q8</strong></td><td>통신사 로고 사용권</td><td>placeholder</td><td>Softbank · KDDI au 라이선스 / 미확보 시 텍스트만</td></tr>
+              <tr><td><strong>Q9</strong></td><td>"Featured in" 미디어</td><td>미사용 결정</td><td>—</td></tr>
+              <tr><td><strong>Q10</strong></td><td>사업자 · 통신판매신고 번호</td><td>placeholder</td><td>nomacom 법인 등기부 (John)</td></tr>
+              <tr><td><strong>Q11</strong></td><td>KICC 에스크로</td><td>placeholder</td><td>네이버 결제와 중복 여부 (중복 시 행 삭제)</td></tr>
+              <tr><td><strong>Q12</strong></td><td>무이자 24개월</td><td>placeholder</td><td>네이버페이 · 카드사 정책</td></tr>
+              <tr style="background: var(--color-warning-50);"><td><strong>M1</strong></td><td><strong>Maya Q7 소진 후 속도</strong> (128 / 500 / 1000 kbps)</td><td>TBD</td><td>macmini-c (Rick/Birdperson) 또는 John 인프라 설정값</td></tr>
+              <tr style="background: var(--color-warning-50);"><td><strong>M2</strong></td><td><strong>Maya 데이터 갱신 정책 실 설정</strong></td><td>문서 불일치</td><td>v2 = 24시간 / 5/19 = 자정 — 어느 쪽이 실 설정?</td></tr>
+              <tr style="background: var(--color-warning-50);"><td><strong>M3</strong></td><td><strong>환불 수수료율</strong> (QR 발급 후 미설치)</td><td>TBD</td><td>운영 정책 결정</td></tr>
+              <tr style="background: var(--color-warning-50);"><td><strong>M4</strong></td><td><strong>고객센터 운영시간 · 응답시간</strong></td><td>placeholder</td><td>현재 카카오톡만 운영 중인지 확인</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- =========================================================
+             §6 실행 플랜
+             ========================================================= -->
+        <h2 id="s6"><span class="num">06</span>v3 승인 후 즉시 실행 플랜</h2>
+
+        <div class="phases">
+          <div class="phase">
+            <div class="phase__head">
+              <span class="phase__num">1</span>
+              <span class="phase__title">즉시 (오늘)</span>
+            </div>
+            <div class="phase__body">
+              <ul>
+                <li>v3 (이 문서) John 리뷰 · 승인</li>
+                <li>🔴 11-compatibility.html S22 · Pixel 오류 즉시 패치</li>
+                <li>M1 · M2 macmini-c 또는 John 확인 요청</li>
+              </ul>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase__head">
+              <span class="phase__num">2</span>
+              <span class="phase__title">v3 승인 직후</span>
+            </div>
+            <div class="phase__body">
+              <ul>
+                <li>카피 패치 9개 섹션 일괄 적용</li>
+                <li>구조 패치 (Why 3→4, Compatibility 카드 분리, Plan picker 데이터 토글)</li>
+                <li>M1 · M2 답 들어오는 대로 해당 카피 final</li>
+              </ul>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase__head">
+              <span class="phase__num">3</span>
+              <span class="phase__title">검수 · 출시</span>
+            </div>
+            <div class="phase__body">
+              <ul>
+                <li>PNG 1차 출력 (14 섹션 일괄)</li>
+                <li>John 검수 → 피드백 반영</li>
+                <li>Q1 · Q4 · Q10 등 실데이터로 placeholder 교체</li>
+                <li>일본 7일 (BEST VALUE) + 30일 (장기체류) 2 SKU 분기</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             §7 참고 / 이력
+             ========================================================= -->
+        <h2 id="s7"><span class="num">07</span>참고 / 작성 이력</h2>
+
+        <h3>관련 문서</h3>
+        <ul>
+          <li><code>마케팅/상세페이지-개선/04_통합_v3_2026-05-20.md</code> — v3 마크다운 원본 (본 HTML 의 원본)</li>
+          <li><code>마케팅/상세페이지-개선/03_구성안_v2_L2L3.md</code> — 4/19 v2 (B 포지셔닝)</li>
+          <li><code>마케팅/상세페이지-개선/02_포지셔닝결정_B_루트틈새.md</code> — B 포지셔닝 확정</li>
+          <li><code>design/plan-2026-05-19.html</code> — 5/19 14섹션 청사진 (원본)</li>
+          <li><code>design/sections/*.html</code> — 5/19 14 섹션 standalone (v3 패치 대상)</li>
+          <li><code>마케팅/상세페이지-개선/조사/기기목록_v2_상세조사.md</code> — 호환기기 v2 조사 (§11 정정 근거)</li>
+          <li><code>마케팅/상세페이지-개선/조사/Maya_정책_검증.md</code> — Maya B2B 정책 통제 영역</li>
+        </ul>
+
+        <h3>v3 작성 결정 이력</h3>
+        <ol>
+          <li>2026-04-19 — v2 12섹션 구성안 작성 (B 포지셔닝, L2+L3 하이브리드) — John 리뷰 대기</li>
+          <li>2026-05-19 — design 14섹션 골격 작업 (한국 1티어 컨벤션 + 차별화 angle), placeholder 데이터로 시각 검수</li>
+          <li>2026-05-20 — John 지시: "5/19 디자인 우선 / 내용은 4/19 기준". 통합 v3 작성</li>
+        </ol>
+
+        <hr />
+        <p class="doc-foot">
+          v3.0 · 2026-05-20 · esimmany 상세페이지 통합 구성안 · John 리뷰 대기
+        </p>
+      </main>
+    </div>
+  </body>
+</html>

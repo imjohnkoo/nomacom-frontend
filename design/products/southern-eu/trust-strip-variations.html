@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trust strip 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body {
+        background: #ededf2;
+      }
+      .page-top {
+        padding: 36px 28px 12px;
+        text-align: center;
+      }
+      .page-top h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .page-top p {
+        font-size: 14px;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+      .variant-stack {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 24px 0 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .variant {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+      .variant__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--color-neutral-100);
+        background: var(--color-neutral-50);
+      }
+      .variant__label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .variant__letter {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 15px;
+        display: grid;
+        place-items: center;
+      }
+      .variant__title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+      }
+      .variant__title small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        margin-top: 1px;
+      }
+      .variant__pick {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+      }
+      .variant__pick code {
+        font-family: var(--font-mono);
+        background: var(--color-neutral-100);
+        color: var(--color-primary-700);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .variant__canvas {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* ─── Trust strip base ─── */
+      .trust {
+        padding: 32px 60px;
+        background: #fff;
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .trust__grid {
+        display: grid;
+        gap: 0;
+      }
+      .trust__grid--4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .trust__grid--5 {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      .trust__grid--2x2 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px 0;
+      }
+      .trust__item {
+        padding: 4px 18px;
+        position: relative;
+        text-align: center;
+      }
+      .trust__item + .trust__item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 14%;
+        bottom: 14%;
+        width: 1px;
+        background: var(--color-neutral-200);
+      }
+      .trust__grid--2x2 .trust__item:nth-child(3)::before,
+      .trust__grid--2x2 .trust__item:nth-child(4)::before {
+        top: 0;
+      }
+      .trust__value {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--color-neutral-900);
+        font-variant-numeric: tabular-nums;
+      }
+      .trust__value small {
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.55;
+        margin-left: 2px;
+      }
+      .trust__value .star {
+        color: #f59e0b;
+        margin-right: 3px;
+      }
+      .trust__label {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        letter-spacing: -0.005em;
+      }
+
+      /* D — 아이콘 + 텍스트 */
+      .trust__icon {
+        font-size: 24px;
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .trust--icon .trust__value {
+        font-size: 18px;
+      }
+      .trust--icon .trust__label {
+        margin-top: 4px;
+      }
+
+      /* E — Dark theme */
+      .trust--dark {
+        background: linear-gradient(135deg, #1f0c6e 0%, #3f1cc0 100%);
+        color: #fff;
+        border-bottom: 0;
+      }
+      .trust--dark .trust__value {
+        color: #fff;
+      }
+      .trust--dark .trust__label {
+        color: rgba(255, 255, 255, 0.65);
+      }
+      .trust--dark .trust__item + .trust__item::before {
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .trust--dark .trust__value .star {
+        color: #fbbf24;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Trust strip 5종 비교</h1>
+      <p>스크롤하며 비교 → 마음에 드는 variation 알려주세요</p>
+    </div>
+
+    <div class="variant-stack">
+      <!-- A — 현재 베이스라인 -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              운영 fact 4 column (현재)
+              <small>1분 / 당일 / 24시간 / 2개국 · placeholder 없음 안전</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>A</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="trust">
+              <div class="trust__grid trust__grid--4">
+                <div class="trust__item">
+                  <div class="trust__value">1<small>분</small></div>
+                  <div class="trust__label">카카오톡 발급</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">당일</div>
+                  <div class="trust__label">자동 발송</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">24<small>시간</small></div>
+                  <div class="trust__label">데이터 갱신 단위</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">2<small>개국</small></div>
+                  <div class="trust__label">스페인 + 포르투갈</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- B — 사회적 증거 중심 -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              사회적 증거 중심
+              <small>누적 / 별점 / 재구매율 / 발급시간 · 실데이터 확보 시 가장 강력</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>B</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="trust">
+              <div class="trust__grid trust__grid--4">
+                <div class="trust__item">
+                  <div class="trust__value">
+                    18,000<small>+</small>
+                  </div>
+                  <div class="trust__label">누적 판매</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">
+                    <span class="star">★</span>4.8
+                  </div>
+                  <div class="trust__label">네이버 별점</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">
+                    31<small>%</small>
+                  </div>
+                  <div class="trust__label">재구매율</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">28<small>초</small></div>
+                  <div class="trust__label">평균 발급 시간</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- C — 5 column (더 많은 정보) -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              5 column (정책 풍부)
+              <small>1분 / 당일 / 24시간 / 500Kbps 무제한 / 2개국</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>C</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="trust">
+              <div class="trust__grid trust__grid--5">
+                <div class="trust__item">
+                  <div class="trust__value">1<small>분</small></div>
+                  <div class="trust__label">카카오톡 발급</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">당일</div>
+                  <div class="trust__label">자동 발송</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">24<small>시간</small></div>
+                  <div class="trust__label">갱신 단위</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">500<small>Kbps</small></div>
+                  <div class="trust__label">소진 후 무제한</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">2<small>개국</small></div>
+                  <div class="trust__label">한 SIM</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- D — 아이콘 + 텍스트 -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              아이콘 + 텍스트
+              <small>큰 이모지 + 간결한 fact · 시각적 임팩트 ↑</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>D</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="trust trust--icon">
+              <div class="trust__grid trust__grid--4">
+                <div class="trust__item">
+                  <div class="trust__icon">⚡</div>
+                  <div class="trust__value">카카오톡 1분</div>
+                  <div class="trust__label">즉시 발급</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__icon">🚀</div>
+                  <div class="trust__value">당일 자동</div>
+                  <div class="trust__label">야간·주말 OK</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__icon">🔁</div>
+                  <div class="trust__value">24시간 갱신</div>
+                  <div class="trust__label">매일 정확히</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__icon">🇪🇸🇵🇹</div>
+                  <div class="trust__value">2개국 자동</div>
+                  <div class="trust__label">국경 이동 자동</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+
+      <!-- E — Dark theme -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              Dark 배경
+              <small>보라 그라데이션 + 흰 글자 · hero 와 시각 톤 연결</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택: <code>E</code></div>
+        </header>
+        <div class="variant__canvas">
+          <div class="canvas">
+            <section class="trust trust--dark">
+              <div class="trust__grid trust__grid--4">
+                <div class="trust__item">
+                  <div class="trust__value">1<small>분</small></div>
+                  <div class="trust__label">카카오톡 발급</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">당일</div>
+                  <div class="trust__label">자동 발송</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">24<small>시간</small></div>
+                  <div class="trust__label">데이터 갱신</div>
+                </div>
+                <div class="trust__item">
+                  <div class="trust__value">2<small>개국</small></div>
+                  <div class="trust__label">스페인 + 포르투갈</div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </article>
+    </div>
+  </body>
+</html>

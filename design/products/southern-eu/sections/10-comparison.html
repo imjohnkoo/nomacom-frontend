@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>10 · Comparison · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .cmp {
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        overflow: hidden;
+        background: #fff;
+      }
+      .cmp__row {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr;
+        align-items: stretch;
+      }
+      .cmp__row + .cmp__row {
+        border-top: 1px solid var(--color-neutral-100);
+      }
+      .cmp__cell {
+        padding: 14px 16px;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--color-neutral-700);
+      }
+      .cmp__cell + .cmp__cell {
+        border-left: 1px solid var(--color-neutral-100);
+      }
+      .cmp__head {
+        background: var(--color-neutral-50);
+      }
+      .cmp__head .cmp__cell {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.005em;
+      }
+      .cmp__rowlabel {
+        font-weight: 700;
+        color: var(--color-neutral-800);
+      }
+      .cmp__us {
+        background: linear-gradient(0deg, rgba(98, 57, 255, 0.04), rgba(98, 57, 255, 0.04)), #fff;
+        position: relative;
+      }
+      .cmp__us-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--color-primary-700) !important;
+      }
+      .cmp__us-label::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--color-primary-500);
+      }
+      .cmp__ok {
+        color: var(--color-success-700);
+        font-weight: 700;
+      }
+      .cmp__bad {
+        color: var(--color-error-700);
+        font-weight: 600;
+      }
+      .cmp__so {
+        color: var(--color-warning-700);
+        font-weight: 600;
+      }
+      .cmp__big {
+        font-weight: 800;
+        font-size: 14px;
+        color: var(--color-neutral-900);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">10</span>
+        <span class="dev-toolbar__title">Comparison</span>
+        <span class="dev-toolbar__hint">로밍 · 와이파이 · 타사 · 우리</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-10-comparison">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Compare</span>
+        <h2 class="section__title">왜 eSIM 이고, 왜 ESIMmany 인가요?</h2>
+        <p class="section__lede">
+          같은 스페인·포르투갈 일정 기준, 사용 경험 관점에서 비교해 봤어요.
+        </p>
+
+        <div class="cmp">
+          <div class="cmp__row cmp__head">
+            <div class="cmp__cell">항목</div>
+            <div class="cmp__cell">통신사 로밍</div>
+            <div class="cmp__cell">포켓 WiFi</div>
+            <div class="cmp__cell">일반 eSIM</div>
+            <div class="cmp__cell cmp__us-label">ESIMmany</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">데이터 정책 통제</div>
+            <div class="cmp__cell cmp__so">통신사 정책</div>
+            <div class="cmp__cell cmp__so">통신사 정책</div>
+            <div class="cmp__cell cmp__so">일률</div>
+            <div class="cmp__cell cmp__us cmp__ok">자체 (무제한/종량제)</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">발급 / 수령 시간</div>
+            <div class="cmp__cell cmp__ok">즉시</div>
+            <div class="cmp__cell cmp__bad">택배 1–2일</div>
+            <div class="cmp__cell cmp__ok">즉시</div>
+            <div class="cmp__cell cmp__us cmp__ok">카카오톡 1분</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">기기 / 짐</div>
+            <div class="cmp__cell cmp__ok">내 폰 그대로</div>
+            <div class="cmp__cell cmp__bad">기기 휴대 · 충전</div>
+            <div class="cmp__cell cmp__ok">내 폰 그대로</div>
+            <div class="cmp__cell cmp__us cmp__ok">내 폰 그대로</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">2개국 동일 SIM<br />🇪🇸 🇵🇹</div>
+            <div class="cmp__cell cmp__bad">국가별<br />비싼 로밍</div>
+            <div class="cmp__cell cmp__bad">국가별<br />기기 임대</div>
+            <div class="cmp__cell cmp__so">국가별<br />별도 구매</div>
+            <div class="cmp__cell cmp__us cmp__ok">한 SIM<br />2개국 자동</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">한국어 고객센터</div>
+            <div class="cmp__cell cmp__ok">한국어</div>
+            <div class="cmp__cell cmp__ok">한국어</div>
+            <div class="cmp__cell cmp__bad">영어만 / 챗봇</div>
+            <div class="cmp__cell cmp__us cmp__ok">카카오톡 한국어</div>
+          </div>
+          <div class="cmp__row">
+            <div class="cmp__cell cmp__rowlabel">테더링 (핫스팟)</div>
+            <div class="cmp__cell cmp__so">제한적</div>
+            <div class="cmp__cell cmp__ok">가능</div>
+            <div class="cmp__cell cmp__so">상품마다 다름</div>
+            <div class="cmp__cell cmp__us cmp__ok">제한 없음</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

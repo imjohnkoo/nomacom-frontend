@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>09 · How it works · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+      .step {
+        position: relative;
+        padding: 24px 18px 20px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .step__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .step__num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 14px;
+      }
+      .step__time {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--color-primary-600);
+        background: var(--color-primary-50);
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+      }
+      .step__h {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        margin: 0 0 6px;
+      }
+      .step__p {
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">09</span>
+        <span class="dev-toolbar__title">How it works</span>
+        <span class="dev-toolbar__hint">4 step + 예상 소요시간</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-09-how-it-works">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">How it works</span>
+        <h2 class="section__title">발급은 이렇게 진행돼요</h2>
+        <p class="section__lede">
+          네이버 결제 → 카카오톡으로 QR 자동 발송 → 스캔하면 끝. 전체 과정 평균 2분.<br />
+          출국 전 미리 설치하고, 현지에서 회선만 OFF → ON 으로 켜세요.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__head">
+              <div class="step__num">1</div>
+              <span class="step__time">30초</span>
+            </div>
+            <h3 class="step__h">스토어 결제</h3>
+            <p class="step__p">네이버 스마트스토어에서 상품 선택 후 결제. 주문번호가 발급돼요.</p>
+          </div>
+          <div class="step">
+            <div class="step__head">
+              <div class="step__num">2</div>
+              <span class="step__time">20초</span>
+            </div>
+            <h3 class="step__h">본인 인증</h3>
+            <p class="step__p">
+              ESIMmany 페이지에서 주문번호와 이름 · 전화번호로 본인 확인을 진행해요.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step__head">
+              <div class="step__num">3</div>
+              <span class="step__time">10초</span>
+            </div>
+            <h3 class="step__h">QR 코드 받기</h3>
+            <p class="step__p">카카오톡으로 받은 링크에서 QR 코드를 다운로드해요.</p>
+          </div>
+          <div class="step">
+            <div class="step__head">
+              <div class="step__num">4</div>
+              <span class="step__time">1분</span>
+            </div>
+            <h3 class="step__h">QR 스캔 후 회선 ON</h3>
+            <p class="step__p">
+              출국 전 미리 설치 가능. 회선 OFF 유지 → 현지 도착 후 회선 ON 시 데이터 시작.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>
