@@ -1,0 +1,49 @@
+name: design-system-publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/design-tokens/**'
+      - 'packages/design-vue/**'
+      - '.github/workflows/design-system-publish.yml'
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies (DS workspaces only)
+        run: yarn workspaces focus @imjohnkoo/design-tokens @imjohnkoo/design-vue
+
+      - name: Build @imjohnkoo/design-tokens
+        run: yarn workspace @imjohnkoo/design-tokens run build
+
+      - name: Build @imjohnkoo/design-vue
+        run: yarn workspace @imjohnkoo/design-vue run build
+
+      - name: Publish @imjohnkoo/design-tokens
+        working-directory: packages/design-tokens
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn npm publish --tolerate-republish
+
+      - name: Publish @imjohnkoo/design-vue
+        working-directory: packages/design-vue
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn npm publish --tolerate-republish
