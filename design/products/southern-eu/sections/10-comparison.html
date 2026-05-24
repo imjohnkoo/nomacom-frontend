@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>10 · Comparison · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .cmp {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.1fr;
+        gap: 12px;
+      }
+      .cmp__col {
+        padding: 24px 20px;
+        border-radius: 16px;
+        border: 1px solid var(--color-neutral-200);
+        display: flex;
+        flex-direction: column;
+      }
+      .cmp__col--roam {
+        background: linear-gradient(180deg, #fafafa, #fff 50%);
+      }
+      .cmp__col--wifi {
+        background: linear-gradient(180deg, #fef2f2, #fff 50%);
+      }
+      .cmp__col--us {
+        background: linear-gradient(180deg, #f1edff, #fff 50%);
+        border-color: var(--color-primary-300);
+        position: relative;
+      }
+      .cmp__col--us::before {
+        content: 'RECOMMENDED';
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 3px 12px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        border-radius: 9999px;
+      }
+      .cmp__h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .cmp__icon {
+        font-size: 24px;
+        line-height: 1;
+      }
+      .cmp__name {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--color-neutral-900);
+      }
+      .cmp__sub {
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+        margin: 0 0 16px;
+        line-height: 1.5;
+      }
+      .cmp__item {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--color-neutral-100);
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        gap: 8px;
+        align-items: center;
+        font-size: 12.5px;
+        line-height: 1.5;
+        color: var(--color-neutral-700);
+      }
+      .cmp__item:last-of-type {
+        border-bottom: 0;
+      }
+      .cmp__mark {
+        font-size: 14px;
+        line-height: 1;
+        font-weight: 800;
+      }
+      .cmp__mark--bad {
+        color: var(--color-error-500);
+      }
+      .cmp__mark--ok {
+        color: var(--color-success-500);
+      }
+      .cmp__mark--so {
+        color: var(--color-warning-500);
+      }
+      .cmp__price {
+        margin-top: 14px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--color-neutral-700);
+      }
+      .cmp__col--us .cmp__price {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .cmp__price small {
+        font-size: 10.5px;
+        opacity: 0.7;
+        font-weight: 600;
+        display: block;
+        margin-top: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">10</span>
+        <span class="dev-toolbar__title">Comparison</span>
+        <span class="dev-toolbar__hint">3 column · 로밍 vs 포켓WiFi vs ESIMmany</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-10-comparison">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Roaming vs Pocket WiFi vs eSIM</span>
+        <h2 class="section__title">이제 로밍·포켓 WiFi 안 써도 돼요</h2>
+        <p class="section__lede">
+          7일 스페인·포르투갈 여행 기준 비교.<br />
+          가격은 평균치이며 실제 금액은 시점에 따라 달라질 수 있습니다.
+        </p>
+
+        <div class="cmp">
+          <!-- 통신사 로밍 -->
+          <div class="cmp__col cmp__col--roam">
+            <div class="cmp__h">
+              <span class="cmp__icon">📡</span>
+              <span class="cmp__name">통신사 로밍</span>
+            </div>
+            <p class="cmp__sub">한국 통신사 자동 로밍</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>내 폰 그대로 · 신청 불요</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>비싼 요금 (일 1만원+)</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>국가별 별도 요금제</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>데이터 제한 · 속도 제한</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>테더링 제한적</span>
+            </div>
+            <div class="cmp__price">~35,000원<small>7일 기준</small></div>
+          </div>
+
+          <!-- 포켓 WiFi -->
+          <div class="cmp__col cmp__col--wifi">
+            <div class="cmp__h">
+              <span class="cmp__icon">📶</span>
+              <span class="cmp__name">포켓 WiFi</span>
+            </div>
+            <p class="cmp__sub">기기 임대 + 충전</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>택배 수령 1~2일</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>기기 휴대 · 충전 · 분실</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>국가별 별도 임대</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>반납 필요</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>테더링 가능</span>
+            </div>
+            <div class="cmp__price">~28,000원<small>7일 기준</small></div>
+          </div>
+
+          <!-- ESIMmany -->
+          <div class="cmp__col cmp__col--us">
+            <div class="cmp__h">
+              <span class="cmp__icon">⭐</span>
+              <span class="cmp__name">ESIMmany</span>
+            </div>
+            <p class="cmp__sub">내 폰 그대로 + 카카오톡 발급</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>카카오톡 1~2분 발급 · 야간 OK</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>내 폰 그대로 · 짐·충전 불요</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>2개국 한 SIM 자동 전환</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>무제한 · 종량제 자유 선택</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>테더링 제한 없음</span>
+            </div>
+            <div class="cmp__price">15,600원~<small>7일 매일 2GB</small></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

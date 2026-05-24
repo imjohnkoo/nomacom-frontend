@@ -3,27 +3,94 @@
     <template #sidebar>
       <NSidebar v-model:collapsed="sidebarCollapsed" theme="dark">
         <template #logo="{ collapsed: c }">
-          <NLogo v-if="!c" variant="full" size="sm" theme="light" />
-          <NLogo v-else variant="square" size="sm" theme="light" />
+          <NLogo variant="square" size="sm" />
         </template>
 
         <template #default="{ collapsed: c }">
-          <NSidebarItem label="Dashboard" :active="activeMenu === 'dashboard'" :collapsed="c" @click="activeMenu = 'dashboard'">
+          <NSidebarItem
+            label="Dashboard"
+            :active="activeMenu === 'dashboard'"
+            :collapsed="c"
+            @click="activeMenu = 'dashboard'"
+          >
             <template #icon>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="7"
+                  height="7"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="10"
+                  y="1"
+                  width="7"
+                  height="7"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="1"
+                  y="10"
+                  width="7"
+                  height="7"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <rect
+                  x="10"
+                  y="10"
+                  width="7"
+                  height="7"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+              </svg>
             </template>
           </NSidebarItem>
-          <NSidebarItem label="Users" :active="activeMenu === 'users'" :collapsed="c" @click="activeMenu = 'users'">
+          <NSidebarItem
+            label="Users"
+            :active="activeMenu === 'users'"
+            :collapsed="c"
+            @click="activeMenu = 'users'"
+          >
             <template #icon>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M2 16c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M2 16c0-3.314 3.134-6 7-6s7 2.686 7 6"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
             </template>
           </NSidebarItem>
 
           <NSidebarSeparator label="Settings" />
 
-          <NSidebarItem label="General" :collapsed="c" :expanded="settingsExpanded" @update:expanded="settingsExpanded = $event">
+          <NSidebarItem
+            label="General"
+            :collapsed="c"
+            :expanded="settingsExpanded"
+            @update:expanded="settingsExpanded = $event"
+          >
             <template #icon>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.42 1.42M13.36 13.36l1.42 1.42M3.22 14.78l1.42-1.42M13.36 4.64l1.42-1.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <circle cx="9" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                <path
+                  d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.42 1.42M13.36 13.36l1.42 1.42M3.22 14.78l1.42-1.42M13.36 4.64l1.42-1.42"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
             </template>
             <NSidebarItem label="Profile" :depth="1" :collapsed="c" />
             <NSidebarItem label="Security" :depth="1" :collapsed="c" />
@@ -33,7 +100,15 @@
         <template #footer="{ collapsed: c }">
           <NSidebarItem label="Logout" :collapsed="c">
             <template #icon>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 15H3.5A1.5 1.5 0 012 13.5v-9A1.5 1.5 0 013.5 3H6M12 12l3-3-3-3M7 9h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path
+                  d="M6 15H3.5A1.5 1.5 0 012 13.5v-9A1.5 1.5 0 013.5 3H6M12 12l3-3-3-3M7 9h8"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
             </template>
           </NSidebarItem>
         </template>
@@ -51,22 +126,59 @@
       <div class="admin-stats">
         <NStat label="Total Users" :value="1234" :change="12.5" change-period="전월 대비">
           <template #icon>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M2 18c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="currentColor" stroke-width="1.5"/></svg>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5" />
+              <path
+                d="M2 18c0-3.866 3.582-7 8-7s8 3.134 8 7"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+            </svg>
           </template>
         </NStat>
         <NStat label="Active Today" :value="89" :change="-3.2" change-period="전일 대비">
           <template #icon>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5" />
+              <path
+                d="M10 6v4l3 3"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
           </template>
         </NStat>
-        <NStat label="Revenue" value="₩12.5M" :change="8.1" change-period="전월 대비" variant="icon-accent">
+        <NStat
+          label="Revenue"
+          value="₩12.5M"
+          :change="8.1"
+          change-period="전월 대비"
+          variant="icon-accent"
+        >
           <template #icon>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 2v20M17 5H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 110 7H6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
           </template>
         </NStat>
-        <NStat label="Bounce Rate" value="32%" :change="5.0" change-period="전주 대비" variant="icon-accent" trend="up-bad">
+        <NStat
+          label="Bounce Rate"
+          value="32%"
+          :change="5.0"
+          change-period="전주 대비"
+          variant="icon-accent"
+          trend="up-bad"
+        >
           <template #icon>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 12l-4-4v3H3v2h15v3l4-4z" fill="currentColor"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M22 12l-4-4v3H3v2h15v3l4-4z" fill="currentColor" />
+            </svg>
           </template>
         </NStat>
       </div>
@@ -123,11 +235,24 @@
           @row-click="handleRowClick"
         >
           <template #cell-name="{ row }">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--color-primary-100, #ede8ff); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--color-primary-600, #5530e6);">
+            <div style="display: flex; align-items: center; gap: 8px">
+              <div
+                style="
+                  width: 28px;
+                  height: 28px;
+                  border-radius: 50%;
+                  background: var(--color-primary-100, #ede8ff);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--color-primary-600, #5530e6);
+                "
+              >
                 {{ row.name.charAt(0) }}
               </div>
-              <span style="font-weight: 500;">{{ row.name }}</span>
+              <span style="font-weight: 500">{{ row.name }}</span>
             </div>
           </template>
           <template #cell-role="{ value }">
@@ -191,11 +316,18 @@ function handleGlobalLoader() {
 }
 
 // Confirm Dialog
-const { current: confirmCurrent, confirm, onConfirm: confirmOnConfirm, onCancel: confirmOnCancel } = useConfirm()
+const {
+  current: confirmCurrent,
+  confirm,
+  onConfirm: confirmOnConfirm,
+  onCancel: confirmOnCancel,
+} = useConfirm()
 
 const confirmDialogOpen = computed({
   get: () => !!confirmCurrent.value,
-  set: (v: boolean) => { if (!v) confirmOnCancel() },
+  set: (v: boolean) => {
+    if (!v) confirmOnCancel()
+  },
 })
 
 async function handleConfirmDemo() {
@@ -260,18 +392,102 @@ const columns = [
 ]
 
 const allUsers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin', status: 'active', joined: '2024-01-15' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'editor', status: 'active', joined: '2024-02-20' },
-  { id: 3, name: 'Bob Wilson', email: 'bob@example.com', role: 'user', status: 'inactive', joined: '2024-03-10' },
-  { id: 4, name: 'Alice Kim', email: 'alice@example.com', role: 'admin', status: 'active', joined: '2024-04-05' },
-  { id: 5, name: 'Charlie Lee', email: 'charlie@example.com', role: 'user', status: 'active', joined: '2024-05-12' },
-  { id: 6, name: 'Diana Park', email: 'diana@example.com', role: 'editor', status: 'inactive', joined: '2024-06-18' },
-  { id: 7, name: 'Eric Choi', email: 'eric@example.com', role: 'user', status: 'active', joined: '2024-07-22' },
-  { id: 8, name: 'Fiona Yoo', email: 'fiona@example.com', role: 'user', status: 'active', joined: '2024-08-30' },
-  { id: 9, name: 'George Han', email: 'george@example.com', role: 'admin', status: 'active', joined: '2024-09-14' },
-  { id: 10, name: 'Hannah Jung', email: 'hannah@example.com', role: 'editor', status: 'inactive', joined: '2024-10-01' },
-  { id: 11, name: 'Ivan Seo', email: 'ivan@example.com', role: 'user', status: 'active', joined: '2024-10-15' },
-  { id: 12, name: 'Julia Kang', email: 'julia@example.com', role: 'user', status: 'active', joined: '2024-11-02' },
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: 'admin',
+    status: 'active',
+    joined: '2024-01-15',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'editor',
+    status: 'active',
+    joined: '2024-02-20',
+  },
+  {
+    id: 3,
+    name: 'Bob Wilson',
+    email: 'bob@example.com',
+    role: 'user',
+    status: 'inactive',
+    joined: '2024-03-10',
+  },
+  {
+    id: 4,
+    name: 'Alice Kim',
+    email: 'alice@example.com',
+    role: 'admin',
+    status: 'active',
+    joined: '2024-04-05',
+  },
+  {
+    id: 5,
+    name: 'Charlie Lee',
+    email: 'charlie@example.com',
+    role: 'user',
+    status: 'active',
+    joined: '2024-05-12',
+  },
+  {
+    id: 6,
+    name: 'Diana Park',
+    email: 'diana@example.com',
+    role: 'editor',
+    status: 'inactive',
+    joined: '2024-06-18',
+  },
+  {
+    id: 7,
+    name: 'Eric Choi',
+    email: 'eric@example.com',
+    role: 'user',
+    status: 'active',
+    joined: '2024-07-22',
+  },
+  {
+    id: 8,
+    name: 'Fiona Yoo',
+    email: 'fiona@example.com',
+    role: 'user',
+    status: 'active',
+    joined: '2024-08-30',
+  },
+  {
+    id: 9,
+    name: 'George Han',
+    email: 'george@example.com',
+    role: 'admin',
+    status: 'active',
+    joined: '2024-09-14',
+  },
+  {
+    id: 10,
+    name: 'Hannah Jung',
+    email: 'hannah@example.com',
+    role: 'editor',
+    status: 'inactive',
+    joined: '2024-10-01',
+  },
+  {
+    id: 11,
+    name: 'Ivan Seo',
+    email: 'ivan@example.com',
+    role: 'user',
+    status: 'active',
+    joined: '2024-10-15',
+  },
+  {
+    id: 12,
+    name: 'Julia Kang',
+    email: 'julia@example.com',
+    role: 'user',
+    status: 'active',
+    joined: '2024-11-02',
+  },
 ]
 
 const processedData = computed(() => {

@@ -1,0 +1,1388 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>eSIM 상세페이지 v3-EU · 남유럽 스페인·포르투갈 · 2026-05-20</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+
+    <style>
+      :root {
+        --color-primary-50: #f1edff;
+        --color-primary-100: #e3dbff;
+        --color-primary-200: #c7b6ff;
+        --color-primary-300: #a78bff;
+        --color-primary-500: #6239ff;
+        --color-primary-600: #5025e8;
+        --color-primary-700: #3f1cc0;
+        --color-primary-900: #1f0c6e;
+
+        --color-neutral-0: #ffffff;
+        --color-neutral-50: #fafafa;
+        --color-neutral-100: #f5f5f5;
+        --color-neutral-200: #e5e5e5;
+        --color-neutral-300: #d4d4d4;
+        --color-neutral-400: #a3a3a3;
+        --color-neutral-500: #737373;
+        --color-neutral-600: #525252;
+        --color-neutral-700: #404040;
+        --color-neutral-800: #262626;
+        --color-neutral-900: #171717;
+
+        --color-success-50: #f0fdf4;
+        --color-success-500: #22c55e;
+        --color-success-700: #15803d;
+        --color-warning-50: #fffbeb;
+        --color-warning-500: #f59e0b;
+        --color-warning-700: #b45309;
+        --color-error-50: #fef2f2;
+        --color-error-500: #ef4444;
+        --color-error-700: #b91c1c;
+        --color-info-50: #f0f9ff;
+        --color-info-500: #0ea5e9;
+        --color-info-700: #0369a1;
+
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 1rem;
+        --radius-full: 9999px;
+
+        --font-sans:
+          'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono:
+          'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-sans);
+        color: var(--color-neutral-800);
+        background: #f0f0f5;
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.65;
+      }
+
+      .shell {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 32px 28px 80px;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 36px;
+        align-items: start;
+      }
+
+      .toc {
+        position: sticky;
+        top: 32px;
+        font-size: 13px;
+      }
+      .toc__title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-neutral-400);
+        margin: 0 0 12px;
+      }
+      .toc ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        counter-reset: toc;
+      }
+      .toc li {
+        counter-increment: toc;
+      }
+      .toc a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: var(--color-neutral-600);
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 120ms ease, color 120ms ease;
+        line-height: 1.45;
+      }
+      .toc a::before {
+        content: counter(toc, decimal-leading-zero);
+        display: inline-block;
+        width: 22px;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-400);
+        font-weight: 700;
+      }
+      .toc a:hover {
+        background: #fff;
+        color: var(--color-primary-700);
+      }
+
+      .paper {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--shadow-md);
+        padding: 56px 64px 72px;
+        max-width: 940px;
+      }
+
+      .doc-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 11.5px;
+        font-weight: 600;
+        background: var(--color-primary-50);
+        color: var(--color-primary-700);
+        letter-spacing: -0.005em;
+      }
+      .badge--neutral {
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-700);
+      }
+      .badge--success {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .badge--warning {
+        background: var(--color-warning-50);
+        color: var(--color-warning-700);
+      }
+      .badge--error {
+        background: var(--color-error-50);
+        color: var(--color-error-700);
+      }
+      .badge--flag {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        color: var(--color-neutral-800);
+      }
+
+      h1.doc-title {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin: 0 0 14px;
+        color: var(--color-neutral-900);
+      }
+      h1.doc-title small {
+        display: block;
+        font-size: 17px;
+        font-weight: 600;
+        color: var(--color-neutral-500);
+        letter-spacing: -0.005em;
+        margin-top: 6px;
+      }
+
+      .doc-sub {
+        font-size: 15px;
+        color: var(--color-neutral-500);
+        margin: 0 0 36px;
+      }
+      .doc-sub b {
+        color: var(--color-neutral-700);
+        font-weight: 600;
+      }
+
+      h2 {
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 56px 0 16px;
+        scroll-margin-top: 24px;
+        color: var(--color-neutral-900);
+      }
+      h2 .num {
+        display: inline-block;
+        min-width: 36px;
+        color: var(--color-primary-500);
+        font-variant-numeric: tabular-nums;
+      }
+
+      h3 {
+        font-size: 16px;
+        font-weight: 800;
+        margin: 28px 0 10px;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.01em;
+      }
+
+      p {
+        margin: 0 0 14px;
+        font-size: 14.5px;
+        color: var(--color-neutral-700);
+      }
+      ul, ol {
+        margin: 0 0 14px;
+        padding-left: 22px;
+      }
+      li {
+        margin: 4px 0;
+        font-size: 14.5px;
+        color: var(--color-neutral-700);
+      }
+      strong {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        background: var(--color-neutral-100);
+        padding: 1px 6px;
+        border-radius: 4px;
+        color: var(--color-primary-700);
+      }
+
+      blockquote.callout {
+        margin: 18px 0;
+        padding: 18px 22px;
+        background: var(--color-primary-50);
+        border-left: 3px solid var(--color-primary-500);
+        border-radius: 10px;
+        color: var(--color-neutral-800);
+        font-size: 14.5px;
+        line-height: 1.75;
+      }
+      blockquote.callout p {
+        margin: 0;
+      }
+      blockquote.callout strong {
+        color: var(--color-primary-700);
+      }
+      blockquote.callout--warn {
+        background: var(--color-warning-50);
+        border-left-color: var(--color-warning-500);
+      }
+      blockquote.callout--warn strong {
+        color: var(--color-warning-700);
+      }
+      blockquote.callout--success {
+        background: var(--color-success-50);
+        border-left-color: var(--color-success-500);
+      }
+      blockquote.callout--success strong {
+        color: var(--color-success-700);
+      }
+
+      .note {
+        padding: 12px 16px;
+        border-radius: 10px;
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        font-size: 13px;
+        color: var(--color-neutral-600);
+        margin: 16px 0;
+      }
+
+      .table-wrap {
+        margin: 16px 0 18px;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+      thead th {
+        text-align: left;
+        background: var(--color-neutral-50);
+        color: var(--color-neutral-600);
+        font-weight: 700;
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--color-neutral-200);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      tbody td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--color-neutral-100);
+        color: var(--color-neutral-700);
+        vertical-align: top;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover td {
+        background: var(--color-neutral-50);
+      }
+      td.center { text-align: center; }
+      td.num {
+        font-variant-numeric: tabular-nums;
+        text-align: right;
+      }
+      td.row-label {
+        font-weight: 700;
+        color: var(--color-neutral-900);
+        background: var(--color-neutral-50);
+      }
+      td.price {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        color: var(--color-neutral-900);
+        text-align: right;
+      }
+      td.price-best {
+        background: var(--color-warning-50);
+        color: var(--color-warning-700);
+      }
+      td.price-long {
+        background: var(--color-info-50);
+        color: var(--color-info-700);
+      }
+
+      /* Hero metric card grid */
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .metric {
+        padding: 16px 14px;
+        border-radius: 12px;
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+      }
+      .metric__label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-neutral-500);
+        margin-bottom: 8px;
+      }
+      .metric__value {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--color-neutral-900);
+        line-height: 1.1;
+      }
+      .metric__value small {
+        font-size: 11px;
+        font-weight: 600;
+        opacity: 0.6;
+        margin-left: 3px;
+      }
+      .metric__hint {
+        margin-top: 6px;
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+      }
+      .metric--primary {
+        background: var(--color-primary-50);
+        border-color: var(--color-primary-200);
+      }
+      .metric--primary .metric__label {
+        color: var(--color-primary-700);
+      }
+      .metric--primary .metric__value {
+        color: var(--color-primary-900);
+      }
+
+      /* Two SKU cards */
+      .sku-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin: 16px 0 24px;
+      }
+      .sku {
+        padding: 20px 22px;
+        border-radius: 14px;
+        border: 1px solid var(--color-neutral-200);
+        background: #fff;
+      }
+      .sku--main {
+        border-color: var(--color-primary-300);
+        background: linear-gradient(0deg, rgba(98, 57, 255, 0.03), rgba(98, 57, 255, 0.03)), #fff;
+      }
+      .sku__tag {
+        display: inline-block;
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border-radius: var(--radius-full);
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-700);
+        margin-bottom: 12px;
+      }
+      .sku--main .sku__tag {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .sku__name {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+      }
+      .sku__code {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+        margin-bottom: 12px;
+      }
+      .sku__base {
+        font-size: 13px;
+        color: var(--color-neutral-600);
+        line-height: 1.7;
+      }
+      .sku__base b {
+        font-size: 18px;
+        color: var(--color-primary-700);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Section card list */
+      .sec-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px 0 8px;
+      }
+      .sec {
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 14px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .sec.is-rewrite { border-color: #fcd34d; }
+      .sec.is-restructure { border-color: var(--color-primary-200); }
+      .sec.is-eu-special { border-color: var(--color-info-200, #bae6fd); }
+      .sec.is-fact-error { border-color: #fecaca; }
+      .sec__head {
+        display: grid;
+        grid-template-columns: 52px 1fr auto;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        background: var(--color-neutral-50);
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .sec.is-rewrite .sec__head { background: var(--color-warning-50); }
+      .sec.is-restructure .sec__head { background: var(--color-primary-50); }
+      .sec.is-eu-special .sec__head { background: var(--color-info-50); }
+      .sec.is-fact-error .sec__head { background: var(--color-error-50); }
+      .sec__num {
+        font-size: 22px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-400);
+        text-align: center;
+      }
+      .sec.is-rewrite .sec__num { color: var(--color-warning-700); }
+      .sec.is-restructure .sec__num { color: var(--color-primary-500); }
+      .sec.is-eu-special .sec__num { color: var(--color-info-700); }
+      .sec.is-fact-error .sec__num { color: var(--color-error-700); }
+      .sec__name {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.015em;
+      }
+      .sec__name small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        margin-top: 2px;
+      }
+      .sec__tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .sec-tag {
+        padding: 3px 9px;
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border-radius: var(--radius-full);
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-600);
+      }
+      .sec-tag--copy { background: var(--color-info-50); color: var(--color-info-700); }
+      .sec-tag--struct { background: var(--color-primary-100); color: var(--color-primary-700); }
+      .sec-tag--keep { background: var(--color-success-50); color: var(--color-success-700); }
+      .sec-tag--eu { background: #fef3c7; color: #92400e; }
+      .sec-tag--decision { background: var(--color-error-50); color: var(--color-error-700); }
+      .sec__body {
+        padding: 16px 20px 18px;
+      }
+      .sec__body p {
+        margin: 0 0 8px;
+        font-size: 13.5px;
+      }
+      .diff {
+        margin: 8px 0 0;
+        font-size: 12.5px;
+        line-height: 1.7;
+      }
+      .diff dt {
+        font-weight: 700;
+        color: var(--color-neutral-600);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 10px 0 4px;
+      }
+      .diff dd {
+        margin: 0;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      .diff dd.old {
+        background: var(--color-error-50);
+        color: var(--color-error-700);
+        text-decoration: line-through;
+        text-decoration-color: rgba(185, 28, 28, 0.4);
+      }
+      .diff dd.new {
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+      }
+      .diff dd.eu {
+        background: var(--color-info-50);
+        color: var(--color-info-700);
+      }
+      .diff dd + dd {
+        margin-top: 4px;
+      }
+
+      /* Price tier badges */
+      .tier-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        border-radius: var(--radius-full);
+      }
+      .tier-badge--best { background: var(--color-warning-500); color: #fff; }
+      .tier-badge--long { background: var(--color-info-500); color: #fff; }
+      .tier-badge--cheap { background: var(--color-success-500); color: #fff; }
+      .tier-badge--trial { background: var(--color-neutral-300); color: var(--color-neutral-700); }
+
+      /* Phase pill row */
+      .phases {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 18px 0;
+      }
+      .phase {
+        padding: 18px 18px 16px;
+        border-radius: 14px;
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+      }
+      .phase__head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .phase__num {
+        width: 24px;
+        height: 24px;
+        border-radius: 7px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 12px;
+        display: grid;
+        place-items: center;
+      }
+      .phase__title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+      }
+      .phase__body {
+        font-size: 13px;
+        color: var(--color-neutral-600);
+      }
+      .phase__body ul {
+        margin: 4px 0 0;
+        padding-left: 16px;
+      }
+      .phase__body li {
+        font-size: 12.5px;
+        line-height: 1.7;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid var(--color-neutral-200);
+        margin: 36px 0;
+      }
+      .doc-foot {
+        font-size: 12px;
+        color: var(--color-neutral-400);
+        margin-top: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <nav class="toc">
+        <p class="toc__title">목차</p>
+        <ol>
+          <li><a href="#s0">v3 → v3-EU 차이</a></li>
+          <li><a href="#s1">상품 실데이터</a></li>
+          <li><a href="#s2">결정값 EU 적용</a></li>
+          <li><a href="#s3">14섹션 v3-EU 사양</a></li>
+          <li><a href="#s4">디자인 패치 리스트</a></li>
+          <li><a href="#s5">자동 해결 / 미해결</a></li>
+          <li><a href="#s6">실행 플랜</a></li>
+          <li><a href="#s7">참고 / 이력</a></li>
+        </ol>
+      </nav>
+
+      <main class="paper">
+        <div class="doc-meta">
+          <span class="badge">v3-EU</span>
+          <span class="badge badge--neutral">2026-05-20</span>
+          <span class="badge badge--flag">🇪🇸 스페인</span>
+          <span class="badge badge--flag">🇵🇹 포르투갈</span>
+          <span class="badge badge--warning">John 리뷰 + E1 결정 대기</span>
+        </div>
+
+        <h1 class="doc-title">
+          esimmany 상세페이지 v3-EU
+          <small>남유럽 2개국 (스페인·포르투갈) · 실데이터 + v2 카피 + 5/19 디자인</small>
+        </h1>
+
+        <p class="doc-sub">
+          v3 (5/20 일본본) 의 14섹션 골격을 유지하되, 카피·정책·가격을
+          <b>네이버 스마트스토어 실 상품 데이터 (EU022U 무제한 + EU022L 종량제)</b> 로 재작성. 가짜
+          placeholder 가 실데이터로 치환되면서 v3 미해결 항목 다수가 자동 해결됨.
+        </p>
+
+        <blockquote class="callout">
+          <p>
+            <strong>John 지시 (2026-05-20):</strong> "네이버 스마트스토어 MCP 연결됨. 남유럽 2개국
+            (스페인·포르투갈) 상품 기준으로 다시 작성. 현재 내용도 참고할 부분이 있으면 참고."
+          </p>
+        </blockquote>
+
+        <!-- §0 -->
+        <h2 id="s0"><span class="num">00</span>v3 (일본) → v3-EU (남유럽) 핵심 차이</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 22%">축</th>
+                <th style="width: 36%">v3 (일본 7일)</th>
+                <th>v3-EU (남유럽 2국)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>국가</strong></td><td>일본 단일</td><td>🇪🇸 스페인 + 🇵🇹 포르투갈 <strong>2개국 동시</strong></td></tr>
+              <tr><td><strong>SKU 수</strong></td><td>1 (일본 7일 매일 2GB)</td><td><strong>2 병행</strong> — 무제한 EU022U + 종량제 EU022L</td></tr>
+              <tr><td><strong>데이터 모델</strong></td><td>매일 N GB 고속 + 저속</td><td>무제한 = 매일 1·2GB + <strong>500Kbps 무제한</strong> 저속 / 종량제 = 30일 총량제</td></tr>
+              <tr><td><strong>일수 (현재)</strong></td><td>1~30일</td><td>무제한 = 1·3·5·7·10·15·30일 / 종량제 = <strong>30일 고정</strong></td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>일수 (이번 업데이트)</strong></td><td>—</td><td><strong>1~30일 전 일수 자유 선택 + 60일·90일 신규</strong> (워홀·노매드)</td></tr>
+              <tr><td><strong>포지셔닝</strong></td><td>L2+L3 (장기·테더링·노매드)</td><td><strong>2개국 한 번에 + 워홀·노매드 90일</strong> + L2+L3</td></tr>
+              <tr><td><strong>현지 도착일</strong></td><td>v2 D1 = 제거</td><td>⚠ 실 운영 = <strong>입력 필드 있음</strong> (D1 충돌)</td></tr>
+              <tr><td><strong>통신사</strong></td><td>Softbank · KDDI au</td><td>Movistar · Vodafone · Orange (스페인) / NOS · Vodafone · MEO (포르투갈)</td></tr>
+              <tr><td><strong>차별화 angle</strong></td><td>테더링 30일 / 노매드 30일×3GB</td><td><strong>2국 무제한 1개월 / 무제한 vs 종량제 자유 선택</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- §1 상품 실데이터 -->
+        <h2 id="s1"><span class="num">01</span>상품 실데이터 (2026-05-20 MCP 조회)</h2>
+
+        <div class="sku-grid">
+          <div class="sku sku--main">
+            <span class="sku__tag">MAIN SKU · 무제한</span>
+            <div class="sku__name">EU022U · 남유럽 2개국 무제한</div>
+            <div class="sku__code">channelProductNo 9350493687</div>
+            <p class="sku__base">
+              매일 1G / 2G + <strong>소진 후 500Kbps 무제한</strong><br />
+              사용일수 1·3·5·7·10·15·30일<br />
+              재고 68,942개 · 즉시할인 후 1일 1GB 베이스 <b>3,600원</b>
+            </p>
+          </div>
+          <div class="sku">
+            <span class="sku__tag">보조 SKU · 종량제</span>
+            <div class="sku__name">EU022L · 남유럽 2개국 종량제</div>
+            <div class="sku__code">channelProductNo 9380410731</div>
+            <p class="sku__base">
+              30일 동안 <strong>총 1·3·5·7·10·20·30GB</strong> 자유 사용<br />
+              사용일수 30일 고정<br />
+              재고 34,891개 · 즉시할인 후 1GB/30일 <b>4,600원</b>
+            </p>
+          </div>
+        </div>
+
+        <h3>EU022U 무제한 가격표 (즉시할인 적용)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>데이터 (1일 한도)</th>
+                <th class="center">1일</th>
+                <th class="center">3일</th>
+                <th class="center">5일</th>
+                <th class="center">7일</th>
+                <th class="center">10일</th>
+                <th class="center">15일</th>
+                <th class="center">30일</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">매일 1GB + 500Kbps 무제한</td>
+                <td class="price">3,600</td>
+                <td class="price">6,300</td>
+                <td class="price">10,200</td>
+                <td class="price">12,500</td>
+                <td class="price">16,200</td>
+                <td class="price price-long">20,500</td>
+                <td class="price price-long">37,100</td>
+              </tr>
+              <tr>
+                <td class="row-label">매일 2GB + 500Kbps 무제한</td>
+                <td class="price">4,700</td>
+                <td class="price">10,200</td>
+                <td class="price">14,200</td>
+                <td class="price price-best">18,500</td>
+                <td class="price">25,900</td>
+                <td class="price price-long">30,900</td>
+                <td class="price price-long">51,200</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: 12.5px; color: var(--color-neutral-500);">
+          <span class="tier-badge tier-badge--best">BEST</span> 1주 표준 ·
+          <span class="tier-badge tier-badge--long">장기체류</span> 15·30일 · 1일 평균: 30일 1GB =
+          <b>1,237원/일</b> · 30일 2GB = <b>1,707원/일</b> (장기일수록 단가 ↓)
+        </p>
+
+        <blockquote class="callout callout--success" style="border-left-color: var(--color-info-500); background: var(--color-info-50);">
+          <p>
+            <strong>🔵 이번 업데이트 예정 — 일수 확장:</strong><br />
+            ① <strong>1~30일 전 일수 자유 선택</strong> (현재 7개 옵션 → 30개 일수) — 5/19 design picker 슬라이더 UX 와 일치<br />
+            ② <strong>60일권 · 90일권 신규</strong> — 워홀 · 디지털 노매드 · 어학연수 타겟. 남유럽 (스페인 어학연수 / 포르투갈 D7 비자) 시장 정확히 적중<br />
+            가격은 운영 결정 (E11 — placeholder 예시: 60일 1GB ≈ 70,000 / 90일 1GB ≈ 99,000)
+          </p>
+        </blockquote>
+
+        <h3>전체 무제한 가격표 (1~30일 = 실데이터, 60·90 = placeholder)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>데이터</th>
+                <th class="center">1일</th>
+                <th class="center">7일</th>
+                <th class="center">15일</th>
+                <th class="center">30일</th>
+                <th class="center" style="background: var(--color-info-50); color: var(--color-info-700);">60일 🎒</th>
+                <th class="center" style="background: var(--color-info-50); color: var(--color-info-700);">90일 ✈️</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">매일 1GB</td>
+                <td class="price">3,600</td>
+                <td class="price">12,500</td>
+                <td class="price price-long">20,500</td>
+                <td class="price price-long">37,100</td>
+                <td class="price" style="background: var(--color-info-50); color: var(--color-info-700);">~70,000</td>
+                <td class="price" style="background: var(--color-info-50); color: var(--color-info-700);">~99,000</td>
+              </tr>
+              <tr>
+                <td class="row-label">매일 2GB</td>
+                <td class="price">4,700</td>
+                <td class="price price-best">18,500</td>
+                <td class="price price-long">30,900</td>
+                <td class="price price-long">51,200</td>
+                <td class="price" style="background: var(--color-info-50); color: var(--color-info-700);">~95,000</td>
+                <td class="price" style="background: var(--color-info-50); color: var(--color-info-700);">~138,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size: 12.5px; color: var(--color-neutral-500);">
+          ※ 1~29일 사이 일수 (2·4·6·8·9·11·12·13·14·16~29) 는 이번 업데이트에서 <strong>전 일수 자유 선택</strong>. 가격은 인접 옵션 사이 보간 (예: 4일 1GB ≈ 7,800 / 8일 1GB ≈ 13,800). 실 가격 운영 확정 (E11).
+        </p>
+
+        <h3>EU022L 종량제 가격표 (30일 고정)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>데이터 (30일 총량)</th>
+                <th class="center">1GB</th>
+                <th class="center">3GB</th>
+                <th class="center">5GB</th>
+                <th class="center">7GB</th>
+                <th class="center">10GB</th>
+                <th class="center">20GB</th>
+                <th class="center">30GB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">가격 (즉시할인 후)</td>
+                <td class="price">4,600</td>
+                <td class="price">8,700</td>
+                <td class="price">11,800</td>
+                <td class="price">15,900</td>
+                <td class="price price-best">22,100</td>
+                <td class="price">37,700</td>
+                <td class="price price-long">53,900</td>
+              </tr>
+              <tr>
+                <td class="row-label">1GB 환산</td>
+                <td class="num">4,600</td>
+                <td class="num">2,900</td>
+                <td class="num">2,360</td>
+                <td class="num">2,271</td>
+                <td class="num">2,210</td>
+                <td class="num">1,885</td>
+                <td class="num"><b>1,797</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric metric--primary">
+            <div class="metric__label">AS 전화</div>
+            <div class="metric__value">050-7017<small>-86725</small></div>
+            <div class="metric__hint">한국 가상번호 · 실 적용</div>
+          </div>
+          <div class="metric">
+            <div class="metric__label">즉시할인</div>
+            <div class="metric__value">~115,400<small>원</small></div>
+            <div class="metric__hint">salePrice 119,000 → 베이스 3,600</div>
+          </div>
+          <div class="metric">
+            <div class="metric__label">총 재고</div>
+            <div class="metric__value">~103K<small>개</small></div>
+            <div class="metric__hint">EU022U 68,942 + EU022L 34,891</div>
+          </div>
+          <div class="metric">
+            <div class="metric__label">통신사 (PRT00U 등록값)</div>
+            <div class="metric__value" style="font-size: 14px;">NOS · Vodafone</div>
+            <div class="metric__hint">포르투갈 단일에서 명시</div>
+          </div>
+        </div>
+
+        <blockquote class="callout callout--warn">
+          <p>
+            <strong>⚠ 현지도착일 필드 발견:</strong> EU022U / EU022L 모두 옵션에
+            <code>"예시 231013 와 같이 현지도착일"</code> 필수 입력 필드가 있음. 즉 실 운영은 도착일
+            예약 기반 활성화 정책. v2 D1 결정 (개통시작일 UI 제거) 과 충돌 — <strong>E1 결정 필요</strong>.
+          </p>
+        </blockquote>
+
+        <!-- §2 -->
+        <h2 id="s2"><span class="num">02</span>v3 결정값 EU 적용 (D1~D10 + M1)</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 60px">#</th>
+                <th style="width: 28%">v2 결정</th>
+                <th>EU 적용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: var(--color-error-50);">
+                <td><strong>D1</strong></td>
+                <td>개통시작일 UI 제거</td>
+                <td>⚠ <strong>실 상품에 "현지도착일" 필드 있음</strong> → <strong>E1 결정 필요</strong></td>
+              </tr>
+              <tr>
+                <td><strong>D2</strong></td>
+                <td>사용시작 24시간 단위 갱신</td>
+                <td>실 옵션명 "매일 1G/2G + 500Kbps 무제한" — "매일" 의 갱신 기준 명시 필요</td>
+              </tr>
+              <tr style="background: var(--color-success-50);">
+                <td><strong>D3</strong></td>
+                <td>소진 후 속도 TBD</td>
+                <td>✅ <strong>500Kbps 무제한</strong> 확정 (실 옵션명에 명시)</td>
+              </tr>
+              <tr><td><strong>D4</strong></td><td>호환기기 v2 조사</td><td>그대로 (국가 무관)</td></tr>
+              <tr>
+                <td><strong>D5</strong></td>
+                <td>fact 3개 + 1</td>
+                <td>"카카오톡 1분 발급 · <strong>당일 자동 발송</strong> · 24시간 갱신 · 2개국 한 번에"</td>
+              </tr>
+              <tr><td><strong>D6</strong></td><td>가격 정면승부 회피</td><td>crossed-out 제거. 즉시할인은 네이버 시스템 내장</td></tr>
+              <tr><td><strong>D7</strong></td><td>옵션표 4뱃지</td><td>무제한 14옵션 / 종량제 7옵션 — 뱃지 재구성 (§3-③)</td></tr>
+              <tr><td><strong>D8</strong></td><td>L2·L3 시그널 후기</td><td>EU 특화: "스페인·포르투갈 한 번에 처리"</td></tr>
+              <tr><td><strong>D9</strong></td><td>차별화 angle</td><td>"2개국 한 번에 / 무제한 30일 / 종량제 30일 선택"</td></tr>
+              <tr><td><strong>D10</strong></td><td>FAQ v2 Q1~Q10</td><td>EU 특화 Q12·Q13 추가 (무제한 vs 종량제 / 국경 이동)</td></tr>
+              <tr style="background: var(--color-success-50);">
+                <td><strong>M1</strong></td>
+                <td>Maya 소진 후 속도</td>
+                <td>✅ <strong>500Kbps</strong> 확정 (실 옵션명)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- §3 -->
+        <h2 id="s3"><span class="num">03</span>14섹션 v3-EU 사양</h2>
+
+        <p>
+          5/19 골격 그대로 + v2 카피 + EU 실데이터. 색상 코드:
+          <span class="sec-tag sec-tag--keep">유지</span>
+          <span class="sec-tag sec-tag--copy">카피만</span>
+          <span class="sec-tag sec-tag--struct">구조+카피</span>
+          <span class="sec-tag sec-tag--eu">EU 특화</span>
+          <span class="sec-tag sec-tag--decision">결정 필요</span>
+        </p>
+
+        <div class="sec-list">
+          <!-- 01 Hero -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">01</div>
+              <div>
+                <div class="sec__name">Hero<small>EU 메인 SKU (EU022U 무제한)</small></div>
+              </div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>메인 (50px)</dt>
+                <dd class="new">스페인·포르투갈 한 번에 / 데이터 넉넉히, 길게</dd>
+                <dt>eyebrow</dt>
+                <dd class="new">유럽 2개국 eSIM · 유심 교체 스트레스 제로</dd>
+                <dt>서브</dt>
+                <dd class="new">
+                  매일 1GB · 2GB + <strong>소진 후 500Kbps 무제한</strong> · 1~30일 자유 · 테더링
+                  OK / 카카오톡 1분 발급 · 당일 자동 발송
+                </dd>
+                <dt>가격</dt>
+                <dd class="new">
+                  1일권 <b>3,600원~</b> (즉시할인 적용) · 1일 평균 <b>1,237원~</b> (30일 매일 1GB)
+                </dd>
+                <dt>4 칩</dt>
+                <dd class="new">
+                  매일 1GB·2GB 선택 · 소진 후 500Kbps 무제한 · 테더링 가능 · 카카오톡 1~2분 발급
+                </dd>
+              </dl>
+            </div>
+          </div>
+
+          <!-- 02 Trust strip -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">02</div>
+              <div><div class="sec__name">Trust strip<small>D5 fact 3+1 (EU 특화)</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <div class="metric-grid">
+                <div class="metric"><div class="metric__label">컬럼 1</div><div class="metric__value">1분<small></small></div><div class="metric__hint">카카오톡 발급</div></div>
+                <div class="metric"><div class="metric__label">컬럼 2</div><div class="metric__value">당일</div><div class="metric__hint">자동 발송 (SEO)</div></div>
+                <div class="metric"><div class="metric__label">컬럼 3</div><div class="metric__value">24시간</div><div class="metric__hint">데이터 갱신 단위</div></div>
+                <div class="metric metric--primary"><div class="metric__label">컬럼 4 (EU)</div><div class="metric__value">2개국</div><div class="metric__hint">스페인 + 포르투갈</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 03 Plan picker -->
+          <div class="sec is-restructure">
+            <div class="sec__head">
+              <div class="sec__num">03</div>
+              <div><div class="sec__name">Plan picker<small>듀얼 SKU 토글 + 1~30일 슬라이더 + 60·90일 카드 — 구조 大大 변경</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--struct">구조大</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <p><strong>이번 업데이트로 구조가 확장됨</strong>: 5/19 단일 슬라이더 → 무제한/종량제 토글 + 무제한 측에 슬라이더 1~30일 자유 + 별도 장기 카드 60·90일.</p>
+              <pre style="background: var(--color-neutral-50); border-radius: 8px; padding: 12px 14px; font-size: 11.5px; line-height: 1.7; color: var(--color-neutral-700); margin: 8px 0; overflow-x: auto;">┌──────────────────────────────────────────────┐
+│ [ 무제한 (매일 한도) ] ↔ [ 종량제 (30일 총량) ] │
+├──────────────────────────────────────────────┤
+│ ▶ 무제한:                                     │
+│   ① 슬라이더: 1 ━━●━━━ 30일 자유 (1일 단위)    │
+│   ② 데이터 토글: [매일 1GB] [매일 2GB]        │
+│   ③ 선택 예시 카드 + 1일 평균가                │
+│   ──────────                                  │
+│   ④ 장기체류 카드 (별도 슬롯):                 │
+│     [ 60일 🎒 워홀 ] [ 90일 ✈️ 노매드 ]        │
+├──────────────────────────────────────────────┤
+│ ▶ 종량제: 7 옵션 그리드 (1·3·5·7·10·20·30GB)  │
+└──────────────────────────────────────────────┘</pre>
+              <p><strong>4 + 2 뱃지 분류</strong>:</p>
+              <p>
+                <span class="tier-badge tier-badge--best">BEST VALUE 🔥</span> 7일 2GB · 10GB 종량제<br />
+                <span class="tier-badge tier-badge--long">장기체류 🌙</span> 15·30일 / 20·30GB<br />
+                <span class="tier-badge tier-badge--cheap">가성비</span> 3·5일 1GB / 3·5GB 종량제<br />
+                <span class="tier-badge tier-badge--trial">체험용</span> 1일권 / 1GB 종량제<br />
+                <span class="tier-badge" style="background: var(--color-info-500); color: #fff;">워홀 🎒</span> <strong>60일 (신규)</strong><br />
+                <span class="tier-badge" style="background: var(--color-primary-500); color: #fff;">디지털 노매드 ✈️</span> <strong>90일 (신규)</strong>
+              </p>
+              <p style="font-size: 12.5px; color: var(--color-neutral-500);">
+                💡 <strong>슬라이더 UX 결정 (E12)</strong>: A = 1~30 슬라이더 + 60·90 카드 (추천) / B = 1~90 단일 슬라이더 / C = 분리 두 슬라이더.
+                의사결정 흐름이 단기·장기 다르므로 A 권장.
+              </p>
+            </div>
+          </div>
+
+          <!-- 04 Payment -->
+          <div class="sec">
+            <div class="sec__head">
+              <div class="sec__num">04</div>
+              <div><div class="sec__name">Payment benefits<small>5/19 그대로 + 즉시할인 강조</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--keep">미니</span></div>
+            </div>
+            <div class="sec__body">
+              <p>footnote: "※ <strong>즉시할인 약 11만원 적용가</strong>로 결제됩니다. 별도 쿠폰·신청 불요."</p>
+            </div>
+          </div>
+
+          <!-- 05 Why -->
+          <div class="sec is-restructure">
+            <div class="sec__head">
+              <div class="sec__num">05</div>
+              <div><div class="sec__name">Why ESIMmany<small>4 benefit · EU 특화 카드 신설</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--struct">구조+카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <ol>
+                <li><strong>① (lead) 한국어 고객센터</strong> — 카카오톡 한국어 상담 · 발급 오류 즉시 대응 · <code>050-7017-86725</code></li>
+                <li><strong>② 카카오톡 당일 발송</strong> — 결제 후 자동 발송 · 야간 · 주말 OK (SEO "당일수령")</li>
+                <li><strong>③ 테더링 · 업로드 지원</strong> — 업무 기기 연결 · 콘텐츠 업로드 · 스트리밍 (L3)</li>
+                <li><strong>④ 2개국 한 번에 (EU 특화)</strong> — 스페인·포르투갈 국경 넘어도 같은 eSIM 그대로</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- 06 Stats -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">06</div>
+              <div><div class="sec__name">Plan at a glance<small>4 stat — 500Kbps 무제한 확정 명시</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <div class="metric-grid">
+                <div class="metric metric--primary"><div class="metric__label">사용 기간</div><div class="metric__value">1~90<small>일 자유</small></div><div class="metric__hint">1~30일 + 60·90일 (신규)</div></div>
+                <div class="metric"><div class="metric__label">매일 고속</div><div class="metric__value">1~2<small>GB/일</small></div><div class="metric__hint">24시간 단위 갱신 (D2)</div></div>
+                <div class="metric metric--primary"><div class="metric__label">소진 후</div><div class="metric__value">500Kbps<small> 무제한</small></div><div class="metric__hint">D3 확정 ✅</div></div>
+                <div class="metric"><div class="metric__label">테더링</div><div class="metric__value">가능</div><div class="metric__hint">노트북·태블릿·일행</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 07 Reviews -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">07</div>
+              <div><div class="sec__name">Reviews<small>5 quote — EU 시그널 재배치 (D8)</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <ol>
+                <li><span class="badge badge--success">2개국·장기</span> "마드리드 → 리스본 4박씩 도느라 8일권 샀는데 국경 넘어도 그대로 잡혀서 편했어요" (7일 2GB · 2026-03)</li>
+                <li><span class="badge">노매드</span> "포르투 한 달 체류 워홀 — 30GB 종량제로 충분, 30일 정확히 끝나니 깔끔" (30GB 종량제 · 2026-02)</li>
+                <li><span class="badge badge--warning">한국 CS</span> "바르셀로나에서 신호 안 잡혔는데 카카오톡으로 30초 만에 해결" (5일 1GB · 2026-04)</li>
+                <li><span class="badge badge--success">테더링</span> "그라나다·세비야 일주일 영상 스트리밍·사진 업로드 끊김 없이" (7일 2GB · 2026-03)</li>
+                <li><span class="badge badge--neutral">L1 가족</span> "부모님 모시고 스페인·포르투갈 10일 — 한 번 발급으로 둘 다 커버" (10일 2GB · 2026-02)</li>
+              </ol>
+            </div>
+          </div>
+
+          <!-- 08 Coverage -->
+          <div class="sec is-eu-special">
+            <div class="sec__head">
+              <div class="sec__num">08</div>
+              <div><div class="sec__name">Coverage<small>전면 재작성 — 스페인 6 + 포르투갈 6 도시</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--struct">구조</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th style="width: 50%">🇪🇸 스페인 (Movistar · Vodafone · Orange)</th><th>🇵🇹 포르투갈 (NOS · Vodafone · MEO)</th></tr></thead>
+                  <tbody>
+                    <tr><td>마드리드 (5G·LTE)</td><td>리스본 (5G·LTE)</td></tr>
+                    <tr><td>바르셀로나 (5G·LTE)</td><td>포르토 (5G·LTE)</td></tr>
+                    <tr><td>세비야 (5G·LTE)</td><td>신트라 (LTE)</td></tr>
+                    <tr><td>발렌시아 (5G·LTE)</td><td>코임브라 (LTE)</td></tr>
+                    <tr><td>그라나다 (LTE)</td><td>알가르브 (LTE)</td></tr>
+                    <tr><td>말라가 (5G·LTE)</td><td>파티마 (LTE)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 09 How it works -->
+          <div class="sec is-fact-error">
+            <div class="sec__head">
+              <div class="sec__num">09</div>
+              <div><div class="sec__name">How it works<small>E1 결정 보류 — 옵션 A or B</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--decision">E1 결정</span></div>
+            </div>
+            <div class="sec__body">
+              <p><strong>옵션 A (v2 D1 — 도착일 제거)</strong>: 결제 → 카카오톡 발송 → QR 받기 → QR 스캔 + 회선 OFF 유지 + 도착 후 회선 ON</p>
+              <p><strong>옵션 B (실 운영 — 도착일 입력 유지)</strong>: 결제 + 도착일 입력 → 카카오톡 발송 → QR 받기 → QR 스캔 + 도착일에 자동 활성화</p>
+              <blockquote class="callout callout--warn" style="margin-top: 10px;">
+                <p>⚠ 현 상품에 "현지도착일" 필수 입력 필드가 있음. v2 D1 결정 (제거) 을 EU 에도 적용할지 / Maya 측 정책에 맞춰 유지할지 — <strong>E1 결정 필요</strong>.</p>
+              </blockquote>
+            </div>
+          </div>
+
+          <!-- 10 Comparison -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">10</div>
+              <div><div class="sec__name">Comparison<small>EU 특화 행 추가 (다국가 동일 SIM)</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>항목</th><th class="center">통신사 로밍</th><th class="center">포켓 WiFi</th><th class="center">일반 eSIM</th><th class="center" style="background: var(--color-primary-50); color: var(--color-primary-700);">ESIMmany</th></tr></thead>
+                  <tbody>
+                    <tr><td class="row-label">데이터 정책 통제</td><td class="center">통신사 정책</td><td class="center">통신사 정책</td><td class="center">일률</td><td class="center" style="background: var(--color-primary-50); color: var(--color-primary-700); font-weight: 700;">자체 (무제한/종량제)</td></tr>
+                    <tr><td class="row-label">발급 시간</td><td class="center">즉시</td><td class="center">택배 1~2일</td><td class="center">즉시</td><td class="center" style="background: var(--color-primary-50); color: var(--color-primary-700); font-weight: 700;">카카오톡 1분</td></tr>
+                    <tr style="background: var(--color-info-50);"><td class="row-label" style="background: var(--color-info-50);"><strong>다국가 동일 SIM (EU 특화)</strong></td><td class="center">국가별 비싼 로밍</td><td class="center">국가별 임대</td><td class="center">국가별 별도</td><td class="center" style="background: var(--color-primary-50); color: var(--color-primary-700); font-weight: 700;">2개국 한 SIM</td></tr>
+                    <tr><td class="row-label">한국어 고객센터</td><td class="center">한국어</td><td class="center">한국어</td><td class="center">영어/챗봇</td><td class="center" style="background: var(--color-primary-50); color: var(--color-primary-700); font-weight: 700;">카카오톡 한국어</td></tr>
+                    <tr><td class="row-label">테더링</td><td class="center">제한적</td><td class="center">가능</td><td class="center">상품별</td><td class="center" style="background: var(--color-primary-50); color: var(--color-primary-700); font-weight: 700;">제한 없음</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 11 Compatibility -->
+          <div class="sec is-fact-error">
+            <div class="sec__head">
+              <div class="sec__num">11</div>
+              <div><div class="sec__name">Compatibility<small>v3 그대로 — S22·Pixel 오류 정정 필수</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--decision">오류 정정</span></div>
+            </div>
+            <div class="sec__body">
+              <p>v3 §⑪ 그대로 적용. 빨간 경고 박스 + iPhone (16e/17/17 Air 포함) + 삼성 국내·해외 분리 + 샤오미 + Pixel 별도 경고.</p>
+            </div>
+          </div>
+
+          <!-- 12 Refund -->
+          <div class="sec">
+            <div class="sec__head">
+              <div class="sec__num">12</div>
+              <div><div class="sec__name">Refund policy<small>v3 골격 + E3 (무제한/종량제 차이 확인)</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span></div>
+            </div>
+            <div class="sec__body">
+              <p>3 카드 유지. EU022U 와 EU022L 의 환불 정책 차이 운영팀 확인 (E3).</p>
+            </div>
+          </div>
+
+          <!-- 13 FAQ -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">13</div>
+              <div><div class="sec__name">FAQ<small>12 → 13개 (EU 특화 Q12·Q13 추가)</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <p>v3 12개 베이스 + EU 특화 2개:</p>
+              <ul>
+                <li><strong>Q12 (EU)</strong>: 무제한 vs 종량제 뭘 사야 하나요? → 짧은 일정 무제한 / 장기·다국가 종량제 30GB</li>
+                <li><strong>Q13 (EU)</strong>: 스페인-포르투갈 국경 넘어도 같은 eSIM 으로 됩니까? → 네, 같은 eSIM 으로 자동 연결</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 14 Final CTA -->
+          <div class="sec is-rewrite">
+            <div class="sec__head">
+              <div class="sec__num">14</div>
+              <div><div class="sec__name">Final CTA + Trust + Footer<small>EU 차별화 angle + 실 CS 번호 적용</small></div></div>
+              <div class="sec__tags"><span class="sec-tag sec-tag--copy">카피</span><span class="sec-tag sec-tag--eu">EU</span></div>
+            </div>
+            <div class="sec__body">
+              <dl class="diff">
+                <dt>final__h</dt>
+                <dd class="new">스페인·포르투갈 한 번에. / 단기 여행부터 90일 노매드까지.</dd>
+                <dt>final__p</dt>
+                <dd class="new">카카오톡 당일 발급 · 한국어 CS · 500Kbps 무제한 저속 · 2개국 동일 eSIM · <strong>1~90일 자유 선택</strong>. 네이버 스마트스토어에서 만나요.</dd>
+                <dt>final__sub</dt>
+                <dd class="new">카카오톡 채널 @esimmany · 한국 CS <code>050-7017-86725</code> · 평균 응답 30분</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- §4 -->
+        <h2 id="s4"><span class="num">04</span>디자인 패치 리스트 (sections/*.html → EU 버전)</h2>
+
+        <p>별도 폴더 분기 권장: <code>design/products/southern-eu/</code> 또는 <code>sections/</code> EU 버전.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width: 32%">파일</th><th style="width: 18%">변경 강도</th><th>일본 → EU 변경</th></tr></thead>
+            <tbody>
+              <tr><td><code>01-hero.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>EU 메인 카피, 3,600원~ 가격, 4 칩 (500Kbps 무제한)</td></tr>
+              <tr><td><code>02-trust-strip.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>4 column: 1분 / 당일 / 24시간 / 2개국</td></tr>
+              <tr style="background: var(--color-primary-50);"><td><code>03-plan-picker.html</code></td><td><span class="sec-tag sec-tag--struct">구조大大</span></td><td>무제한/종량제 토글 + 무제한 1~30일 슬라이더 자유 선택 + <strong>60·90일 별도 카드 (워홀·노매드)</strong> + 종량제 7옵션</td></tr>
+              <tr><td><code>04-payment-benefits.html</code></td><td><span class="sec-tag sec-tag--keep">미니</span></td><td>footnote "즉시할인 11만원 적용가"</td></tr>
+              <tr><td><code>05-why.html</code></td><td><span class="sec-tag sec-tag--struct">구조+카피</span></td><td>4 benefit (한국 CS lead / 당일 발송 / 테더링 / 2국 한 번에)</td></tr>
+              <tr><td><code>06-stats.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>4 stat — 500Kbps 무제한 확정</td></tr>
+              <tr><td><code>07-reviews.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>5 quote EU 시그널로 (2국·노매드·CS·테더링·가족)</td></tr>
+              <tr style="background: var(--color-info-50);"><td><code>08-coverage.html</code></td><td><span class="sec-tag sec-tag--struct">전면</span></td><td>스페인 6 + 포르투갈 6 도시 + Movistar/Vodafone/Orange/NOS/MEO</td></tr>
+              <tr style="background: var(--color-error-50);"><td><code>09-how-it-works.html</code></td><td><span class="sec-tag sec-tag--decision">E1 결정</span></td><td>도착일 정책 결정 후 옵션 A or B</td></tr>
+              <tr><td><code>10-comparison.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>"다국가 동일 SIM" 행 추가 (EU 특화)</td></tr>
+              <tr style="background: var(--color-error-50);"><td><code>11-compatibility.html</code></td><td><span class="sec-tag sec-tag--decision">오류 정정</span></td><td>v3 그대로 — S22·Pixel 오류 정정 필수</td></tr>
+              <tr><td><code>12-refund.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>v3 그대로 (E3 무제한/종량제 정책 차이 확인)</td></tr>
+              <tr><td><code>13-faq.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>12 → 13개 (EU Q12·Q13 추가)</td></tr>
+              <tr><td><code>14-final-cta.html</code></td><td><span class="sec-tag sec-tag--copy">카피</span></td><td>메인 카피 EU, CS 050-7017-86725 적용</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- §5 -->
+        <h2 id="s5"><span class="num">05</span>v3 미해결 → v3-EU 자동 해결 / 신규 미해결</h2>
+
+        <blockquote class="callout callout--success">
+          <p>
+            <strong>✅ 자동 해결</strong>: Q4 가격 / Q5 결제 / Q8 통신사 / Q10 사업자 / M1 Maya 소진
+            후 속도 / M4 CS — 6개 항목이 실데이터로 채워짐
+          </p>
+        </blockquote>
+
+        <h3>v3-EU 신규 미해결 항목</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th style="width: 60px">#</th><th style="width: 30%">항목</th><th>확보 경로</th></tr></thead>
+            <tbody>
+              <tr style="background: var(--color-error-50);"><td><strong>E1</strong></td><td><strong>현지도착일 정책</strong> (v2 D1 vs 실 운영)</td><td>John 또는 운영팀: 도착일 입력 유지 / 회선 OFF·ON 전환 결정</td></tr>
+              <tr><td><strong>E2</strong></td><td>EU022L modelName 오기 ("서유럽3개국")</td><td>스마트스토어 수정</td></tr>
+              <tr><td><strong>E3</strong></td><td>무제한 vs 종량제 환불 정책 차이</td><td>운영팀</td></tr>
+              <tr><td><strong>E4</strong></td><td>누적 판매 / 별점 (SKU 별)</td><td>구글시트 / 스마트스토어</td></tr>
+              <tr><td><strong>E5</strong></td><td>즉시할인 11만원 — 시즌 변동 여부</td><td>운영팀</td></tr>
+              <tr><td><strong>E6</strong></td><td>통신사 로고 사용권 (Movistar/Vodafone/Orange/NOS/MEO)</td><td>라이선스</td></tr>
+              <tr><td><strong>E7</strong></td><td>환불 수수료율 (QR 발급 후 미설치)</td><td>운영팀</td></tr>
+              <tr><td><strong>E8</strong></td><td>"당일수령" SEO — 야간·주말 자동 발송 가능 여부</td><td>운영팀</td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>E10</strong></td><td><strong>60·90일 데이터 옵션</strong> — 매일 1·2GB 유지 vs 3GB 추가</td><td>운영팀 (장기 헤비 유저 패턴)</td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>E11</strong></td><td><strong>60·90일 가격</strong> + 1~29일 사이 일수 가격</td><td>운영팀 (placeholder = 30일 단가 × 비율 할인)</td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>E12</strong></td><td><strong>Plan picker UX</strong> — A (1~30 슬라이더 + 60·90 카드) vs B (1~90 단일) vs C (분리)</td><td>디자인 작업 시 결정</td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>E13</strong></td><td><strong>60·90일 출시 시점</strong> — 미리 노출 vs 출시 동시 패치</td><td>John (마케팅 결정)</td></tr>
+              <tr style="background: var(--color-info-50);"><td><strong>E14</strong></td><td>60·90일 Maya 측 라우팅·정책 (500Kbps 동일 유지 여부)</td><td>운영팀 / Maya 설정</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- §6 -->
+        <h2 id="s6"><span class="num">06</span>v3-EU 실행 플랜</h2>
+
+        <div class="phases">
+          <div class="phase">
+            <div class="phase__head"><span class="phase__num">1</span><span class="phase__title">즉시 (오늘)</span></div>
+            <div class="phase__body">
+              <ul>
+                <li>v3-EU (이 문서) John 리뷰 · 승인</li>
+                <li>🔴 E1 (현지도착일 정책) 결정</li>
+                <li>🟡 E2 (modelName 오기) 스마트스토어 수정</li>
+                <li>🔵 E10·E11 (60·90일 데이터·가격) 운영팀 확정</li>
+                <li>🔵 E13 (60·90일 출시 시점) John 결정</li>
+              </ul>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase__head"><span class="phase__num">2</span><span class="phase__title">v3-EU 승인 직후</span></div>
+            <div class="phase__body">
+              <ul>
+                <li>S22·Pixel 명백한 오류 패치 (일본·EU 공통)</li>
+                <li>14 섹션 EU 변환 (Coverage·Plan picker 전면 / 그 외 카피)</li>
+                <li>E1 결정 따라 09 How it works 옵션 A 또는 B 확정</li>
+              </ul>
+            </div>
+          </div>
+          <div class="phase">
+            <div class="phase__head"><span class="phase__num">3</span><span class="phase__title">검수 · 출시</span></div>
+            <div class="phase__body">
+              <ul>
+                <li>PNG 1차 출력 (EU 14 섹션)</li>
+                <li>John 검수 → 피드백</li>
+                <li>E4·E5·E6 실데이터 placeholder 교체</li>
+                <li>스마트스토어 detailContent 교체</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- §7 -->
+        <h2 id="s7"><span class="num">07</span>참고 / 작성 이력</h2>
+
+        <h3>관련 문서</h3>
+        <ul>
+          <li><code>마케팅/상세페이지-개선/05_통합_v3-EU_2026-05-20.md</code> — v3-EU 마크다운 원본 (본 HTML 의 원본)</li>
+          <li><code>마케팅/상세페이지-개선/04_통합_v3_2026-05-20.md</code> — v3 통합본 (일본 기준)</li>
+          <li><code>design/plan-2026-05-20.html</code> — v3 시각화 (일본)</li>
+          <li><code>design/sections/*.html</code> — 5/19 14 섹션 (일본 7일 기준)</li>
+        </ul>
+
+        <h3>스마트스토어 채널 상품 번호</h3>
+        <ul>
+          <li><code>9350493687</code> · EU022U · 남유럽 2개국 무제한 (메인)</li>
+          <li><code>9380410731</code> · EU022L · 남유럽 2개국 종량제 (보조)</li>
+          <li><code>9380964143</code> · PRT00U · 포르투갈 단일 (NOS·Vodafone brandName 참고)</li>
+          <li><code>9349431142</code> · EU032U · 유럽 3개국 무제한 (확장 옵션 참고)</li>
+        </ul>
+
+        <h3>v3-EU 작성 이력</h3>
+        <ol>
+          <li>2026-04-19 — v2 (B 포지셔닝 L2+L3) 일본 기준</li>
+          <li>2026-05-19 — 5/19 design 14섹션 일본 7일 placeholder</li>
+          <li>2026-05-20 — v3 (5/20 통합 일본본)</li>
+          <li>2026-05-20 — <strong>v3-EU (이 문서)</strong> — 남유럽 2국 실데이터 + v2 카피 + 5/19 골격</li>
+        </ol>
+
+        <hr />
+        <p class="doc-foot">
+          v3-EU · 2026-05-20 · esimmany 남유럽 (스페인·포르투갈) 상세페이지 통합안 · John 리뷰 + E1 결정 대기
+        </p>
+      </main>
+    </div>
+  </body>
+</html>

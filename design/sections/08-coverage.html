@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>08 · Coverage · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .net-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 26px;
+        padding: 18px 22px;
+        background: var(--color-neutral-900);
+        color: #fff;
+        border-radius: var(--radius-2xl);
+      }
+      .net-row__label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-300);
+      }
+      .net-row__brands {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+      }
+      .net-pill {
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: -0.005em;
+      }
+      .net-row__tags {
+        display: flex;
+        gap: 6px;
+      }
+      .net-tag {
+        padding: 4px 10px;
+        background: var(--color-primary-500);
+        color: #fff;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .country-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+      }
+      .country {
+        padding: 14px 8px 12px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-neutral-700);
+      }
+      .country__flag {
+        display: block;
+        font-size: 22px;
+        margin-bottom: 4px;
+        line-height: 1;
+      }
+      .country__net {
+        margin-top: 3px;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--color-neutral-400);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">08</span>
+        <span class="dev-toolbar__title">Coverage</span>
+        <span class="dev-toolbar__hint">12 도시 + 통신사 + 5G/4G</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="08-coverage">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Coverage</span>
+        <h2 class="section__title">일본 전국 어디서나</h2>
+        <p class="section__lede">
+          주요 도시는 물론 홋카이도 · 오키나와 외곽까지 현지 1티어 통신망에 자동 연결됩니다.
+        </p>
+
+        <div class="net-row">
+          <span class="net-row__label">사용 통신사</span>
+          <div class="net-row__brands">
+            <span class="net-pill">Softbank<span class="placeholder">로고 라이선스 확인</span></span>
+            <span class="net-pill">KDDI au</span>
+          </div>
+          <div class="net-row__tags">
+            <span class="net-tag">5G</span>
+            <span class="net-tag">LTE</span>
+          </div>
+        </div>
+
+        <div class="country-grid">
+          <div class="country"><span class="country__flag">🇯🇵</span>도쿄<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>오사카<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>교토<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>후쿠오카<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>삿포로<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>오키나와<div class="country__net">LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>나고야<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>요코하마<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>고베<div class="country__net">5G · LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>나라<div class="country__net">LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>히로시마<div class="country__net">LTE</div></div>
+          <div class="country"><span class="country__flag">🇯🇵</span>센다이<div class="country__net">LTE</div></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

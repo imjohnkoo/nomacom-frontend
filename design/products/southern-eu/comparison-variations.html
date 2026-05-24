@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Comparison 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      .sect { padding: 48px 60px; }
+      .sect .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-500); margin-bottom: 10px; display: inline-block; }
+      .sect h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .sect .lede { font-size: 13.5px; color: var(--color-neutral-500); margin: 0 0 24px; line-height: 1.6; max-width: 540px; }
+
+      /* ─── A: 5 column 표 (현재) ─── */
+      .a-tbl { border: 1px solid var(--color-neutral-200); border-radius: 16px; overflow: hidden; background: #fff; }
+      .a-row { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr 1fr; }
+      .a-row + .a-row { border-top: 1px solid var(--color-neutral-100); }
+      .a-cell { padding: 12px 14px; font-size: 12.5px; line-height: 1.5; color: var(--color-neutral-700); }
+      .a-cell + .a-cell { border-left: 1px solid var(--color-neutral-100); }
+      .a-head { background: var(--color-neutral-50); }
+      .a-head .a-cell { font-size: 13px; font-weight: 800; color: var(--color-neutral-900); }
+      .a-row__label { font-weight: 700; color: var(--color-neutral-800); }
+      .a-us { background: linear-gradient(0deg, rgba(98, 57, 255, 0.04), rgba(98, 57, 255, 0.04)), #fff; }
+      .a-us-label { display: flex; align-items: center; gap: 5px; color: var(--color-primary-700) !important; }
+      .a-us-label::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary-500); }
+      .a-ok { color: var(--color-success-700); font-weight: 700; }
+      .a-bad { color: var(--color-error-700); }
+      .a-so { color: var(--color-warning-700); }
+      .a-us-cell { background: linear-gradient(0deg, rgba(98, 57, 255, 0.04), rgba(98, 57, 255, 0.04)), #fff; font-weight: 700; color: var(--color-primary-700) !important; }
+
+      /* ─── B: 3 column (로밍 + 포켓 WiFi + ESIMmany) ─── */
+      .b-split { display: grid; grid-template-columns: 1fr 1fr 1.1fr; gap: 12px; }
+      .b-col { padding: 24px 20px; border-radius: 16px; border: 1px solid var(--color-neutral-200); display: flex; flex-direction: column; }
+      .b-col--roam { background: linear-gradient(180deg, #fafafa, #fff 50%); }
+      .b-col--wifi { background: linear-gradient(180deg, #fef2f2, #fff 50%); }
+      .b-col--us { background: linear-gradient(180deg, #f1edff, #fff 50%); border-color: var(--color-primary-300); position: relative; }
+      .b-col--us::before { content: 'RECOMMENDED'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); padding: 3px 12px; background: var(--color-primary-500); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; border-radius: 9999px; }
+      .b-col__h { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+      .b-col__icon { font-size: 24px; line-height: 1; }
+      .b-col__name { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .b-col__sub { font-size: 11.5px; color: var(--color-neutral-500); margin: 0 0 16px; line-height: 1.5; }
+      .b-item { padding: 8px 0; border-bottom: 1px solid var(--color-neutral-100); display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: center; font-size: 12px; line-height: 1.5; }
+      .b-item:last-of-type { border-bottom: 0; }
+      .b-item__mark { font-size: 14px; line-height: 1; font-weight: 800; }
+      .b-mark--bad { color: var(--color-error-500); }
+      .b-mark--ok { color: var(--color-success-500); }
+      .b-mark--so { color: var(--color-warning-500); }
+      .b-price { margin-top: 14px; padding: 10px 12px; background: rgba(0, 0, 0, 0.04); border-radius: 8px; text-align: center; font-size: 13.5px; font-weight: 800; color: var(--color-neutral-700); }
+      .b-col--us .b-price { background: var(--color-primary-500); color: #fff; }
+      .b-price small { font-size: 10px; opacity: 0.7; font-weight: 600; display: block; margin-top: 1px; }
+
+      /* ─── C: 체크리스트 ─── */
+      .c-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .c-item { padding: 16px 18px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; display: flex; align-items: flex-start; gap: 12px; }
+      .c-item__check { width: 28px; height: 28px; border-radius: 50%; background: var(--color-success-500); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+      .c-item__h { font-size: 13.5px; font-weight: 800; color: var(--color-neutral-900); margin: 0 0 2px; }
+      .c-item__p { font-size: 11.5px; color: var(--color-neutral-500); margin: 0; line-height: 1.55; }
+
+      /* ─── D: 4 카드 (옵션별) ─── */
+      .d-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      .d-card { padding: 18px 16px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 14px; }
+      .d-card--us { background: linear-gradient(180deg, #f1edff, #fff 60%); border-color: var(--color-primary-200); }
+      .d-card__h { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--color-neutral-100); }
+      .d-card__icon { font-size: 22px; line-height: 1; }
+      .d-card__name { font-size: 13px; font-weight: 800; color: var(--color-neutral-900); }
+      .d-card--us .d-card__name { color: var(--color-primary-700); }
+      .d-card__list { font-size: 11.5px; line-height: 1.7; color: var(--color-neutral-600); margin: 0; padding-left: 0; list-style: none; }
+      .d-card__list li { padding-left: 16px; position: relative; }
+      .d-card__list li::before { content: ''; position: absolute; left: 0; top: 9px; width: 4px; height: 4px; background: var(--color-neutral-400); border-radius: 50%; }
+      .d-card--us .d-card__list li::before { background: var(--color-primary-500); }
+      .d-card__price { margin-top: 10px; padding: 8px 10px; background: var(--color-neutral-50); border-radius: 8px; font-size: 12px; font-weight: 800; text-align: center; color: var(--color-neutral-800); }
+      .d-card--us .d-card__price { background: var(--color-primary-500); color: #fff; }
+
+      /* ─── E: scoring 카드 ─── */
+      .e-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+      .e-card { padding: 22px 18px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 14px; text-align: center; }
+      .e-card--us { background: linear-gradient(180deg, #f1edff, #fff 50%); border-color: var(--color-primary-300); }
+      .e-card__name { font-size: 13px; font-weight: 800; color: var(--color-neutral-700); margin-bottom: 10px; }
+      .e-card--us .e-card__name { color: var(--color-primary-700); }
+      .e-card__score { font-size: 38px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--color-neutral-900); }
+      .e-card--us .e-card__score { color: var(--color-primary-700); }
+      .e-card__score small { font-size: 14px; font-weight: 600; opacity: 0.55; margin-left: 2px; }
+      .e-card__sub { margin-top: 8px; font-size: 11px; color: var(--color-neutral-500); line-height: 1.55; }
+      .e-card__stars { font-size: 11px; color: #f59e0b; letter-spacing: 2px; margin-top: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Comparison 5종 비교</h1>
+      <p>통신사 로밍 vs 포켓 WiFi vs 일반 eSIM vs ESIMmany 어떻게 보여줄지</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ═══ A · 현재 5 column 표 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              5 column 표 (현재)
+              <small>6 행 비교 · 정책 / 발급 / 기기 / 다국가 / CS / 테더링</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>A</code><em>현재 5 column</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Compare</span>
+            <h2>왜 eSIM 이고, 왜 ESIMmany 인가요?</h2>
+            <p class="lede">같은 스페인·포르투갈 일정 기준, 사용 경험 관점에서 비교.</p>
+            <div class="a-tbl">
+              <div class="a-row a-head">
+                <div class="a-cell">항목</div>
+                <div class="a-cell">통신사 로밍</div>
+                <div class="a-cell">포켓 WiFi</div>
+                <div class="a-cell">일반 eSIM</div>
+                <div class="a-cell a-us-label">ESIMmany</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">데이터 정책</div>
+                <div class="a-cell a-so">통신사 정책</div>
+                <div class="a-cell a-so">통신사 정책</div>
+                <div class="a-cell a-so">일률</div>
+                <div class="a-cell a-us-cell">자체 (무제한/종량)</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">발급 시간</div>
+                <div class="a-cell a-ok">즉시</div>
+                <div class="a-cell a-bad">택배 1~2일</div>
+                <div class="a-cell a-ok">즉시</div>
+                <div class="a-cell a-us-cell">카카오톡 1분</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">기기 / 짐</div>
+                <div class="a-cell a-ok">내 폰 그대로</div>
+                <div class="a-cell a-bad">기기 휴대·충전</div>
+                <div class="a-cell a-ok">내 폰 그대로</div>
+                <div class="a-cell a-us-cell">내 폰 그대로</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">2개국 동일 SIM 🇪🇸🇵🇹</div>
+                <div class="a-cell a-bad">국가별<br />비싼 로밍</div>
+                <div class="a-cell a-bad">국가별<br />기기 임대</div>
+                <div class="a-cell a-so">국가별<br />별도 구매</div>
+                <div class="a-cell a-us-cell">한 SIM<br />2개국 자동</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">한국어 고객센터</div>
+                <div class="a-cell a-ok">한국어</div>
+                <div class="a-cell a-ok">한국어</div>
+                <div class="a-cell a-bad">영어 / 챗봇</div>
+                <div class="a-cell a-us-cell">카카오톡 한국어</div>
+              </div>
+              <div class="a-row">
+                <div class="a-cell a-row__label">테더링</div>
+                <div class="a-cell a-so">제한적</div>
+                <div class="a-cell a-ok">가능</div>
+                <div class="a-cell a-so">상품별</div>
+                <div class="a-cell a-us-cell">제한 없음</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ B · 좌우 분할 (포켓 WiFi vs ESIMmany) ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              좌우 분할 (포켓 WiFi vs ESIMmany)
+              <small>2자 비교 강조 · 가장 큰 경쟁자 대비</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>B</code><em>2자 비교</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Roaming vs Pocket WiFi vs eSIM</span>
+            <h2>이제 로밍·포켓 WiFi 안 써도 돼요</h2>
+            <p class="lede">7일 스페인·포르투갈 여행 기준 비교.</p>
+            <div class="b-split">
+              <div class="b-col b-col--roam">
+                <div class="b-col__h">
+                  <span class="b-col__icon">📡</span>
+                  <span class="b-col__name">통신사 로밍</span>
+                </div>
+                <p class="b-col__sub">한국 통신사 자동 로밍</p>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>내 폰 그대로 · 신청 불요</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--bad">✕</span><span>비싼 요금 (일 1만원+)</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--so">⚠</span><span>국가별 별도 요금제</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--so">⚠</span><span>데이터 제한 · 속도 제한</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--so">⚠</span><span>테더링 제한적</span></div>
+                <div class="b-price">~35,000원<small>7일 기준</small></div>
+              </div>
+              <div class="b-col b-col--wifi">
+                <div class="b-col__h">
+                  <span class="b-col__icon">📶</span>
+                  <span class="b-col__name">포켓 WiFi</span>
+                </div>
+                <p class="b-col__sub">기기 임대 + 충전</p>
+                <div class="b-item"><span class="b-item__mark b-mark--bad">✕</span><span>택배 수령 1~2일</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--bad">✕</span><span>기기 휴대·충전·분실</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--bad">✕</span><span>국가별 별도 임대</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--so">⚠</span><span>반납 필요</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>테더링 가능</span></div>
+                <div class="b-price">~28,000원<small>7일 기준</small></div>
+              </div>
+              <div class="b-col b-col--us">
+                <div class="b-col__h">
+                  <span class="b-col__icon">⭐</span>
+                  <span class="b-col__name">ESIMmany</span>
+                </div>
+                <p class="b-col__sub">내 폰 그대로 + 카카오톡 발급</p>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>카카오톡 1~2분 발급 · 야간 OK</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>내 폰 그대로 · 짐·충전 불요</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>2개국 한 SIM 자동 전환</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>무제한 · 종량제 자유 선택</span></div>
+                <div class="b-item"><span class="b-item__mark b-mark--ok">✓</span><span>테더링 제한 없음</span></div>
+                <div class="b-price">18,500원~<small>7일 매일 2GB</small></div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ C · 체크리스트 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              체크리스트 — ESIMmany ✓ 6개
+              <small>"이런 거 다 됩니다" 단순 강조 · 경쟁자 없이 자체 강점</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>C</code><em>체크리스트</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">What you get</span>
+            <h2>ESIMmany 가 주는 것 6가지</h2>
+            <p class="lede">다른 옵션과 비교 없이 우리 강점만 명확히.</p>
+            <div class="c-list">
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">자체 데이터 정책</h3>
+                  <p class="c-item__p">무제한 / 종량제 · 60·90일 워홀까지 자유 선택</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">카카오톡 1~2분 발급</h3>
+                  <p class="c-item__p">결제 후 자동 발송 · 야간·주말 OK</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">내 폰 그대로</h3>
+                  <p class="c-item__p">기기 휴대·충전 불요 · 분실 걱정 없음</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">2개국 한 SIM 🇪🇸🇵🇹</h3>
+                  <p class="c-item__p">국경 넘어도 같은 eSIM · 자동 통신사 전환</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">한국어 카카오톡 상담</h3>
+                  <p class="c-item__p">평균 응답 30분 · 발급 오류 즉시 대응</p>
+                </div>
+              </div>
+              <div class="c-item">
+                <div class="c-item__check">✓</div>
+                <div>
+                  <h3 class="c-item__h">테더링 제한 없음</h3>
+                  <p class="c-item__p">노트북·태블릿 연결 · 속도 그대로</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ D · 4 카드 (옵션별) ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              4 카드 (옵션별 묶음)
+              <small>각 옵션이 독립 카드 · 한눈에 차이 + 가격대</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>D</code><em>4 카드</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Compare options</span>
+            <h2>4가지 옵션, 한눈에</h2>
+            <p class="lede">7일 여행 기준 사용 경험 (가격은 평균치).</p>
+            <div class="d-grid">
+              <div class="d-card">
+                <div class="d-card__h">
+                  <span class="d-card__icon">📡</span>
+                  <span class="d-card__name">통신사 로밍</span>
+                </div>
+                <ul class="d-card__list">
+                  <li>내 폰 그대로</li>
+                  <li>국가별 비싼 로밍</li>
+                  <li>한국어 CS</li>
+                  <li>테더링 제한적</li>
+                </ul>
+                <div class="d-card__price">~35,000원</div>
+              </div>
+              <div class="d-card">
+                <div class="d-card__h">
+                  <span class="d-card__icon">📶</span>
+                  <span class="d-card__name">포켓 WiFi</span>
+                </div>
+                <ul class="d-card__list">
+                  <li>택배 1~2일</li>
+                  <li>기기 휴대·충전</li>
+                  <li>국가별 임대</li>
+                  <li>테더링 OK</li>
+                </ul>
+                <div class="d-card__price">~28,000원</div>
+              </div>
+              <div class="d-card">
+                <div class="d-card__h">
+                  <span class="d-card__icon">📱</span>
+                  <span class="d-card__name">일반 eSIM</span>
+                </div>
+                <ul class="d-card__list">
+                  <li>즉시 발급</li>
+                  <li>내 폰 그대로</li>
+                  <li>국가별 별도</li>
+                  <li>영어 / 챗봇</li>
+                </ul>
+                <div class="d-card__price">~15,000원</div>
+              </div>
+              <div class="d-card d-card--us">
+                <div class="d-card__h">
+                  <span class="d-card__icon">⭐</span>
+                  <span class="d-card__name">ESIMmany</span>
+                </div>
+                <ul class="d-card__list">
+                  <li>카카오톡 1분 발급</li>
+                  <li>2개국 한 SIM</li>
+                  <li>한국어 카카오톡 CS</li>
+                  <li>테더링 제한 없음</li>
+                </ul>
+                <div class="d-card__price">18,500원~</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ E · scoring 카드 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              scoring 카드 (5점 만점)
+              <small>편의·가격·기능 종합 점수 · 시각적 임팩트 ↑</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>E</code><em>점수</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Score</span>
+            <h2>편의·가격·기능 종합 점수</h2>
+            <p class="lede">7일 스페인·포르투갈 여행 기준 자체 평가 (5점 만점).</p>
+            <div class="e-grid">
+              <div class="e-card">
+                <div class="e-card__name">통신사 로밍</div>
+                <div class="e-card__score">2.8<small>/5</small></div>
+                <div class="e-card__stars">★★★☆☆</div>
+                <div class="e-card__sub">발급 OK<br />가격 ✕</div>
+              </div>
+              <div class="e-card">
+                <div class="e-card__name">포켓 WiFi</div>
+                <div class="e-card__score">3.2<small>/5</small></div>
+                <div class="e-card__stars">★★★☆☆</div>
+                <div class="e-card__sub">테더링 OK<br />짐 ✕</div>
+              </div>
+              <div class="e-card">
+                <div class="e-card__name">일반 eSIM</div>
+                <div class="e-card__score">3.6<small>/5</small></div>
+                <div class="e-card__stars">★★★★☆</div>
+                <div class="e-card__sub">발급 OK<br />CS ✕</div>
+              </div>
+              <div class="e-card e-card--us">
+                <div class="e-card__name">ESIMmany</div>
+                <div class="e-card__score">4.8<small>/5</small></div>
+                <div class="e-card__stars">★★★★★</div>
+                <div class="e-card__sub">2개국·CS<br />테더링 OK</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>

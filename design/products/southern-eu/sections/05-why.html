@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>05 · Why ESIMmany · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .benefits {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .benefit {
+        padding: 26px 22px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .benefit--lead {
+        border-color: var(--color-primary-200);
+        background: linear-gradient(0deg, rgba(98, 57, 255, 0.04), rgba(98, 57, 255, 0.04)), #fff;
+      }
+      .benefit__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--color-primary-50);
+        color: var(--color-primary-600);
+        display: grid;
+        place-items: center;
+        margin-bottom: 16px;
+        font-size: 22px;
+        line-height: 1;
+      }
+      .benefit__h {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .benefit__p {
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">05</span>
+        <span class="dev-toolbar__title">Why ESIMmany</span>
+        <span class="dev-toolbar__hint">2×2 · 운영 fact (즉시·저속·테더링·다국가)</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-05-why">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">Why ESIMmany</span>
+        <h2 class="section__title">물리유심 없이<br />입국 즉시 데이터.</h2>
+        <p class="section__lede">
+          결제 후 카카오톡으로 1~2분 안에 QR 자동 발급.<br />
+          출국 전에 미리 설치해 두면, 현지에서 회선만 ON 하면 바로 데이터가 시작됩니다.
+        </p>
+
+        <div class="benefits">
+          <div class="benefit benefit--lead">
+            <div class="benefit__icon">⚡</div>
+            <h3 class="benefit__h">카카오톡 1~2분 발급</h3>
+            <p class="benefit__p">
+              결제 후 카카오톡으로 QR 자동 발송. 야간·주말에도 24시간 자동, 영업시간 제한 없음.
+            </p>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon">🌐</div>
+            <h3 class="benefit__h">소진 후 500Kbps 무제한</h3>
+            <p class="benefit__p">
+              매일 한도 다 써도 끊김 없음. 메신저·지도·인터넷 전화 그대로 사용 가능.
+            </p>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon">🔁</div>
+            <h3 class="benefit__h">테더링 · 업로드 OK</h3>
+            <p class="benefit__p">
+              노트북·태블릿 연결, 콘텐츠 업로드, 영상 스트리밍 모두 지원. 속도 제한 없음.
+            </p>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon">🌍</div>
+            <h3 class="benefit__h">2개국 한 SIM</h3>
+            <p class="benefit__p">
+              스페인·포르투갈 국경 넘어도 같은 eSIM. Vodafone·Movistar 등 1티어 자동 전환.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

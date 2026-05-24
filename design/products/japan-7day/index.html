@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>일본 7일 매일 2GB · ESIMmany Detail Gallery</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../../shared/tokens.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        background: #ededf2;
+        color: var(--color-neutral-900);
+      }
+
+      /* ----- top bar (excluded from PNG) ----- */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(23, 23, 23, 0.96);
+        color: #fff;
+        backdrop-filter: blur(10px);
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .topbar__title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .topbar__dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--color-primary-400);
+        box-shadow: 0 0 0 5px rgba(135, 97, 255, 0.2);
+      }
+      .topbar__h {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+      }
+      .topbar__sub {
+        font-size: 12px;
+        opacity: 0.55;
+      }
+      .topbar__meta {
+        font-size: 11.5px;
+        opacity: 0.55;
+        margin-left: auto;
+      }
+
+      /* ----- shell ----- */
+      .shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: calc(100vh - 50px);
+      }
+
+      /* ----- sidebar ----- */
+      .sidebar {
+        background: #fff;
+        border-right: 1px solid var(--color-neutral-200);
+        padding: 22px 18px;
+        position: sticky;
+        top: 50px;
+        height: calc(100vh - 50px);
+        overflow-y: auto;
+      }
+      .sidebar__title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-neutral-400);
+        margin: 0 0 14px;
+        padding-left: 10px;
+      }
+      .sidebar__list {
+        list-style: none;
+        margin: 0 0 20px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .sidebar__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: var(--color-neutral-700);
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 120ms ease;
+      }
+      .sidebar__item:hover {
+        background: var(--color-neutral-50);
+      }
+      .sidebar__num {
+        min-width: 22px;
+        height: 22px;
+        padding: 0 5px;
+        border-radius: 5px;
+        background: var(--color-neutral-100);
+        color: var(--color-neutral-600);
+        font-weight: 800;
+        font-size: 10.5px;
+        display: grid;
+        place-items: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .sidebar__item.is-new .sidebar__num {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .sidebar__name {
+        flex: 1;
+      }
+      .sidebar__tag {
+        font-size: 9.5px;
+        font-weight: 800;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: var(--color-primary-500);
+        color: #fff;
+        letter-spacing: 0.04em;
+      }
+      .sidebar__divider {
+        height: 1px;
+        background: var(--color-neutral-100);
+        margin: 14px 6px;
+      }
+      .sidebar__action {
+        padding: 10px 12px;
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        line-height: 1.6;
+      }
+      .sidebar__action b {
+        color: var(--color-neutral-800);
+      }
+
+      /* ----- main scroll area ----- */
+      .stack {
+        padding: 24px 0 80px;
+      }
+
+      .section-frame {
+        max-width: 1040px;
+        margin: 0 auto 22px;
+        background: transparent;
+        scroll-margin-top: 70px;
+      }
+      .section-frame__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 28px 10px;
+      }
+      .section-frame__id {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-frame__num {
+        min-width: 26px;
+        height: 26px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: var(--color-neutral-200);
+        color: var(--color-neutral-700);
+        font-weight: 800;
+        font-size: 11.5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .section-frame.is-new .section-frame__num {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .section-frame__name {
+        font-size: 13.5px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--color-neutral-900);
+      }
+      .section-frame__hint {
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+      }
+      .section-frame__actions {
+        display: flex;
+        gap: 6px;
+      }
+      .btn {
+        appearance: none;
+        background: #fff;
+        color: var(--color-neutral-800);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        padding: 7px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        transition: border-color 120ms ease, background 120ms ease;
+      }
+      .btn:hover {
+        border-color: var(--color-primary-300);
+        background: var(--color-primary-50);
+        color: var(--color-primary-700);
+      }
+      .btn--primary {
+        background: var(--color-primary-500);
+        color: #fff;
+        border-color: var(--color-primary-500);
+      }
+      .btn--primary:hover {
+        background: var(--color-primary-600);
+        color: #fff;
+        border-color: var(--color-primary-600);
+      }
+      .section-frame__body {
+        background: transparent;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .section-frame iframe {
+        width: 860px;
+        margin: 0 auto;
+        display: block;
+        border: 0;
+        background: #fff;
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.12);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__title">
+        <span class="topbar__dot"></span>
+        <div>
+          <div class="topbar__h">일본 7일 매일 2GB</div>
+          <div class="topbar__sub">ESIMmany · Detail Page</div>
+        </div>
+      </div>
+      <div class="topbar__meta">
+        14 섹션 · 섹션별 PNG export · placeholder 데이터 (§7 확정 후 교체)
+      </div>
+    </header>
+
+    <div class="shell">
+      <aside class="sidebar">
+        <p class="sidebar__title">섹션</p>
+        <ul class="sidebar__list" id="toc">
+          <!-- filled by script -->
+        </ul>
+
+        <div class="sidebar__divider"></div>
+        <p class="sidebar__action">
+          <b>섹션별 PNG export</b><br />
+          오른쪽 각 섹션 카드의 "PNG" 버튼을 누르거나, "원본 열기" 로 standalone 파일에서 export 하세요.
+        </p>
+        <p class="sidebar__action">
+          <b>다른 상품 만들기</b><br />
+          이 폴더를 통째로 복사 (예: <code>products/taiwan-5day/</code>) 후 텍스트만 교체.
+        </p>
+      </aside>
+
+      <main class="stack" id="stack">
+        <!-- filled by script -->
+      </main>
+    </div>
+
+    <script>
+      const SECTIONS = [
+        { num: '01', slug: 'hero', name: 'Hero', hint: '상품명 · 가격 · 폰 mockup', height: 580, isNew: false },
+        { num: '02', slug: 'trust-strip', name: 'Trust strip', hint: '누적 · 별점 · 재구매 · 발급시간', height: 170, isNew: true },
+        { num: '03', slug: 'plan-picker', name: 'Plan picker', hint: '1~30일 자유 선택 + 예시 + 참고가', height: 1020, isNew: true },
+        { num: '04', slug: 'payment-benefits', name: 'Payment benefits', hint: '네이버 · 카카오 · 토스 · 무이자', height: 560, isNew: true },
+        { num: '05', slug: 'why', name: 'Why ESIMmany', hint: '3 benefit · 한국 CS 1순위', height: 640, isNew: false },
+        { num: '06', slug: 'stats', name: 'Plan at a glance', hint: '4 stats', height: 560, isNew: false },
+        { num: '07', slug: 'reviews', name: 'Reviews', hint: '별점 · 5 인용 · 사진 후기', height: 1040, isNew: true },
+        { num: '08', slug: 'coverage', name: 'Coverage', hint: '12 도시 + 통신사', height: 600, isNew: false },
+        { num: '09', slug: 'how-it-works', name: 'How it works', hint: '4 step + 소요시간', height: 540, isNew: false },
+        { num: '10', slug: 'comparison', name: 'Comparison', hint: '4 column 비교 표', height: 660, isNew: true },
+        { num: '11', slug: 'compatibility', name: 'Compatibility', hint: 'iPhone · Galaxy', height: 660, isNew: false },
+        { num: '12', slug: 'refund', name: 'Refund policy', hint: '3 카드 + CS', height: 680, isNew: true },
+        { num: '13', slug: 'faq', name: 'FAQ', hint: '12 항목', height: 1380, isNew: false },
+        { num: '14', slug: 'final-cta', name: 'Final CTA + Trust', hint: '신뢰배지 + CTA + 사업자정보', height: 580, isNew: false },
+      ];
+
+      const SECTION_BASE = '../../sections';
+
+      function buildTOC() {
+        const list = document.getElementById('toc');
+        const fragment = document.createDocumentFragment();
+        for (const s of SECTIONS) {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.className = 'sidebar__item' + (s.isNew ? ' is-new' : '');
+          a.href = `#sec-${s.num}`;
+          const numEl = document.createElement('span');
+          numEl.className = 'sidebar__num';
+          numEl.textContent = s.num;
+          const nameEl = document.createElement('span');
+          nameEl.className = 'sidebar__name';
+          nameEl.textContent = s.name;
+          a.appendChild(numEl);
+          a.appendChild(nameEl);
+          if (s.isNew) {
+            const tag = document.createElement('span');
+            tag.className = 'sidebar__tag';
+            tag.textContent = 'NEW';
+            a.appendChild(tag);
+          }
+          li.appendChild(a);
+          fragment.appendChild(li);
+        }
+        list.appendChild(fragment);
+      }
+
+      function buildStack() {
+        const stack = document.getElementById('stack');
+        const fragment = document.createDocumentFragment();
+        for (const s of SECTIONS) {
+          const frameUrl = `${SECTION_BASE}/${s.num}-${s.slug}.html`;
+
+          const wrap = document.createElement('section');
+          wrap.className = 'section-frame' + (s.isNew ? ' is-new' : '');
+          wrap.id = `sec-${s.num}`;
+
+          // head
+          const head = document.createElement('header');
+          head.className = 'section-frame__head';
+
+          const id = document.createElement('div');
+          id.className = 'section-frame__id';
+          const numEl = document.createElement('span');
+          numEl.className = 'section-frame__num';
+          numEl.textContent = s.num;
+          const nameEl = document.createElement('span');
+          nameEl.className = 'section-frame__name';
+          nameEl.textContent = s.name;
+          const hintEl = document.createElement('span');
+          hintEl.className = 'section-frame__hint';
+          hintEl.textContent = '· ' + s.hint;
+          id.appendChild(numEl);
+          id.appendChild(nameEl);
+          id.appendChild(hintEl);
+
+          const actions = document.createElement('div');
+          actions.className = 'section-frame__actions';
+
+          const openLink = document.createElement('a');
+          openLink.className = 'btn';
+          openLink.href = frameUrl;
+          openLink.target = '_blank';
+          openLink.rel = 'noopener';
+          openLink.textContent = '원본 열기';
+
+          const pngBtn = document.createElement('a');
+          pngBtn.className = 'btn btn--primary';
+          pngBtn.href = `${frameUrl}?auto-export=1`;
+          pngBtn.target = '_blank';
+          pngBtn.rel = 'noopener';
+          pngBtn.textContent = 'PNG 저장';
+
+          actions.appendChild(openLink);
+          actions.appendChild(pngBtn);
+
+          head.appendChild(id);
+          head.appendChild(actions);
+
+          // body
+          const body = document.createElement('div');
+          body.className = 'section-frame__body';
+          const iframe = document.createElement('iframe');
+          iframe.src = `${frameUrl}?embed=1`;
+          iframe.title = `${s.num}. ${s.name}`;
+          iframe.style.height = s.height + 'px';
+          iframe.loading = 'lazy';
+          body.appendChild(iframe);
+
+          wrap.appendChild(head);
+          wrap.appendChild(body);
+          fragment.appendChild(wrap);
+        }
+        stack.appendChild(fragment);
+      }
+
+      buildTOC();
+      buildStack();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>04 · Payment benefits · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .pay__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .pay-card {
+        padding: 18px 16px 16px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .pay-card__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: var(--radius-full);
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: -0.005em;
+        align-self: flex-start;
+      }
+      .pay-card__brand--naver {
+        background: #03c75a;
+        color: #fff;
+      }
+      .pay-card__brand--kakao {
+        background: #ffeb3b;
+        color: #3c1e1e;
+      }
+      .pay-card__brand--toss {
+        background: #3182f6;
+        color: #fff;
+      }
+      .pay-card__brand--card {
+        background: var(--color-neutral-900);
+        color: #fff;
+      }
+      .pay-card__brand-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .pay-card__value {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--color-neutral-900);
+        line-height: 1.25;
+      }
+      .pay-card__value b {
+        color: var(--color-primary-600);
+      }
+      .pay-card__hint {
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+        line-height: 1.55;
+        margin-top: auto;
+      }
+      .pay__footnote {
+        margin-top: 16px;
+        font-size: 11.5px;
+        color: var(--color-neutral-400);
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">04</span>
+        <span class="dev-toolbar__title">Payment benefits</span>
+        <span class="dev-toolbar__hint">네이버페이 · 카카오 · 토스 · 무이자</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="04-payment-benefits">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Payment benefits</span>
+        <h2 class="section__title">
+          결제도 더 알뜰하게<span class="placeholder">정책 확인 필요</span>
+        </h2>
+        <p class="section__lede">
+          네이버 스마트스토어에서 사용 가능한 결제 혜택을 한눈에 확인하세요. 카드사·간편결제별
+          혜택은 결제 시점에 자동 적용됩니다.
+        </p>
+
+        <div class="pay__grid">
+          <div class="pay-card">
+            <span class="pay-card__brand pay-card__brand--naver">
+              <span class="pay-card__brand-dot"></span>네이버페이
+            </span>
+            <div class="pay-card__value">최대 <b>5,000원</b><br />포인트 적립</div>
+            <div class="pay-card__hint">네이버 멤버십 이용자 한정 추가 적립</div>
+          </div>
+
+          <div class="pay-card">
+            <span class="pay-card__brand pay-card__brand--kakao">
+              <span class="pay-card__brand-dot"></span>카카오페이
+            </span>
+            <div class="pay-card__value">최대 <b>3,000원</b><br />즉시 할인</div>
+            <div class="pay-card__hint">카카오페이머니 결제 시 즉시 차감</div>
+          </div>
+
+          <div class="pay-card">
+            <span class="pay-card__brand pay-card__brand--toss">
+              <span class="pay-card__brand-dot"></span>토스페이
+            </span>
+            <div class="pay-card__value">최대 <b>3,000원</b><br />즉시 할인</div>
+            <div class="pay-card__hint">토스 첫 결제 시 추가 혜택</div>
+          </div>
+
+          <div class="pay-card">
+            <span class="pay-card__brand pay-card__brand--card">
+              <span class="pay-card__brand-dot"></span>카드 무이자
+            </span>
+            <div class="pay-card__value">최대 <b>12개월</b><br />무이자 할부</div>
+            <div class="pay-card__hint">국내 주요 카드사 · 5만원 이상 결제 시</div>
+          </div>
+        </div>
+
+        <p class="pay__footnote">
+          ※ 위 금액과 적용 카드사는 예시이며, 실제 혜택은 네이버 스마트스토어 결제 페이지에서
+          최신 기준으로 적용됩니다.
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

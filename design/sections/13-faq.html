@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>13 · FAQ · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .faq {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .faq__item {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: 18px 24px 20px;
+      }
+      .faq__q {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        margin: 0 0 10px;
+        color: var(--color-neutral-900);
+      }
+      .faq__q::before {
+        content: 'Q';
+        flex: 0 0 22px;
+        height: 22px;
+        background: var(--color-primary-500);
+        color: #fff;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 11.5px;
+        font-weight: 800;
+        margin-top: 2px;
+      }
+      .faq__a {
+        padding-left: 34px;
+        font-size: 13.5px;
+        line-height: 1.75;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">13</span>
+        <span class="dev-toolbar__title">FAQ</span>
+        <span class="dev-toolbar__hint">12 항목 (자주 묻는 질문)</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="13-faq">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section__title">자주 묻는 질문</h2>
+        <p class="section__lede">결제 전, 가장 많이 받는 질문 12개를 정리했어요.</p>
+
+        <div class="faq">
+          <div class="faq__item">
+            <p class="faq__q">한국에서 미리 발급받아도 되나요?</p>
+            <p class="faq__a">
+              네, 가능합니다. 시작 일시를 출국일 기준으로 설정하시면 그 시점부터 카운트가
+              시작되며, 그 전까지는 기존 통신사 그대로 사용할 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">QR 코드를 잃어버렸어요. 재발급되나요?</p>
+            <p class="faq__a">
+              주문번호로 다시 로그인하시면 같은 QR 코드를 다시 보실 수 있습니다. 단, eSIM 은 한
+              기기에만 등록되며 등록 후에는 다른 기기로 옮길 수 없어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">테더링 (핫스팟) 도 되나요?</p>
+            <p class="faq__a">
+              네, 됩니다. 일행과 데이터를 나눠 쓰시려는 경우 한 명만 결제하시고 핫스팟을 켜셔도
+              괜찮아요. 핫스팟 사용 시 배터리 소모는 빠른 점 참고해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">현지에서 전화 통화도 되나요?</p>
+            <p class="faq__a">
+              본 상품은 데이터 전용입니다. 카카오톡 보이스톡 · WhatsApp 등 인터넷 전화는 가능하며,
+              일반 음성 통화는 한국 번호 그대로 (로밍 요금 발생) 또는 별도 앱을 사용해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">설치했는데 데이터가 안 잡혀요.</p>
+            <p class="faq__a">
+              비행기 모드를 5초 켜고 다시 꺼 보세요. 그래도 안 되면 설정에서 ESIMmany 회선이 켜져
+              있고 데이터 회선으로 선택돼 있는지 확인해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">APN 설정은 어떻게 하나요?</p>
+            <p class="faq__a">
+              대부분의 기기에서 자동 설정됩니다. 수동 설정이 필요하면 카카오톡 채널로 문의해
+              주시면 기기 모델별로 안내드려요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">남은 데이터는 어디서 확인하나요?</p>
+            <p class="faq__a">
+              현재 잔여 데이터 확인은 휴대폰 설정 → 셀룰러 → ESIMmany 회선 통계에서 보실 수
+              있습니다. 매일 자정 (현지) 마다 2GB 가 새로 충전돼요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">일본 외 다른 나라에 가도 쓸 수 있나요?</p>
+            <p class="faq__a">
+              본 상품은 일본 전용입니다. 다른 국가에서는 자동으로 차단됩니다. 동남아 / 유럽 / 미주
+              상품은 별도로 판매 중이에요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">eSIM 을 삭제하면 어떻게 되나요?</p>
+            <p class="faq__a">
+              한 번 설치된 eSIM 은 삭제하면 다시 등록할 수 없습니다. 일정이 끝난 후 자연히 만료될
+              때까지 그대로 두시거나, 다 사용한 후 삭제해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">결제 후 발급까지 얼마나 걸리나요?</p>
+            <p class="faq__a">
+              네이버 결제 완료 즉시 주문이 접수되고, 본인 인증 후 평균 30초 안에 QR 코드를
+              받으실 수 있어요. 야간 / 주말에도 자동 발급됩니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">환불은 언제까지 가능한가요?</p>
+            <p class="faq__a">
+              QR 코드를 휴대폰에 등록하기 전이면 100% 환불됩니다. 등록 후에는 통신망 사 정책에
+              따라 개별 검토되며, 사용을 시작하면 환불이 어렵습니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">한 사람이 여러 개 사도 되나요?</p>
+            <p class="faq__a">
+              네, 가능합니다. 일행 분 것을 함께 결제하시거나, 여행지를 여러 번 가실 경우 미리
+              여러 개 구매해 두셔도 됩니다. 각각 별도의 QR 코드로 발급됩니다.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

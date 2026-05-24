@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Why 5종 비교 (디자인 × 콘텐츠) · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      /* ─── 공통 ─── */
+      .ws { padding: 48px 60px; }
+      .ws h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .ws .lede { font-size: 13.5px; color: var(--color-neutral-500); margin: 0 0 24px; line-height: 1.6; max-width: 520px; }
+
+      /* A: 2×2 */
+      .a-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .a-card { padding: 24px 22px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 16px; }
+      .a-card--lead { border-color: var(--color-primary-200); background: linear-gradient(0deg, rgba(98, 57, 255, 0.04), rgba(98, 57, 255, 0.04)), #fff; }
+      .a-icon { width: 40px; height: 40px; border-radius: 11px; background: var(--color-primary-50); color: var(--color-primary-600); display: grid; place-items: center; font-size: 20px; margin-bottom: 14px; }
+      .a-h { font-size: 15px; font-weight: 800; letter-spacing: -0.015em; margin: 0 0 6px; }
+      .a-p { font-size: 12.5px; line-height: 1.65; color: var(--color-neutral-600); margin: 0; }
+
+      /* B: 3 (lead 큰 + 2 작은) */
+      .b-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
+      .b-card { padding: 26px 24px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 16px; }
+      .b-lead { background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border: 0; }
+      .b-lead .a-h { color: #fff; font-size: 17px; }
+      .b-lead .a-p { color: rgba(255, 255, 255, 0.85); font-size: 13px; }
+      .b-lead .a-icon { background: rgba(255, 255, 255, 0.18); color: #fff; }
+
+      /* C: 4 column 가로 */
+      .c-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--color-neutral-200); border-radius: 16px; overflow: hidden; background: #fff; }
+      .c-cell { padding: 28px 20px; text-align: center; position: relative; }
+      .c-cell + .c-cell::before { content: ''; position: absolute; left: 0; top: 14%; bottom: 14%; width: 1px; background: var(--color-neutral-200); }
+      .c-icon { font-size: 30px; line-height: 1; margin-bottom: 12px; }
+      .c-h { font-size: 14px; font-weight: 800; margin-bottom: 4px; color: var(--color-neutral-900); }
+      .c-p { font-size: 11.5px; color: var(--color-neutral-500); line-height: 1.5; margin: 0; }
+
+      /* D: 큰 lead + 작은 3 stack */
+      .d-wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; }
+      .d-lead { padding: 32px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 280px; }
+      .d-lead-icon { font-size: 40px; line-height: 1; margin-bottom: 12px; }
+      .d-lead h3 { font-size: 22px; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.02em; }
+      .d-lead p { font-size: 13.5px; line-height: 1.65; opacity: 0.85; margin: 0; }
+      .d-side { display: flex; flex-direction: column; gap: 10px; }
+      .d-side-card { flex: 1; padding: 16px 18px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; display: flex; align-items: center; gap: 12px; }
+      .d-side-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--color-primary-50); color: var(--color-primary-600); display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+      .d-side-text strong { display: block; font-size: 13.5px; font-weight: 800; color: var(--color-neutral-900); margin-bottom: 2px; }
+      .d-side-text span { font-size: 11.5px; color: var(--color-neutral-500); line-height: 1.5; }
+
+      /* E: dark */
+      .e-wrap { padding: 48px 60px; background: linear-gradient(135deg, #1f0c6e 0%, #3f1cc0 100%); color: #fff; border-radius: 16px; }
+      .e-wrap h2 { color: #fff; }
+      .e-wrap .lede { color: rgba(255, 255, 255, 0.7); }
+      .e-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .e-card { padding: 22px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 14px; backdrop-filter: blur(8px); }
+      .e-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(255, 255, 255, 0.18); display: grid; place-items: center; font-size: 18px; margin-bottom: 12px; }
+      .e-h { font-size: 14px; font-weight: 800; margin: 0 0 6px; }
+      .e-p { font-size: 12px; color: rgba(255, 255, 255, 0.75); margin: 0; line-height: 1.65; }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Why ESIMmany — 디자인 5 × 콘텐츠 5</h1>
+      <p>각 variation 마다 디자인·콘텐츠 둘 다 다름 (한국어 CS 제거됨)</p>
+    </div>
+
+    <div class="variant-stack">
+      <!-- ═══════════════════════════════════════
+           A · 2×2 grid + 콘텐츠 1: 운영 fact
+           ═══════════════════════════════════════ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              디자인 2×2 + 콘텐츠 1
+              <small>운영 fact 중심 — 즉시성·기능·정책·다국가</small>
+            </div>
+          </div>
+          <div class="variant__pick">
+            <code>A</code>
+            <em>fact-운영</em>
+          </div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="ws">
+            <h2>물리유심 없이, 입국 즉시 데이터.</h2>
+            <p class="lede">결제 후 카카오톡 1~2분 자동 발송. 출국 전 미리 설치, 도착 후 회선 ON.</p>
+            <div class="a-grid">
+              <div class="a-card a-card--lead">
+                <div class="a-icon">⚡</div>
+                <h3 class="a-h">카카오톡 1~2분 발급</h3>
+                <p class="a-p">결제 후 카카오톡으로 QR 자동 발송. 야간·주말에도 24시간 자동, 영업시간 제한 없음.</p>
+              </div>
+              <div class="a-card">
+                <div class="a-icon">🌐</div>
+                <h3 class="a-h">소진 후 500Kbps 무제한</h3>
+                <p class="a-p">매일 한도 다 써도 끊김 없음. 메신저·지도·인터넷 전화 그대로 사용 가능.</p>
+              </div>
+              <div class="a-card">
+                <div class="a-icon">🔁</div>
+                <h3 class="a-h">테더링 · 업로드 OK</h3>
+                <p class="a-p">노트북·태블릿 연결, 콘텐츠 업로드, 영상 스트리밍 모두 지원. 속도 제한 없음.</p>
+              </div>
+              <div class="a-card">
+                <div class="a-icon">🇪🇸🇵🇹</div>
+                <h3 class="a-h">2개국 한 SIM</h3>
+                <p class="a-p">스페인·포르투갈 국경 넘어도 같은 eSIM. Vodafone·Movistar 등 1티어 자동 전환.</p>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══════════════════════════════════════
+           B · 3 lead + 콘텐츠 2: 가격·정책
+           ═══════════════════════════════════════ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              디자인 3 lead + 콘텐츠 2
+              <small>가격·정책 중심 — 즉시할인·자유 선택·다국가</small>
+            </div>
+          </div>
+          <div class="variant__pick">
+            <code>B</code>
+            <em>가격·정책</em>
+          </div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="ws">
+            <h2>지갑 부담은 ↓, 자유는 ↑</h2>
+            <p class="lede">즉시할인 11만원 자동 적용 + 무제한·종량제 자유 선택.</p>
+            <div class="b-grid">
+              <div class="b-card b-lead">
+                <div class="a-icon">💸</div>
+                <h3 class="a-h">즉시할인 약 11만원</h3>
+                <p class="a-p">네이버 결제 시 자동 차감. 별도 쿠폰·신청 없이 모든 옵션에 적용. 1일 1GB 단 3,600원부터 시작.</p>
+              </div>
+              <div class="b-card">
+                <div class="a-icon">📊</div>
+                <h3 class="a-h">무제한 vs 종량제</h3>
+                <p class="a-p">짧은 일정·장기 사용 따라 자유 선택.</p>
+              </div>
+              <div class="b-card">
+                <div class="a-icon">🇪🇸🇵🇹</div>
+                <h3 class="a-h">2개국 한 SIM</h3>
+                <p class="a-p">스페인·포르투갈 자동 전환.</p>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══════════════════════════════════════
+           C · 4 column + 콘텐츠 3: 장기 노매드
+           ═══════════════════════════════════════ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              디자인 4 column + 콘텐츠 3
+              <small>장기·노매드 중심 — 워홀·D7 비자·어학연수 타겟</small>
+            </div>
+          </div>
+          <div class="variant__pick">
+            <code>C</code>
+            <em>장기·노매드</em>
+          </div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="ws">
+            <h2>단기 여행부터 90일 노매드까지.</h2>
+            <p class="lede">스페인 어학연수 · 포르투갈 D7 비자 · 디지털 노매드 모두 한 분기 안심.</p>
+            <div class="c-row">
+              <div class="c-cell">
+                <div class="c-icon">🎒</div>
+                <div class="c-h">60일 워홀</div>
+                <p class="c-p">한 달 워홀 + 한 달<br />여유 동시 커버</p>
+              </div>
+              <div class="c-cell">
+                <div class="c-icon">✈️</div>
+                <div class="c-h">90일 노매드</div>
+                <p class="c-p">한 분기 통째로<br />D7 비자·어학연수</p>
+              </div>
+              <div class="c-cell">
+                <div class="c-icon">🆕</div>
+                <div class="c-h">1~30일 자유</div>
+                <p class="c-p">단기 여행도<br />1일 단위 선택</p>
+              </div>
+              <div class="c-cell">
+                <div class="c-icon">🇪🇸🇵🇹</div>
+                <div class="c-h">2개국 한 SIM</div>
+                <p class="c-p">국경 이동 자동<br />1티어 통신사</p>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══════════════════════════════════════
+           D · 큰 lead + 작은 3 + 콘텐츠 4: 편의·안심
+           ═══════════════════════════════════════ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              디자인 큰 lead + 작은 3 + 콘텐츠 4
+              <small>편의·안심 — 폰 그대로·환불·당일·다국가</small>
+            </div>
+          </div>
+          <div class="variant__pick">
+            <code>D</code>
+            <em>편의·안심</em>
+          </div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="ws">
+            <h2>유심 안 바꿔도 OK.</h2>
+            <p class="lede">폰 그대로 두 번호. 한국 번호 카카오톡·문자 그대로 받으면서 현지 데이터.</p>
+            <div class="d-wrap">
+              <div class="d-lead">
+                <div>
+                  <div class="d-lead-icon">📱</div>
+                  <h3>듀얼심 한국 번호 유지</h3>
+                  <p>물리유심 안 바꿈. 한국 번호로 카카오톡·문자 그대로 수신. 인증번호·전화 안내도 그대로 받으면서 현지 데이터는 eSIM 으로.</p>
+                </div>
+                <div style="font-size: 13px; opacity: 0.85; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.18); margin-top: 14px;">
+                  ✅ iPhone XS · 갤럭시 S23 이상 · iPad Pro 11+ 등
+                </div>
+              </div>
+              <div class="d-side">
+                <div class="d-side-card">
+                  <div class="d-side-icon">⚡</div>
+                  <div class="d-side-text">
+                    <strong>카카오톡 당일 발송</strong>
+                    <span>결제 후 1~2분 · 야간 OK</span>
+                  </div>
+                </div>
+                <div class="d-side-card">
+                  <div class="d-side-icon">🛡</div>
+                  <div class="d-side-text">
+                    <strong>QR 스캔 전 100% 환불</strong>
+                    <span>발급 전이면 전액 환불</span>
+                  </div>
+                </div>
+                <div class="d-side-card">
+                  <div class="d-side-icon">🇪🇸🇵🇹</div>
+                  <div class="d-side-text">
+                    <strong>2개국 한 SIM</strong>
+                    <span>국경 자동 · 1티어 통신사</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══════════════════════════════════════
+           E · dark + 콘텐츠 5: EU 특화 + L2·L3
+           ═══════════════════════════════════════ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              디자인 Dark + 콘텐츠 5
+              <small>EU 특화 + L2·L3 — 다국가·노매드·테더링·저속 무제한</small>
+            </div>
+          </div>
+          <div class="variant__pick">
+            <code>E</code>
+            <em>EU + L2·L3</em>
+          </div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section style="padding: 24px;">
+            <div class="e-wrap">
+              <h2>한 SIM 으로 두 나라, 한 분기까지.</h2>
+              <p class="lede">남유럽 전용 차별화 — 다국가 자동, 60·90일 노매드, 끊김 없는 저속, 테더링 OK.</p>
+              <div class="e-grid">
+                <div class="e-card">
+                  <div class="e-icon">🇪🇸🇵🇹</div>
+                  <h3 class="e-h">2개국 자동 전환</h3>
+                  <p class="e-p">마드리드 → 리스본 이동 시 폰이 자동으로 현지 1티어 통신사 (Vodafone 등)</p>
+                </div>
+                <div class="e-card">
+                  <div class="e-icon">✈️</div>
+                  <h3 class="e-h">60·90일 노매드</h3>
+                  <p class="e-p">워홀·어학연수·D7 비자 한 분기 안심. 1일 평균 1,100원~</p>
+                </div>
+                <div class="e-card">
+                  <div class="e-icon">🌐</div>
+                  <h3 class="e-h">500Kbps 무제한 저속</h3>
+                  <p class="e-p">매일 한도 다 써도 끊김 없음 — 메신저·지도·인터넷 전화 그대로</p>
+                </div>
+                <div class="e-card">
+                  <div class="e-icon">🔁</div>
+                  <h3 class="e-h">테더링 · 업로드</h3>
+                  <p class="e-p">노트북·태블릿 연결, 콘텐츠 업로드, 영상 스트리밍 — 속도 제한 없음</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>

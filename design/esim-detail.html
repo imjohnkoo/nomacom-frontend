@@ -1,0 +1,1154 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ESIMmany · eSIM 상품 상세</title>
+
+    <!-- Pretendard (design system primary font) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+
+    <!-- html-to-image for PNG export -->
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+
+    <style>
+      /* ====================================================================
+         Design tokens — verbatim copy from packages/design-tokens/src/*.json
+         Keep in sync manually. This file is intentionally standalone — it is
+         NOT bundled with any app; only used for PNG mockup export.
+         ==================================================================== */
+      :root {
+        /* primary */
+        --color-primary-50: #f1edff;
+        --color-primary-100: #e3dbff;
+        --color-primary-200: #c7b6ff;
+        --color-primary-300: #a78bff;
+        --color-primary-400: #8761ff;
+        --color-primary-500: #6239ff;
+        --color-primary-600: #5025e8;
+        --color-primary-700: #3f1cc0;
+        --color-primary-800: #2f1499;
+        --color-primary-900: #1f0c6e;
+
+        /* neutral */
+        --color-neutral-0: #ffffff;
+        --color-neutral-50: #fafafa;
+        --color-neutral-100: #f5f5f5;
+        --color-neutral-200: #e5e5e5;
+        --color-neutral-300: #d4d4d4;
+        --color-neutral-400: #a3a3a3;
+        --color-neutral-500: #737373;
+        --color-neutral-600: #525252;
+        --color-neutral-700: #404040;
+        --color-neutral-800: #262626;
+        --color-neutral-900: #171717;
+
+        /* status */
+        --color-success-50: #f0fdf4;
+        --color-success-500: #22c55e;
+        --color-success-700: #15803d;
+        --color-warning-50: #fffbeb;
+        --color-warning-500: #f59e0b;
+        --color-warning-700: #b45309;
+        --color-error-50: #fef2f2;
+        --color-error-500: #ef4444;
+        --color-error-700: #b91c1c;
+        --color-info-50: #f0f9ff;
+        --color-info-500: #0ea5e9;
+        --color-info-700: #0369a1;
+
+        /* shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        --shadow-cta-brand: 0 10px 24px -10px rgba(98, 57, 255, 0.5);
+        --shadow-modal: 0 30px 60px -20px rgba(17, 17, 17, 0.25);
+
+        /* radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+        --radius-2xl: 1rem;
+        --radius-3xl: 1.5rem;
+        --radius-full: 9999px;
+
+        /* fonts */
+        --font-sans:
+          'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      /* ====================================================================
+         Reset
+         ==================================================================== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        color: var(--color-neutral-900);
+        background: #ededf2;
+      }
+
+      /* ====================================================================
+         Toolbar (excluded from PNG export — has id="toolbar")
+         ==================================================================== */
+      .toolbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 20px;
+        background: rgba(23, 23, 23, 0.94);
+        color: #fff;
+        backdrop-filter: blur(8px);
+        font-size: 13px;
+      }
+      .toolbar__info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        opacity: 0.85;
+      }
+      .toolbar__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--color-primary-400);
+      }
+      .toolbar__btn {
+        appearance: none;
+        background: var(--color-primary-500);
+        color: #fff;
+        border: 0;
+        border-radius: var(--radius-lg);
+        padding: 9px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 150ms ease;
+      }
+      .toolbar__btn:hover {
+        background: var(--color-primary-600);
+      }
+      .toolbar__btn:disabled {
+        opacity: 0.6;
+        cursor: progress;
+      }
+      .toolbar__btn .label-default {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .toolbar__btn .label-busy {
+        display: none;
+      }
+      .toolbar__btn.is-busy .label-default {
+        display: none;
+      }
+      .toolbar__btn.is-busy .label-busy {
+        display: inline;
+      }
+      .toolbar__hint {
+        opacity: 0.55;
+        font-size: 12px;
+      }
+
+      /* ====================================================================
+         Page frame — 860px Naver Smart Store standard width
+         ==================================================================== */
+      .page {
+        width: 860px;
+        margin: 32px auto;
+        background: #fff;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        border-radius: 4px;
+      }
+
+      /* ====================================================================
+         Section primitives
+         ==================================================================== */
+      .section {
+        padding: 80px 60px;
+      }
+      .section--tight {
+        padding: 60px 60px;
+      }
+      .section--alt {
+        background: var(--color-neutral-50);
+      }
+      .section--ink {
+        background: var(--color-neutral-900);
+        color: var(--color-neutral-0);
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-500);
+        margin-bottom: 18px;
+      }
+      .section--ink .eyebrow {
+        color: var(--color-primary-300);
+      }
+      .section__title {
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin: 0 0 16px;
+      }
+      .section__lede {
+        font-size: 16px;
+        line-height: 1.7;
+        color: var(--color-neutral-600);
+        margin: 0 0 40px;
+        max-width: 620px;
+      }
+      .section--ink .section__lede {
+        color: var(--color-neutral-300);
+      }
+
+      /* ====================================================================
+         HERO
+         ==================================================================== */
+      .hero {
+        position: relative;
+        padding: 64px 60px 72px;
+        background:
+          radial-gradient(circle at 80% 0%, rgba(167, 139, 255, 0.5) 0%, transparent 55%),
+          radial-gradient(circle at 0% 80%, rgba(80, 37, 232, 0.6) 0%, transparent 50%),
+          linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        overflow: hidden;
+      }
+      .hero__nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 48px;
+      }
+      .hero__brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .hero__brand-mark {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: #fff;
+        display: grid;
+        place-items: center;
+        color: var(--color-primary-500);
+        font-weight: 900;
+        font-size: 13px;
+      }
+      .hero__nav-meta {
+        font-size: 12px;
+        opacity: 0.7;
+        letter-spacing: 0.04em;
+      }
+
+      .hero__row {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 36px;
+        align-items: center;
+      }
+      .hero__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px 7px 9px;
+        background: rgba(255, 255, 255, 0.16);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .hero__badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+      }
+      .hero__title {
+        font-size: 52px;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.05;
+        margin: 20px 0 18px;
+      }
+      .hero__title small {
+        display: block;
+        font-size: 22px;
+        font-weight: 600;
+        opacity: 0.78;
+        letter-spacing: -0.015em;
+        margin-bottom: 8px;
+      }
+      .hero__sub {
+        font-size: 16px;
+        line-height: 1.75;
+        color: rgba(255, 255, 255, 0.82);
+        margin: 0 0 28px;
+      }
+      .hero__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hero__chip {
+        padding: 7px 13px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+
+      /* Phone illustration */
+      .phone {
+        position: relative;
+        margin: 0 auto;
+        width: 240px;
+        height: 480px;
+        background: #fff;
+        border-radius: 36px;
+        padding: 14px;
+        box-shadow:
+          0 0 0 6px rgba(255, 255, 255, 0.18),
+          0 30px 60px -20px rgba(0, 0, 0, 0.55);
+      }
+      .phone__screen {
+        height: 100%;
+        background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
+        border-radius: 24px;
+        padding: 22px 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        color: var(--color-neutral-900);
+      }
+      .phone__pill {
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 9px;
+        color: var(--color-neutral-400);
+        margin-bottom: 4px;
+      }
+      .phone__status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        background: var(--color-success-50);
+        color: var(--color-success-700);
+        font-size: 9.5px;
+        font-weight: 700;
+        border-radius: var(--radius-full);
+      }
+      .phone__status::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--color-success-500);
+      }
+      .phone__h {
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.3;
+        text-align: center;
+        letter-spacing: -0.015em;
+      }
+      .phone__qr {
+        margin-top: 4px;
+        width: 132px;
+        height: 132px;
+        background:
+          conic-gradient(from 0deg at 50% 50%, #171717 25%, transparent 0 50%, #171717 0 75%, transparent 0) 0 0 / 18px 18px,
+          #fff;
+        border: 2px solid var(--color-neutral-900);
+        border-radius: 14px;
+        padding: 8px;
+        position: relative;
+      }
+      .phone__qr::after {
+        content: '';
+        position: absolute;
+        inset: 50% 50% auto auto;
+        transform: translate(50%, -50%);
+        width: 30px;
+        height: 30px;
+        background: var(--color-primary-500);
+        border-radius: 6px;
+        box-shadow: 0 0 0 4px #fff;
+      }
+      .phone__cta {
+        margin-top: auto;
+        align-self: stretch;
+        background: var(--color-neutral-900);
+        color: #fff;
+        text-align: center;
+        padding: 11px 0;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      /* ====================================================================
+         3-benefit grid
+         ==================================================================== */
+      .benefits {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .benefit {
+        padding: 28px 22px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .section--alt .benefit {
+        background: #fff;
+      }
+      .benefit__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: var(--color-primary-50);
+        color: var(--color-primary-600);
+        display: grid;
+        place-items: center;
+        margin-bottom: 18px;
+      }
+      .benefit__h {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      .benefit__p {
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+
+      /* ====================================================================
+         Stat / spec triple
+         ==================================================================== */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: var(--color-neutral-900);
+        color: #fff;
+        border-radius: var(--radius-3xl);
+        overflow: hidden;
+      }
+      .stat {
+        padding: 36px 28px;
+        position: relative;
+      }
+      .stat + .stat {
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .stat__label {
+        font-size: 11.5px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--color-primary-300);
+        margin-bottom: 12px;
+      }
+      .stat__value {
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+      }
+      .stat__value small {
+        font-size: 16px;
+        font-weight: 600;
+        opacity: 0.6;
+        margin-left: 4px;
+      }
+      .stat__hint {
+        margin-top: 8px;
+        font-size: 12.5px;
+        color: var(--color-neutral-400);
+      }
+
+      /* ====================================================================
+         Country chip grid
+         ==================================================================== */
+      .country-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+      }
+      .country {
+        padding: 12px 10px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-xl);
+        text-align: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-neutral-700);
+      }
+      .country__flag {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 4px;
+        line-height: 1;
+      }
+
+      /* ====================================================================
+         Steps
+         ==================================================================== */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .step {
+        position: relative;
+        padding: 26px 20px 24px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .step__num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+      .step__h {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        margin: 0 0 6px;
+      }
+      .step__p {
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+
+      /* ====================================================================
+         Device table
+         ==================================================================== */
+      .devices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .device {
+        padding: 26px 24px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .device__head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .device__logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--color-neutral-100);
+        display: grid;
+        place-items: center;
+        color: var(--color-neutral-900);
+      }
+      .device__title {
+        font-size: 15px;
+        font-weight: 800;
+      }
+      .device__list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 13px;
+        color: var(--color-neutral-600);
+        line-height: 1.9;
+      }
+      .device__list li::before {
+        content: '·';
+        margin-right: 8px;
+        color: var(--color-primary-500);
+        font-weight: 900;
+      }
+
+      /* ====================================================================
+         FAQ
+         ==================================================================== */
+      .faq {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .faq__item {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: 22px 26px;
+      }
+      .faq__q {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 15.5px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        margin: 0 0 10px;
+      }
+      .faq__q::before {
+        content: 'Q';
+        flex: 0 0 22px;
+        height: 22px;
+        background: var(--color-primary-500);
+        color: #fff;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 11.5px;
+        font-weight: 800;
+        margin-top: 2px;
+      }
+      .faq__a {
+        padding-left: 34px;
+        font-size: 13.5px;
+        line-height: 1.75;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+
+      /* ====================================================================
+         Caution
+         ==================================================================== */
+      .caution {
+        background: var(--color-warning-50);
+        border: 1px solid #fde68a;
+        border-radius: var(--radius-2xl);
+        padding: 24px 28px;
+      }
+      .caution__h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--color-warning-700);
+        margin: 0 0 12px;
+      }
+      .caution__list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--color-neutral-700);
+        font-size: 13px;
+        line-height: 1.85;
+      }
+      .caution__list li {
+        padding-left: 4px;
+      }
+
+      /* ====================================================================
+         Footer / final CTA
+         ==================================================================== */
+      .final {
+        padding: 80px 60px;
+        background:
+          radial-gradient(circle at 100% 100%, rgba(167, 139, 255, 0.4) 0%, transparent 60%),
+          linear-gradient(135deg, #171717 0%, #2f1499 100%);
+        color: #fff;
+        text-align: center;
+      }
+      .final__h {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        margin: 0 0 14px;
+      }
+      .final__p {
+        font-size: 15px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.78);
+        margin: 0 0 28px;
+      }
+      .final__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        background: #fff;
+        color: var(--color-neutral-900);
+        border-radius: var(--radius-full);
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        box-shadow: var(--shadow-cta-brand);
+      }
+      .final__sub {
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+        gap: 22px;
+        font-size: 12.5px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .final__sub span::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar__info">
+        <span class="toolbar__dot"></span>
+        <strong>ESIMmany 상품상세</strong>
+        <span class="toolbar__hint">860 × 자동 · PNG export 시 본 툴바는 제외됩니다.</span>
+      </div>
+      <button class="toolbar__btn" id="exportBtn">
+        <span class="label-default">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          PNG 으로 저장
+        </span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <main class="page" id="page">
+      <!-- ============================================================
+           HERO
+           ============================================================ -->
+      <header class="hero">
+        <div class="hero__nav">
+          <div class="hero__brand">
+            <span class="hero__brand-mark">e</span>
+            <span>esimmany · 이심마니</span>
+          </div>
+          <div class="hero__nav-meta">NAVER SMART STORE · eSIM</div>
+        </div>
+
+        <div class="hero__row">
+          <div>
+            <span class="hero__badge">
+              <span class="hero__badge-dot"></span>
+              한국 고객센터 · 평일 10시–18시
+            </span>
+            <h1 class="hero__title">
+              <small>일본 데이터 무제한</small>
+              7일이면 충분해요
+            </h1>
+            <p class="hero__sub">
+              네이버에서 결제하고, 주문번호 하나로 발급받는 가장 쉬운 eSIM.<br />
+              시작 일시를 미리 예약해 두면 비행기에서 내리는 순간 바로 켜집니다.
+            </p>
+            <div class="hero__chips">
+              <span class="hero__chip">매일 2GB 고속</span>
+              <span class="hero__chip">소진 후 무제한 (저속)</span>
+              <span class="hero__chip">테더링 가능</span>
+              <span class="hero__chip">즉시 발급</span>
+            </div>
+          </div>
+
+          <div class="phone">
+            <div class="phone__screen">
+              <div class="phone__pill">
+                <span>9:41</span>
+                <span>●●● 5G</span>
+              </div>
+              <div class="phone__status">발급 완료</div>
+              <div class="phone__h">QR 코드가<br />준비됐어요</div>
+              <div class="phone__qr"></div>
+              <div class="phone__cta">QR 코드 다운로드</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ============================================================
+           WHY ESIMmany
+           ============================================================ -->
+      <section class="section section--alt">
+        <span class="eyebrow">Why ESIMmany</span>
+        <h2 class="section__title">물리유심 없이<br />입국 즉시 데이터.</h2>
+        <p class="section__lede">
+          결제 후 평균 30초 안에 발급됩니다. 시작 일시를 미리 정해 두면 비행기 모드를 끄는 순간
+          자동 활성화되어, 공항에서 줄 서서 유심을 살 필요가 없습니다.
+        </p>
+
+        <div class="benefits">
+          <div class="benefit">
+            <div class="benefit__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L4.09 12.97a1 1 0 0 0 .76 1.63H11l-1 7L19.91 11.03a1 1 0 0 0-.76-1.63H13z" />
+              </svg>
+            </div>
+            <h3 class="benefit__h">결제 즉시 발급</h3>
+            <p class="benefit__p">
+              네이버 결제와 동시에 주문이 접수되고, 평균 30초 안에 QR 코드를 받으실 수 있어요.
+            </p>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M8 2v4M16 2v4M3 10h18" />
+              </svg>
+            </div>
+            <h3 class="benefit__h">시작 일시 예약</h3>
+            <p class="benefit__p">
+              출국 일정에 맞춰 시작 일시를 직접 선택. 도착 전까지는 기존 통신사를 그대로 사용할 수
+              있어요.
+            </p>
+          </div>
+          <div class="benefit">
+            <div class="benefit__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+              </svg>
+            </div>
+            <h3 class="benefit__h">한국 고객센터</h3>
+            <p class="benefit__p">
+              해외 현지에서도 카카오톡으로 한국어 상담. 발급 오류 시 환불 또는 재발급을 즉시
+              도와드려요.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           SPEC STATS
+           ============================================================ -->
+      <section class="section">
+        <span class="eyebrow">Plan at a glance</span>
+        <h2 class="section__title">상품 한눈에 보기</h2>
+        <p class="section__lede">
+          매일 2GB 의 고속 데이터를 7일 동안 사용하실 수 있어요. 소진 후에도 같은 속도는
+          아니지만 카카오톡 · 지도 정도는 충분히 쓸 수 있도록 저속으로 계속 연결됩니다.
+        </p>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__label">사용 기간</div>
+            <div class="stat__value">7<small>일</small></div>
+            <div class="stat__hint">최초 활성화 시점부터 카운트</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">매일 고속</div>
+            <div class="stat__value">2<small>GB / 일</small></div>
+            <div class="stat__hint">매일 자정 (현지) 초기화</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">소진 후</div>
+            <div class="stat__value">무제한<small>저속</small></div>
+            <div class="stat__hint">메신저 · 지도 사용 가능</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           COUNTRIES
+           ============================================================ -->
+      <section class="section section--alt">
+        <span class="eyebrow">Coverage</span>
+        <h2 class="section__title">사용 가능 지역</h2>
+        <p class="section__lede">
+          일본 전국에서 사용 가능합니다. 도쿄 · 오사카 · 후쿠오카 등 주요 도시는 물론, 홋카이도와
+          오키나와 외곽 지역까지 NTT Docomo · SoftBank 망에 자동 연결됩니다.
+        </p>
+
+        <div class="country-grid">
+          <div class="country"><span class="country__flag">🇯🇵</span>도쿄</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>오사카</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>교토</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>후쿠오카</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>삿포로</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>오키나와</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>나고야</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>요코하마</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>고베</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>나라</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>히로시마</div>
+          <div class="country"><span class="country__flag">🇯🇵</span>센다이</div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           STEPS
+           ============================================================ -->
+      <section class="section">
+        <span class="eyebrow">How it works</span>
+        <h2 class="section__title">발급은 이렇게 진행돼요</h2>
+        <p class="section__lede">
+          네이버 스마트스토어에서 결제 후, 받으신 주문번호로 본인 인증만 하시면 됩니다. 전체 과정은
+          평균 1분.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__num">1</div>
+            <h3 class="step__h">스토어 결제</h3>
+            <p class="step__p">네이버 스마트스토어에서 상품 선택 후 결제. 주문번호가 발급돼요.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">2</div>
+            <h3 class="step__h">본인 인증</h3>
+            <p class="step__p">
+              ESIMmany 페이지에서 주문번호와 이름 · 전화번호로 본인 확인을 진행해요.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step__num">3</div>
+            <h3 class="step__h">시작 일시 선택</h3>
+            <p class="step__p">현지 시간 기준으로 사용을 시작할 일시와 국가를 선택해요.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">4</div>
+            <h3 class="step__h">QR 코드 등록</h3>
+            <p class="step__p">
+              발급된 QR 코드를 휴대폰 설정에서 스캔하면 끝. 비행기에서 켜지면 자동 활성화돼요.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           DEVICES
+           ============================================================ -->
+      <section class="section section--alt">
+        <span class="eyebrow">Compatibility</span>
+        <h2 class="section__title">지원 기기를 확인해 주세요</h2>
+        <p class="section__lede">
+          eSIM 은 휴대폰 자체가 지원해야 사용할 수 있어요. 아래 기기 또는 그 이후 모델이면
+          대부분 동작합니다.
+        </p>
+
+        <div class="devices">
+          <div class="device">
+            <div class="device__head">
+              <div class="device__logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.665 16.811a10.32 10.32 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.563-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.025-1.154-.229-1.732-.764-.367-.32-.826-.87-1.377-1.648-.59-.829-1.075-1.794-1.456-2.891-.408-1.187-.611-2.335-.611-3.447 0-1.273.275-2.372.826-3.292a4.857 4.857 0 0 1 1.73-1.751 4.65 4.65 0 0 1 2.34-.662c.46 0 1.063.142 1.81.422.745.28 1.224.422 1.434.422.157 0 .688-.166 1.588-.493.852-.303 1.572-.429 2.164-.379 1.604.13 2.809.762 3.611 1.901-1.434.871-2.144 2.091-2.13 3.658.012 1.221.456 2.237 1.33 3.044a4.378 4.378 0 0 0 1.336.871c-.108.31-.221.609-.341.895zM15.998 2.38c0 .95-.348 1.838-1.039 2.659-.836.976-1.846 1.541-2.941 1.452a2.955 2.955 0 0 1-.022-.36c0-.913.396-1.889 1.103-2.688.353-.404.802-.741 1.347-1.009.543-.264 1.058-.41 1.541-.435.014.128.021.255.021.381z" />
+                </svg>
+              </div>
+              <div class="device__title">iPhone · iOS 14+</div>
+            </div>
+            <ul class="device__list">
+              <li>iPhone XS · XR 이후 모든 모델</li>
+              <li>iPhone SE 2세대 · 3세대</li>
+              <li>한국 정식 발매 제품 (LG U+ · KT · SKT)</li>
+              <li>설정 → 셀룰러 → eSIM 추가 → QR 스캔</li>
+            </ul>
+          </div>
+
+          <div class="device">
+            <div class="device__head">
+              <div class="device__logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#3ddc84">
+                  <path d="M17.523 15.34a1.123 1.123 0 1 1 1.122-1.123 1.123 1.123 0 0 1-1.122 1.123m-11.046 0a1.123 1.123 0 1 1 1.123-1.123 1.123 1.123 0 0 1-1.123 1.123m11.45-6.02 2.24-3.879a.465.465 0 0 0-.165-.635.466.466 0 0 0-.635.17l-2.27 3.931a14.107 14.107 0 0 0-11.793 0L3.034 4.976a.467.467 0 0 0-.806.464l2.24 3.88A13.219 13.219 0 0 0 0 19.59h24a13.218 13.218 0 0 0-6.077-10.27" />
+                </svg>
+              </div>
+              <div class="device__title">Galaxy · Pixel · One UI 4+</div>
+            </div>
+            <ul class="device__list">
+              <li>Galaxy S20 · Note 20 이후 모든 모델</li>
+              <li>Galaxy Z Flip · Z Fold 시리즈</li>
+              <li>Google Pixel 4 이후 (해외 직구 포함)</li>
+              <li>설정 → 연결 → SIM 카드 관리자 → QR 스캔</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           FAQ
+           ============================================================ -->
+      <section class="section">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section__title">자주 묻는 질문</h2>
+        <p class="section__lede">결제 전, 가장 많이 받는 질문을 정리했어요.</p>
+
+        <div class="faq">
+          <div class="faq__item">
+            <p class="faq__q">한국에서 미리 발급받아도 되나요?</p>
+            <p class="faq__a">
+              네, 가능합니다. 시작 일시를 출국일 기준으로 설정하시면 그 시점부터 카운트가
+              시작되며, 그 전까지는 기존 통신사 그대로 사용할 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">QR 코드를 잃어버렸어요. 재발급되나요?</p>
+            <p class="faq__a">
+              주문번호로 다시 로그인하시면 같은 QR 코드를 다시 보실 수 있습니다. 단, eSIM 은 한
+              기기에만 등록되며 등록 후에는 다른 기기로 옮길 수 없어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">테더링 (핫스팟) 도 되나요?</p>
+            <p class="faq__a">
+              네, 됩니다. 일행과 데이터를 나눠 쓰시려는 경우 한 명만 결제하시고 핫스팟을 켜셔도
+              괜찮아요. (다만 핫스팟 사용 시 배터리 소모가 빠른 점 참고해 주세요.)
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">현지에서 전화 통화도 되나요?</p>
+            <p class="faq__a">
+              본 상품은 데이터 전용입니다. 카카오톡 보이스톡 · WhatsApp 등 인터넷 전화는 가능하며,
+              일반 음성 통화는 한국 번호 그대로 (로밍 요금 발생) 또는 별도 앱을 사용해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">사용 도중 데이터가 끊겨요.</p>
+            <p class="faq__a">
+              일시적인 통신망 문제일 수 있습니다. 비행기 모드를 5초 켜고 다시 꺼 보시거나, 설정에서
+              ESIMmany 회선을 한 번 비활성화 후 다시 활성화해 주세요. 그래도 안 되면 카카오톡으로
+              문의해 주세요.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           CAUTION
+           ============================================================ -->
+      <section class="section section--tight section--alt">
+        <div class="caution">
+          <h3 class="caution__h">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            구매 전 꼭 확인해 주세요
+          </h3>
+          <ul class="caution__list">
+            <li>eSIM 은 디지털 상품 특성상 발급 후 환불이 어렵습니다.</li>
+            <li>지원되지 않는 기기에서는 발급해도 사용하실 수 없으니 호환성 표를 먼저 확인해 주세요.</li>
+            <li>QR 코드는 한 기기에만 등록되며, 등록 후 다른 기기로 이전할 수 없어요.</li>
+            <li>현지 통신 상황 (지하철 · 산간 · 지하공간) 에 따라 일시적으로 속도가 느려질 수 있어요.</li>
+            <li>일본 외 다른 국가로 이동하시면 데이터가 동작하지 않습니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           FINAL CTA
+           ============================================================ -->
+      <section class="final">
+        <h2 class="final__h">출국 전 단 1분.<br />지금 발급받으세요.</h2>
+        <p class="final__p">
+          이미 18,000명 이상이 ESIMmany 로 일본 여행을 떠났어요.<br />
+          네이버 스마트스토어에서 검색해 보세요.
+        </p>
+        <div class="final__btn">
+          네이버 스마트스토어에서 구매하기
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M13 5l7 7-7 7" />
+          </svg>
+        </div>
+        <div class="final__sub">
+          <span>카카오톡 채널 @esimmany</span>
+          <span>평일 10시–18시 한국어 상담</span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        const btn = document.getElementById('exportBtn');
+        const node = document.getElementById('page');
+
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          btn.classList.add('is-busy');
+          try {
+            const dataUrl = await htmlToImage.toPng(node, {
+              pixelRatio: 2,
+              backgroundColor: '#ffffff',
+              cacheBust: true,
+            });
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = `esim-detail-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          } catch (err) {
+            console.error(err);
+            window.alert('PNG 변환 실패: ' + err.message);
+          } finally {
+            btn.disabled = false;
+            btn.classList.remove('is-busy');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

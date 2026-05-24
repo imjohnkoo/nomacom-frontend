@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>07 · Reviews · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .reviews__hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        border-radius: var(--radius-3xl);
+        margin-bottom: 28px;
+      }
+      .reviews__score {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .reviews__stars {
+        font-size: 22px;
+        letter-spacing: 4px;
+        color: #fbbf24;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .reviews__score-value {
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .reviews__score-sub {
+        margin-top: 6px;
+        font-size: 13px;
+        opacity: 0.78;
+      }
+      .reviews__breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        justify-content: center;
+      }
+      .reviews__row {
+        display: grid;
+        grid-template-columns: 30px 1fr 48px;
+        align-items: center;
+        gap: 10px;
+      }
+      .reviews__bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+      .reviews__bar-fill {
+        height: 100%;
+        background: #fbbf24;
+        border-radius: var(--radius-full);
+      }
+      .reviews__row-num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.85;
+      }
+
+      .quotes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .quote {
+        padding: 20px 22px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .quote--span {
+        grid-column: span 2;
+      }
+      .quote__stars {
+        font-size: 13px;
+        letter-spacing: 1.5px;
+        color: #f59e0b;
+        margin-bottom: 8px;
+      }
+      .quote__text {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--color-neutral-800);
+        margin: 0 0 14px;
+      }
+      .quote__author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .quote__avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+      }
+      .quote__meta {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        line-height: 1.5;
+      }
+      .quote__meta strong {
+        display: block;
+        color: var(--color-neutral-800);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .photos {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .photo {
+        aspect-ratio: 1 / 1;
+        background: var(--color-neutral-200);
+        border-radius: var(--radius-xl);
+        position: relative;
+        overflow: hidden;
+      }
+      .photo::after {
+        content: '사진 후기';
+        position: absolute;
+        inset: auto 8px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--color-neutral-600);
+        background: rgba(255, 255, 255, 0.88);
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        text-align: center;
+      }
+      .photo:nth-child(1) {
+        background:
+          linear-gradient(135deg, rgba(98, 57, 255, 0.3), rgba(0, 0, 0, 0.2)),
+          radial-gradient(circle at 30% 30%, #c7b6ff, #6239ff);
+      }
+      .photo:nth-child(2) {
+        background:
+          linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(0, 0, 0, 0.2)),
+          radial-gradient(circle at 70% 30%, #fde68a, #f59e0b);
+      }
+      .photo:nth-child(3) {
+        background:
+          linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(0, 0, 0, 0.2)),
+          radial-gradient(circle at 50% 60%, #bbf7d0, #22c55e);
+      }
+      .photo:nth-child(4) {
+        background:
+          linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(0, 0, 0, 0.2)),
+          radial-gradient(circle at 60% 40%, #bae6fd, #0ea5e9);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">07</span>
+        <span class="dev-toolbar__title">Reviews</span>
+        <span class="dev-toolbar__hint">별점 · 5 인용 · 사진 후기 4장</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-07-reviews">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">Reviews</span>
+        <h2 class="section__title">
+          스페인·포르투갈로 떠난 분들
+        </h2>
+        <p class="section__lede">
+          실제 구매하신 분들의 후기입니다. 네이버 스마트스토어에서 더 많은 후기를 확인하실 수
+          있어요.
+        </p>
+
+        <div class="reviews__hero">
+          <div class="reviews__score">
+            <div class="reviews__stars">★★★★★</div>
+            <div class="reviews__score-value">4.8</div>
+            <div class="reviews__score-sub">2,847개 후기 기준</div>
+          </div>
+          <div class="reviews__breakdown">
+            <div class="reviews__row">
+              <span>5★</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 84%"></div></div>
+              <span class="reviews__row-num">84%</span>
+            </div>
+            <div class="reviews__row">
+              <span>4★</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 11%"></div></div>
+              <span class="reviews__row-num">11%</span>
+            </div>
+            <div class="reviews__row">
+              <span>3★</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 3%"></div></div>
+              <span class="reviews__row-num">3%</span>
+            </div>
+            <div class="reviews__row">
+              <span>2★</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 1%"></div></div>
+              <span class="reviews__row-num">1%</span>
+            </div>
+            <div class="reviews__row">
+              <span>1★</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 1%"></div></div>
+              <span class="reviews__row-num">1%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quotes">
+          <div class="quote quote--span">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "마드리드 → 리스본 4박씩 도느라 8일권 샀는데 국경 넘어도 같은 eSIM 그대로 잡혀서
+              편했어요. 매일 테더링으로 노트북 업무도 속도 한 번도 안 떨어졌고요."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">김</div>
+              <div class="quote__meta">
+                <strong>김** 님</strong>
+                남유럽 7일 매일 2GB · 2026년 3월
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "포르투 한 달 워홀로 머무는데 30GB 종량제로 충분. 30일 정확히 끝나니까 자동 연장 걱정
+              없어서 깔끔하고 좋았어요."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">박</div>
+              <div class="quote__meta">
+                <strong>박** 님</strong>
+                남유럽 종량제 30GB · 2026년 2월
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "바르셀로나에서 신호가 약한 곳에서 잠깐 헤맸는데, 카카오톡 한국어 상담으로 30초 만에
+              해결. 외국어 안 통할 걱정 없는 게 진짜 큰 장점."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">이</div>
+              <div class="quote__meta">
+                <strong>이** 님</strong>
+                남유럽 5일 매일 1GB · 2026년 4월
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <div class="quote__stars">★★★★☆</div>
+            <p class="quote__text">
+              "그라나다 · 세비야 일주일 돌면서 영상 스트리밍·사진 업로드 끊김 없이. 일행 셋이서
+              테더링 같이 썼는데도 속도 안 떨어졌어요."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">최</div>
+              <div class="quote__meta">
+                <strong>최** 님</strong>
+                남유럽 7일 매일 2GB · 2026년 3월
+              </div>
+            </div>
+          </div>
+
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "부모님 모시고 스페인·포르투갈 10일 패키지였는데, 한 번 발급으로 두 나라 다 커버.
+              카카오톡으로 미리 받아두니 출국 전 안심이었어요."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">정</div>
+              <div class="quote__meta">
+                <strong>정** 님</strong>
+                남유럽 10일 매일 2GB · 2026년 2월
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="photos">
+          <div class="photo"></div>
+          <div class="photo"></div>
+          <div class="photo"></div>
+          <div class="photo"></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

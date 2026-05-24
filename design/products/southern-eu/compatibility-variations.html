@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compatibility 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      .sect { padding: 48px 60px; }
+      .sect .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary-500); margin-bottom: 10px; display: inline-block; }
+      .sect h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+      .sect .lede { font-size: 13.5px; color: var(--color-neutral-500); margin: 0 0 24px; line-height: 1.6; max-width: 540px; }
+
+      /* 공통 chip / 경고 */
+      .chip { padding: 4px 10px; background: var(--color-neutral-100); color: var(--color-neutral-700); border-radius: 9999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+      .chip--new { background: var(--color-primary-50); color: var(--color-primary-700); }
+      .chip--bad { background: var(--color-error-50); color: var(--color-error-700); }
+      .warn { padding: 16px 20px; background: var(--color-error-50); border: 2px solid var(--color-error-500); border-radius: 14px; margin-bottom: 18px; }
+      .warn__h { font-size: 13.5px; font-weight: 800; color: var(--color-error-700); margin: 0 0 6px; }
+      .warn ul { margin: 0; padding-left: 18px; font-size: 12px; line-height: 1.7; color: var(--color-error-700); }
+      .warn b { font-weight: 800; }
+
+      /* ─── A: 현재 — 경고박스 + 3 device 카드 ─── */
+      .a-devices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .a-device { padding: 22px 22px 20px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 14px; }
+      .a-device--full { grid-column: span 2; }
+      .a-device--warn { border-color: #fcd34d; background: linear-gradient(0deg, rgba(245, 158, 11, 0.04), rgba(245, 158, 11, 0.04)), #fff; }
+      .a-device__head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+      .a-device__icon { width: 34px; height: 34px; border-radius: 9px; background: var(--color-neutral-100); display: grid; place-items: center; font-size: 18px; }
+      .a-device__title { font-size: 14px; font-weight: 800; color: var(--color-neutral-900); }
+      .a-device__title small { display: block; font-size: 11px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .a-device__chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+      .a-device__guide { padding: 10px 12px; background: var(--color-neutral-50); border-radius: 8px; font-size: 11.5px; line-height: 1.6; color: var(--color-neutral-700); }
+      .a-device__guide b { color: var(--color-neutral-900); }
+
+      /* ─── B: 호환/비호환 좌우 분할 ─── */
+      .b-split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .b-col { padding: 24px 22px; border-radius: 16px; border: 1px solid var(--color-neutral-200); }
+      .b-col--ok { background: linear-gradient(180deg, #f0fdf4, #fff 50%); border-color: var(--color-success-500); }
+      .b-col--ng { background: linear-gradient(180deg, #fef2f2, #fff 50%); border-color: var(--color-error-500); }
+      .b-col__h { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+      .b-col__icon { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; font-weight: 800; color: #fff; }
+      .b-col--ok .b-col__icon { background: var(--color-success-500); }
+      .b-col--ng .b-col__icon { background: var(--color-error-500); }
+      .b-col__name { font-size: 16px; font-weight: 800; }
+      .b-col--ok .b-col__name { color: var(--color-success-700); }
+      .b-col--ng .b-col__name { color: var(--color-error-700); }
+      .b-col__sub { font-size: 12px; color: var(--color-neutral-500); margin: 0 0 14px; }
+      .b-group { margin-top: 10px; }
+      .b-group__title { font-size: 11.5px; font-weight: 800; color: var(--color-neutral-600); margin-bottom: 6px; }
+      .b-group__chips { display: flex; flex-wrap: wrap; gap: 5px; }
+
+      /* ─── C: 큰 체크리스트 ─── */
+      .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .c-card { padding: 18px 20px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; display: flex; align-items: flex-start; gap: 12px; }
+      .c-card--ok { border-color: var(--color-success-200, #86efac); }
+      .c-card--bad { border-color: var(--color-error-200, #fecaca); background: linear-gradient(0deg, rgba(239, 68, 68, 0.02), rgba(239, 68, 68, 0.02)), #fff; }
+      .c-icon { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; color: #fff; flex-shrink: 0; }
+      .c-card--ok .c-icon { background: var(--color-success-500); }
+      .c-card--bad .c-icon { background: var(--color-error-500); }
+      .c-card__h { font-size: 13.5px; font-weight: 800; color: var(--color-neutral-900); margin: 0 0 2px; }
+      .c-card__p { font-size: 11.5px; color: var(--color-neutral-500); margin: 0; line-height: 1.55; }
+
+      /* ─── D: 검색·필터 mockup ─── */
+      .d-search { padding: 16px 20px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; border-radius: 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+      .d-search__icon { width: 36px; height: 36px; border-radius: 9px; background: rgba(255, 255, 255, 0.18); display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+      .d-search__h { font-size: 14px; font-weight: 800; margin: 0; }
+      .d-search__h small { display: block; font-size: 11.5px; opacity: 0.78; margin-top: 1px; font-weight: 500; }
+      .d-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+      .d-tab { padding: 6px 14px; background: var(--color-neutral-100); border: 1px solid transparent; border-radius: 9999px; font-size: 12px; font-weight: 700; color: var(--color-neutral-700); }
+      .d-tab--active { background: #fff; border-color: var(--color-primary-300); color: var(--color-primary-700); }
+      .d-list { padding: 18px; background: #fff; border: 1px solid var(--color-neutral-200); border-radius: 12px; }
+      .d-list__title { font-size: 11.5px; font-weight: 800; color: var(--color-neutral-600); margin-bottom: 10px; }
+      .d-list__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+      /* ─── E: 단순 표 ─── */
+      .e-tbl { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--color-neutral-200); border-radius: 12px; overflow: hidden; font-size: 12.5px; background: #fff; }
+      .e-tbl th, .e-tbl td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--color-neutral-100); }
+      .e-tbl thead th { background: var(--color-neutral-50); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-neutral-600); font-weight: 700; }
+      .e-tbl tbody tr:last-child td { border-bottom: 0; }
+      .e-tbl th:first-child, .e-tbl td:first-child { width: 28%; font-weight: 700; color: var(--color-neutral-800); }
+      .e-tbl td.col-mark { width: 60px; text-align: center; font-weight: 800; font-size: 16px; }
+      .e-tbl .mark-ok { color: var(--color-success-500); }
+      .e-tbl .mark-bad { color: var(--color-error-500); }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Compatibility 5종 비교</h1>
+      <p>호환 기기 + 예외 어떻게 보여줄지</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ═══ A · 현재 — 경고 + 3 device 카드 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              현재 — 빨간 경고 + 3 device 카드
+              <small>iPhone·iPad / 삼성·샤오미 / 해외판·Pixel 분리 · 정보 풍부</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>A</code><em>경고 + 3 카드</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Compatibility</span>
+            <h2>지원 기기를 먼저 확인해 주세요</h2>
+            <p class="lede">한국 정식 발매 제품 기준 호환 모델 + 예외 사항.</p>
+            <div class="warn">
+              <p class="warn__h">🔴 구매 전 반드시 확인</p>
+              <ul>
+                <li><b>갤럭시 S22 이하 국내판</b> — eSIM 미탑재</li>
+                <li><b>중국 본토 iPhone</b> — 17 Air 만 가능</li>
+                <li><b>홍콩·마카오 iPhone</b> — 일부 모델만</li>
+                <li>통신사 잠금 기기 불가</li>
+              </ul>
+            </div>
+            <div class="a-devices">
+              <div class="a-device a-device--full">
+                <div class="a-device__head">
+                  <div class="a-device__icon">🍎</div>
+                  <div class="a-device__title">iPhone · iPad<small>iOS 14+ · 한국 정식 발매</small></div>
+                </div>
+                <div class="a-device__chips">
+                  <span class="chip">XS · XR</span>
+                  <span class="chip">11 · 12 · 13 · 14 · 15</span>
+                  <span class="chip chip--new">16e</span>
+                  <span class="chip chip--new">17 전 모델 (17 Air eSIM 전용)</span>
+                  <span class="chip">SE 2·3</span>
+                  <span class="chip">iPad Pro 11·12.9</span>
+                  <span class="chip">iPad Air 3+ · mini 5+</span>
+                </div>
+                <div class="a-device__guide"><b>설치 경로</b> · 설정 → 셀룰러 → eSIM 추가 → QR 스캔</div>
+              </div>
+              <div class="a-device">
+                <div class="a-device__head">
+                  <div class="a-device__icon">📱</div>
+                  <div class="a-device__title">삼성·샤오미 (국내)<small>S23 이후</small></div>
+                </div>
+                <div class="a-device__chips">
+                  <span class="chip">S23·S24·S25</span>
+                  <span class="chip chip--new">S25 Edge</span>
+                  <span class="chip">Z Flip 4·5·6·7</span>
+                  <span class="chip">Z Fold 4·5·6·7</span>
+                  <span class="chip">A35·54·55</span>
+                  <span class="chip">Xiaomi 14T·15</span>
+                </div>
+                <div class="a-device__guide"><b>설치</b> · 설정 → 연결 → SIM 관리자 → eSIM 추가</div>
+              </div>
+              <div class="a-device a-device--warn">
+                <div class="a-device__head">
+                  <div class="a-device__icon">⚠️</div>
+                  <div class="a-device__title">해외판 · Pixel<small>IMEI 등록 필요</small></div>
+                </div>
+                <div class="a-device__chips">
+                  <span class="chip">삼성 해외판 Z 1~7</span>
+                  <span class="chip">S20~S25 International</span>
+                  <span class="chip chip--bad">Pixel — 한국 미유통</span>
+                </div>
+                <div class="a-device__guide">⚠ <b>Pixel</b> 해외 구매만 가능 · 모토로라·OnePlus 등 한국 유통 없음</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ B · 호환 / 비호환 좌우 분할 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              호환 / 비호환 좌우 분할
+              <small>OK vs NG 명확 · 초록 / 빨강 톤</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>B</code><em>OK / NG 분할</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Device check</span>
+            <h2>내 기기는 됩니다 / 안 됩니다</h2>
+            <p class="lede">한국 정식 발매 기준 호환·비호환 한눈에.</p>
+            <div class="b-split">
+              <div class="b-col b-col--ok">
+                <div class="b-col__h">
+                  <div class="b-col__icon">✓</div>
+                  <span class="b-col__name">호환 기기</span>
+                </div>
+                <p class="b-col__sub">한국 정식 발매 제품 기준</p>
+                <div class="b-group">
+                  <div class="b-group__title">🍎 iPhone (iOS 14+)</div>
+                  <div class="b-group__chips">
+                    <span class="chip">XS·XR · 11·12·13·14·15</span>
+                    <span class="chip chip--new">16e · 17 (17 Air eSIM 전용)</span>
+                    <span class="chip">SE 2·3</span>
+                  </div>
+                </div>
+                <div class="b-group">
+                  <div class="b-group__title">📱 갤럭시 (S23+)</div>
+                  <div class="b-group__chips">
+                    <span class="chip">S23·S24·S25</span>
+                    <span class="chip chip--new">S25 Edge</span>
+                    <span class="chip">Z Flip·Fold 4~7</span>
+                    <span class="chip">A35·54·55</span>
+                  </div>
+                </div>
+                <div class="b-group">
+                  <div class="b-group__title">📱 기타</div>
+                  <div class="b-group__chips">
+                    <span class="chip">iPad Pro·Air·mini</span>
+                    <span class="chip">Xiaomi 14T·15</span>
+                  </div>
+                </div>
+              </div>
+              <div class="b-col b-col--ng">
+                <div class="b-col__h">
+                  <div class="b-col__icon">✕</div>
+                  <span class="b-col__name">사용 불가</span>
+                </div>
+                <p class="b-col__sub">eSIM 하드웨어 미탑재·해외판 등</p>
+                <div class="b-group">
+                  <div class="b-group__title">📱 갤럭시 S22 이하</div>
+                  <div class="b-group__chips">
+                    <span class="chip chip--bad">S22·S21·S20 국내판</span>
+                    <span class="chip chip--bad">Z Flip 3 이전</span>
+                    <span class="chip chip--bad">Z Fold 3 이전</span>
+                  </div>
+                </div>
+                <div class="b-group">
+                  <div class="b-group__title">🍎 중국·홍콩 iPhone</div>
+                  <div class="b-group__chips">
+                    <span class="chip chip--bad">중국 본토 (17 Air만 OK)</span>
+                    <span class="chip chip--bad">홍콩·마카오 일부만</span>
+                  </div>
+                </div>
+                <div class="b-group">
+                  <div class="b-group__title">📱 한국 미유통</div>
+                  <div class="b-group__chips">
+                    <span class="chip chip--bad">Pixel (해외 구매만)</span>
+                    <span class="chip chip--bad">OnePlus·Oppo·Vivo</span>
+                    <span class="chip chip--bad">통신사 잠금 기기</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ C · 큰 체크리스트 카드 4 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              체크리스트 카드 (✓ × 4)
+              <small>호환 가능 4가지 + 경고 박스 · 긍정 톤</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>C</code><em>체크리스트</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Compatible devices</span>
+            <h2>이런 기기 다 됩니다</h2>
+            <p class="lede">한국 정식 발매 기준.</p>
+            <div class="c-grid">
+              <div class="c-card c-card--ok">
+                <div class="c-icon">✓</div>
+                <div>
+                  <h3 class="c-card__h">iPhone XS 이후 모든 모델</h3>
+                  <p class="c-card__p">11·12·13·14·15·16e·17 (17 Air eSIM 전용) · SE 2·3</p>
+                </div>
+              </div>
+              <div class="c-card c-card--ok">
+                <div class="c-icon">✓</div>
+                <div>
+                  <h3 class="c-card__h">갤럭시 S23 이후 국내판</h3>
+                  <p class="c-card__p">S23·S24·S25(Edge) · Z Flip·Fold 4~7 · A35·54·55</p>
+                </div>
+              </div>
+              <div class="c-card c-card--ok">
+                <div class="c-icon">✓</div>
+                <div>
+                  <h3 class="c-card__h">iPad (셀룰러)</h3>
+                  <p class="c-card__p">Pro 11·12.9 · Air 3+ · mini 5+</p>
+                </div>
+              </div>
+              <div class="c-card c-card--bad">
+                <div class="c-icon">✕</div>
+                <div>
+                  <h3 class="c-card__h">갤럭시 S22 이하 국내판</h3>
+                  <p class="c-card__p">S22·S21·S20 · Z Flip 3 이전 · Z Fold 3 이전 · eSIM 미탑재</p>
+                </div>
+              </div>
+            </div>
+            <div class="warn" style="margin-top: 18px; margin-bottom: 0;">
+              <p class="warn__h">⚠ 그 외 예외</p>
+              <ul>
+                <li>중국·홍콩·마카오 iPhone 일부 / Pixel (한국 미유통)</li>
+                <li>통신사 잠금 기기</li>
+              </ul>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ D · 검색·필터 mockup ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              검색·필터 mockup
+              <small>탭으로 브랜드 전환 · 인터랙티브 인상</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>D</code><em>탭 mockup</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Find your device</span>
+            <h2>내 기기 찾기</h2>
+            <p class="lede">브랜드 선택 → 모델 확인.</p>
+            <div class="d-search">
+              <div class="d-search__icon">🔍</div>
+              <div>
+                <h3 class="d-search__h">eSIM 호환 기기 검색<small>한국 정식 발매 기준 · 빠른 확인</small></h3>
+              </div>
+            </div>
+            <div class="d-tabs">
+              <span class="d-tab d-tab--active">🍎 iPhone</span>
+              <span class="d-tab">📱 갤럭시</span>
+              <span class="d-tab">📱 iPad</span>
+              <span class="d-tab">📱 Xiaomi</span>
+              <span class="d-tab">⚠ 비호환</span>
+            </div>
+            <div class="d-list">
+              <div class="d-list__title">iPhone · iPad — 호환 모델 (iOS 14 이상)</div>
+              <div class="d-list__chips">
+                <span class="chip">XS · XR</span>
+                <span class="chip">11 · 11 Pro</span>
+                <span class="chip">12 · mini · Pro</span>
+                <span class="chip">13 · mini · Pro</span>
+                <span class="chip">14 · Plus · Pro</span>
+                <span class="chip">15 · Plus · Pro</span>
+                <span class="chip chip--new">16e</span>
+                <span class="chip chip--new">17 · Plus · Pro · Air (eSIM 전용)</span>
+                <span class="chip">SE 2·3</span>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ E · 단순 표 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              단순 표 (브랜드 × 호환)
+              <small>가장 컴팩트 · 모바일 친화</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>E</code><em>단순 표</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="sect">
+            <span class="eyebrow">Compatibility</span>
+            <h2>지원 기기 표</h2>
+            <p class="lede">브랜드별 호환 여부 + 모델.</p>
+            <table class="e-tbl">
+              <thead>
+                <tr><th>브랜드</th><th>호환</th><th>모델</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>iPhone</td><td class="col-mark mark-ok">✓</td><td>XS · XR · 11~15 · 16e · 17 (17 Air eSIM 전용) · SE 2·3</td></tr>
+                <tr><td>iPad</td><td class="col-mark mark-ok">✓</td><td>Pro 11 · 12.9 · Air 3+ · mini 5+</td></tr>
+                <tr><td>갤럭시</td><td class="col-mark mark-ok">✓</td><td>S23·S24·S25(Edge) · Z Flip·Fold 4~7 · A35·54·55</td></tr>
+                <tr><td>Xiaomi</td><td class="col-mark mark-ok">✓</td><td>14T · 14T Pro · 15 Pro · 15 Ultra</td></tr>
+                <tr><td>갤럭시 S22↓ 국내판</td><td class="col-mark mark-bad">✕</td><td>eSIM 하드웨어 미탑재</td></tr>
+                <tr><td>중국 본토 iPhone</td><td class="col-mark mark-bad">✕</td><td>17 Air 만 가능</td></tr>
+                <tr><td>Pixel · OnePlus 등</td><td class="col-mark mark-bad">✕</td><td>한국 미유통</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>

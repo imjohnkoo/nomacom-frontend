@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>02 · Trust strip · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .trust {
+        padding: 32px 60px;
+        background: #fff;
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .trust__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+      }
+      .trust__item {
+        padding: 4px 18px;
+        position: relative;
+        text-align: center;
+      }
+      .trust__item + .trust__item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 14%;
+        bottom: 14%;
+        width: 1px;
+        background: var(--color-neutral-200);
+      }
+      .trust__value {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: var(--color-neutral-900);
+        font-variant-numeric: tabular-nums;
+      }
+      .trust__value small {
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.55;
+        margin-left: 2px;
+      }
+      .trust__value .star {
+        color: #f59e0b;
+        margin-right: 3px;
+      }
+      .trust__label {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        letter-spacing: -0.005em;
+      }
+
+      /* D — 아이콘 + 텍스트 */
+      .trust__icon {
+        font-size: 28px;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .trust--icon .trust__value {
+        font-size: 18px;
+      }
+      .trust--icon .trust__label {
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">02</span>
+        <span class="dev-toolbar__title">Trust strip</span>
+        <span class="dev-toolbar__hint">아이콘 4 column · ⚡ 🚀 🔁 🇪🇸🇵🇹</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-02-trust-strip">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="trust trust--icon" id="export-target">
+        <div class="trust__grid">
+          <div class="trust__item">
+            <div class="trust__icon">⚡</div>
+            <div class="trust__value">카카오톡 1분</div>
+            <div class="trust__label">즉시 발급</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__icon">🚀</div>
+            <div class="trust__value">당일 자동</div>
+            <div class="trust__label">야간·주말 OK</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__icon">🔁</div>
+            <div class="trust__value">24시간 갱신</div>
+            <div class="trust__label">매일 정확히</div>
+          </div>
+          <div class="trust__item">
+            <div class="trust__icon">🇪🇸🇵🇹</div>
+            <div class="trust__value">2개국 자동</div>
+            <div class="trust__label">국경 이동 자동</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

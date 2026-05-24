@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>01 · Hero · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .hero {
+        position: relative;
+        padding: 56px 60px 0;
+        background:
+          radial-gradient(circle at 80% 0%, rgba(167, 139, 255, 0.5) 0%, transparent 55%),
+          radial-gradient(circle at 0% 80%, rgba(80, 37, 232, 0.6) 0%, transparent 50%),
+          linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        overflow: hidden;
+      }
+      .hero__row {
+        align-items: center;
+        width: 100%;
+      }
+      .hero__row > * {
+        min-width: 0;
+      }
+      .hero__row > div:first-child {
+        margin-top: -50px;
+      }
+      .hero__models {
+        align-self: end;
+      }
+
+      .hero__nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+      }
+      .hero__brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .hero__brand-mark {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        display: grid;
+        place-items: center;
+        padding: 0;
+      }
+      .hero__brand-mark img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .hero__brand-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .hero__brand-name {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -0.005em;
+        line-height: 1.15;
+      }
+      .hero__brand-tagline {
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.7;
+        letter-spacing: 0.04em;
+      }
+      .hero__nav-meta {
+        font-size: 12px;
+        opacity: 0.7;
+        letter-spacing: 0.04em;
+      }
+      .hero__row {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 36px;
+        align-items: center;
+      }
+      .hero__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+        transform: scale(0.85);
+        transform-origin: left center;
+      }
+      .hero__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 13px 7px 9px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .hero__badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.25);
+      }
+      .hero__badge--star {
+        background: #fff;
+        color: #171717;
+        gap: 5px;
+      }
+      .hero__badge--star::before {
+        content: '★';
+        color: #f59e0b;
+        font-size: 13px;
+      }
+      .hero__title {
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.2;
+        margin: 0 0 24px;
+      }
+      .hero__title small {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        opacity: 0.78;
+        letter-spacing: -0.015em;
+        margin-bottom: 8px;
+      }
+      .hero__sub {
+        font-size: 15.5px;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.82);
+        margin: 0 0 22px;
+      }
+      .hero__price {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 10px;
+        padding: 12px 18px;
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: var(--radius-xl);
+        margin-bottom: 0;
+      }
+      .hero__price-strike {
+        text-decoration: line-through;
+        opacity: 0.55;
+        font-size: 13px;
+      }
+      .hero__price-now {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .hero__price-now small {
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.7;
+        margin-left: 2px;
+      }
+      .hero__price-deal {
+        margin-top: 6px;
+        margin-bottom: 22px;
+        font-size: 13px;
+        line-height: 1.45;
+        letter-spacing: -0.005em;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      .hero__price-deal b {
+        font-weight: 800;
+        color: #fff;
+      }
+      .hero__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hero__chip {
+        padding: 7px 13px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* 모델 이미지 (폰 mockup 대체) */
+      .hero__models {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        height: 680px;
+        width: 100%;
+        margin-bottom: 0;
+      }
+      .hero__model {
+        display: block;
+        width: auto;
+        filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.3));
+      }
+      .hero__model--front {
+        position: relative;
+        height: 100%;
+        max-height: 100%;
+        transform: translate(10px, 130px) scale(1.25);
+        transform-origin: center bottom;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">01</span>
+        <span class="dev-toolbar__title">Hero</span>
+        <span class="dev-toolbar__hint">남유럽 2개국 · 무제한 · 폰 mockup</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-01-hero">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <header class="hero" id="export-target">
+        <div class="hero__nav">
+          <div class="hero__brand">
+            <span class="hero__brand-mark">
+              <img src="../assets/logo/logo_light_square.png" alt="ESIMmany logo" />
+            </span>
+            <span class="hero__brand-text">
+              <span class="hero__brand-name">esimmany</span>
+              <span class="hero__brand-tagline">이심마니 · 해외 eSIM</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="hero__row">
+          <div>
+            <div class="hero__badges">
+              <span class="hero__badge hero__badge--star">4.8</span>
+              <span class="hero__badge">🔁 테더링 OK</span>
+              <span class="hero__badge">🚀 당일 자동 발송</span>
+            </div>
+            <h1 class="hero__title">
+              <small>🇪🇸 스페인 · 🇵🇹 포르투갈 한 번에</small>
+              데이터 넉넉히, 길게.
+            </h1>
+            <p class="hero__sub">
+              매일 1GB · 2GB + 소진 후 <b style="color:#fff">500Kbps 무제한</b><br />
+              1~30일 자유 선택 + 60·90일 신규<br />
+              카카오톡 1분 발급 · 당일 자동 발송 · 테더링 OK
+            </p>
+            <div class="hero__price">
+              <span class="hero__price-now"
+                >3,600원<small> 부터 (1일 1GB)</small></span
+              >
+            </div>
+            <div class="hero__price-deal">
+              💸 <b>30일 매일 1GB ₩993/일~</b> · 장기 할인
+            </div>
+            <div class="hero__chips">
+              <span class="hero__chip">매일 1GB · 2GB 선택</span>
+              <span class="hero__chip">소진 후 500Kbps 무제한</span>
+              <span class="hero__chip">테더링 가능</span>
+              <span class="hero__chip">1~90일 자유 선택</span>
+            </div>
+          </div>
+
+          <div class="hero__models">
+            <img
+              src="../assets/models/model_female.png"
+              alt="ESIMmany 사용 고객"
+              class="hero__model hero__model--front"
+            />
+          </div>
+        </div>
+      </header>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

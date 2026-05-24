@@ -26,5 +26,19 @@
     "blur": "25px",
     "spread": "-5px",
     "color": "rgba(0, 0, 0, 0.1)"
+  },
+  "cta-brand": {
+    "x": "0",
+    "y": "10px",
+    "blur": "24px",
+    "spread": "-10px",
+    "color": "rgba(98, 57, 255, 0.5)"
+  },
+  "modal": {
+    "x": "0",
+    "y": "30px",
+    "blur": "60px",
+    "spread": "-20px",
+    "color": "rgba(17, 17, 17, 0.25)"
   }
 }

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>14 · Final CTA · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .final {
+        padding: 60px 60px 64px;
+        background:
+          radial-gradient(circle at 100% 100%, rgba(167, 139, 255, 0.4) 0%, transparent 60%),
+          linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        text-align: center;
+      }
+      .final__h {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+        margin: 0 0 8px;
+      }
+      .final__sub {
+        font-size: 14px;
+        opacity: 0.78;
+        margin: 0 0 30px;
+        line-height: 1.6;
+      }
+      .final__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 36px;
+        background: #fff;
+        color: var(--color-neutral-900);
+        border-radius: 9999px;
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4);
+        margin-bottom: 32px;
+      }
+      .final__divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+        opacity: 0.7;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .final__divider::before,
+      .final__divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .final__channels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .final__channel {
+        padding: 22px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-align: left;
+      }
+      .final__channel--kakao {
+        background: linear-gradient(135deg, rgba(254, 220, 0, 0.18), rgba(254, 220, 0, 0.06));
+        border-color: rgba(254, 220, 0, 0.4);
+      }
+      .final__channel--talk {
+        background: linear-gradient(135deg, rgba(3, 199, 90, 0.18), rgba(3, 199, 90, 0.06));
+        border-color: rgba(3, 199, 90, 0.4);
+      }
+      .final__channel-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .final__channel--kakao .final__channel-icon {
+        background: #fedc00;
+        color: #3c1e1e;
+      }
+      .final__channel--talk .final__channel-icon {
+        background: #03c75a;
+        color: #fff;
+      }
+      .final__channel-body { flex: 1; }
+      .final__channel-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        margin-bottom: 2px;
+      }
+      .final__channel-name {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        margin-bottom: 2px;
+      }
+      .final__channel-meta {
+        font-size: 11.5px;
+        opacity: 0.75;
+      }
+      .final__channel-arrow {
+        font-size: 20px;
+        opacity: 0.5;
+      }
+      .final__cs-note {
+        margin-top: 18px;
+        font-size: 12px;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">14</span>
+        <span class="dev-toolbar__title">Final CTA</span>
+        <span class="dev-toolbar__hint">F · CTA + 상담 채널 2 카드 강조</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-14-final-cta">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <div id="export-target">
+        <section class="final">
+          <h2 class="final__h">두 나라, 한 SIM.</h2>
+          <p class="final__sub">스페인·포르투갈 1~90일 · 30일 매일 1GB ₩993/일~ · 카카오톡 1분 발급</p>
+
+          <div class="final__btn">
+            네이버 스마트스토어에서 구매하기
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </div>
+
+          <div class="final__divider">또는 온라인 상담하기</div>
+
+          <div class="final__channels">
+            <div class="final__channel final__channel--kakao">
+              <div class="final__channel-icon">💬</div>
+              <div class="final__channel-body">
+                <div class="final__channel-label">KakaoTalk</div>
+                <div class="final__channel-name">@이심마니</div>
+                <div class="final__channel-meta">한국어 채팅 · 평균 30분 응답</div>
+              </div>
+              <div class="final__channel-arrow">→</div>
+            </div>
+            <div class="final__channel final__channel--talk">
+              <div class="final__channel-icon">N</div>
+              <div class="final__channel-body">
+                <div class="final__channel-label">Naver Talk</div>
+                <div class="final__channel-name">네이버 톡톡</div>
+                <div class="final__channel-meta">스마트스토어 직접 문의</div>
+              </div>
+              <div class="final__channel-arrow">→</div>
+            </div>
+          </div>
+
+          <div class="final__cs-note">호환 기기 · 일정 · 환불 · 기술 문의 모두 OK</div>
+        </section>
+      </div>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

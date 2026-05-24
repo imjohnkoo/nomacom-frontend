@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>03 · Plan picker · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      /* ─── 헤더 ─── */
+      .pp__head {
+        margin-bottom: 24px;
+      }
+      .pp__eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-500);
+        margin-bottom: 10px;
+      }
+      .pp__title {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin: 0 0 8px;
+      }
+      .pp__lede {
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+
+      /* ─── 좌우 분할 ─── */
+      .pp__split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .pp__col {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--color-neutral-200);
+        background: #fff;
+        overflow: hidden;
+      }
+      .pp__col--unlimited {
+        background: linear-gradient(180deg, #f1edff 0%, #fff 60%);
+        border-color: var(--color-primary-200);
+      }
+      .pp__col--quantity {
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 60%);
+        border-color: #bae6fd;
+      }
+
+      .pp__col-head {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .pp__col-tag {
+        display: inline-block;
+        padding: 3px 9px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        border-radius: 9999px;
+      }
+      .pp__col--unlimited .pp__col-tag {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .pp__col--quantity .pp__col-tag {
+        background: var(--color-info-500);
+        color: #fff;
+      }
+      .pp__col-name {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--color-neutral-900);
+      }
+      .pp__col-sub {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        margin: 0 0 14px;
+        line-height: 1.55;
+      }
+
+      /* ─── 매트릭스 표 ─── */
+      .pp-mx {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        border: 1px solid var(--color-neutral-100);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 12.5px;
+      }
+      .pp-mx th,
+      .pp-mx td {
+        padding: 9px 10px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .pp-mx thead th {
+        background: var(--color-neutral-50);
+        font-weight: 700;
+        font-size: 10.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-neutral-500);
+        text-align: center;
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--color-neutral-200);
+      }
+      .pp-mx thead th:first-child {
+        text-align: left;
+      }
+      .pp-mx tbody tr + tr td,
+      .pp-mx tbody tr + tr th {
+        border-top: 1px solid var(--color-neutral-100);
+      }
+      .pp-mx tbody th {
+        text-align: left;
+        font-weight: 700;
+        color: var(--color-neutral-700);
+        font-size: 12.5px;
+      }
+      .pp-mx tbody td {
+        color: var(--color-neutral-800);
+        font-weight: 600;
+      }
+      .pp-mx .cell-best {
+        background: #fffbeb;
+        color: var(--color-warning-700);
+        font-weight: 800;
+        position: relative;
+      }
+      .pp-mx .cell-long {
+        background: #f0f9ff;
+        color: var(--color-info-700);
+        font-weight: 800;
+      }
+      .pp-mx .cell-future {
+        color: var(--color-neutral-400);
+        font-style: italic;
+      }
+      .pp-mx .row-future th {
+        color: var(--color-neutral-500);
+      }
+      .pp-mx .row-future {
+        background: rgba(0, 0, 0, 0.015);
+      }
+      .pp-mx .tag-inline {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 800;
+        padding: 1px 5px;
+        border-radius: 4px;
+        margin-left: 4px;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+      }
+      .pp-mx .tag-best {
+        background: var(--color-warning-500);
+        color: #fff;
+      }
+      .pp-mx .tag-long {
+        background: var(--color-info-500);
+        color: #fff;
+      }
+      .pp-mx .tag-wh {
+        background: linear-gradient(135deg, #b45309, #f59e0b);
+        color: #fff;
+      }
+      .pp-mx .tag-nomad {
+        background: linear-gradient(135deg, #2f1499, #6239ff);
+        color: #fff;
+      }
+
+      /* ─── 의사결정 가이드 ─── */
+      .pp-guide {
+        margin-top: 22px;
+        padding: 20px 24px;
+        background: var(--color-neutral-50);
+        border-radius: 12px;
+        border-left: 4px solid var(--color-primary-500);
+      }
+      .pp-guide__title {
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pp-guide__list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .pp-guide__item {
+        padding: 12px 14px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--color-neutral-200);
+      }
+      .pp-guide__item-h {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        margin-bottom: 4px;
+      }
+      .pp-guide__item-p {
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+        line-height: 1.55;
+        margin: 0;
+      }
+      .pp-guide__item-p b {
+        color: var(--color-primary-700);
+        font-weight: 700;
+      }
+
+      .pp-note {
+        margin-top: 12px;
+        font-size: 11px;
+        color: var(--color-neutral-400);
+        text-align: center;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">03</span>
+        <span class="dev-toolbar__title">Plan picker</span>
+        <span class="dev-toolbar__hint">좌우 분할 + 매트릭스 (C+D 합본)</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-03-plan-picker">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <div class="pp__head">
+          <div class="pp__eyebrow">Flexible plan</div>
+          <h2 class="pp__title">무제한 · 종량제 자유 선택</h2>
+          <p class="pp__lede">
+            짧은 여행은 무제한, 장기·다국가는 종량제, 워홀·노매드는 60·90일.
+            한 SIM 으로 스페인·포르투갈 모두.
+          </p>
+        </div>
+
+        <div class="pp__split">
+          <!-- ─────────────────────────────────────
+               좌측: 무제한 매트릭스
+               ───────────────────────────────────── -->
+          <div class="pp__col pp__col--unlimited">
+            <div class="pp__col-head">
+              <span class="pp__col-tag">🌐 무제한</span>
+              <span class="pp__col-name">매일 한도 + 500Kbps</span>
+            </div>
+            <p class="pp__col-sub">
+              매일 1GB · 2GB 고속 + 소진 후 500Kbps 무제한 저속 (계속 연결됨)
+            </p>
+            <table class="pp-mx">
+              <thead>
+                <tr>
+                  <th>일수</th>
+                  <th>매일 1GB</th>
+                  <th>매일 2GB</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>1일</th>
+                  <td>3,600</td>
+                  <td>4,700</td>
+                </tr>
+                <tr>
+                  <th>3일</th>
+                  <td>5,100</td>
+                  <td>8,300</td>
+                </tr>
+                <tr>
+                  <th>5일</th>
+                  <td>7,200</td>
+                  <td>11,900</td>
+                </tr>
+                <tr>
+                  <th>7일</th>
+                  <td>9,300</td>
+                  <td class="cell-best">
+                    15,600<span class="tag-inline tag-best">BEST</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>10일</th>
+                  <td>13,200</td>
+                  <td>21,400</td>
+                </tr>
+                <tr>
+                  <th>15일</th>
+                  <td>17,600</td>
+                  <td class="cell-long">26,700</td>
+                </tr>
+                <tr>
+                  <th>30일</th>
+                  <td class="cell-long">
+                    29,800<span class="tag-inline tag-long">₩993/일</span>
+                  </td>
+                  <td class="cell-long">48,600</td>
+                </tr>
+                <tr class="row-future">
+                  <th>🎒 60일</th>
+                  <td class="cell-future">~70,000</td>
+                  <td class="cell-future">
+                    ~95,000<span class="tag-inline tag-wh">워홀</span>
+                  </td>
+                </tr>
+                <tr class="row-future">
+                  <th>✈️ 90일</th>
+                  <td class="cell-future">~99,000</td>
+                  <td class="cell-future">
+                    ~138,000<span class="tag-inline tag-nomad">노매드</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ─────────────────────────────────────
+               우측: 종량제 표
+               ───────────────────────────────────── -->
+          <div class="pp__col pp__col--quantity">
+            <div class="pp__col-head">
+              <span class="pp__col-tag">📊 종량제</span>
+              <span class="pp__col-name">30일 총량 자유</span>
+            </div>
+            <p class="pp__col-sub">
+              30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료
+            </p>
+            <table class="pp-mx">
+              <thead>
+                <tr>
+                  <th>용량</th>
+                  <th>30일 가격</th>
+                  <th>1GB 단가</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>1GB</th>
+                  <td>4,600</td>
+                  <td>4,600</td>
+                </tr>
+                <tr>
+                  <th>3GB</th>
+                  <td>8,700</td>
+                  <td>2,900</td>
+                </tr>
+                <tr>
+                  <th>5GB</th>
+                  <td>11,800</td>
+                  <td>2,360</td>
+                </tr>
+                <tr>
+                  <th>7GB</th>
+                  <td>15,900</td>
+                  <td>2,271</td>
+                </tr>
+                <tr>
+                  <th>10GB</th>
+                  <td class="cell-best">
+                    22,100<span class="tag-inline tag-best">BEST</span>
+                  </td>
+                  <td class="cell-best">2,210</td>
+                </tr>
+                <tr>
+                  <th>20GB</th>
+                  <td>37,700</td>
+                  <td>1,885</td>
+                </tr>
+                <tr>
+                  <th>30GB</th>
+                  <td class="cell-long">
+                    53,900<span class="tag-inline tag-long">노매드</span>
+                  </td>
+                  <td class="cell-long">1,797</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ─────────────────────────────────────
+             의사결정 가이드
+             ───────────────────────────────────── -->
+        <div class="pp-guide">
+          <div class="pp-guide__title">💡 어떤 걸 골라야 하나요?</div>
+          <div class="pp-guide__list">
+            <div class="pp-guide__item">
+              <div class="pp-guide__item-h">짧은 일정 (≤ 7일)</div>
+              <p class="pp-guide__item-p">
+                <b>무제한 매일 2GB</b> 추천. 매일 다 못 쓰면 다음 24시간에 새로 채워지고,
+                다 써도 500Kbps 무제한 저속으로 연결 유지.
+              </p>
+            </div>
+            <div class="pp-guide__item">
+              <div class="pp-guide__item-h">장기·다국가 (~30일)</div>
+              <p class="pp-guide__item-p">
+                <b>종량제 10~30GB</b> 추천. 매일 사용량 변동 크거나 일부 날만 많이 쓸 때
+                효율적. 1GB 단가 1,797원~까지 ↓.
+              </p>
+            </div>
+            <div class="pp-guide__item">
+              <div class="pp-guide__item-h">워홀·노매드 (60·90일)</div>
+              <p class="pp-guide__item-p">
+                <b>60일 워홀 / 90일 노매드</b> 무제한 추천. 어학연수 · D7 비자 ·
+                디지털 노매드 한 분기 안심.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="pp-note">
+          ※ 모든 가격은 즉시할인 적용가 · 60·90일은 출시 예정 · 매일 갱신 = 사용 시작 시점부터 24시간 단위
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

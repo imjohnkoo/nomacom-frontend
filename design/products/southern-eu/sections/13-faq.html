@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>13 · FAQ · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .faq {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .faq__item {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: 18px 24px 20px;
+      }
+      .faq__q {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        margin: 0 0 10px;
+        color: var(--color-neutral-900);
+      }
+      .faq__q::before {
+        content: 'Q';
+        flex: 0 0 22px;
+        height: 22px;
+        background: var(--color-primary-500);
+        color: #fff;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 11.5px;
+        font-weight: 800;
+        margin-top: 2px;
+      }
+      .faq__a {
+        padding-left: 34px;
+        font-size: 13.5px;
+        line-height: 1.75;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">13</span>
+        <span class="dev-toolbar__title">FAQ</span>
+        <span class="dev-toolbar__hint">13 항목 · EU 특화 Q12·Q13 포함</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-13-faq">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section__title">자주 묻는 질문</h2>
+        <p class="section__lede">결제 전, 가장 많이 받는 질문 13개를 정리했어요.</p>
+
+        <div class="faq">
+          <div class="faq__item">
+            <p class="faq__q">eSIM 은 언제 받을 수 있나요?</p>
+            <p class="faq__a">
+              네이버 결제 완료 후 카카오톡으로 평균 1~2분 안에 QR 발급 링크가 자동 전송됩니다.
+              24시간 자동이라 야간·주말에도 발급돼요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">데이터 갱신 기준은 언제인가요?</p>
+            <p class="faq__a">
+              <b>사용 시작 시점부터 24시간 단위</b>로 매일 갱신됩니다. 예를 들어 첫 사용이 현지 오후
+              3시였다면, 매일 오후 3시에 일일 데이터가 새로 채워져요. (종량제는 30일 동안 총량 사용)
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">설치는 언제 하면 되나요?</p>
+            <p class="faq__a">
+              출국 전에 미리 QR 스캔으로 설치 가능합니다. 설치 후 해당 eSIM 회선을 <b>OFF</b>로
+              유지하면 데이터가 시작되지 않아요. 현지 도착 후 회선을 <b>ON</b> 하시면 그때부터
+              사용이 시작됩니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">전화·문자 사용 가능한가요?</p>
+            <p class="faq__a">
+              본 상품은 데이터 전용입니다. 카카오톡 · 보이스톡 · WhatsApp 등 인터넷 전화는 가능하며,
+              일반 음성 통화는 한국 번호 그대로 (로밍 요금) 또는 별도 앱을 사용해 주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">사용량은 어떻게 확인하나요?</p>
+            <p class="faq__a">
+              아이폰: 설정 → 셀룰러 → 해당 eSIM 회선 / 갤럭시: 설정 → 연결 → 데이터 사용 → 해당
+              SIM 에서 확인 가능합니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">테더링 (핫스팟) 도 되나요?</p>
+            <p class="faq__a">
+              <b>전 상품 테더링 지원</b>합니다. 노트북·태블릿 연결 가능하며, 현지 통신 환경에 따라
+              속도가 다소 달라질 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">데이터를 다 쓰면 어떻게 되나요?</p>
+            <p class="faq__a">
+              <b>무제한 상품</b>: 일일 고속 한도 (1GB · 2GB) 소진 시 <b>500Kbps 무제한 저속</b>으로
+              계속 연결됩니다. 다음 24시간 갱신 시점에 고속으로 복구돼요.<br />
+              <b>종량제 상품</b>: 30일 총량 (1~30GB) 을 다 쓰면 사용 종료. 추가 구매로 연장 가능.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">환불은 언제까지 가능한가요?</p>
+            <p class="faq__a">
+              QR 발급 전 100% / 발급 후 미설치는 ESIMmany 자체 정책으로 수수료
+               차감 후 부분 환불 / 설치 후 환불 불가.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">얼마나 길게 쓸 수 있나요?</p>
+            <p class="faq__a">
+              <b>1일 ~ 90일</b> 자유 선택. 30일까지는 1일 단위 선택, 그 이상은 60일·90일 옵션이
+              있어요. 추가 구매로 연장도 가능합니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">테더링 속도에 제한이 있나요?</p>
+            <p class="faq__a">
+              일일 고속 한도 소진 전까지는 원속도가 그대로 유지되며, 테더링도 동일합니다. 소진
+              후에는 500Kbps 저속이 적용돼요. 기기·현지 통신망에 따라 다소 차이가 있을 수 있습니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">QR 코드를 잃어버렸어요. 재발급되나요?</p>
+            <p class="faq__a">
+              주문번호로 다시 로그인하시면 같은 QR 코드를 다시 보실 수 있습니다. 단, eSIM 은 한
+              기기에만 등록되며 등록 후에는 다른 기기로 옮길 수 없어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">무제한 vs 종량제, 뭘 사야 하나요?</p>
+            <p class="faq__a">
+              짧은 일정 (1주↓) = 무제한 매일 1·2GB / 장기·다국가 = 종량제 10·20·30GB 추천 /
+              <b>워홀·어학연수 = 60·90일 무제한</b>. 매일 사용량 변동이 크면 종량제가 효율적입니다.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">스페인 ↔ 포르투갈 국경 넘어도 같은 eSIM 으로 됩니까?</p>
+            <p class="faq__a">
+              네, <b>같은 eSIM 으로 2개국 자동 연결</b>됩니다. 추가 작업·재발급 불요. 마드리드 →
+              리스본 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

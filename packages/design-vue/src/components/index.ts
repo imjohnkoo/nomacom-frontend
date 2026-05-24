@@ -255,10 +255,51 @@ export { NDataTable } from './NDataTable'
 export type { NDataTableProps, NDataTableColumn } from './NDataTable'
 
 export { NSearchFilter } from './NSearchFilter'
-export type { NSearchFilterProps, NFilterConfig, NFilterOption, NDateRangeValue } from './NSearchFilter'
+export type {
+  NSearchFilterProps,
+  NFilterConfig,
+  NFilterOption,
+  NDateRangeValue,
+} from './NSearchFilter'
 
 export { NGlobalLoader, useGlobalLoader } from './NGlobalLoader'
 export type { NGlobalLoaderProps } from './NGlobalLoader'
 
 export { NLogo } from './NLogo'
 export type { NLogoProps } from './NLogo'
+
+export { NInfoChip } from './NInfoChip'
+export type { NInfoChipProps } from './NInfoChip'
+
+export { NStatusPill } from './NStatusPill'
+export type { NStatusPillProps, NStatusPillColor } from './NStatusPill'
+
+export { NTrustNote } from './NTrustNote'
+export type { NTrustNoteProps } from './NTrustNote'
+
+export { NPageHeading } from './NPageHeading'
+export type { NPageHeadingProps } from './NPageHeading'
+
+export { NStepProgress } from './NStepProgress'
+export type { NStepProgressProps } from './NStepProgress'
+
+export { NBottomSheet } from './NBottomSheet'
+export type { NBottomSheetProps } from './NBottomSheet'
+
+export { NLoaderDialog } from './NLoaderDialog'
+export type { NLoaderDialogProps } from './NLoaderDialog'
+
+export { NFieldCard } from './NFieldCard'
+export type { NFieldCardProps } from './NFieldCard'
+
+export { NHighlightCard } from './NHighlightCard'
+export type { NHighlightCardProps, NHighlightCardVariant } from './NHighlightCard'
+
+export { NDurationCalendar } from './NDurationCalendar'
+export type { NDurationCalendarProps, CalDate } from './NDurationCalendar'
+
+export { NCodeRow } from './NCodeRow'
+export type { NCodeRowProps } from './NCodeRow'
+
+export { NLinkCard } from './NLinkCard'
+export type { NLinkCardProps } from './NLinkCard'
