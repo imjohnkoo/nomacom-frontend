@@ -12,101 +12,126 @@
     <link rel="stylesheet" href="../shared/base.css" />
     <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
     <style>
-      .trust-badges {
-        background: #fff;
-        padding: 26px 40px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 24px 36px;
-        border-bottom: 1px solid var(--color-neutral-100);
-      }
-      .trust-badge {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        color: var(--color-neutral-600);
-        font-weight: 600;
-      }
-      .trust-badge__icon {
-        width: 26px;
-        height: 26px;
-        border-radius: 7px;
-        background: var(--color-neutral-100);
-        color: var(--color-neutral-700);
-        display: grid;
-        place-items: center;
-      }
-      .trust-badge b {
-        color: var(--color-neutral-900);
-        font-weight: 800;
-      }
-
       .final {
-        padding: 64px 60px 72px;
+        padding: 60px 60px 64px;
         background:
           radial-gradient(circle at 100% 100%, rgba(167, 139, 255, 0.4) 0%, transparent 60%),
-          linear-gradient(135deg, #171717 0%, #2f1499 100%);
+          linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
         color: #fff;
         text-align: center;
       }
       .final__h {
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 800;
         letter-spacing: -0.025em;
-        margin: 0 0 14px;
+        line-height: 1.2;
+        margin: 0 0 8px;
       }
-      .final__p {
-        font-size: 15px;
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.78);
-        margin: 0 0 24px;
+      .final__sub {
+        font-size: 14px;
+        opacity: 0.78;
+        margin: 0 0 30px;
+        line-height: 1.6;
       }
       .final__btn {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 16px 30px;
+        gap: 10px;
+        padding: 18px 36px;
         background: #fff;
         color: var(--color-neutral-900);
-        border-radius: var(--radius-full);
-        font-size: 15px;
+        border-radius: 9999px;
+        font-size: 16px;
         font-weight: 800;
         letter-spacing: -0.01em;
-        box-shadow: var(--shadow-cta-brand);
+        box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4);
+        margin-bottom: 32px;
       }
-      .final__sub {
-        margin-top: 20px;
+      .final__divider {
         display: flex;
-        justify-content: center;
-        gap: 22px;
-        flex-wrap: wrap;
-        font-size: 12.5px;
-        color: rgba(255, 255, 255, 0.6);
-      }
-      .final__sub span::before {
-        content: '';
-        display: inline-block;
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4);
-        margin-right: 8px;
-        vertical-align: middle;
-      }
-
-      .biz {
-        background: var(--color-neutral-900);
-        color: rgba(255, 255, 255, 0.55);
-        padding: 22px 40px;
-        font-size: 11px;
-        line-height: 1.75;
-        text-align: center;
-      }
-      .biz b {
-        color: rgba(255, 255, 255, 0.85);
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+        opacity: 0.7;
+        font-size: 12px;
         font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .final__divider::before,
+      .final__divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.24);
+      }
+      .final__channels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .final__channel {
+        padding: 22px 24px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        text-align: left;
+      }
+      .final__channel--kakao {
+        background: linear-gradient(135deg, rgba(254, 220, 0, 0.18), rgba(254, 220, 0, 0.06));
+        border-color: rgba(254, 220, 0, 0.4);
+      }
+      .final__channel--talk {
+        background: linear-gradient(135deg, rgba(3, 199, 90, 0.18), rgba(3, 199, 90, 0.06));
+        border-color: rgba(3, 199, 90, 0.4);
+      }
+      .final__channel-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+        font-weight: 800;
+        flex-shrink: 0;
+      }
+      .final__channel--kakao .final__channel-icon {
+        background: #fedc00;
+        color: #3c1e1e;
+      }
+      .final__channel--talk .final__channel-icon {
+        background: #03c75a;
+        color: #fff;
+      }
+      .final__channel-body { flex: 1; }
+      .final__channel-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.65;
+        margin-bottom: 2px;
+      }
+      .final__channel-name {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        margin-bottom: 2px;
+      }
+      .final__channel-meta {
+        font-size: 11.5px;
+        opacity: 0.75;
+      }
+      .final__channel-arrow {
+        font-size: 20px;
+        opacity: 0.5;
+      }
+      .final__cs-note {
+        margin-top: 18px;
+        font-size: 12px;
+        opacity: 0.7;
       }
     </style>
   </head>
@@ -114,8 +139,8 @@
     <div class="dev-toolbar">
       <div class="dev-toolbar__info">
         <span class="dev-toolbar__num">14</span>
-        <span class="dev-toolbar__title">Final CTA + Trust</span>
-        <span class="dev-toolbar__hint">신뢰배지 줄 + CTA + 사업자정보</span>
+        <span class="dev-toolbar__title">Final CTA</span>
+        <span class="dev-toolbar__hint">F · CTA + 상담 채널 2 카드 강조</span>
       </div>
       <button class="dev-toolbar__btn" data-export="eu-14-final-cta">
         <span class="label-default">PNG 저장</span>
@@ -125,90 +150,10 @@
 
     <div class="canvas">
       <div id="export-target">
-        <!-- trust badge strip -->
-        <div class="trust-badges">
-          <div class="trust-badge">
-            <div class="trust-badge__icon">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
-            <span><b>안전결제</b> KICC 에스크로</span>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge__icon">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="3" y="4" width="18" height="16" rx="2" />
-                <path d="M3 10h18" />
-              </svg>
-            </div>
-            <span><b>사업자등록</b> 정상 신고</span>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge__icon">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M9 12l2 2 4-4" />
-                <circle cx="12" cy="12" r="10" />
-              </svg>
-            </div>
-            <span><b>통신판매신고</b> 완료</span>
-          </div>
-          <div class="trust-badge">
-            <div class="trust-badge__icon">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M12 1l3 6 6 1-4.5 4.5 1 6.5L12 16l-5.5 3 1-6.5L3 8l6-1 3-6z" />
-              </svg>
-            </div>
-            <span><b>개인정보보호</b> 책임자 지정</span>
-          </div>
-        </div>
-
-        <!-- final cta -->
         <section class="final">
-          <h2 class="final__h">
-            스페인·포르투갈 한 번에.<br />단기 여행부터 90일 노매드까지.
-          </h2>
-          <p class="final__p">
-            카카오톡 당일 발급 · 한국어 CS · 500Kbps 무제한 저속<br />
-            2개국 동일 eSIM · <b style="color:#fff">1~90일 자유 선택</b><br />
-            네이버 스마트스토어에서 만나요.
-          </p>
+          <h2 class="final__h">두 나라, 한 SIM.</h2>
+          <p class="final__sub">스페인·포르투갈 1~90일 · 30일 매일 1GB ₩993/일~ · 카카오톡 1분 발급</p>
+
           <div class="final__btn">
             네이버 스마트스토어에서 구매하기
             <svg
@@ -224,18 +169,32 @@
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
           </div>
-          <div class="final__sub">
-            <span>카카오톡 채널 @esimmany</span>
-            <span>한국 CS 050-7017-86725</span>
-            <span>평균 응답 30분</span>
-          </div>
-        </section>
 
-        <!-- business info footer -->
-        <div class="biz">
-          <b>(주) nomacom</b> · 대표 OOO · 사업자등록번호 OOO-OO-OOOOO<br />
-          통신판매업신고 제 OOOO-서울XX-OOOO 호 · 개인정보보호책임자 OOO · 고객센터 카카오톡 채널 @esimmany · 050-7017-86725
-        </div>
+          <div class="final__divider">또는 온라인 상담하기</div>
+
+          <div class="final__channels">
+            <div class="final__channel final__channel--kakao">
+              <div class="final__channel-icon">💬</div>
+              <div class="final__channel-body">
+                <div class="final__channel-label">KakaoTalk</div>
+                <div class="final__channel-name">@이심마니</div>
+                <div class="final__channel-meta">한국어 채팅 · 평균 30분 응답</div>
+              </div>
+              <div class="final__channel-arrow">→</div>
+            </div>
+            <div class="final__channel final__channel--talk">
+              <div class="final__channel-icon">N</div>
+              <div class="final__channel-body">
+                <div class="final__channel-label">Naver Talk</div>
+                <div class="final__channel-name">네이버 톡톡</div>
+                <div class="final__channel-meta">스마트스토어 직접 문의</div>
+              </div>
+              <div class="final__channel-arrow">→</div>
+            </div>
+          </div>
+
+          <div class="final__cs-note">호환 기기 · 일정 · 환불 · 기술 문의 모두 OK</div>
+        </section>
       </div>
     </div>
 

@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Plan picker — 500MB 신규 적용 3종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body {
+        background: #ededf2;
+      }
+      .page-top {
+        padding: 36px 28px 12px;
+        text-align: center;
+      }
+      .page-top h1 {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 6px;
+      }
+      .page-top p {
+        font-size: 14px;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+      .variant-stack {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 24px 0 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .variant {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+      .variant__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--color-neutral-100);
+        background: var(--color-neutral-50);
+      }
+      .variant__label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .variant__letter {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-weight: 800;
+        font-size: 15px;
+        display: grid;
+        place-items: center;
+      }
+      .variant__title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+      }
+      .variant__title small {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-neutral-500);
+        margin-top: 1px;
+      }
+      .variant__pick {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+      }
+      .variant__pick code {
+        font-family: var(--font-mono);
+        background: var(--color-neutral-100);
+        color: var(--color-primary-700);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .variant__canvas {
+        padding: 28px 28px 36px;
+      }
+      .variant__notes {
+        margin-top: 18px;
+        padding: 12px 16px;
+        background: #f8f9fb;
+        border-left: 3px solid var(--color-primary-300);
+        border-radius: 6px;
+        font-size: 12px;
+        line-height: 1.65;
+        color: var(--color-neutral-600);
+      }
+      .variant__notes b {
+        color: var(--color-neutral-900);
+      }
+      .variant__notes ul {
+        margin: 6px 0 0;
+        padding-left: 18px;
+      }
+      .variant__notes li { margin: 2px 0; }
+
+      /* ─── 공통 섹션 헤더 ─── */
+      .pp__head {
+        margin-bottom: 22px;
+      }
+      .pp__eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-500);
+        margin-bottom: 10px;
+      }
+      .pp__title {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin: 0 0 8px;
+      }
+      .pp__lede {
+        font-size: 13.5px;
+        line-height: 1.65;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
+
+      /* ─── 좌우 분할 ─── */
+      .pp__split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .pp__col {
+        padding: 22px;
+        border-radius: 16px;
+        border: 1px solid var(--color-neutral-200);
+        background: #fff;
+        overflow: hidden;
+      }
+      .pp__col--unlimited {
+        background: linear-gradient(180deg, #f1edff 0%, #fff 60%);
+        border-color: var(--color-primary-200);
+      }
+      .pp__col--quantity {
+        background: linear-gradient(180deg, #f0f9ff 0%, #fff 60%);
+        border-color: #bae6fd;
+      }
+      .pp__col-head {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .pp__col-tag {
+        display: inline-block;
+        padding: 3px 9px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        border-radius: 9999px;
+      }
+      .pp__col--unlimited .pp__col-tag {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .pp__col--quantity .pp__col-tag {
+        background: var(--color-info-500);
+        color: #fff;
+      }
+      .pp__col-name {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--color-neutral-900);
+      }
+      .pp__col-sub {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        margin: 0 0 14px;
+        line-height: 1.55;
+      }
+
+      /* ─── 매트릭스 표 ─── */
+      .pp-mx {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        border: 1px solid var(--color-neutral-100);
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      .pp-mx th,
+      .pp-mx td {
+        padding: 8px 8px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .pp-mx thead th {
+        background: var(--color-neutral-50);
+        font-weight: 700;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-neutral-500);
+        text-align: center;
+        padding: 7px 8px;
+        border-bottom: 1px solid var(--color-neutral-200);
+      }
+      .pp-mx thead th:first-child {
+        text-align: left;
+      }
+      .pp-mx tbody tr + tr td,
+      .pp-mx tbody tr + tr th {
+        border-top: 1px solid var(--color-neutral-100);
+      }
+      .pp-mx tbody th {
+        text-align: left;
+        font-weight: 700;
+        color: var(--color-neutral-700);
+        font-size: 12px;
+      }
+      .pp-mx tbody td {
+        color: var(--color-neutral-800);
+        font-weight: 600;
+      }
+      .pp-mx .cell-best {
+        background: #fffbeb;
+        color: var(--color-warning-700);
+        font-weight: 800;
+      }
+      .pp-mx .cell-long {
+        background: #f0f9ff;
+        color: var(--color-info-700);
+        font-weight: 800;
+      }
+      .pp-mx .cell-lead {
+        background: #fef2f2;
+        color: var(--color-error-700);
+        font-weight: 800;
+      }
+      .pp-mx .cell-bep {
+        background: #ecfdf5;
+        color: var(--color-success-700);
+        font-weight: 800;
+        position: relative;
+      }
+      .pp-mx .cell-future {
+        color: var(--color-neutral-400);
+        font-style: italic;
+      }
+      .pp-mx .row-future {
+        background: rgba(0, 0, 0, 0.015);
+      }
+      .pp-mx .row-future th {
+        color: var(--color-neutral-500);
+      }
+      .pp-mx .tag-inline {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 1px 4px;
+        border-radius: 4px;
+        margin-left: 3px;
+        letter-spacing: 0.02em;
+        vertical-align: middle;
+      }
+      .pp-mx .tag-lead {
+        background: var(--color-error-500);
+        color: #fff;
+      }
+      .pp-mx .tag-bep {
+        background: var(--color-success-500);
+        color: #fff;
+      }
+      .pp-mx .tag-best {
+        background: var(--color-warning-500);
+        color: #fff;
+      }
+      .pp-mx .tag-long {
+        background: var(--color-info-500);
+        color: #fff;
+      }
+      .pp-mx .tag-wh {
+        background: linear-gradient(135deg, #b45309, #f59e0b);
+        color: #fff;
+      }
+      .pp-mx .tag-nomad {
+        background: linear-gradient(135deg, #2f1499, #6239ff);
+        color: #fff;
+      }
+
+      /* ─── B: 미끼 카드 ─── */
+      .pp-bait {
+        margin-bottom: 14px;
+        padding: 22px 24px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #fef2f2 0%, #fff 60%);
+        border: 2px solid var(--color-error-200, #fecaca);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 18px;
+        align-items: center;
+      }
+      .pp-bait__left {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .pp-bait__tag {
+        align-self: flex-start;
+        padding: 3px 10px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        background: var(--color-error-500);
+        color: #fff;
+        border-radius: 9999px;
+      }
+      .pp-bait__h {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--color-neutral-900);
+        margin: 0;
+      }
+      .pp-bait__sub {
+        font-size: 12px;
+        color: var(--color-neutral-600);
+        line-height: 1.55;
+        margin: 0;
+      }
+      .pp-bait__right {
+        text-align: right;
+      }
+      .pp-bait__price {
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--color-error-700);
+        line-height: 1;
+      }
+      .pp-bait__price small {
+        font-size: 13px;
+        font-weight: 700;
+        opacity: 0.8;
+        margin-left: 2px;
+      }
+      .pp-bait__hint {
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--color-neutral-500);
+      }
+
+      .pp-bait-mini {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+      }
+      .pp-bait-mini__cell {
+        padding: 8px 6px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 8px;
+        text-align: center;
+      }
+      .pp-bait-mini__d {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--color-neutral-500);
+        margin-bottom: 2px;
+      }
+      .pp-bait-mini__p {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ─── C: BEP 정직 안내 박스 ─── */
+      .pp-bep-note {
+        margin-top: 14px;
+        padding: 14px 18px;
+        background: #ecfdf5;
+        border-left: 4px solid var(--color-success-500);
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.65;
+        color: var(--color-success-700);
+      }
+      .pp-bep-note b { color: var(--color-success-700); font-weight: 800; }
+      .pp-bep-note .pp-bep-emoji {
+        font-size: 14px;
+        margin-right: 4px;
+      }
+
+      .pp-guide {
+        margin-top: 20px;
+        padding: 18px 22px;
+        background: var(--color-neutral-50);
+        border-radius: 12px;
+        border-left: 4px solid var(--color-primary-500);
+      }
+      .pp-guide__title {
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 10px;
+      }
+      .pp-guide__list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .pp-guide__item {
+        padding: 10px 12px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--color-neutral-200);
+      }
+      .pp-guide__item-h {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--color-neutral-900);
+        margin-bottom: 3px;
+      }
+      .pp-guide__item-p {
+        font-size: 11px;
+        color: var(--color-neutral-500);
+        line-height: 1.5;
+        margin: 0;
+      }
+      .pp-guide__item-p b {
+        color: var(--color-primary-700);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Plan picker — 500MB 신규 옵션 적용 3종</h1>
+      <p>신규 SKU 최저가 ₩800/일 (1일 500MB) 노출 방식 비교 — 동일 데이터·동일 레이아웃, 500MB 처리만 다름</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ─────────────────────────────────────
+           Variant A: 3열 단순 확장
+           ───────────────────────────────────── -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <span class="variant__letter">A</span>
+            <div class="variant__title">
+              3열 단순 확장
+              <small>무제한 매트릭스에 500MB 컬럼 추가 — 데이터 옵션 3개 균등</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택 시: <code>03-plan-picker.html ← A</code></div>
+        </header>
+        <div class="variant__canvas">
+          <section class="section">
+            <div class="pp__head">
+              <div class="pp__eyebrow">Flexible plan</div>
+              <h2 class="pp__title">무제한 · 종량제 자유 선택</h2>
+              <p class="pp__lede">
+                500MB 미끼부터 매일 2GB까지 · 짧은 여행은 무제한, 장기는 종량제, 워홀·노매드는 60·90일.
+              </p>
+            </div>
+
+            <div class="pp__split">
+              <!-- 좌측: 무제한 매트릭스 (3열) -->
+              <div class="pp__col pp__col--unlimited">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">🌐 무제한</span>
+                  <span class="pp__col-name">매일 한도 + 500Kbps</span>
+                </div>
+                <p class="pp__col-sub">
+                  매일 500MB · 1GB · 2GB 고속 + 소진 후 500Kbps 무제한 저속
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>일수</th>
+                      <th>500MB</th>
+                      <th>매일 1GB</th>
+                      <th>매일 2GB</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>1일</th>
+                      <td class="cell-lead">800<span class="tag-inline tag-lead">최저</span></td>
+                      <td>3,600</td>
+                      <td>4,700</td>
+                    </tr>
+                    <tr><th>3일</th><td>2,400</td><td>6,300</td><td>10,200</td></tr>
+                    <tr><th>5일</th><td>4,000</td><td>10,200</td><td>14,200</td></tr>
+                    <tr>
+                      <th>7일</th>
+                      <td>5,600</td>
+                      <td>12,500</td>
+                      <td class="cell-best">18,500<span class="tag-inline tag-best">BEST</span></td>
+                    </tr>
+                    <tr><th>10일</th><td>8,000</td><td>16,200</td><td>25,900</td></tr>
+                    <tr><th>15일</th><td>12,000</td><td>20,500</td><td class="cell-long">30,900</td></tr>
+                    <tr>
+                      <th>30일</th>
+                      <td class="cell-long">24,000</td>
+                      <td class="cell-long">37,100<span class="tag-inline tag-long">장기</span></td>
+                      <td class="cell-long">51,200</td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>🎒 60일</th>
+                      <td class="cell-future">~48,000</td>
+                      <td class="cell-future">~70,000</td>
+                      <td class="cell-future">~95,000<span class="tag-inline tag-wh">워홀</span></td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>✈️ 90일</th>
+                      <td class="cell-future">~72,000</td>
+                      <td class="cell-future">~99,000</td>
+                      <td class="cell-future">~138,000<span class="tag-inline tag-nomad">노매드</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 우측: 종량제 표 -->
+              <div class="pp__col pp__col--quantity">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">📊 종량제</span>
+                  <span class="pp__col-name">30일 총량 자유</span>
+                </div>
+                <p class="pp__col-sub">
+                  30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>용량</th>
+                      <th>30일 가격</th>
+                      <th>1GB 단가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th>1GB</th><td>4,600</td><td>4,600</td></tr>
+                    <tr><th>3GB</th><td>8,700</td><td>2,900</td></tr>
+                    <tr><th>5GB</th><td>11,800</td><td>2,360</td></tr>
+                    <tr><th>7GB</th><td>15,900</td><td>2,271</td></tr>
+                    <tr>
+                      <th>10GB</th>
+                      <td class="cell-best">22,100<span class="tag-inline tag-best">BEST</span></td>
+                      <td class="cell-best">2,210</td>
+                    </tr>
+                    <tr><th>20GB</th><td>37,700</td><td>1,885</td></tr>
+                    <tr>
+                      <th>30GB</th>
+                      <td class="cell-long">53,900<span class="tag-inline tag-long">노매드</span></td>
+                      <td class="cell-long">1,797</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="pp-guide">
+              <div class="pp-guide__title">💡 어떤 걸 골라야 하나요?</div>
+              <div class="pp-guide__list">
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📩 매일 500MB</div>
+                  <p class="pp-guide__item-p"><b>카카오톡만 사용</b> · 메신저 위주, 데이터 최소 사용자에게 충분.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">🗺️ 매일 1GB</div>
+                  <p class="pp-guide__item-p"><b>지도 · 메시지 · 검색</b> · 길찾기·번역·웹 검색 등 일상 사용.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📺 매일 2GB</div>
+                  <p class="pp-guide__item-p"><b>SNS · 동영상 시청</b> · 인스타·유튜브·릴스까지 넉넉히.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div style="padding: 0 28px 24px;">
+          <div class="variant__notes">
+            <b>장점</b> · 구조 변경 최소, 기존 03-plan-picker 그대로 컬럼 1개 추가. 시각 일관성 유지<br>
+            <b>단점</b> · 500MB 미끼의 "₩800" 임팩트가 표 안에 묻힘. 1열일 뿐<br>
+            <b>BEP 안내</b> · 없음 (적자구간 Lead로 진행 결정에 따라 노출 OK)
+          </div>
+        </div>
+      </article>
+
+      <!-- ─────────────────────────────────────
+           Variant B: 별도 미끼 카드 분리
+           ───────────────────────────────────── -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <span class="variant__letter">B</span>
+            <div class="variant__title">
+              별도 미끼 카드 분리
+              <small>500MB를 상단 단독 카드로 강조 — Lead 가격 임팩트 최대화</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택 시: <code>03-plan-picker.html ← B</code></div>
+        </header>
+        <div class="variant__canvas">
+          <section class="section">
+            <div class="pp__head">
+              <div class="pp__eyebrow">Flexible plan</div>
+              <h2 class="pp__title">무제한 · 종량제 자유 선택</h2>
+              <p class="pp__lede">
+                500MB 미끼로 시작 · 무제한 매일 1·2GB · 종량제 30일 총량 · 60·90일 워홀·노매드.
+              </p>
+            </div>
+
+            <!-- 상단: 500MB 미끼 카드 단독 -->
+            <div class="pp-bait">
+              <div class="pp-bait__left">
+                <span class="pp-bait__tag">🔥 LEAD · 최저 진입가</span>
+                <h3 class="pp-bait__h">매일 500MB + 500Kbps 무제한</h3>
+                <p class="pp-bait__sub">
+                  카카오톡 위주 가벼운 사용 · 소진 후에도 500Kbps 무제한 연결.<br>
+                  짧은 체험 · 단기 출장 진입가.
+                </p>
+              </div>
+              <div class="pp-bait__right">
+                <div class="pp-bait__price">800<small>원/일~</small></div>
+                <div class="pp-bait__hint">1일 ₩800부터 시작</div>
+              </div>
+            </div>
+            <div class="pp-bait-mini">
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">1일</div>
+                <div class="pp-bait-mini__p">800</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">3일</div>
+                <div class="pp-bait-mini__p">2,400</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">5일</div>
+                <div class="pp-bait-mini__p">4,000</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">7일</div>
+                <div class="pp-bait-mini__p">5,600</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">10일</div>
+                <div class="pp-bait-mini__p">8,000</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">15일</div>
+                <div class="pp-bait-mini__p">12,000</div>
+              </div>
+              <div class="pp-bait-mini__cell">
+                <div class="pp-bait-mini__d">30일</div>
+                <div class="pp-bait-mini__p">24,000</div>
+              </div>
+            </div>
+
+            <!-- 좌우 분할: 무제한 (1GB/2GB) + 종량제 -->
+            <div class="pp__split" style="margin-top: 22px;">
+              <div class="pp__col pp__col--unlimited">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">🌐 무제한</span>
+                  <span class="pp__col-name">매일 1GB · 2GB</span>
+                </div>
+                <p class="pp__col-sub">
+                  매일 1~2GB 고속 + 소진 후 500Kbps 무제한 (계속 연결)
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>일수</th>
+                      <th>매일 1GB</th>
+                      <th>매일 2GB</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th>1일</th><td>3,600</td><td>4,700</td></tr>
+                    <tr><th>3일</th><td>6,300</td><td>10,200</td></tr>
+                    <tr><th>5일</th><td>10,200</td><td>14,200</td></tr>
+                    <tr>
+                      <th>7일</th>
+                      <td>12,500</td>
+                      <td class="cell-best">18,500<span class="tag-inline tag-best">BEST</span></td>
+                    </tr>
+                    <tr><th>10일</th><td>16,200</td><td>25,900</td></tr>
+                    <tr><th>15일</th><td>20,500</td><td class="cell-long">30,900</td></tr>
+                    <tr>
+                      <th>30일</th>
+                      <td class="cell-long">37,100<span class="tag-inline tag-long">장기</span></td>
+                      <td class="cell-long">51,200</td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>🎒 60일</th>
+                      <td class="cell-future">~70,000</td>
+                      <td class="cell-future">~95,000<span class="tag-inline tag-wh">워홀</span></td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>✈️ 90일</th>
+                      <td class="cell-future">~99,000</td>
+                      <td class="cell-future">~138,000<span class="tag-inline tag-nomad">노매드</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="pp__col pp__col--quantity">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">📊 종량제</span>
+                  <span class="pp__col-name">30일 총량 자유</span>
+                </div>
+                <p class="pp__col-sub">
+                  30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>용량</th>
+                      <th>30일 가격</th>
+                      <th>1GB 단가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th>1GB</th><td>4,600</td><td>4,600</td></tr>
+                    <tr><th>3GB</th><td>8,700</td><td>2,900</td></tr>
+                    <tr><th>5GB</th><td>11,800</td><td>2,360</td></tr>
+                    <tr><th>7GB</th><td>15,900</td><td>2,271</td></tr>
+                    <tr>
+                      <th>10GB</th>
+                      <td class="cell-best">22,100<span class="tag-inline tag-best">BEST</span></td>
+                      <td class="cell-best">2,210</td>
+                    </tr>
+                    <tr><th>20GB</th><td>37,700</td><td>1,885</td></tr>
+                    <tr>
+                      <th>30GB</th>
+                      <td class="cell-long">53,900<span class="tag-inline tag-long">노매드</span></td>
+                      <td class="cell-long">1,797</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="pp-guide">
+              <div class="pp-guide__title">💡 어떤 걸 골라야 하나요?</div>
+              <div class="pp-guide__list">
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📩 매일 500MB</div>
+                  <p class="pp-guide__item-p"><b>카카오톡만 사용</b> · 메신저 위주, 데이터 최소 사용자에게 충분.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">🗺️ 매일 1GB</div>
+                  <p class="pp-guide__item-p"><b>지도 · 메시지 · 검색</b> · 길찾기·번역·웹 검색 등 일상 사용.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📺 매일 2GB</div>
+                  <p class="pp-guide__item-p"><b>SNS · 동영상 시청</b> · 인스타·유튜브·릴스까지 넉넉히.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div style="padding: 0 28px 24px;">
+          <div class="variant__notes">
+            <b>장점</b> · 500MB ₩800 Lead 임팩트 가장 강함. 큰 가격 텍스트(₩800)로 진입가 어필 명확<br>
+            <b>단점</b> · 카드 1개 + 미니그리드 + 좌우분할 = 세로 길이↑. 정보 밀도 큼<br>
+            <b>BEP 안내</b> · 카드 카피로 "메신저·지도 가벼운 사용" 명시 — 사용자 기대 관리
+          </div>
+        </div>
+      </article>
+
+      <!-- ─────────────────────────────────────
+           Variant C: 3열 + BEP 정직 시각화
+           ───────────────────────────────────── -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <span class="variant__letter">C</span>
+            <div class="variant__title">
+              3열 + BEP 정직 시각화
+              <small>500MB 컬럼 추가 + "10일권+ 추천" 색상 가이드 + 정직 안내 박스</small>
+            </div>
+          </div>
+          <div class="variant__pick">선택 시: <code>03-plan-picker.html ← C</code></div>
+        </header>
+        <div class="variant__canvas">
+          <section class="section">
+            <div class="pp__head">
+              <div class="pp__eyebrow">Flexible plan</div>
+              <h2 class="pp__title">무제한 · 종량제 자유 선택</h2>
+              <p class="pp__lede">
+                ₩800/일부터 진입 · 10일권 이상부터 본격 추천 · 워홀·노매드는 60·90일.
+              </p>
+            </div>
+
+            <div class="pp__split">
+              <div class="pp__col pp__col--unlimited">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">🌐 무제한</span>
+                  <span class="pp__col-name">매일 한도 + 500Kbps</span>
+                </div>
+                <p class="pp__col-sub">
+                  500MB · 1GB · 2GB · 매일 갱신 + 소진 후 500Kbps 무제한
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>일수</th>
+                      <th>500MB</th>
+                      <th>매일 1GB</th>
+                      <th>매일 2GB</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>1일</th>
+                      <td class="cell-lead">800<span class="tag-inline tag-lead">최저</span></td>
+                      <td>3,600</td>
+                      <td>4,700</td>
+                    </tr>
+                    <tr><th>3일</th><td>2,400</td><td>6,300</td><td>10,200</td></tr>
+                    <tr><th>5일</th><td>4,000</td><td>10,200</td><td>14,200</td></tr>
+                    <tr>
+                      <th>7일</th>
+                      <td>5,600</td>
+                      <td>12,500</td>
+                      <td class="cell-best">18,500<span class="tag-inline tag-best">BEST</span></td>
+                    </tr>
+                    <tr>
+                      <th>10일</th>
+                      <td class="cell-bep">8,000<span class="tag-inline tag-bep">추천↑</span></td>
+                      <td>16,200</td>
+                      <td>25,900</td>
+                    </tr>
+                    <tr><th>15일</th><td class="cell-bep">12,000</td><td>20,500</td><td class="cell-long">30,900</td></tr>
+                    <tr>
+                      <th>30일</th>
+                      <td class="cell-bep">24,000</td>
+                      <td class="cell-long">37,100<span class="tag-inline tag-long">장기</span></td>
+                      <td class="cell-long">51,200</td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>🎒 60일</th>
+                      <td class="cell-future">~48,000</td>
+                      <td class="cell-future">~70,000</td>
+                      <td class="cell-future">~95,000<span class="tag-inline tag-wh">워홀</span></td>
+                    </tr>
+                    <tr class="row-future">
+                      <th>✈️ 90일</th>
+                      <td class="cell-future">~72,000</td>
+                      <td class="cell-future">~99,000</td>
+                      <td class="cell-future">~138,000<span class="tag-inline tag-nomad">노매드</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="pp-bep-note">
+                  <span class="pp-bep-emoji">🟢</span><b>500MB 권장 사용법:</b>
+                  <b>카카오톡 위주</b> 사용자 또는 <b>10일 이상</b> 장기 체류 시 가성비 best.<br>
+                  지도·메시지·검색은 <b>매일 1GB</b>, SNS·동영상은 <b>매일 2GB</b> 권장.
+                </div>
+              </div>
+
+              <div class="pp__col pp__col--quantity">
+                <div class="pp__col-head">
+                  <span class="pp__col-tag">📊 종량제</span>
+                  <span class="pp__col-name">30일 총량 자유</span>
+                </div>
+                <p class="pp__col-sub">
+                  30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료
+                </p>
+                <table class="pp-mx">
+                  <thead>
+                    <tr>
+                      <th>용량</th>
+                      <th>30일 가격</th>
+                      <th>1GB 단가</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th>1GB</th><td>4,600</td><td>4,600</td></tr>
+                    <tr><th>3GB</th><td>8,700</td><td>2,900</td></tr>
+                    <tr><th>5GB</th><td>11,800</td><td>2,360</td></tr>
+                    <tr><th>7GB</th><td>15,900</td><td>2,271</td></tr>
+                    <tr>
+                      <th>10GB</th>
+                      <td class="cell-best">22,100<span class="tag-inline tag-best">BEST</span></td>
+                      <td class="cell-best">2,210</td>
+                    </tr>
+                    <tr><th>20GB</th><td>37,700</td><td>1,885</td></tr>
+                    <tr>
+                      <th>30GB</th>
+                      <td class="cell-long">53,900<span class="tag-inline tag-long">노매드</span></td>
+                      <td class="cell-long">1,797</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="pp-guide">
+              <div class="pp-guide__title">💡 어떤 걸 골라야 하나요?</div>
+              <div class="pp-guide__list">
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📩 매일 500MB</div>
+                  <p class="pp-guide__item-p"><b>카카오톡만 사용</b> · 메신저 위주, 데이터 최소 사용자에게 충분.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">🗺️ 매일 1GB</div>
+                  <p class="pp-guide__item-p"><b>지도 · 메시지 · 검색</b> · 길찾기·번역·웹 검색 등 일상 사용.</p>
+                </div>
+                <div class="pp-guide__item">
+                  <div class="pp-guide__item-h">📺 매일 2GB</div>
+                  <p class="pp-guide__item-p"><b>SNS · 동영상 시청</b> · 인스타·유튜브·릴스까지 넉넉히.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div style="padding: 0 28px 24px;">
+          <div class="variant__notes">
+            <b>장점</b> · 정직한 사용 가이드 동봉 → 사용자 기대 관리 + 환불·CS 부담 ↓<br>
+            <b>단점</b> · 안내 박스로 세로 길이↑ · 미끼 임팩트는 B보다 약함<br>
+            <b>BEP 표기</b> · 10일권+ 셀 초록 강조 + "추천↑" 태그 + 정직 안내 — Lead로 진행해도 사용 가이드는 함께
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </body>
+</html>

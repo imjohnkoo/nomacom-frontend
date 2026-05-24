@@ -12,55 +12,66 @@
     <link rel="stylesheet" href="../shared/base.css" />
     <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
     <style>
-      .steps {
+      .hw-flow {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
+        grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
       }
-      .step {
-        position: relative;
-        padding: 24px 18px 20px;
+      .hw-card {
+        padding: 24px 16px;
         background: #fff;
         border: 1px solid var(--color-neutral-200);
-        border-radius: var(--radius-2xl);
+        border-radius: 14px;
+        text-align: center;
       }
-      .step__head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
+      .hw-card__icon {
+        font-size: 36px;
+        line-height: 1;
+        margin-bottom: 12px;
       }
-      .step__num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        border-radius: 9px;
-        background: var(--color-primary-500);
-        color: #fff;
+      .hw-card__num {
+        display: inline-block;
+        font-size: 10.5px;
         font-weight: 800;
-        font-size: 14px;
-      }
-      .step__time {
-        font-size: 11px;
-        font-weight: 700;
+        letter-spacing: 0.08em;
         color: var(--color-primary-600);
         background: var(--color-primary-50);
-        padding: 3px 8px;
-        border-radius: var(--radius-full);
+        padding: 2px 8px;
+        border-radius: 9999px;
+        margin-bottom: 8px;
       }
-      .step__h {
-        font-size: 15px;
+      .hw-card__h {
+        font-size: 14.5px;
         font-weight: 800;
-        letter-spacing: -0.015em;
-        margin: 0 0 6px;
+        margin-bottom: 4px;
+        color: var(--color-neutral-900);
+        letter-spacing: -0.01em;
       }
-      .step__p {
+      .hw-card__time {
+        font-size: 11.5px;
+        color: var(--color-neutral-400);
+        font-weight: 600;
+      }
+      .hw-arrow {
+        color: var(--color-primary-400);
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .hw-note {
+        margin-top: 22px;
+        padding: 14px 18px;
+        background: var(--color-neutral-50);
+        border-radius: 10px;
         font-size: 12.5px;
+        color: var(--color-neutral-600);
         line-height: 1.65;
-        color: var(--color-neutral-500);
-        margin: 0;
+        text-align: center;
+      }
+      .hw-note b {
+        color: var(--color-neutral-900);
+        font-weight: 700;
       }
     </style>
   </head>
@@ -69,7 +80,7 @@
       <div class="dev-toolbar__info">
         <span class="dev-toolbar__num">09</span>
         <span class="dev-toolbar__title">How it works</span>
-        <span class="dev-toolbar__hint">4 step + 예상 소요시간</span>
+        <span class="dev-toolbar__hint">화살표 process flow · 4 카드</span>
       </div>
       <button class="dev-toolbar__btn" data-export="eu-09-how-it-works">
         <span class="label-default">PNG 저장</span>
@@ -79,51 +90,47 @@
 
     <div class="canvas">
       <section class="section" id="export-target">
-        <span class="eyebrow">How it works</span>
-        <h2 class="section__title">발급은 이렇게 진행돼요</h2>
+        <span class="eyebrow">Process</span>
+        <h2 class="section__title">결제 → 발송 → QR → 사용</h2>
         <p class="section__lede">
-          네이버 결제 → 카카오톡으로 QR 자동 발송 → 스캔하면 끝. 전체 과정 평균 2분.<br />
-          출국 전 미리 설치하고, 현지에서 회선만 OFF → ON 으로 켜세요.
+          네이버 결제부터 현지 회선 ON 까지 4단계 · 평균 2분.<br />
+          출국 전 미리 설치해 두면, 현지에서 회선만 ON 으로 즉시 시작.
         </p>
 
-        <div class="steps">
-          <div class="step">
-            <div class="step__head">
-              <div class="step__num">1</div>
-              <span class="step__time">30초</span>
-            </div>
-            <h3 class="step__h">스토어 결제</h3>
-            <p class="step__p">네이버 스마트스토어에서 상품 선택 후 결제. 주문번호가 발급돼요.</p>
+        <div class="hw-flow">
+          <div class="hw-card">
+            <div class="hw-card__icon">💳</div>
+            <div class="hw-card__num">STEP 1</div>
+            <div class="hw-card__h">결제</div>
+            <div class="hw-card__time">30초</div>
           </div>
-          <div class="step">
-            <div class="step__head">
-              <div class="step__num">2</div>
-              <span class="step__time">20초</span>
-            </div>
-            <h3 class="step__h">본인 인증</h3>
-            <p class="step__p">
-              ESIMmany 페이지에서 주문번호와 이름 · 전화번호로 본인 확인을 진행해요.
-            </p>
+          <div class="hw-arrow">→</div>
+          <div class="hw-card">
+            <div class="hw-card__icon">💬</div>
+            <div class="hw-card__num">STEP 2</div>
+            <div class="hw-card__h">카톡 발송</div>
+            <div class="hw-card__time">1~2분</div>
           </div>
-          <div class="step">
-            <div class="step__head">
-              <div class="step__num">3</div>
-              <span class="step__time">10초</span>
-            </div>
-            <h3 class="step__h">QR 코드 받기</h3>
-            <p class="step__p">카카오톡으로 받은 링크에서 QR 코드를 다운로드해요.</p>
+          <div class="hw-arrow">→</div>
+          <div class="hw-card">
+            <div class="hw-card__icon">📲</div>
+            <div class="hw-card__num">STEP 3</div>
+            <div class="hw-card__h">QR 스캔</div>
+            <div class="hw-card__time">10초</div>
           </div>
-          <div class="step">
-            <div class="step__head">
-              <div class="step__num">4</div>
-              <span class="step__time">1분</span>
-            </div>
-            <h3 class="step__h">QR 스캔 후 회선 ON</h3>
-            <p class="step__p">
-              출국 전 미리 설치 가능. 회선 OFF 유지 → 현지 도착 후 회선 ON 시 데이터 시작.
-            </p>
+          <div class="hw-arrow">→</div>
+          <div class="hw-card">
+            <div class="hw-card__icon">✈️</div>
+            <div class="hw-card__num">STEP 4</div>
+            <div class="hw-card__h">현지 ON</div>
+            <div class="hw-card__time">1분</div>
           </div>
         </div>
+
+        <p class="hw-note">
+          💡 <b>출국 전 미리 설치</b>해 두면 안심 — 회선 OFF 유지 → 현지 도착 후 회선 ON 시
+          데이터 시작 · 야간·주말 발급 OK
+        </p>
       </section>
     </div>
 

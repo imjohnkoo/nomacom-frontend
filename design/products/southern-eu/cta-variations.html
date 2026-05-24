@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Final CTA 5종 비교 · 남유럽</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <link rel="stylesheet" href="shared/base.css" />
+    <style>
+      body { background: #ededf2; }
+      .page-top { padding: 36px 28px 12px; text-align: center; }
+      .page-top h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 6px; }
+      .page-top p { font-size: 14px; color: var(--color-neutral-500); margin: 0; }
+      .variant-stack { max-width: 1040px; margin: 0 auto; padding: 24px 0 80px; display: flex; flex-direction: column; gap: 28px; }
+      .variant { background: #fff; border-radius: 14px; box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.15); overflow: hidden; }
+      .variant__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 28px; border-bottom: 1px solid var(--color-neutral-100); background: var(--color-neutral-50); }
+      .variant__label { display: flex; align-items: center; gap: 12px; }
+      .variant__letter { width: 32px; height: 32px; border-radius: 9px; background: var(--color-primary-500); color: #fff; font-weight: 800; font-size: 15px; display: grid; place-items: center; }
+      .variant__title { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; }
+      .variant__title small { display: block; font-size: 12px; font-weight: 500; color: var(--color-neutral-500); margin-top: 1px; }
+      .variant__pick { font-size: 12px; color: var(--color-neutral-500); display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+      .variant__pick code { font-family: var(--font-mono); background: var(--color-neutral-100); color: var(--color-primary-700); padding: 2px 8px; border-radius: 4px; font-weight: 700; }
+      .variant__pick em { font-style: normal; color: var(--color-neutral-400); font-size: 11px; }
+      .variant__canvas { display: flex; justify-content: center; }
+
+      /* 공통 */
+      .biz { background: var(--color-neutral-900); color: rgba(255, 255, 255, 0.55); padding: 22px 40px; font-size: 11px; line-height: 1.75; text-align: center; }
+      .biz b { color: rgba(255, 255, 255, 0.85); font-weight: 700; }
+
+      /* ─── A: 현재 (trust strip + final block + biz) ─── */
+      .a-trust { background: #fff; padding: 24px 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 22px 32px; border-bottom: 1px solid var(--color-neutral-100); }
+      .a-badge { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-neutral-600); font-weight: 600; }
+      .a-badge__icon { width: 24px; height: 24px; border-radius: 7px; background: var(--color-neutral-100); display: grid; place-items: center; font-size: 12px; }
+      .a-badge b { color: var(--color-neutral-900); font-weight: 800; }
+      .a-final { padding: 56px 60px 64px; background: radial-gradient(circle at 100% 100%, rgba(167, 139, 255, 0.4) 0%, transparent 60%), linear-gradient(135deg, #171717 0%, #2f1499 100%); color: #fff; text-align: center; }
+      .a-final__h { font-size: 28px; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 14px; line-height: 1.25; }
+      .a-final__p { font-size: 14px; line-height: 1.7; color: rgba(255, 255, 255, 0.78); margin: 0 0 22px; }
+      .a-final__btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: #fff; color: var(--color-neutral-900); border-radius: 9999px; font-size: 14px; font-weight: 800; }
+      .a-final__sub { margin-top: 18px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+      .a-final__sub span::before { content: ''; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.4); margin-right: 8px; vertical-align: middle; }
+
+      /* ─── B: 단순 큰 CTA ─── */
+      .b-final { padding: 80px 60px; background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%); color: #fff; text-align: center; }
+      .b-final__h { font-size: 38px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 12px; line-height: 1.15; }
+      .b-final__p { font-size: 15px; line-height: 1.6; opacity: 0.82; margin: 0 0 30px; }
+      .b-final__btn { display: inline-flex; align-items: center; gap: 10px; padding: 18px 36px; background: #fff; color: var(--color-neutral-900); border-radius: 9999px; font-size: 16px; font-weight: 800; box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4); }
+      .b-final__cs { margin-top: 20px; font-size: 12px; opacity: 0.7; }
+
+      /* ─── C: 가격 강조 + CTA ─── */
+      .c-final { padding: 56px 60px; background: linear-gradient(135deg, #1f0c6e 0%, #6239ff 100%); color: #fff; }
+      .c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+      .c-left h3 { font-size: 26px; font-weight: 800; line-height: 1.2; margin: 0 0 10px; letter-spacing: -0.02em; }
+      .c-left p { font-size: 13.5px; opacity: 0.78; line-height: 1.6; margin: 0; }
+      .c-right { text-align: center; padding: 28px 24px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 16px; backdrop-filter: blur(8px); }
+      .c-right__tag { display: inline-block; font-size: 10.5px; font-weight: 800; padding: 3px 10px; background: var(--color-warning-500); color: #fff; border-radius: 9999px; margin-bottom: 12px; letter-spacing: 0.04em; }
+      .c-right__price { font-size: 42px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+      .c-right__price small { font-size: 14px; opacity: 0.7; font-weight: 600; margin-left: 4px; }
+      .c-right__sub { margin-top: 4px; font-size: 12px; opacity: 0.7; }
+      .c-right__btn { margin-top: 14px; padding: 14px 22px; background: #fff; color: var(--color-neutral-900); border-radius: 9999px; font-size: 13.5px; font-weight: 800; display: inline-block; }
+
+      /* ─── D: 강점 요약 카드 + CTA ─── */
+      .d-final { padding: 56px 60px; background: linear-gradient(135deg, #2f1499, #6239ff); color: #fff; text-align: center; }
+      .d-h { font-size: 26px; font-weight: 800; margin: 0 0 24px; letter-spacing: -0.02em; }
+      .d-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 26px; }
+      .d-chip { padding: 7px 14px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 9999px; font-size: 12.5px; font-weight: 600; }
+      .d-btn { padding: 16px 32px; background: #fff; color: var(--color-neutral-900); border-radius: 9999px; font-size: 15px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; }
+      .d-cs { margin-top: 18px; font-size: 12px; opacity: 0.65; }
+
+      /* ─── E: 후기 + CTA ─── */
+      .e-final { padding: 56px 60px; background: #fff; }
+      .e-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; align-items: center; }
+      .e-quote { padding: 22px 24px; background: linear-gradient(135deg, #f1edff, #fff 50%); border: 1px solid var(--color-primary-100); border-radius: 16px; }
+      .e-quote .stars { color: #f59e0b; font-size: 14px; letter-spacing: 2px; margin-bottom: 10px; }
+      .e-quote p { font-size: 14px; line-height: 1.7; margin: 0 0 14px; color: var(--color-neutral-800); }
+      .e-quote__meta { font-size: 12px; color: var(--color-neutral-500); }
+      .e-quote__meta b { display: block; color: var(--color-neutral-900); font-weight: 700; font-size: 13px; }
+      .e-right h3 { font-size: 24px; font-weight: 800; margin: 0 0 8px; line-height: 1.25; letter-spacing: -0.02em; color: var(--color-neutral-900); }
+      .e-right p { font-size: 13px; color: var(--color-neutral-500); line-height: 1.6; margin: 0 0 22px; }
+      .e-btn { padding: 14px 28px; background: var(--color-primary-500); color: #fff; border-radius: 9999px; font-size: 14px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow-cta-brand); }
+
+      /* ─── F: 상담 채널 강조 ─── */
+      .f-final { padding: 56px 60px; background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%); color: #fff; text-align: center; }
+      .f-final__h { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; line-height: 1.25; }
+      .f-final__sub { font-size: 13.5px; opacity: 0.78; margin: 0 0 28px; }
+      .f-final__btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: #fff; color: var(--color-neutral-900); border-radius: 9999px; font-size: 15px; font-weight: 800; box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.4); margin-bottom: 28px; }
+      .f-divider { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; opacity: 0.65; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+      .f-divider::before, .f-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.22); }
+      .f-channels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .f-channel { padding: 22px 24px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 16px; display: flex; align-items: center; gap: 16px; text-align: left; transition: background 200ms ease; }
+      .f-channel--kakao { background: linear-gradient(135deg, rgba(254, 220, 0, 0.18), rgba(254, 220, 0, 0.06)); border-color: rgba(254, 220, 0, 0.35); }
+      .f-channel--talk { background: linear-gradient(135deg, rgba(3, 199, 90, 0.18), rgba(3, 199, 90, 0.06)); border-color: rgba(3, 199, 90, 0.35); }
+      .f-channel__icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; font-weight: 800; flex-shrink: 0; }
+      .f-channel--kakao .f-channel__icon { background: #fedc00; color: #3c1e1e; }
+      .f-channel--talk .f-channel__icon { background: #03c75a; color: #fff; }
+      .f-channel__body { flex: 1; }
+      .f-channel__label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65; margin-bottom: 2px; }
+      .f-channel__name { font-size: 16px; font-weight: 800; letter-spacing: -0.015em; margin-bottom: 2px; }
+      .f-channel__meta { font-size: 11.5px; opacity: 0.75; }
+      .f-channel__arrow { font-size: 18px; opacity: 0.5; }
+      .f-cs-note { margin-top: 18px; font-size: 12px; opacity: 0.7; }
+    </style>
+  </head>
+  <body>
+    <div class="page-top">
+      <h1>Final CTA 5종 비교 · 남유럽</h1>
+      <p>마지막 클릭 유도 영역 — 어떻게 마무리할지</p>
+    </div>
+
+    <div class="variant-stack">
+
+      <!-- ═══ A · 현재 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">A</div>
+            <div class="variant__title">
+              현재 — 신뢰배지 + final hero + biz footer
+              <small>trust strip 4 + 다크 hero + 사업자 정보</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>A</code><em>3단 구조</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <div class="a-trust">
+            <div class="a-badge"><div class="a-badge__icon">🛡</div><span><b>안전결제</b> KICC 에스크로</span></div>
+            <div class="a-badge"><div class="a-badge__icon">📋</div><span><b>사업자등록</b> 정상 신고</span></div>
+            <div class="a-badge"><div class="a-badge__icon">✓</div><span><b>통신판매신고</b> 완료</span></div>
+            <div class="a-badge"><div class="a-badge__icon">⭐</div><span><b>개인정보보호</b> 책임자 지정</span></div>
+          </div>
+          <section class="a-final">
+            <h2 class="a-final__h">스페인·포르투갈 한 번에.<br />단기 여행부터 90일 노매드까지.</h2>
+            <p class="a-final__p">카카오톡 당일 발급 · 한국어 CS · 500Kbps 무제한 저속<br />2개국 동일 eSIM · 1~90일 자유 선택</p>
+            <div class="a-final__btn">네이버 스마트스토어에서 구매하기 →</div>
+            <div class="a-final__sub">
+              <span>💬 상담은 카카오톡 <b style="color:#fff">@이심마니</b> 또는 <b style="color:#fff">네이버 톡톡</b>으로</span>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ B · 단순 큰 CTA ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">B</div>
+            <div class="variant__title">
+              단순 큰 CTA
+              <small>큰 헤드라인 + 큰 버튼 · 군더더기 없음</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>B</code><em>단순</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="b-final">
+            <h2 class="b-final__h">두 나라, 한 SIM.</h2>
+            <p class="b-final__p">카카오톡 1분 발급 · 1~90일 자유 선택 · 테더링 OK</p>
+            <div class="b-final__btn">네이버 스마트스토어에서 구매하기 →</div>
+            <div class="b-final__cs">💬 상담은 카카오톡 <b style="color:#fff">@이심마니</b> 또는 <b style="color:#fff">네이버 톡톡</b>으로</div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ C · 가격 강조 + CTA ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">C</div>
+            <div class="variant__title">
+              가격 강조 + CTA
+              <small>좌측 메시지 + 우측 가격 카드 + CTA</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>C</code><em>가격 강조</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="c-final">
+            <div class="c-grid">
+              <div class="c-left">
+                <h3>스페인·포르투갈,<br />지금 출발 준비.</h3>
+                <p>카카오톡 당일 발급 · 한국어 상담 · 2개국 한 SIM. 1일권부터 90일 노매드까지 자유 선택.</p>
+              </div>
+              <div class="c-right">
+                <span class="c-right__tag">💰 1일권 최저가</span>
+                <div class="c-right__price">3,600<small>원~</small></div>
+                <div class="c-right__sub">즉시할인 11만원 적용</div>
+                <div class="c-right__btn">네이버 스토어로 →</div>
+                <div style="margin-top: 12px; font-size: 11px; opacity: 0.7;">💬 카카오톡 <b style="color:#fff">@이심마니</b> · <b style="color:#fff">네이버 톡톡</b></div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ D · 강점 칩 + CTA ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">D</div>
+            <div class="variant__title">
+              강점 칩 요약 + CTA
+              <small>차별 chip 6개 + 큰 CTA</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>D</code><em>강점 칩</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="d-final">
+            <h2 class="d-h">단 1분이면<br />여행 준비 끝.</h2>
+            <div class="d-chips">
+              <span class="d-chip">✓ 카카오톡 1분 발급</span>
+              <span class="d-chip">✓ 1~90일 자유 선택</span>
+              <span class="d-chip">✓ 무제한 · 종량제</span>
+              <span class="d-chip">✓ 500Kbps 무제한 저속</span>
+              <span class="d-chip">✓ 테더링 제한 없음</span>
+              <span class="d-chip">✓ 2개국 한 SIM 🇪🇸🇵🇹</span>
+            </div>
+            <div class="d-btn">네이버 스마트스토어에서 구매하기 →</div>
+            <div class="d-cs">💬 상담은 카카오톡 <b style="color:#fff">@이심마니</b> 또는 <b style="color:#fff">네이버 톡톡</b>으로</div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ F · 상담 채널 강조 ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">F</div>
+            <div class="variant__title">
+              상담 채널 강조
+              <small>CTA + 카카오톡 @이심마니 / 네이버 톡톡 큰 카드 2개</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>F</code><em>상담 강조</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="f-final">
+            <h2 class="f-final__h">두 나라, 한 SIM.</h2>
+            <p class="f-final__sub">스페인·포르투갈 1~90일 자유 선택 · 카카오톡 1분 발급</p>
+            <div class="f-final__btn">
+              네이버 스마트스토어에서 구매하기 →
+            </div>
+            <div class="f-divider">또는 먼저 상담하기</div>
+            <div class="f-channels">
+              <a class="f-channel f-channel--kakao">
+                <div class="f-channel__icon">💬</div>
+                <div class="f-channel__body">
+                  <div class="f-channel__label">KakaoTalk</div>
+                  <div class="f-channel__name">@이심마니</div>
+                  <div class="f-channel__meta">한국어 채팅 · 평균 30분 응답</div>
+                </div>
+                <div class="f-channel__arrow">→</div>
+              </a>
+              <a class="f-channel f-channel--talk">
+                <div class="f-channel__icon">N</div>
+                <div class="f-channel__body">
+                  <div class="f-channel__label">Naver Talk</div>
+                  <div class="f-channel__name">네이버 톡톡</div>
+                  <div class="f-channel__meta">스마트스토어 직접 문의</div>
+                </div>
+                <div class="f-channel__arrow">→</div>
+              </a>
+            </div>
+            <div class="f-cs-note">호환 기기·일정·환불·기술 문의 모두 OK</div>
+          </section>
+        </div></div>
+      </article>
+
+      <!-- ═══ E · 후기 + CTA ═══ -->
+      <article class="variant">
+        <header class="variant__head">
+          <div class="variant__label">
+            <div class="variant__letter">E</div>
+            <div class="variant__title">
+              후기 + CTA (밝은 톤)
+              <small>좌측 후기 카드 + 우측 CTA · 사회적 증거로 마무리</small>
+            </div>
+          </div>
+          <div class="variant__pick"><code>E</code><em>후기 + CTA</em></div>
+        </header>
+        <div class="variant__canvas"><div class="canvas">
+          <section class="e-final">
+            <div class="e-grid">
+              <div class="e-quote">
+                <div class="stars">★★★★★</div>
+                <p>"마드리드 → 리스본 4박씩 도느라 8일권 샀는데 국경 넘어도 같은 eSIM 그대로 잡혀서 편했어요. 매일 테더링으로 노트북 업무도 속도 안 떨어졌고요."</p>
+                <div class="e-quote__meta"><b>김** 님</b>남유럽 7일 매일 2GB · 2026-03</div>
+              </div>
+              <div class="e-right">
+                <h3>여러분도<br />이렇게 떠나세요.</h3>
+                <p>카카오톡 1분 발급 · 한국어 CS · 2개국 한 SIM. 1~90일 자유 선택.</p>
+                <div class="e-btn">네이버 스마트스토어 →</div>
+                <div style="margin-top: 14px; font-size: 12px; color: var(--color-neutral-500);">💬 상담은 카카오톡 <b style="color: var(--color-primary-700)">@이심마니</b> 또는 <b style="color: var(--color-primary-700)">네이버 톡톡</b>으로</div>
+              </div>
+            </div>
+          </section>
+        </div></div>
+      </article>
+    </div>
+  </body>
+</html>
