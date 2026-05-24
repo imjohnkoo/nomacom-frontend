@@ -16,7 +16,10 @@ export const useDB = () => {
     throw new Error('DATABASE_URL is not configured')
   }
 
-  client = postgres(databaseUrl)
+  // prod RDS requires SSL (pg_hba.conf); local dev postgres typically doesn't.
+  const ssl = process.env.NODE_ENV === 'production' ? 'require' : false
+
+  client = postgres(databaseUrl, { ssl })
   db = drizzle(client, { schema })
 
   return db
