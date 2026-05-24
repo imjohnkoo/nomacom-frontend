@@ -57,8 +57,10 @@ export default defineEventHandler((event) => {
     return
   }
 
-  const config = useRuntimeConfig()
-  const extra = (config.corsExtraOrigins as string[] | undefined) ?? []
+  const extra = (process.env.CORS_EXTRA_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
 
   if (!isOriginAllowed(requestOrigin, extra)) {
     // 비허용 origin — 403. preflight 든 본 요청이든 동일하게 차단

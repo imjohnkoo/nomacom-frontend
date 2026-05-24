@@ -19,15 +19,6 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    databaseUrl: process.env.DATABASE_URL,
-    mayaApiEndpoint: process.env.MAYA_API_ENDPOINT,
-    mayaApiClientId: process.env.MAYA_API_CLIENT_ID,
-    mayaApiClientSecret: process.env.MAYA_API_CLIENT_SECRET,
-    // CORS 화이트리스트 — 정적 origins 외 추가 (콤마 separated env)
-    corsExtraOrigins: (process.env.CORS_EXTRA_ORIGINS ?? '')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean),
     public: {
       apiBase: '/api/v1',
     },
