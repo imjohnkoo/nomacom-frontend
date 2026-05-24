@@ -7,149 +7,137 @@ import {
   integer,
   text,
   serial,
-} from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+} from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
 
-// Order table
+// prod DB 는 TypeORM 기본 naming (camelCase 컬럼). backend (NestJS) 와 schema 공유.
+// 표 이름: `order`, `esim`, `plan`, `plan-type` (plan-type 는 hyphen)
+
 export const orders = pgTable('order', {
-  productOrderId: bigint('product_order_id', { mode: 'number' }).primaryKey(),
-  orderId: bigint('order_id', { mode: 'number' }),
-  productOrderStatus: varchar('product_order_status', { length: 255 }),
-  lastChangedType: varchar('last_changed_type', { length: 255 }),
-  paymentDate: timestamp('payment_date'),
-  lastChangedDate: timestamp('last_changed_date'),
-  claimType: varchar('claim_type', { length: 255 }),
-  claimStatus: varchar('claim_status', { length: 255 }),
-  receiverAddressChanged: boolean('receiver_address_changed'),
+  productOrderId: bigint('productOrderId', { mode: 'number' }).primaryKey(),
+  orderId: bigint('orderId', { mode: 'number' }),
+  productOrderStatus: varchar('productOrderStatus', { length: 255 }),
+  lastChangedType: varchar('lastChangedType', { length: 255 }),
+  paymentDate: timestamp('paymentDate'),
+  lastChangedDate: timestamp('lastChangedDate'),
+  claimType: varchar('claimType', { length: 255 }),
+  claimStatus: varchar('claimStatus', { length: 255 }),
+  receiverAddressChanged: boolean('receiverAddressChanged'),
 
-  // Order details
-  productName: varchar('product_name', { length: 255 }),
-  productOption: varchar('product_option', { length: 255 }),
-  placeOrderDate: timestamp('place_order_date'),
+  productName: varchar('productName', { length: 255 }),
+  productOption: varchar('productOption', { length: 255 }),
+  placeOrderDate: timestamp('placeOrderDate'),
   quantity: integer('quantity'),
-  totalPaymentAmount: integer('total_payment_amount'),
-  sellerProductCode: varchar('seller_product_code', { length: 255 }),
-  optionManageCode: varchar('option_manage_code', { length: 255 }),
+  totalPaymentAmount: integer('totalPaymentAmount'),
+  sellerProductCode: varchar('sellerProductCode', { length: 255 }),
+  optionManageCode: varchar('optionManageCode', { length: 255 }),
 
-  // Customer info
-  customerName: varchar('customer_name', { length: 255 }),
-  customerPhoneNumber: varchar('customer_phone_number', { length: 50 }),
-  customerId: varchar('customer_id', { length: 255 }),
-  customerEmail: varchar('customer_email', { length: 255 }),
+  customerName: varchar('customerName', { length: 255 }),
+  customerPhoneNumber: varchar('customerPhoneNumber', { length: 50 }),
+  customerId: varchar('customerId', { length: 255 }),
+  customerEmail: varchar('customerEmail', { length: 255 }),
 
-  // Receiver info
-  receiverName: varchar('receiver_name', { length: 255 }),
-  receiverPhoneNumber: varchar('receiver_phone_number', { length: 50 }),
+  receiverName: varchar('receiverName', { length: 255 }),
+  receiverPhoneNumber: varchar('receiverPhoneNumber', { length: 50 }),
 
-  // Cancel info
-  cancelApprovalDate: timestamp('cancel_approval_date'),
-  cancelCompletedDate: timestamp('cancel_completed_date'),
-  cancelClaimRequestDate: timestamp('cancel_claim_request_date'),
-  refundStandbyStatus: varchar('refund_standby_status', { length: 255 }),
-  cancelReason: varchar('cancel_reason', { length: 255 }),
+  cancelApprovalDate: timestamp('cancelApprovalDate'),
+  cancelCompletedDate: timestamp('cancelCompletedDate'),
+  cancelClaimRequestDate: timestamp('cancelClaimRequestDate'),
+  refundStandbyStatus: varchar('refundStandbyStatus', { length: 255 }),
+  cancelReason: varchar('cancelReason', { length: 255 }),
 
-  // Return info
-  returnClaimRequestDate: timestamp('return_claim_request_date'),
-  returnClaimStatus: varchar('return_claim_status', { length: 255 }),
-  returnDetailedReason: text('return_detailed_reason'),
-  returnReason: varchar('return_reason', { length: 255 }),
-  returnCompletedDate: timestamp('return_completed_date'),
+  returnClaimRequestDate: timestamp('returnClaimRequestDate'),
+  returnClaimStatus: varchar('returnClaimStatus', { length: 255 }),
+  returnDetailedReason: text('returnDetailedReason'),
+  returnReason: varchar('returnReason', { length: 255 }),
+  returnCompletedDate: timestamp('returnCompletedDate'),
 
-  // Timestamps
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-});
+  createdAt: timestamp('createdAt').defaultNow(),
+  updatedAt: timestamp('updatedAt').defaultNow(),
+})
 
-// eSIM table
 export const esims = pgTable('esim', {
-  esimId: varchar('esim_id', { length: 255 }).primaryKey(),
+  esimId: varchar('esimId', { length: 255 }).primaryKey(),
   apn: varchar('apn', { length: 255 }),
   tag: varchar('tag', { length: 255 }),
   uid: varchar('uid', { length: 255 }),
   iccid: varchar('iccid', { length: 255 }),
   state: varchar('state', { length: 100 }),
-  autoApn: varchar('auto_apn', { length: 255 }),
-  manualCode: varchar('manual_code', { length: 255 }),
-  smdpAddress: varchar('smdp_address', { length: 255 }),
-  dateAssigned: timestamp('date_assigned'),
-  networkStatus: varchar('network_status', { length: 100 }),
-  serviceStatus: varchar('service_status', { length: 100 }),
-  activationCode: text('activation_code'),
+  autoApn: varchar('autoApn', { length: 255 }),
+  manualCode: varchar('manualCode', { length: 255 }),
+  smdpAddress: varchar('smdpAddress', { length: 255 }),
+  dateAssigned: timestamp('dateAssigned'),
+  networkStatus: varchar('networkStatus', { length: 100 }),
+  serviceStatus: varchar('serviceStatus', { length: 100 }),
+  activationCode: text('activationCode'),
 
-  // Foreign key
-  orderId: bigint('order_id', { mode: 'number' }).references(() => orders.productOrderId),
-});
+  // TypeORM 기본 ManyToOne FK naming: `{relation}{ReferencedPK}` → `orderProductOrderId`
+  orderId: bigint('orderProductOrderId', { mode: 'number' }).references(
+    () => orders.productOrderId,
+  ),
+})
 
-// Plan Type table
 export const planTypes = pgTable('plan-type', {
-  planTypeId: varchar('plan_type_id', { length: 255 }).primaryKey(),
-  planCode: varchar('plan_code', { length: 100 }),
-  dataCode: varchar('data_code', { length: 100 }),
-  durationCode: varchar('duration_code', { length: 100 }),
+  planTypeId: varchar('planTypeId', { length: 255 }).primaryKey(),
+  planCode: varchar('planCode', { length: 100 }),
+  dataCode: varchar('dataCode', { length: 100 }),
+  durationCode: varchar('durationCode', { length: 100 }),
   version: varchar('version', { length: 50 }),
 
-  // Display names
-  planNameKr: varchar('plan_name_kr', { length: 255 }),
-  planDataTypeKr: varchar('plan_data_type_kr', { length: 255 }),
-  planDataLimitKr: varchar('plan_data_limit_kr', { length: 255 }),
-  planNameEng: varchar('plan_name_eng', { length: 255 }),
-  planDataTypeEng: varchar('plan_data_type_eng', { length: 255 }),
-  planDataLimitEng: varchar('plan_data_limit_eng', { length: 255 }),
+  planNameKr: varchar('planNameKr', { length: 255 }),
+  planDataTypeKr: varchar('planDataTypeKr', { length: 255 }),
+  planDataLimitKr: varchar('planDataLimitKr', { length: 255 }),
+  planNameEng: varchar('planNameEng', { length: 255 }),
+  planDataTypeEng: varchar('planDataTypeEng', { length: 255 }),
+  planDataLimitEng: varchar('planDataLimitEng', { length: 255 }),
 
-  planDataDuration: integer('plan_data_duration'),
-  planCountriesKr: text('plan_countries_kr').array(),
-  planCountriesEng: text('plan_countries_eng').array(),
-  planCountriesIso: text('plan_countries_iso').array(),
-  timeZones: text('time_zones').array(),
+  planDataDuration: integer('planDataDuration'),
+  planCountriesKr: text('planCountriesKr').array(),
+  planCountriesEng: text('planCountriesEng').array(),
+  planCountriesIso: text('planCountriesIso').array(),
+  timeZones: text('timeZones').array(),
 
-  // Maya API fields
   uid: varchar('uid', { length: 255 }),
   name: varchar('name', { length: 255 }),
-  policyId: integer('policy_id'),
-  policyName: varchar('policy_name', { length: 255 }),
-  dataQuotaMb: integer('data_quota_mb'),
-  validityDays: integer('validity_days'),
-  countriesEnabled: text('countries_enabled').array(),
-});
+  policyId: integer('policyId'),
+  policyName: varchar('policyName', { length: 255 }),
+  dataQuotaMb: integer('dataQuotaMb'),
+  validityDays: integer('validityDays'),
+  countriesEnabled: text('countriesEnabled').array(),
+})
 
-// Plan table
 export const plans = pgTable('plan', {
-  planId: serial('plan_id').primaryKey(),
+  planId: serial('planId').primaryKey(),
   id: varchar('id', { length: 255 }),
-  isActivated: boolean('is_activated'),
-  activatedAt: timestamp('activated_at'),
-  timeToBeActivatedInUTC: timestamp('time_to_be_activated_in_utc'),
-  timeToBeActivatedInLocal: timestamp('time_to_be_activated_in_local'),
+  isActivated: boolean('isActivated'),
+  activatedAt: timestamp('activatedAt'),
+  timeToBeActivatedInUTC: timestamp('timeToBeActivatedInUTC'),
+  timeToBeActivatedInLocal: timestamp('timeToBeActivatedInLocal'),
 
-  // User entered values
-  startDateEntered: varchar('start_date_entered', { length: 50 }),
-  startTimeEntered: integer('start_time_entered'),
-  startTimeZoneEntered: varchar('start_time_zone_entered', { length: 100 }),
-  startCountryEntered: varchar('start_country_entered', { length: 100 }),
+  startDateEntered: varchar('startDateEntered', { length: 50 }),
+  startTimeEntered: integer('startTimeEntered'),
+  startTimeZoneEntered: varchar('startTimeZoneEntered', { length: 100 }),
+  startCountryEntered: varchar('startCountryEntered', { length: 100 }),
 
-  // Actual times
-  startTime: timestamp('start_time'),
-  endTime: timestamp('end_time'),
+  startTime: timestamp('startTime'),
+  endTime: timestamp('endTime'),
 
-  // Status
-  networkStatus: varchar('network_status', { length: 100 }),
-  dataQuotaBytes: bigint('data_quota_bytes', { mode: 'number' }),
-  dataBytesRemaining: bigint('data_bytes_remaining', { mode: 'number' }),
-  countriesEnabled: text('countries_enabled').array(),
+  networkStatus: varchar('networkStatus', { length: 100 }),
+  dataQuotaBytes: bigint('dataQuotaBytes', { mode: 'number' }),
+  dataBytesRemaining: bigint('dataBytesRemaining', { mode: 'number' }),
+  countriesEnabled: text('countriesEnabled').array(),
 
-  // Foreign keys
-  esimId: varchar('esim_id', { length: 255 }).references(() => esims.esimId),
-  planTypeId: varchar('plan_type_id', { length: 255 }).references(() => planTypes.planTypeId),
+  // TypeORM 기본 FK naming
+  esimId: varchar('esimEsimId', { length: 255 }).references(() => esims.esimId),
+  planTypeId: varchar('planTypePlanTypeId', { length: 255 }).references(() => planTypes.planTypeId),
 
-  // Timestamps
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-});
+  createdAt: timestamp('createdAt').defaultNow(),
+  updatedAt: timestamp('updatedAt').defaultNow(),
+})
 
-// Relations
 export const ordersRelations = relations(orders, ({ many }) => ({
   esims: many(esims),
-}));
+}))
 
 export const esimsRelations = relations(esims, ({ one, many }) => ({
   order: one(orders, {
@@ -157,11 +145,11 @@ export const esimsRelations = relations(esims, ({ one, many }) => ({
     references: [orders.productOrderId],
   }),
   plans: many(plans),
-}));
+}))
 
 export const planTypesRelations = relations(planTypes, ({ many }) => ({
   plans: many(plans),
-}));
+}))
 
 export const plansRelations = relations(plans, ({ one }) => ({
   esim: one(esims, {
@@ -172,13 +160,12 @@ export const plansRelations = relations(plans, ({ one }) => ({
     fields: [plans.planTypeId],
     references: [planTypes.planTypeId],
   }),
-}));
+}))
 
-// Types
-export type Order = typeof orders.$inferSelect;
-export type NewOrder = typeof orders.$inferInsert;
-export type Esim = typeof esims.$inferSelect;
-export type NewEsim = typeof esims.$inferInsert;
-export type PlanType = typeof planTypes.$inferSelect;
-export type Plan = typeof plans.$inferSelect;
-export type NewPlan = typeof plans.$inferInsert;
+export type Order = typeof orders.$inferSelect
+export type NewOrder = typeof orders.$inferInsert
+export type Esim = typeof esims.$inferSelect
+export type NewEsim = typeof esims.$inferInsert
+export type PlanType = typeof planTypes.$inferSelect
+export type Plan = typeof plans.$inferSelect
+export type NewPlan = typeof plans.$inferInsert
