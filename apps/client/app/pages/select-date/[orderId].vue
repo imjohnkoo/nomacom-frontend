@@ -110,11 +110,14 @@ const onSubmit = () => {
     )
     const end = addDays(start, order.value.planDataDuration)
 
+    // startTime = -24: backend createUTCDateTime 이 addHours(midnight, -24) 로
+    // timeToBeActivatedInUTC 를 (선택일 -1 day) 00:00 현지시각으로 저장 → eSIM
+    // 사전 활성화 버퍼. startDate 는 사용자가 선택한 날짜 그대로.
     const updatedOrder: Order = {
       ...order.value,
       startDate: format(start, 'yyyy-MM-dd'),
       endDate: format(end, 'yyyy-MM-dd'),
-      startTime: 0,
+      startTime: -24,
       startTimeZone: getTimeZone(),
       startCountry: selectedCountry.value,
     }
