@@ -1,428 +1,618 @@
 <script setup lang="ts">
 import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-  ListboxLabel,
-} from '@headlessui/vue';
-import { ChevronUpDownIcon } from '@heroicons/vue/24/solid';
-import { CheckIcon } from '@heroicons/vue/20/solid';
-import VueTailwindDatepicker from 'vue-tailwind-datepicker';
-import { addDays, format, parseISO } from 'date-fns';
-import { useOrderStore } from '~/stores/order';
-import { useApi } from '~/composables/useApi';
-import type { Order } from '~/types/order';
+  NStepProgress,
+  NPageHeading,
+  NInfoChip,
+  NFieldCard,
+  NHighlightCard,
+  NTrustNote,
+  NDurationCalendar,
+  NBottomSheet,
+  NButton,
+  NAlertDialog,
+  NLoaderDialog,
+} from '@imjohnkoo/design-vue'
+import type { CalDate } from '@imjohnkoo/design-vue'
+import { addDays, format } from 'date-fns'
+import { useOrderStore } from '~/stores/order'
+import { useApi } from '~/composables/useApi'
+import type { Order } from '~/types/order'
 
-interface CombinedCountry {
-  kr: string;
-  en: string;
-  iso: string;
-  timeZone: string;
-}
+const route = useRoute()
+const router = useRouter()
+const orderStore = useOrderStore()
+const api = useApi()
 
-const route = useRoute();
-const router = useRouter();
-const orderStore = useOrderStore();
-const api = useApi();
+const orderId = computed(() => Number(route.params.orderId))
+const order = computed(() => orderStore.singleOrder)
 
-const orderId = computed(() => Number(route.params.orderId));
-const order = computed(() => orderStore.singleOrder);
-
-// Form state
-const selectedCountry = ref('');
-const selectedHour = ref<number | null>(null);
-const dateValue = ref({
-  startDate: '',
-  endDate: '',
-});
-
-// Validation errors
-const errors = ref<{ country?: string; date?: string; hour?: string }>({});
-
-// Combined countries for dropdown
-const combinedCountries = computed<CombinedCountry[]>(() => {
-  if (!order.value) return [];
+const combinedCountries = computed(() => {
+  if (!order.value) return []
   return order.value.planCountriesKr.map((country, index) => ({
     kr: country,
     en: order.value?.planCountriesEng[index] || '',
     iso: order.value?.planCountriesIso[index] || '',
     timeZone: order.value?.timeZones[index] || '',
-  }));
-});
+  }))
+})
 
-// Modal state
-const isSubmitting = ref(false);
-const isIssueQrCodesVisible = ref(false);
-const isNoOrderAlertVisible = ref(false);
-const isCancelledOrderVisible = ref(false);
-const isConfirmOrderVisible = ref(false);
+const selectedCountry = ref<string>('')
+const selectedDate = ref<CalDate | null>(null)
 
-// Format hour display
-const formatHour = (hour: number) => {
-  const period = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  return `${period} ${displayHour}시`;
-};
+const errors = ref<{ country?: string; date?: string }>({})
 
-// Get timezone for selected country
+const isCountrySheetOpen = ref(false)
+const isDateSheetOpen = ref(false)
+const isSubmitting = ref(false)
+const isIssueQrCodesVisible = ref(false)
+const isNoOrderAlertVisible = ref(false)
+const isCancelledOrderVisible = ref(false)
+const isConfirmOrderVisible = ref(false)
+
+const formatDate = (d: CalDate | null) => {
+  if (!d) return ''
+  const dow = ['일', '월', '화', '수', '목', '금', '토']
+  const js = new Date(d.year, d.month - 1, d.day)
+  return `${d.year}.${String(d.month).padStart(2, '0')}.${String(d.day).padStart(2, '0')} (${dow[js.getDay()]})`
+}
+
+const endDateLabel = computed(() => {
+  if (!selectedDate.value || !order.value) return ''
+  const start = new Date(
+    selectedDate.value.year,
+    selectedDate.value.month - 1,
+    selectedDate.value.day,
+  )
+  const end = addDays(start, order.value.planDataDuration)
+  const dow = ['일', '월', '화', '수', '목', '금', '토']
+  return `${format(end, 'yyyy.MM.dd')} (${dow[end.getDay()]})`
+})
+
+const startDateLabel = computed(() => formatDate(selectedDate.value))
+
+const countryLabel = computed(() => {
+  if (!selectedCountry.value) return ''
+  const c = combinedCountries.value.find((c) => c.kr === selectedCountry.value)
+  return c ? `${c.kr} · ${c.timeZone}` : selectedCountry.value
+})
+
 const getTimeZone = () => {
-  const country = combinedCountries.value.find((c) => c.kr === selectedCountry.value);
-  return country?.timeZone || 'Asia/Seoul';
-};
+  const c = combinedCountries.value.find((c) => c.kr === selectedCountry.value)
+  return c?.timeZone || 'Asia/Seoul'
+}
 
-// Handle date change
-const handleDateChange = (value: unknown) => {
-  const dateData = value as { startDate: string; endDate: string } | null;
-  if (dateData && dateData.startDate) {
-    const duration = order.value?.planDataDuration || 0;
-    const dateObj = parseISO(dateData.startDate);
-    const newEndDate = addDays(dateObj, duration);
-    dateValue.value = {
-      startDate: dateData.startDate,
-      endDate: format(newEndDate, 'yyyy-MM-dd'),
-    };
-  } else {
-    dateValue.value = { startDate: '', endDate: '' };
-  }
-};
+const onCountrySelect = (kr: string) => {
+  selectedCountry.value = kr
+  isCountrySheetOpen.value = false
+  errors.value.country = undefined
+}
 
-// Validate form
+const onDateConfirm = () => {
+  if (selectedDate.value) errors.value.date = undefined
+  isDateSheetOpen.value = false
+}
+
 const validate = () => {
-  errors.value = {};
+  errors.value = {}
+  if (!selectedCountry.value) errors.value.country = '국가를 선택해 주세요.'
+  if (!selectedDate.value) errors.value.date = '시작 날짜를 선택해 주세요.'
+  return Object.keys(errors.value).length === 0
+}
 
-  if (!selectedCountry.value) {
-    errors.value.country = '국가를 선택해 주세요.';
-  }
-
-  if (!dateValue.value.startDate) {
-    errors.value.date = '시작날짜를 선택해 주세요.';
-  }
-
-  if (selectedHour.value === null) {
-    errors.value.hour = '시작시간을 선택해주세요.';
-  }
-
-  return Object.keys(errors.value).length === 0;
-};
-
-// Submit form
 const onSubmit = () => {
-  if (!validate()) return;
+  if (!validate()) return
 
-  if (order.value) {
+  if (order.value && selectedDate.value) {
+    const start = new Date(
+      selectedDate.value.year,
+      selectedDate.value.month - 1,
+      selectedDate.value.day,
+    )
+    const end = addDays(start, order.value.planDataDuration)
+
     const updatedOrder: Order = {
       ...order.value,
-      startDate: dateValue.value.startDate,
-      endDate: dateValue.value.endDate,
-      startTime: selectedHour.value!,
+      startDate: format(start, 'yyyy-MM-dd'),
+      endDate: format(end, 'yyyy-MM-dd'),
+      startTime: 0,
       startTimeZone: getTimeZone(),
       startCountry: selectedCountry.value,
-    };
-
-    orderStore.setSingleOrder(updatedOrder);
-    isConfirmOrderVisible.value = true;
+    }
+    orderStore.setSingleOrder(updatedOrder)
+    isConfirmOrderVisible.value = true
   } else {
-    isNoOrderAlertVisible.value = true;
+    isNoOrderAlertVisible.value = true
     setTimeout(() => {
-      isNoOrderAlertVisible.value = false;
-      router.push(`/verify/${orderId.value}`);
-    }, 3000);
+      isNoOrderAlertVisible.value = false
+      router.push(`/verify/${orderId.value}`)
+    }, 3000)
   }
-};
+}
 
-// Confirm and activate
 const onConfirm = async () => {
-  isConfirmOrderVisible.value = false;
-  isIssueQrCodesVisible.value = true;
+  isConfirmOrderVisible.value = false
+  isIssueQrCodesVisible.value = true
 
   if (!order.value) {
-    isIssueQrCodesVisible.value = false;
-    isNoOrderAlertVisible.value = true;
+    isIssueQrCodesVisible.value = false
+    isNoOrderAlertVisible.value = true
     setTimeout(() => {
-      isNoOrderAlertVisible.value = false;
-      router.push(`/verify/${orderId.value}`);
-    }, 3000);
-    return;
+      isNoOrderAlertVisible.value = false
+      router.push(`/verify/${orderId.value}`)
+    }, 3000)
+    return
   }
 
-  // Add delay for loading animation
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 2000))
 
   try {
-    // Verify order first
     const verifyResponse = await api.verifyOrder({
       orderId: orderId.value,
       phoneNumber: order.value.receiverPhoneNumber,
       fullName: order.value.receiverName,
-    });
-
-    const { verified, cancelled } = verifyResponse;
+    })
+    const { verified, cancelled } = verifyResponse
 
     if (verified && !cancelled) {
-      // Activate order
-      const activateResponse = await api.activateOrder(orderStore.singleOrder!);
-      const { verified: activateVerified, details } = activateResponse;
-
+      const activateResponse = await api.activateOrder(orderStore.singleOrder!)
+      const { verified: activateVerified, details } = activateResponse
       if (activateVerified && details) {
-        isSubmitting.value = false;
-        isIssueQrCodesVisible.value = false;
-        orderStore.setSingleOrder(details[0]);
+        isSubmitting.value = false
+        isIssueQrCodesVisible.value = false
+        orderStore.setSingleOrder(details[0])
 
-        // Refresh orders list
         const updatedOrders = await api.verifyOrder({
           orderId: orderId.value,
           phoneNumber: order.value.receiverPhoneNumber,
           fullName: order.value.receiverName,
-        });
-        if (updatedOrders.details) {
-          orderStore.setOrders(updatedOrders.details);
-        }
+        })
+        if (updatedOrders.details) orderStore.setOrders(updatedOrders.details)
 
-        router.push(`/view/${orderId.value}`);
+        router.push(`/view/${orderId.value}`)
       }
     } else if (verified && cancelled) {
-      isIssueQrCodesVisible.value = false;
-      isCancelledOrderVisible.value = true;
+      isIssueQrCodesVisible.value = false
+      isCancelledOrderVisible.value = true
       setTimeout(() => {
-        isCancelledOrderVisible.value = false;
-        router.push(`/verify/${orderId.value}`);
-      }, 2000);
+        isCancelledOrderVisible.value = false
+        router.push(`/verify/${orderId.value}`)
+      }, 2000)
     } else {
-      isIssueQrCodesVisible.value = false;
-      isNoOrderAlertVisible.value = true;
+      isIssueQrCodesVisible.value = false
+      isNoOrderAlertVisible.value = true
       setTimeout(() => {
-        isNoOrderAlertVisible.value = false;
-        router.push(`/verify/${orderId.value}`);
-      }, 2000);
+        isNoOrderAlertVisible.value = false
+        router.push(`/verify/${orderId.value}`)
+      }, 2000)
     }
   } catch (error) {
-    console.error(error);
-    isSubmitting.value = false;
-    isIssueQrCodesVisible.value = false;
-    isNoOrderAlertVisible.value = true;
+    console.error(error)
+    isSubmitting.value = false
+    isIssueQrCodesVisible.value = false
+    isNoOrderAlertVisible.value = true
     setTimeout(() => {
-      isNoOrderAlertVisible.value = false;
-      router.push(`/verify/${orderId.value}`);
-    }, 3000);
+      isNoOrderAlertVisible.value = false
+      router.push(`/verify/${orderId.value}`)
+    }, 3000)
   }
-};
+}
 
-// Close confirm modal
-const handlePopupClose = () => {
-  isConfirmOrderVisible.value = false;
-  isSubmitting.value = false;
-};
+// Design preview seed — store.singleOrder 가 비어있을 때만 주입
+const DESIGN_PREVIEW_SINGLE: Order = {
+  orderId: 2026052671032971,
+  productOrderId: 2026052646969541,
+  productName: '[유럽이심전문] 북유럽4개국 무제한데이터',
+  placeOrderDate: new Date('2026-05-25T13:56:47.560Z'),
+  quantity: 1,
+  totalPaymentAmount: 21600,
+  optionManageCode: 'EU043U02D10V2',
+  receiverName: '',
+  receiverPhoneNumber: '',
+  planNameKr: '북유럽4개국',
+  planDataTypeKr: '무제한 데이터',
+  planDataLimitKr: '매일 2기가 + 무제한 500Kbps',
+  planDataDuration: 10,
+  planCountriesKr: ['덴마크', '노르웨이', '스웨덴', '핀란드'],
+  planCountriesEng: ['Denmark', 'Norway', 'Sweden', 'Finland'],
+  planCountriesIso: ['DNK', 'NOR', 'SWE', 'FIN'],
+  timeZones: ['Europe/Copenhagen', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Helsinki'],
+  startDate: '',
+  startTime: 0,
+  endDate: '',
+  startCountry: '',
+  startTimeZone: '',
+  planTypeId: 'EU043U02D10V2',
+  esims: [],
+}
 
-// Check order on mount
 onMounted(() => {
   if (!order.value) {
-    isNoOrderAlertVisible.value = true;
-    setTimeout(() => {
-      isNoOrderAlertVisible.value = false;
-      router.push(`/verify/${orderId.value}`);
-    }, 3000);
+    orderStore.setSingleOrder(DESIGN_PREVIEW_SINGLE)
   } else if (order.value.esims && order.value.esims.length > 0) {
-    router.push(`/details/${orderId.value}`);
+    router.push(`/details/${orderId.value}`)
   }
-});
+})
 </script>
 
 <template>
-  <div class="w-full">
-    <!-- Header -->
-    <div
-      class="flex h-72 flex-col justify-end rounded-b-2xl bg-cover bg-center p-4 pb-5"
-      :style="{ backgroundImage: `url('/images/background-2.png')` }"
-    >
-      <p class="pb-2 text-sm text-white">3/4</p>
-      <h1 class="pb-2 text-2xl font-semibold text-white">사용 시작 일시를 선택하세요.</h1>
-      <p class="pb-1 text-xs text-white">주문번호</p>
-      <p class="text-xs font-medium text-white">{{ orderId }}</p>
+  <div class="select-date-page">
+    <div class="select-date-page__top">
+      <NStepProgress :step="3" :total="4" label="사용 일시" />
     </div>
 
-    <!-- Form -->
-    <div class="flex w-full flex-col px-2 py-5">
-      <div
-        class="flex w-full flex-col items-center justify-center rounded-2xl px-4 py-4 ring-1 ring-inset ring-gray-200"
-      >
-        <form class="flex w-full flex-col gap-y-4" @submit.prevent="onSubmit">
-          <!-- Country select -->
-          <div class="flex w-full flex-col">
-            <Listbox v-model="selectedCountry">
-              <ListboxLabel class="text-sm font-medium text-gray-800">
-                이심 사용을 시작할 국가를 선택해 주세요.
-              </ListboxLabel>
-              <div class="relative mt-1">
-                <ListboxButton
-                  :class="[
-                    'relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 sm:text-sm',
-                    errors.country ? 'ring-2 ring-red-500' : 'ring-1 ring-inset ring-gray-200',
-                  ]"
-                >
-                  <span class="block truncate">
-                    {{ selectedCountry || '국가를 선택하세요.' }}
-                  </span>
-                  <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-                  </span>
-                </ListboxButton>
-                <transition
-                  leave-active-class="transition ease-in duration-100"
-                  leave-from-class="opacity-100"
-                  leave-to-class="opacity-0"
-                >
-                  <ListboxOptions
-                    class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                  >
-                    <ListboxOption
-                      v-for="(country, index) in combinedCountries"
-                      v-slot="{ active, selected }"
-                      :key="index"
-                      :value="country.kr"
-                      as="template"
-                    >
-                      <li
-                        :class="[
-                          active ? 'bg-amber-100 text-amber-900' : 'text-gray-900',
-                          'relative cursor-default select-none py-2 pl-3 pr-9',
-                        ]"
-                      >
-                        <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">
-                          {{ country.kr }}
-                        </span>
-                        <span
-                          v-if="selected"
-                          class="absolute inset-y-0 right-0 flex items-center pr-4 text-amber-600"
-                        >
-                          <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                        </span>
-                      </li>
-                    </ListboxOption>
-                  </ListboxOptions>
-                </transition>
-              </div>
-            </Listbox>
-            <p v-if="errors.country" class="mt-1.5 pl-3.5 text-xs text-red-500">
-              {{ errors.country }}
-            </p>
-          </div>
+    <div class="select-date-page__heading">
+      <NPageHeading
+        eyebrow="eSIM QR 코드 발급"
+        :title="`사용 시작 날짜를\n선택해 주세요`"
+        :description="`현지에 도착하는 날짜를 골라 주시면\n그날부터 회선이 자동으로 켜져요.`"
+      />
+    </div>
 
-          <!-- Date picker -->
-          <div class="flex w-full flex-col items-start justify-center">
-            <label class="text-sm font-medium text-gray-800">시작 날짜를 선택해 주세요.</label>
-            <p class="text-xs text-gray-500">도착하는 날짜를 선택해 주세요.</p>
-            <VueTailwindDatepicker
-              v-model="dateValue"
-              :formatter="{ date: 'YYYY-MM-DD', month: 'MMM' }"
-              as-single
-              use-range
-              :shortcuts="false"
-              input-classes="text-md border border-gray-300 rounded-md px-4 py-2 w-full mt-1"
-              @update:model-value="handleDateChange"
-            />
-            <p v-if="errors.date" class="mt-1.5 pl-3.5 text-xs text-red-500">
-              {{ errors.date }}
-            </p>
-          </div>
+    <div class="select-date-page__chip-row">
+      <NInfoChip label="주문번호" :value="String(orderId)">
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M8 2v4M16 2v4M3 10h18" />
+          </svg>
+        </template>
+      </NInfoChip>
+      <NInfoChip v-if="order" :value="order.planNameKr">
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20" />
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+        </template>
+      </NInfoChip>
+    </div>
 
-          <!-- Hour select -->
-          <div class="w-full">
-            <Listbox v-model="selectedHour">
-              <ListboxLabel class="text-sm font-medium text-gray-800">
-                시작 시간을 선택해 주세요
-              </ListboxLabel>
-              <div class="relative mt-1">
-                <ListboxButton
-                  :class="[
-                    'relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 sm:text-sm',
-                    errors.hour ? 'ring-2 ring-red-500' : 'ring-1 ring-inset ring-gray-200',
-                  ]"
-                >
-                  <span class="block truncate">
-                    {{ selectedHour !== null ? formatHour(selectedHour) : '시간을 선택하세요' }}
-                  </span>
-                  <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
-                  </span>
-                </ListboxButton>
-                <transition
-                  leave-active-class="transition ease-in duration-100"
-                  leave-from-class="opacity-100"
-                  leave-to-class="opacity-0"
-                >
-                  <ListboxOptions
-                    class="absolute z-10 mt-1 max-h-32 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                  >
-                    <ListboxOption
-                      v-for="hour in 24"
-                      v-slot="{ active, selected }"
-                      :key="hour - 1"
-                      :value="hour - 1"
-                      as="template"
-                    >
-                      <li
-                        :class="[
-                          active ? 'bg-amber-100 text-amber-900' : 'text-gray-900',
-                          'relative cursor-default select-none py-2 pl-3 pr-9',
-                        ]"
-                      >
-                        <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">
-                          {{ formatHour(hour - 1) }}
-                        </span>
-                        <span
-                          v-if="selected"
-                          class="absolute inset-y-0 right-0 flex items-center pr-4 text-amber-600"
-                        >
-                          <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                        </span>
-                      </li>
-                    </ListboxOption>
-                  </ListboxOptions>
-                </transition>
-              </div>
-            </Listbox>
-            <p v-if="errors.hour" class="mt-1.5 pl-3.5 text-xs text-red-500">
-              {{ errors.hour }}
-            </p>
-          </div>
+    <div class="select-date-page__fields">
+      <div class="select-date-page__field-wrap">
+        <NFieldCard
+          label="시작 국가"
+          :value="countryLabel"
+          placeholder="국가를 선택해 주세요"
+          :active="!!selectedCountry"
+          :error="!!errors.country"
+          @click="isCountrySheetOpen = true"
+        />
+        <p v-if="errors.country" class="select-date-page__err">{{ errors.country }}</p>
+      </div>
 
-          <!-- Submit button -->
-          <div class="mt-6">
-            <button
-              type="submit"
-              :disabled="isSubmitting"
-              :class="[
-                'flex w-full justify-center rounded-md px-3 py-3 text-lg font-semibold leading-6 text-white shadow-sm',
-                isSubmitting ? 'bg-gray-500' : 'bg-cyan-600 hover:bg-cyan-700',
-              ]"
-            >
-              QR코드 발행하기
-            </button>
-          </div>
-        </form>
+      <div class="select-date-page__field-wrap">
+        <NFieldCard
+          label="시작 날짜"
+          :value="startDateLabel"
+          placeholder="날짜를 선택해 주세요"
+          :active="!!selectedDate"
+          :error="!!errors.date"
+          @click="isDateSheetOpen = true"
+        />
+        <p v-if="errors.date" class="select-date-page__err">{{ errors.date }}</p>
       </div>
     </div>
 
-    <!-- Modals -->
-    <NoOrderAlertModal
-      :visible="isNoOrderAlertVisible"
-      @close="isNoOrderAlertVisible = false"
+    <div v-if="selectedDate" class="select-date-page__preview">
+      <NHighlightCard>
+        <template #icon>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 8v4l3 2" />
+            <circle cx="12" cy="12" r="10" />
+          </svg>
+        </template>
+        eSIM 사용 예상 기간은
+        <b style="color: var(--color-primary-700)">{{ startDateLabel }} ~ {{ endDateLabel }}</b>
+        이에요.
+      </NHighlightCard>
+    </div>
+
+    <div class="select-date-page__notes">
+      <NTrustNote>
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </template>
+        <b style="color: #111827">사용 일수는 첫 연결 시점부터 24시간 단위로 차감돼요.</b><br />
+        현지에 도착해 처음 회선이 연결된 순간부터 24시간이 지나면 1일이 차감돼요. 선택한 날짜에
+        도착하지 않아도 실제 연결 전까지는 사용일이 줄지 않아요.
+      </NTrustNote>
+      <div style="height: 8px" />
+      <NTrustNote>
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            />
+          </svg>
+        </template>
+        <b style="color: #111827">다국가 이심은 자동 로밍으로 그대로 사용할 수 있어요.</b><br />
+        한 번 개통된 다음에는 포함된 국가들을 오가도 추가 설치나 설정 변경 없이 자동으로 연결돼요.
+      </NTrustNote>
+    </div>
+
+    <div class="select-date-page__cta">
+      <NButton
+        type="button"
+        variant="primary"
+        size="xl"
+        full-width
+        :disabled="isSubmitting"
+        @click="onSubmit"
+      >
+        QR 코드 발행하기
+      </NButton>
+    </div>
+
+    <!-- Country bottom sheet -->
+    <NBottomSheet v-model="isCountrySheetOpen" title="시작 국가 선택">
+      <div class="select-date-page__sheet-list">
+        <button
+          v-for="c in combinedCountries"
+          :key="c.iso"
+          type="button"
+          class="select-date-page__sheet-row"
+          :class="{ 'select-date-page__sheet-row--active': selectedCountry === c.kr }"
+          @click="onCountrySelect(c.kr)"
+        >
+          <span class="select-date-page__sheet-row-main">{{ c.kr }}</span>
+          <span class="select-date-page__sheet-row-sub">{{ c.timeZone }}</span>
+        </button>
+      </div>
+    </NBottomSheet>
+
+    <!-- Date bottom sheet -->
+    <NBottomSheet v-model="isDateSheetOpen" title="시작 날짜 선택">
+      <div class="select-date-page__cal">
+        <NDurationCalendar v-model="selectedDate" :duration="order?.planDataDuration || 0" />
+      </div>
+      <template #footer>
+        <NButton variant="primary" size="xl" full-width @click="onDateConfirm"> 선택 완료 </NButton>
+      </template>
+    </NBottomSheet>
+
+    <!-- Confirm summary -->
+    <NAlertDialog
+      v-model="isConfirmOrderVisible"
+      title="이 내용으로 발급할까요?"
+      color="primary"
+      :closable="false"
+    >
+      <div v-if="order" class="select-date-page__confirm">
+        <div class="select-date-page__confirm-row">
+          <span>상품</span><b>{{ order.planNameKr }}</b>
+        </div>
+        <div class="select-date-page__confirm-row">
+          <span>시작 국가</span><b>{{ selectedCountry }}</b>
+        </div>
+        <div class="select-date-page__confirm-row">
+          <span>시작 날짜</span><b>{{ startDateLabel }}</b>
+        </div>
+        <div class="select-date-page__confirm-row">
+          <span>사용 기간</span><b>{{ order.planDataDuration }}일</b>
+        </div>
+        <div class="select-date-page__confirm-row">
+          <span>수량</span><b>{{ order.quantity }}개</b>
+        </div>
+      </div>
+      <template #actions>
+        <div class="select-date-page__confirm-actions">
+          <NButton variant="secondary" @click="isConfirmOrderVisible = false">뒤로</NButton>
+          <NButton variant="primary" @click="onConfirm">발급하기</NButton>
+        </div>
+      </template>
+    </NAlertDialog>
+
+    <NLoaderDialog
+      v-model="isIssueQrCodesVisible"
+      title="QR 코드를 발급하고 있어요"
+      description="잠시만 기다려주세요…"
     />
-    <IssueQrCodesModal
-      :visible="isIssueQrCodesVisible"
-      @close="isIssueQrCodesVisible = false"
-    />
-    <CancelledOrderAlertModal
-      :visible="isCancelledOrderVisible"
-      @close="isCancelledOrderVisible = false"
-    />
-    <ConfirmOrderModal
-      v-if="orderStore.singleOrder"
-      :visible="isConfirmOrderVisible"
-      :order="orderStore.singleOrder"
-      @close="handlePopupClose"
-      @confirm="onConfirm"
-    />
+
+    <NAlertDialog
+      v-model="isNoOrderAlertVisible"
+      title="주문 정보를 찾을 수 없어요"
+      color="warning"
+      :closable="false"
+    >
+      <p class="select-date-page__dialog-desc">
+        주문번호를 다시 확인해 주세요.<br />본인 확인 페이지로 돌아갈게요.
+      </p>
+    </NAlertDialog>
+
+    <NAlertDialog
+      v-model="isCancelledOrderVisible"
+      title="이미 취소된 주문이에요"
+      color="warning"
+      :closable="false"
+    >
+      <p class="select-date-page__dialog-desc">
+        취소된 주문은 발급할 수 없어요.<br />본인 확인 페이지로 돌아갈게요.
+      </p>
+    </NAlertDialog>
   </div>
 </template>
+
+<style scoped>
+.select-date-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px 24px 32px;
+  background: #ffffff;
+}
+
+.select-date-page__heading {
+  margin-top: 28px;
+}
+
+.select-date-page__chip-row {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.select-date-page__fields {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.select-date-page__field-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-date-page__err {
+  margin: 6px 0 0 4px;
+  font-size: 12px;
+  color: var(--color-error-500, #ef4444);
+}
+
+.select-date-page__preview {
+  margin-top: 20px;
+}
+
+.select-date-page__notes {
+  margin-top: 16px;
+}
+
+.select-date-page__cta {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.select-date-page__sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.select-date-page__sheet-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 12px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 120ms ease;
+}
+
+.select-date-page__sheet-row:hover {
+  background: #f8fafc;
+}
+
+.select-date-page__sheet-row--active {
+  background: var(--color-primary-50, #f3efff);
+}
+
+.select-date-page__sheet-row-main {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.select-date-page__sheet-row-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.select-date-page__cal {
+  padding: 0 4px 12px;
+}
+
+.select-date-page__confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 13px;
+}
+
+.select-date-page__confirm-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.select-date-page__confirm-row span {
+  color: #6b7280;
+}
+
+.select-date-page__confirm-row b {
+  font-weight: 600;
+  color: #111827;
+}
+
+.select-date-page__confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.select-date-page__dialog-desc {
+  margin: -6px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.55;
+}
+</style>
