@@ -1,213 +1,561 @@
 <script setup lang="ts">
-import QRCodeVue3 from 'qrcode-vue3';
-import { useOrderStore } from '~/stores/order';
+import QRCodeVue3 from 'qrcode-vue3'
+import {
+  NStepProgress,
+  NPageHeading,
+  NInfoChip,
+  NStatusPill,
+  NCodeRow,
+  NLinkCard,
+  NButton,
+  NTrustNote,
+} from '@imjohnkoo/design-vue'
+import { useOrderStore } from '~/stores/order'
 
-const route = useRoute();
-const router = useRouter();
-const orderStore = useOrderStore();
+const route = useRoute()
+const router = useRouter()
+const orderStore = useOrderStore()
 
-const orderId = computed(() => Number(route.params.orderId));
-const order = computed(() => orderStore.singleOrder);
+const orderId = computed(() => Number(route.params.orderId))
+const order = computed(() => orderStore.singleOrder)
 
-// Download QR as PNG
+// 다발 발급 케이스: 2개 이상이면 accordion 으로 1번만 펼쳐서 시작
+const isMulti = computed(() => (order.value?.esims?.length ?? 0) >= 2)
+const openIdx = ref<number>(0)
+const toggle = (idx: number) => {
+  openIdx.value = openIdx.value === idx ? -1 : idx
+}
+
 const downloadQR = (index: number) => {
-  const canvas = document.querySelector(`#qr-code-${index} canvas`) as HTMLCanvasElement;
-  if (!canvas) return;
+  const canvas = document.querySelector(`#qr-code-${index} canvas`) as HTMLCanvasElement
+  if (!canvas) return
 
-  const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-  const downloadLink = document.createElement('a');
-  downloadLink.href = pngUrl;
-  downloadLink.download = `qr-code-${index + 1}.png`;
-  document.body.appendChild(downloadLink);
-  downloadLink.click();
-  document.body.removeChild(downloadLink);
-};
+  const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream')
+  const downloadLink = document.createElement('a')
+  downloadLink.href = pngUrl
+  downloadLink.download = `qr-code-${index + 1}.png`
+  document.body.appendChild(downloadLink)
+  downloadLink.click()
+  document.body.removeChild(downloadLink)
+}
 
-// Copy text to clipboard
-const copyToClipboard = async (text: string) => {
-  try {
-    await navigator.clipboard.writeText(text);
-    console.log('복사 완료');
-  } catch (error) {
-    console.error('복사 실패:', error);
-  }
-};
-
-// Open external URL
-const openGuide = (url: string) => {
-  window.open(url, '_blank');
-};
-
-// Check order on mount
 onMounted(() => {
   if (!order.value) {
-    router.push(`/verify/${orderId.value}`);
+    router.push(`/verify/${orderId.value}`)
   }
-});
+})
 </script>
 
 <template>
-  <div class="w-full">
-    <!-- Header -->
-    <div
-      class="flex h-72 flex-col justify-end rounded-b-2xl bg-cover bg-center p-4 pb-5"
-      :style="{ backgroundImage: `url('/images/background-2.png')` }"
-    >
-      <p class="pb-2 text-sm text-white">4/4</p>
-      <h1 class="pb-2 text-2xl font-semibold text-white">QR코드가 발행되었습니다.</h1>
-      <p class="pb-1 text-xs text-white">주문번호</p>
-      <p class="text-xs font-medium text-white">{{ orderId }}</p>
+  <div class="view-page">
+    <div class="view-page__top">
+      <NStepProgress :step="4" :total="4" label="발급 완료" />
     </div>
 
-    <!-- eSIM cards -->
+    <div class="view-page__heading">
+      <NPageHeading
+        eyebrow="eSIM QR 코드 발급"
+        :title="`eSIM 발급이\n완료됐어요`"
+        :description="`QR 코드를 스캔해서 설치해 주세요.\n현지 도착 후 데이터 로밍을 켜면 자동으로 연결돼요.`"
+      />
+    </div>
+
+    <div v-if="order" class="view-page__chip-row">
+      <NInfoChip label="주문번호" :value="String(orderId)">
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M8 2v4M16 2v4M3 10h18" />
+          </svg>
+        </template>
+      </NInfoChip>
+      <NInfoChip :value="order.planNameKr">
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            />
+          </svg>
+        </template>
+      </NInfoChip>
+    </div>
+
     <template v-if="order && order.esims && order.esims.length > 0">
-      <div
-        v-for="(esim, index) in order.esims"
-        :key="index"
-        class="flex w-full flex-col px-2 py-4"
-      >
-        <div
-          class="flex w-full flex-col items-center justify-center gap-y-6 rounded-2xl px-4 py-8 ring-1 ring-inset ring-gray-200"
-        >
-          <!-- QR Code -->
-          <div class="flex w-full flex-col items-center justify-center gap-y-3">
-            <p class="pb-1 text-sm font-medium text-gray-500">
-              {{ index + 1 }}/{{ order.esims.length }}
-            </p>
-            <div
-              :id="`qr-code-${index}`"
-              class="flex w-fit flex-col items-center justify-center rounded-lg p-1.5 ring-1 ring-inset ring-black"
-            >
+      <!-- Single esim — full card without accordion -->
+      <div v-if="!isMulti" class="view-page__esim">
+        <div class="view-page__esim-head">
+          <NStatusPill color="success" dot>발급완료</NStatusPill>
+        </div>
+
+        <div class="view-page__qr-wrap">
+          <div :id="`qr-code-0`" class="view-page__qr">
+            <ClientOnly>
               <QRCodeVue3
-                :value="esim.activationCode"
-                :width="250"
-                :height="250"
+                :value="order.esims[0]!.activationCode"
+                :width="220"
+                :height="220"
                 :margin="2"
               />
-            </div>
-          </div>
-
-          <!-- Download button -->
-          <div class="flex flex-col items-center justify-center">
-            <button
-              type="button"
-              class="rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-              @click="downloadQR(index)"
-            >
-              QR코드 다운로드
-            </button>
-          </div>
-
-          <!-- Instructions -->
-          <div class="flex w-full flex-col items-center justify-center gap-y-3 px-5">
-            <p class="text-sm text-red-500">
-              만약 QR코드 다운로드가 안되시면 스크린샷을 찍어 사진앱에 저장하세요.
-            </p>
-            <p class="text-sm text-gray-500">
-              아래의 설치가이드를 참고해 이심 설치를 진행해 주세요.
-            </p>
-          </div>
-
-          <!-- Guide buttons -->
-          <div class="flex flex-col items-center justify-center gap-y-3">
-            <button
-              type="button"
-              class="flex items-center rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-              @click="openGuide('https://esimmany.super.site')"
-            >
-              <img src="~/assets/icons/apple.svg" alt="Apple" class="mb-0.5 mr-1 h-4 w-4" />
-              <span>아이폰 설치가이드 바로가기</span>
-            </button>
-            <button
-              type="button"
-              class="flex items-center rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-              @click="openGuide('https://esimmany.super.site')"
-            >
-              <img src="~/assets/icons/android.svg" alt="Android" class="mr-1 mt-0.5 h-4 w-4" />
-              <span>안드로이드 설치가이드 바로가기</span>
-            </button>
-          </div>
-
-          <!-- iPhone installation codes -->
-          <div class="flex w-full flex-col items-center justify-center gap-y-3 px-5">
-            <div class="flex w-full items-center justify-center">
-              <div class="flex-grow border-t border-gray-400"></div>
-              <div class="flex flex-row items-center justify-end px-2 text-sm text-gray-400">
-                <img src="~/assets/icons/apple.svg" alt="Apple" class="mb-0.5 mr-1 h-4 w-4 text-gray-400" />
-                <p class="text-md font-medium text-gray-800">아이폰 설치 코드</p>
-              </div>
-              <div class="flex-grow border-t border-gray-400"></div>
-            </div>
-
-            <div class="flex w-full flex-col items-center justify-center">
-              <!-- SM-DP+ Address -->
-              <div class="flex w-full flex-row items-center justify-center">
-                <div class="flex w-4/6 flex-col items-start justify-center gap-y-1 py-2">
-                  <p class="text-xs font-bold text-gray-500">SM-DP+ 주소</p>
-                  <p class="text-sm font-light text-gray-500">{{ esim.smdpAddress }}</p>
-                </div>
-                <div class="flex w-2/6 flex-col items-end justify-center py-2">
-                  <button
-                    type="button"
-                    class="rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-                    @click="copyToClipboard(esim.smdpAddress)"
-                  >
-                    복사하기
-                  </button>
-                </div>
-              </div>
-
-              <!-- Activation Code (iPhone) -->
-              <div class="flex w-full flex-row items-center justify-center">
-                <div class="flex w-4/6 flex-col items-start justify-center gap-y-1 py-2">
-                  <p class="text-xs font-bold text-gray-500">활성화 코드</p>
-                  <p class="text-xs font-light text-gray-500">{{ esim.manualCode }}</p>
-                </div>
-                <div class="flex w-2/6 flex-col items-end justify-center py-2">
-                  <button
-                    type="button"
-                    class="rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-                    @click="copyToClipboard(esim.manualCode)"
-                  >
-                    복사하기
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Android installation codes -->
-          <div class="flex w-full flex-col items-center justify-center gap-y-3 px-5">
-            <div class="flex w-full items-center justify-center">
-              <div class="flex-grow border-t border-gray-400"></div>
-              <div class="flex flex-row items-center justify-end px-2 text-sm text-gray-400">
-                <img src="~/assets/icons/android.svg" alt="Android" class="mr-1 h-4 w-4 text-green-600" />
-                <p class="text-md font-medium text-gray-800">안드로이드 설치 코드</p>
-              </div>
-              <div class="flex-grow border-t border-gray-400"></div>
-            </div>
-
-            <!-- Activation Code (Android) -->
-            <div class="flex w-full flex-row items-center justify-center">
-              <div class="flex w-4/6 flex-col items-start justify-center gap-y-1 py-2">
-                <p class="text-xs font-bold text-gray-500">활성화 코드</p>
-                <p class="flex break-all text-xs font-light text-gray-500">
-                  {{ esim.activationCode }}
-                </p>
-              </div>
-              <div class="flex w-2/6 flex-col items-end justify-center py-2">
-                <button
-                  type="button"
-                  class="rounded-full bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500"
-                  @click="copyToClipboard(esim.activationCode)"
-                >
-                  복사하기
-                </button>
-              </div>
-            </div>
+              <template #fallback>
+                <div class="view-page__qr-skeleton" />
+              </template>
+            </ClientOnly>
           </div>
         </div>
+
+        <div class="view-page__download">
+          <NButton variant="secondary" size="md" @click="downloadQR(0)">
+            <template #icon>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </template>
+            QR 코드 다운로드
+          </NButton>
+        </div>
+
+        <p class="view-page__qr-hint">다운로드가 안 되면 스크린샷으로 저장해 주세요.</p>
+
+        <div class="view-page__divider view-page__divider--ios">
+          <span class="view-page__divider-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#111827" aria-hidden="true">
+              <path
+                d="M19.665 16.811a10.32 10.32 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.563-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.025-1.154-.229-1.732-.764-.367-.32-.826-.87-1.377-1.648-.59-.829-1.075-1.794-1.456-2.891-.408-1.187-.611-2.335-.611-3.447 0-1.273.275-2.372.826-3.292a4.857 4.857 0 0 1 1.73-1.751 4.65 4.65 0 0 1 2.34-.662c.46 0 1.063.142 1.81.422.745.28 1.224.422 1.434.422.157 0 .688-.166 1.588-.493.852-.303 1.572-.429 2.164-.379 1.604.13 2.809.762 3.611 1.901-1.434.871-2.144 2.091-2.13 3.658.012 1.221.456 2.237 1.33 3.044a4.378 4.378 0 0 0 1.336.871c-.108.31-.221.609-.341.895z"
+              />
+            </svg>
+            아이폰 수동 설치
+          </span>
+        </div>
+
+        <div class="view-page__codes">
+          <NCodeRow label="SM-DP+ 주소" :value="order.esims[0]!.smdpAddress" />
+          <NCodeRow label="활성화 코드" :value="order.esims[0]!.manualCode" />
+        </div>
+
+        <div class="view-page__divider view-page__divider--android">
+          <span class="view-page__divider-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#3ddc84" aria-hidden="true">
+              <path
+                d="M17.523 15.34a1.123 1.123 0 1 1 1.122-1.123 1.123 1.123 0 0 1-1.122 1.123m-11.046 0a1.123 1.123 0 1 1 1.123-1.123 1.123 1.123 0 0 1-1.123 1.123m11.45-6.02 2.24-3.879a.465.465 0 0 0-.165-.635.466.466 0 0 0-.635.17l-2.27 3.931a14.107 14.107 0 0 0-11.793 0L3.034 4.976a.467.467 0 0 0-.806.464l2.24 3.88A13.219 13.219 0 0 0 0 19.59h24a13.218 13.218 0 0 0-6.077-10.27"
+              />
+            </svg>
+            안드로이드 수동 설치
+          </span>
+        </div>
+
+        <div class="view-page__codes">
+          <NCodeRow label="LPA 전체" :value="order.esims[0]!.activationCode" />
+        </div>
+      </div>
+
+      <!-- Multi esim — accordion list, 1번 esim 만 펼쳐서 시작 -->
+      <ul v-else class="view-page__list">
+        <li
+          v-for="(esim, index) in order.esims"
+          :key="index"
+          class="view-page__row"
+          :class="{ 'view-page__row--open': openIdx === index }"
+        >
+          <button class="view-page__row-head" type="button" @click="toggle(index)">
+            <span class="view-page__row-head-left">
+              <span class="view-page__row-num">eSIM {{ index + 1 }}</span>
+              <NStatusPill color="success" dot>발급완료</NStatusPill>
+            </span>
+            <svg
+              class="view-page__chev"
+              :class="{ 'view-page__chev--open': openIdx === index }"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+
+          <div v-show="openIdx === index" class="view-page__row-body">
+            <div class="view-page__qr-wrap">
+              <div :id="`qr-code-${index}`" class="view-page__qr">
+                <ClientOnly>
+                  <QRCodeVue3 :value="esim.activationCode" :width="200" :height="200" :margin="2" />
+                  <template #fallback>
+                    <div class="view-page__qr-skeleton" />
+                  </template>
+                </ClientOnly>
+              </div>
+            </div>
+
+            <div class="view-page__download">
+              <NButton variant="secondary" size="sm" @click="downloadQR(index)">
+                QR 다운로드
+              </NButton>
+            </div>
+
+            <div class="view-page__divider view-page__divider--ios">
+              <span class="view-page__divider-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#111827" aria-hidden="true">
+                  <path
+                    d="M19.665 16.811a10.32 10.32 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.563-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.025-1.154-.229-1.732-.764-.367-.32-.826-.87-1.377-1.648-.59-.829-1.075-1.794-1.456-2.891-.408-1.187-.611-2.335-.611-3.447 0-1.273.275-2.372.826-3.292a4.857 4.857 0 0 1 1.73-1.751 4.65 4.65 0 0 1 2.34-.662c.46 0 1.063.142 1.81.422.745.28 1.224.422 1.434.422.157 0 .688-.166 1.588-.493.852-.303 1.572-.429 2.164-.379 1.604.13 2.809.762 3.611 1.901-1.434.871-2.144 2.091-2.13 3.658.012 1.221.456 2.237 1.33 3.044a4.378 4.378 0 0 0 1.336.871c-.108.31-.221.609-.341.895z"
+                  />
+                </svg>
+                아이폰 수동 설치
+              </span>
+            </div>
+
+            <div class="view-page__codes">
+              <NCodeRow label="SM-DP+ 주소" :value="esim.smdpAddress" />
+              <NCodeRow label="활성화 코드" :value="esim.manualCode" />
+            </div>
+
+            <div class="view-page__divider view-page__divider--android">
+              <span class="view-page__divider-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#3ddc84" aria-hidden="true">
+                  <path
+                    d="M17.523 15.34a1.123 1.123 0 1 1 1.122-1.123 1.123 1.123 0 0 1-1.122 1.123m-11.046 0a1.123 1.123 0 1 1 1.123-1.123 1.123 1.123 0 0 1-1.123 1.123m11.45-6.02 2.24-3.879a.465.465 0 0 0-.165-.635.466.466 0 0 0-.635.17l-2.27 3.931a14.107 14.107 0 0 0-11.793 0L3.034 4.976a.467.467 0 0 0-.806.464l2.24 3.88A13.219 13.219 0 0 0 0 19.59h24a13.218 13.218 0 0 0-6.077-10.27"
+                  />
+                </svg>
+                안드로이드 수동 설치
+              </span>
+            </div>
+
+            <div class="view-page__codes">
+              <NCodeRow label="LPA 전체" :value="esim.activationCode" />
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- 공통 설치 가이드 — single/multi 둘 다 1회만 -->
+      <div class="view-page__divider"><span>설치 가이드</span></div>
+
+      <div class="view-page__guides">
+        <NLinkCard
+          label="아이폰 설치 가이드"
+          sub="iOS · Universal Link 자동 설치"
+          href="https://esimmany.super.site"
+          external
+        >
+          <template #icon>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#111827">
+              <path
+                d="M19.665 16.811a10.32 10.32 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.563-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.025-1.154-.229-1.732-.764-.367-.32-.826-.87-1.377-1.648-.59-.829-1.075-1.794-1.456-2.891-.408-1.187-.611-2.335-.611-3.447 0-1.273.275-2.372.826-3.292a4.857 4.857 0 0 1 1.73-1.751 4.65 4.65 0 0 1 2.34-.662c.46 0 1.063.142 1.81.422.745.28 1.224.422 1.434.422.157 0 .688-.166 1.588-.493.852-.303 1.572-.429 2.164-.379 1.604.13 2.809.762 3.611 1.901-1.434.871-2.144 2.091-2.13 3.658.012 1.221.456 2.237 1.33 3.044a4.378 4.378 0 0 0 1.336.871c-.108.31-.221.609-.341.895z"
+              />
+            </svg>
+          </template>
+        </NLinkCard>
+        <NLinkCard
+          label="안드로이드 설치 가이드"
+          sub="Galaxy · Pixel · QR 등록"
+          href="https://esimmany.super.site"
+          external
+        >
+          <template #icon>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#3ddc84">
+              <path
+                d="M17.523 15.34a1.123 1.123 0 1 1 1.122-1.123 1.123 1.123 0 0 1-1.122 1.123m-11.046 0a1.123 1.123 0 1 1 1.123-1.123 1.123 1.123 0 0 1-1.123 1.123m11.45-6.02 2.24-3.879a.465.465 0 0 0-.165-.635.466.466 0 0 0-.635.17l-2.27 3.931a14.107 14.107 0 0 0-11.793 0L3.034 4.976a.467.467 0 0 0-.806.464l2.24 3.88A13.219 13.219 0 0 0 0 19.59h24a13.218 13.218 0 0 0-6.077-10.27"
+              />
+            </svg>
+          </template>
+        </NLinkCard>
       </div>
     </template>
+
+    <div v-else class="view-page__empty">
+      <p>주문 정보를 불러오는 중이에요…</p>
+    </div>
+
+    <div class="view-page__notes">
+      <NTrustNote>
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </template>
+        <b style="color: #111827">사용 일수는 첫 연결 시점부터 24시간 단위로 차감돼요.</b><br />
+        현지에 도착해 처음 회선이 연결된 순간부터 24시간이 지나면 1일이 차감돼요.
+      </NTrustNote>
+      <div style="height: 8px" />
+      <NTrustNote>
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M2 12h20" />
+            <path
+              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+            />
+          </svg>
+        </template>
+        <b style="color: #111827">다국가 이심은 자동 로밍으로 그대로 사용할 수 있어요.</b><br />
+        한 번 개통된 다음에는 포함된 국가들을 오가도 추가 설치나 설정 변경 없이 자동으로 연결돼요.
+      </NTrustNote>
+    </div>
+
+    <div class="view-page__back">
+      <NButton variant="ghost" size="md" full-width @click="router.push('/')"> 처음으로 </NButton>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.view-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px 24px 32px;
+  background: #ffffff;
+}
+
+.view-page__heading {
+  margin-top: 28px;
+}
+
+.view-page__chip-row {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.view-page__esim {
+  margin-top: 24px;
+  padding: 20px 18px 22px;
+  border: 1px solid #eef2f7;
+  border-radius: var(--radius-xl, 18px);
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px -16px rgba(15, 23, 42, 0.12);
+}
+
+.view-page__esim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-page__esim-index {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* ===== Multi-esim accordion ===== */
+.view-page__list {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.view-page__row {
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  background: #ffffff;
+  overflow: hidden;
+  transition:
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.view-page__row--open {
+  border-color: var(--color-primary-300, #a78bff);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px -16px rgba(15, 23, 42, 0.12);
+}
+
+.view-page__row-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.view-page__row-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-page__row-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.005em;
+}
+
+.view-page__chev {
+  color: #94a3b8;
+  transition: transform 200ms ease;
+}
+
+.view-page__chev--open {
+  transform: rotate(180deg);
+  color: var(--color-primary-500, #6239ff);
+}
+
+.view-page__row-body {
+  padding: 4px 16px 18px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.view-page__qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.view-page__qr {
+  display: flex;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.view-page__qr-skeleton {
+  width: 220px;
+  height: 220px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: view-page__qr-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes view-page__qr-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.view-page__download {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.view-page__qr-hint {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.view-page__divider {
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-page__divider-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: -0.005em;
+}
+
+.view-page__divider::before,
+.view-page__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.view-page__guides {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.view-page__codes {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-page__notes {
+  margin-top: 24px;
+}
+
+.view-page__empty {
+  margin-top: 60px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.view-page__back {
+  margin-top: 28px;
+}
+</style>

@@ -1,172 +1,255 @@
 <script setup lang="ts">
-import { useOrderStore } from '~/stores/order';
-import { useApi } from '~/composables/useApi';
-import { formatPhoneNumber, isValidPhoneNumber } from '~/utils/formatter';
+import {
+  NStepProgress,
+  NPageHeading,
+  NInfoChip,
+  NInput,
+  NTrustNote,
+  NButton,
+  NAlertDialog,
+  NLoaderDialog,
+} from '@imjohnkoo/design-vue'
+import { useOrderStore } from '~/stores/order'
+import { useApi } from '~/composables/useApi'
+import { formatPhoneNumber, isValidPhoneNumber } from '~/utils/formatter'
 
-const route = useRoute();
-const router = useRouter();
-const orderStore = useOrderStore();
-const api = useApi();
+const route = useRoute()
+const router = useRouter()
+const orderStore = useOrderStore()
+const api = useApi()
 
-const orderId = computed(() => Number(route.params.orderId));
+const orderId = computed(() => Number(route.params.orderId))
 
-// Form state
-const fullName = ref('');
-const phoneNumber = ref('');
-const errors = ref<{ fullName?: string; phoneNumber?: string }>({});
+const fullName = ref('')
+const phoneNumber = ref('')
+const errors = ref<{ fullName?: string; phoneNumber?: string }>({})
 
-// Modal state
-const isSubmitting = ref(false);
-const isAlertVisible = ref(false);
-const isCancelledOrderVisible = ref(false);
-const isServerErrorVisible = ref(false);
+const isSubmitting = ref(false)
+const isAlertVisible = ref(false)
+const isCancelledOrderVisible = ref(false)
+const isServerErrorVisible = ref(false)
 
-// Handle phone number formatting
-const handlePhoneInput = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  phoneNumber.value = formatPhoneNumber(input.value);
-};
+watch(phoneNumber, (val) => {
+  const formatted = formatPhoneNumber(val)
+  if (formatted !== val) phoneNumber.value = formatted
+})
 
-// Validate form
 const validate = () => {
-  errors.value = {};
-
-  if (!fullName.value.trim()) {
-    errors.value.fullName = '이름을 입력해주세요.';
-  }
-
+  errors.value = {}
+  if (!fullName.value.trim()) errors.value.fullName = '이름을 입력해주세요.'
   if (!phoneNumber.value) {
-    errors.value.phoneNumber = '전화번호를 입력해주세요.';
+    errors.value.phoneNumber = '전화번호를 입력해주세요.'
   } else if (!isValidPhoneNumber(phoneNumber.value)) {
-    errors.value.phoneNumber = '유효하지 않은 전화번호 형식입니다.';
+    errors.value.phoneNumber = '유효하지 않은 전화번호 형식입니다.'
   }
+  return Object.keys(errors.value).length === 0
+}
 
-  return Object.keys(errors.value).length === 0;
-};
-
-// Submit form
 const onSubmit = async () => {
-  if (!validate()) return;
-
-  isSubmitting.value = true;
-
-  // Add delay for loading animation
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
+  if (!validate()) return
+  isSubmitting.value = true
+  await new Promise((resolve) => setTimeout(resolve, 1200))
   try {
     const response = await api.verifyOrder({
       fullName: fullName.value,
       phoneNumber: phoneNumber.value,
       orderId: orderId.value,
-    });
-
-    const { verified, cancelled, details } = response;
-
+    })
+    const { verified, cancelled, details } = response
     if (verified && !cancelled) {
-      orderStore.setOrders(details || []);
-      router.push(`/details/${orderId.value}`);
+      orderStore.setOrders(details || [])
+      router.push(`/details/${orderId.value}`)
     } else if (verified && cancelled) {
-      isCancelledOrderVisible.value = true;
+      isCancelledOrderVisible.value = true
     } else {
-      isAlertVisible.value = true;
+      isAlertVisible.value = true
     }
   } catch (error) {
-    console.error(error);
-    isServerErrorVisible.value = true;
+    console.error(error)
+    isServerErrorVisible.value = true
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <template>
-  <div class="w-full">
-    <!-- Header -->
-    <div
-      class="flex h-64 flex-col justify-end rounded-b-2xl bg-cover bg-center p-4 pb-5"
-      :style="{ backgroundImage: `url('/images/background-2.png')` }"
-    >
-      <p class="pb-2 text-sm text-white">1/4</p>
-      <h1 class="pb-2 text-xl font-semibold text-white">주문을 확인합니다.</h1>
-      <p class="pb-1 text-xs text-white">주문번호</p>
-      <p class="text-xs font-medium text-white">{{ orderId }}</p>
+  <div class="verify-page">
+    <div class="verify-page__top">
+      <NStepProgress :step="1" :total="4" label="본인 확인" />
     </div>
 
-    <!-- Form -->
-    <div class="mt-4 flex flex-col items-center justify-center gap-y-2">
-      <form class="w-full p-2" @submit.prevent="onSubmit">
-        <!-- Name field -->
-        <div class="w-full">
-          <div
-            :class="[
-              'rounded-xl px-3 pb-3 pt-3 shadow-sm focus-within:ring-2 focus-within:ring-cyan-600',
-              errors.fullName ? 'ring-2 ring-red-500' : 'ring-1 ring-inset ring-gray-100',
-            ]"
-          >
-            <label for="fullName" class="block pb-1 text-sm font-medium text-gray-700">
-              이름
-            </label>
-            <input
-              id="fullName"
-              v-model="fullName"
-              type="text"
-              class="w-full text-lg text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-0"
-              placeholder="이름을 입력하세요"
-            />
-          </div>
-          <p v-if="errors.fullName" class="mt-1.5 pl-3.5 text-xs text-red-500">
-            {{ errors.fullName }}
-          </p>
-        </div>
-
-        <!-- Phone field -->
-        <div class="w-full pt-6">
-          <div
-            :class="[
-              'rounded-xl px-3 pb-3 pt-3 shadow-sm focus-within:ring-2 focus-within:ring-cyan-600',
-              errors.phoneNumber ? 'ring-2 ring-red-500' : 'ring-1 ring-inset ring-gray-100',
-            ]"
-          >
-            <label for="phoneNumber" class="block pb-1 text-sm font-medium text-gray-700">
-              전화번호
-            </label>
-            <input
-              id="phoneNumber"
-              :value="phoneNumber"
-              type="tel"
-              class="w-full text-lg text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-0"
-              placeholder="전화번호를 입력하세요"
-              @input="handlePhoneInput"
-            />
-          </div>
-          <p v-if="errors.phoneNumber" class="mt-1.5 pl-3.5 text-xs text-red-500">
-            {{ errors.phoneNumber }}
-          </p>
-        </div>
-
-        <!-- Submit button -->
-        <div class="mt-6">
-          <button
-            type="submit"
-            :disabled="isSubmitting"
-            :class="[
-              'flex w-full justify-center rounded-md px-3 py-4 text-lg font-semibold leading-6 text-white shadow-sm',
-              isSubmitting ? 'bg-gray-500' : 'bg-cyan-600 hover:bg-cyan-700',
-            ]"
-          >
-            주문 확인
-          </button>
-        </div>
-      </form>
+    <div class="verify-page__heading">
+      <NPageHeading
+        eyebrow="eSIM QR 코드 발급"
+        :title="`주문하신 분이\n맞는지 확인할게요`"
+        :description="`주문 시 입력하신 이름과 전화번호를\n그대로 입력해 주세요.`"
+      />
     </div>
 
-    <!-- Modals -->
-    <AlertModal :visible="isAlertVisible" @close="isAlertVisible = false" />
-    <CancelledOrderAlertModal
-      :visible="isCancelledOrderVisible"
-      @close="isCancelledOrderVisible = false"
+    <div class="verify-page__chip">
+      <NInfoChip label="주문번호" :value="String(orderId)">
+        <template #icon>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M8 2v4M16 2v4M3 10h18" />
+          </svg>
+        </template>
+      </NInfoChip>
+    </div>
+
+    <form class="verify-page__form" @submit.prevent="onSubmit">
+      <div class="verify-page__field">
+        <NInput v-model="fullName" variant="underline" label="이름" :error="!!errors.fullName" />
+        <p v-if="errors.fullName" class="verify-page__err">{{ errors.fullName }}</p>
+      </div>
+
+      <div class="verify-page__field">
+        <NInput
+          v-model="phoneNumber"
+          variant="underline"
+          label="전화번호"
+          type="tel"
+          :error="!!errors.phoneNumber"
+        />
+        <p v-if="errors.phoneNumber" class="verify-page__err">{{ errors.phoneNumber }}</p>
+      </div>
+
+      <div class="verify-page__note">
+        <NTrustNote>
+          본인 확인은 주문자와 동일한지 검증하기 위한 용도예요.<br />
+          입력한 정보는 안전하게 처리되며, 발급 외 다른 목적으로 사용하지 않아요.
+        </NTrustNote>
+      </div>
+
+      <div class="verify-page__cta">
+        <NButton type="submit" variant="primary" size="xl" full-width :disabled="isSubmitting">
+          주문 확인하기
+        </NButton>
+      </div>
+    </form>
+
+    <NLoaderDialog
+      v-model="isSubmitting"
+      title="주문을 확인하고 있어요"
+      description="잠시만 기다려주세요…"
     />
-    <ServerErrorModal :visible="isServerErrorVisible" @close="isServerErrorVisible = false" />
-    <LoadingModal :visible="isSubmitting" @close="isSubmitting = false" />
+
+    <NAlertDialog
+      v-model="isAlertVisible"
+      title="주문번호와 일치하지 않아요"
+      color="warning"
+      :closable="false"
+    >
+      <p class="verify-page__dialog-desc">
+        주문 시 입력하신 이름과 전화번호를<br />다시 한 번 확인해 주세요.
+      </p>
+      <template #actions>
+        <NButton variant="primary" full-width @click="isAlertVisible = false">
+          다시 입력하기
+        </NButton>
+      </template>
+    </NAlertDialog>
+
+    <NAlertDialog
+      v-model="isCancelledOrderVisible"
+      title="이미 취소된 주문이에요"
+      color="warning"
+      :closable="false"
+    >
+      <p class="verify-page__dialog-desc">
+        취소된 주문은 발급할 수 없어요.<br />
+        스마트스토어에서 새로 주문해 주세요.
+      </p>
+      <template #actions>
+        <NButton variant="primary" full-width @click="isCancelledOrderVisible = false">
+          확인
+        </NButton>
+      </template>
+    </NAlertDialog>
+
+    <NAlertDialog
+      v-model="isServerErrorVisible"
+      title="잠시 후 다시 시도해 주세요"
+      color="error"
+      :closable="false"
+    >
+      <p class="verify-page__dialog-desc">
+        서버에 일시적인 문제가 발생했어요.<br />
+        잠시 후 다시 시도해 주세요.
+      </p>
+      <template #actions>
+        <NButton variant="primary" full-width @click="isServerErrorVisible = false"> 확인 </NButton>
+      </template>
+    </NAlertDialog>
   </div>
 </template>
+
+<style scoped>
+.verify-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 20px 24px 32px;
+  background: #ffffff;
+}
+
+.verify-page__top {
+  padding-top: 4px;
+}
+
+.verify-page__heading {
+  margin-top: 28px;
+}
+
+.verify-page__chip {
+  margin-top: 18px;
+}
+
+.verify-page__form {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.verify-page__field {
+  margin-top: 12px;
+}
+
+.verify-page__field:first-of-type {
+  margin-top: 0;
+}
+
+.verify-page__err {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--color-error-500, #ef4444);
+}
+
+.verify-page__note {
+  margin-top: 28px;
+}
+
+.verify-page__cta {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.verify-page__dialog-desc {
+  margin: -6px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+  line-height: 1.55;
+}
+</style>
