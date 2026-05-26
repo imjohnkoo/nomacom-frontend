@@ -8,7 +8,6 @@ import {
   NAlertDialog,
   NLoaderDialog,
 } from '@imjohnkoo/design-vue'
-import type { Order } from '~/types/order'
 import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
 import { formatDateString } from '~/utils/date'
@@ -85,101 +84,17 @@ const handleSelectOrder = async (idx: number) => {
   }
 }
 
-// Design preview seed — prod DB 의 최근 주문에서 발췌 (PII 제외).
-// store 가 비어있을 때만 주입; 실제 흐름 (verify → details) 에서는 영향 없음.
-const DESIGN_PREVIEW_SEED: Order[] = [
-  {
-    orderId: 2026052671032971,
-    productOrderId: 2026052646969541,
-    productName: '[유럽이심전문] 북유럽4개국 무제한데이터',
-    placeOrderDate: new Date('2026-05-25T13:56:47.560Z'),
-    quantity: 1,
-    totalPaymentAmount: 21600,
-    optionManageCode: 'EU043U02D10V2',
-    receiverName: '',
-    receiverPhoneNumber: '',
-    planNameKr: '북유럽4개국',
-    planDataTypeKr: '무제한 데이터',
-    planDataLimitKr: '매일 2기가 + 무제한 500Kbps',
-    planDataDuration: 10,
-    planCountriesKr: ['덴마크', '노르웨이', '스웨덴', '핀란드'],
-    planCountriesEng: ['Denmark', 'Norway', 'Sweden', 'Finland'],
-    planCountriesIso: ['DNK', 'NOR', 'SWE', 'FIN'],
-    timeZones: ['Europe/Copenhagen', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Helsinki'],
-    startDate: '',
-    startTime: 0,
-    endDate: '',
-    startCountry: '',
-    startTimeZone: '',
-    planTypeId: 'EU043U02D10V2',
-    esims: [],
-  },
-  {
-    orderId: 2026052435967091,
-    productOrderId: 2026052484335791,
-    productName: '[유럽이심전문] 동유럽3개국 무제한데이터',
-    placeOrderDate: new Date('2026-05-24T00:06:09.224Z'),
-    quantity: 1,
-    totalPaymentAmount: 17700,
-    optionManageCode: 'EU033U01D15V2',
-    receiverName: '',
-    receiverPhoneNumber: '',
-    planNameKr: '동유럽3개국',
-    planDataTypeKr: '무제한 데이터',
-    planDataLimitKr: '매일 1기가 + 무제한 500Kbps',
-    planDataDuration: 15,
-    planCountriesKr: ['오스트리아', '체코', '헝가리'],
-    planCountriesEng: ['Austria', 'Czechia', 'Hungary'],
-    planCountriesIso: ['AUT', 'CZE', 'HUN'],
-    timeZones: ['Europe/Vienna', 'Europe/Prague', 'Europe/Budapest'],
-    startDate: '',
-    startTime: 0,
-    endDate: '',
-    startCountry: '',
-    startTimeZone: '',
-    planTypeId: 'EU033U01D15V2',
-    esims: [
-      {
-        apn: 'globaldata',
-        manualCode: 'TN20260414161839CFD59AE3',
-        smdpAddress: 'consumer.e-sim.global',
-        networkStatus: 'ENABLED',
-        serviceStatus: 'active',
-        activationCode: 'LPA:1$consumer.e-sim.global$TN20260414161839CFD59AE3',
-      },
-    ],
-  },
-  {
-    orderId: 2026052429534751,
-    productOrderId: 2026052475167681,
-    productName: '[유럽이심전문] 북유럽4개국 무제한데이터',
-    placeOrderDate: new Date('2026-05-23T18:34:17.863Z'),
-    quantity: 2,
-    totalPaymentAmount: 35600,
-    optionManageCode: 'EU043U01D15V2',
-    receiverName: '',
-    receiverPhoneNumber: '',
-    planNameKr: '북유럽4개국',
-    planDataTypeKr: '무제한 데이터',
-    planDataLimitKr: '매일 1기가 + 무제한 500Kbps',
-    planDataDuration: 15,
-    planCountriesKr: ['덴마크', '노르웨이', '스웨덴', '핀란드'],
-    planCountriesEng: ['Denmark', 'Norway', 'Sweden', 'Finland'],
-    planCountriesIso: ['DNK', 'NOR', 'SWE', 'FIN'],
-    timeZones: ['Europe/Copenhagen', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Helsinki'],
-    startDate: '',
-    startTime: 0,
-    endDate: '',
-    startCountry: '',
-    startTimeZone: '',
-    planTypeId: 'EU043U01D15V2',
-    esims: [],
-  },
-]
-
 onMounted(() => {
   if (!orderStore.orders || orderStore.orders.length === 0) {
-    orderStore.setOrders(DESIGN_PREVIEW_SEED)
+    isPullingOrderVisible.value = true
+    setTimeout(() => {
+      isPullingOrderVisible.value = false
+      isNoOrderAlertVisible.value = true
+      setTimeout(() => {
+        isNoOrderAlertVisible.value = false
+        router.push(`/verify/${orderId.value}`)
+      }, 3000)
+    }, 3000)
   }
 })
 </script>

@@ -197,37 +197,13 @@ const onConfirm = async () => {
   }
 }
 
-// Design preview seed — store.singleOrder 가 비어있을 때만 주입
-const DESIGN_PREVIEW_SINGLE: Order = {
-  orderId: 2026052671032971,
-  productOrderId: 2026052646969541,
-  productName: '[유럽이심전문] 북유럽4개국 무제한데이터',
-  placeOrderDate: new Date('2026-05-25T13:56:47.560Z'),
-  quantity: 1,
-  totalPaymentAmount: 21600,
-  optionManageCode: 'EU043U02D10V2',
-  receiverName: '',
-  receiverPhoneNumber: '',
-  planNameKr: '북유럽4개국',
-  planDataTypeKr: '무제한 데이터',
-  planDataLimitKr: '매일 2기가 + 무제한 500Kbps',
-  planDataDuration: 10,
-  planCountriesKr: ['덴마크', '노르웨이', '스웨덴', '핀란드'],
-  planCountriesEng: ['Denmark', 'Norway', 'Sweden', 'Finland'],
-  planCountriesIso: ['DNK', 'NOR', 'SWE', 'FIN'],
-  timeZones: ['Europe/Copenhagen', 'Europe/Oslo', 'Europe/Stockholm', 'Europe/Helsinki'],
-  startDate: '',
-  startTime: 0,
-  endDate: '',
-  startCountry: '',
-  startTimeZone: '',
-  planTypeId: 'EU043U02D10V2',
-  esims: [],
-}
-
 onMounted(() => {
   if (!order.value) {
-    orderStore.setSingleOrder(DESIGN_PREVIEW_SINGLE)
+    isNoOrderAlertVisible.value = true
+    setTimeout(() => {
+      isNoOrderAlertVisible.value = false
+      router.push(`/verify/${orderId.value}`)
+    }, 3000)
   } else if (order.value.esims && order.value.esims.length > 0) {
     router.push(`/details/${orderId.value}`)
   }

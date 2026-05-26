@@ -11,8 +11,6 @@ import {
   NTrustNote,
 } from '@imjohnkoo/design-vue'
 import { useOrderStore } from '~/stores/order'
-import type { Order } from '~/types/order'
-import { buildMultiQrSeed } from '~/utils/multi-qr-seed'
 
 const route = useRoute()
 const router = useRouter()
@@ -41,56 +39,11 @@ const downloadQR = (index: number) => {
   document.body.removeChild(downloadLink)
 }
 
-// Design preview seed — store.singleOrder 가 비어있을 때만 주입 (활성화 완료된 esim 1개 포함)
-const DESIGN_PREVIEW_SINGLE: Order = {
-  orderId: 2026052435967091,
-  productOrderId: 2026052484335791,
-  productName: '[유럽이심전문] 동유럽3개국 무제한데이터',
-  placeOrderDate: new Date('2026-05-24T00:06:09.224Z'),
-  quantity: 1,
-  totalPaymentAmount: 17700,
-  optionManageCode: 'EU033U01D15V2',
-  receiverName: '',
-  receiverPhoneNumber: '',
-  planNameKr: '동유럽3개국',
-  planDataTypeKr: '무제한 데이터',
-  planDataLimitKr: '매일 1기가 + 무제한 500Kbps',
-  planDataDuration: 15,
-  planCountriesKr: ['오스트리아', '체코', '헝가리'],
-  planCountriesEng: ['Austria', 'Czechia', 'Hungary'],
-  planCountriesIso: ['AUT', 'CZE', 'HUN'],
-  timeZones: ['Europe/Vienna', 'Europe/Prague', 'Europe/Budapest'],
-  startDate: '2026-06-01',
-  startTime: 0,
-  endDate: '2026-06-16',
-  startCountry: '오스트리아',
-  startTimeZone: 'Europe/Vienna',
-  planTypeId: 'EU033U01D15V2',
-  esims: [
-    {
-      apn: 'globaldata',
-      manualCode: 'TN20260414161839CFD59AE3',
-      smdpAddress: 'consumer.e-sim.global',
-      networkStatus: 'ENABLED',
-      serviceStatus: 'active',
-      activationCode: 'LPA:1$consumer.e-sim.global$TN20260414161839CFD59AE3',
-    },
-  ],
-}
-
-// 디자인 시안 확인용 — 단일 esim seed (DESIGN_PREVIEW_SINGLE) 또는
-// 다발 발급 케이스 (buildMultiQrSeed(N), N>=2) 로 토글.
-const DESIGN_PREVIEW_MULTI = buildMultiQrSeed(3)
-
 onMounted(() => {
   if (!order.value) {
-    // 기본은 multi (accordion 시안 확인용) — 단일 케이스 보려면 _SINGLE 로 교체
-    orderStore.setSingleOrder(DESIGN_PREVIEW_MULTI)
+    router.push(`/verify/${orderId.value}`)
   }
 })
-
-// 단일 케이스 미사용 경고 회피 (필요 시 위 onMounted 에서 사용)
-void DESIGN_PREVIEW_SINGLE
 </script>
 
 <template>
