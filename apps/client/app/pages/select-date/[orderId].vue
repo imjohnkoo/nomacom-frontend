@@ -658,8 +658,6 @@ onMounted(() => {
 }
 
 .select-date-page__confirm-policy-link {
-  display: inline-block;
-  margin-top: 4px;
   font-weight: 600;
   color: #6239ff;
   text-decoration: underline;
