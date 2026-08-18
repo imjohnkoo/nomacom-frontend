@@ -420,6 +420,7 @@ onMounted(() => {
       title="이 내용으로 발급할까요?"
       color="primary"
       :closable="false"
+      :width="340"
     >
       <div v-if="order" class="select-date-page__confirm">
         <div class="select-date-page__confirm-row">
