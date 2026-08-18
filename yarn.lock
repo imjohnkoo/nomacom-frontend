@@ -13943,6 +13943,7 @@ __metadata:
     postgres: "npm:^3.4.8"
     qrcode-vue3: "npm:^1.7.1"
     tailwindcss: "npm:^4"
+    vitest: "npm:^4.1.6"
     vue: "npm:^3.5.30"
     vue-router: "npm:^4.5.1"
     vue-tailwind-datepicker: "npm:^1.7.4"

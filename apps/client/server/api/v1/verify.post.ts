@@ -1,5 +1,6 @@
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { useDB, schema } from '../../db'
+import { matchesReceiver } from '../../utils/verification'
 
 interface VerifyOrderRequest {
   fullName: string
@@ -73,6 +74,21 @@ export default defineEventHandler(async (event): Promise<VerifyOrderResponse> =>
     }
   }
 
+  // 수신자 대조 — orderId 만으로 타인의 PII / activationCode 조회 차단.
+  // 불일치 시 취소 여부 등 어떤 정보도 노출하지 않고 verified:false 만 반환
+  const receiverMatched = ordersWithEsims.some((order) =>
+    matchesReceiver(
+      { fullName: body.fullName, phoneNumber: body.phoneNumber },
+      { receiverName: order.receiverName, receiverPhoneNumber: order.receiverPhoneNumber },
+    ),
+  )
+
+  if (!receiverMatched) {
+    return {
+      verified: false,
+    }
+  }
+
   // Check if order is cancelled
   const firstOrder = ordersWithEsims[0]
   if (
@@ -85,14 +101,22 @@ export default defineEventHandler(async (event): Promise<VerifyOrderResponse> =>
     }
   }
 
-  // Build response with plan type information
+  // Build response with plan type information (planTypes 는 일괄 조회 — N+1 방지)
+  const planTypeIds = [
+    ...new Set(ordersWithEsims.map((order) => order.optionManageCode).filter(Boolean)),
+  ] as string[]
+
+  const planTypeRows = planTypeIds.length
+    ? await db.query.planTypes.findMany({
+        where: inArray(schema.planTypes.planTypeId, planTypeIds),
+      })
+    : []
+  const planTypesById = new Map(planTypeRows.map((pt) => [pt.planTypeId, pt]))
+
   const details: OrderDetails[] = []
 
   for (const order of ordersWithEsims) {
-    // Get plan type by optionManageCode
-    const planType = await db.query.planTypes.findFirst({
-      where: eq(schema.planTypes.planTypeId, order.optionManageCode || ''),
-    })
+    const planType = planTypesById.get(order.optionManageCode || '')
 
     // Map esims to response format
     const esimResponses: EsimResponse[] = order.esims.map((esim) => ({
