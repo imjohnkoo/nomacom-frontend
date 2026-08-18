@@ -142,13 +142,13 @@
         position: relative;
         overflow: hidden;
       }
-      .photo::after {
-        content: '구매자 사진';
+      .photo__stars {
         position: absolute;
         inset: auto 8px 8px;
-        font-size: 11px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
         font-weight: 700;
-        color: var(--color-neutral-600);
+        color: #f59e0b;
         background: rgba(255, 255, 255, 0.88);
         padding: 3px 8px;
         border-radius: var(--radius-full);
@@ -286,15 +286,19 @@
         <div class="photos">
           <div class="photo">
             <img src="../assets/reviews/9380410731_4724084141_1.jpg" alt="구매자 사진 — 바르셀로나 구엘 공원" />
+            <span class="photo__stars">★★★★★</span>
           </div>
           <div class="photo">
             <img src="../assets/reviews/9380410731_4673733216_1.jpg" alt="구매자 사진 — 리스본 트램 골목" />
+            <span class="photo__stars">★★★★★</span>
           </div>
           <div class="photo">
             <img src="../assets/reviews/9380410731_4669609866_1.jpg" alt="구매자 사진 — 톨레도 대성당" />
+            <span class="photo__stars">★★★★★</span>
           </div>
           <div class="photo">
             <img src="../assets/reviews/9350493687_4898296853_1.jpg" alt="구매자 사진 — 포르투갈 대서양 해안" />
+            <span class="photo__stars">★★★★★</span>
           </div>
         </div>
       </section>
