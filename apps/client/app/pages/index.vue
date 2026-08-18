@@ -7,7 +7,7 @@ import { NLogo } from '@imjohnkoo/design-vue'
 <template>
   <div class="landing-page">
     <div class="landing-page__card">
-      <NLogo variant="kor" size="lg" aria-label="eSIM마니" />
+      <NLogo variant="kor" size="md" aria-label="eSIM마니" />
       <h1 class="landing-page__title">
         eSIM 발급은<br />
         주문 안내 링크로 접속해 주세요
