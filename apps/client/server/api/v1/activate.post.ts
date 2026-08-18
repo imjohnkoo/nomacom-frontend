@@ -144,6 +144,15 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       })
     }
 
+    // 벤더 가드 (backend Spark Wave 1) — 이 엔드포인트는 Maya 발급 전용.
+    // provider 가 NULL 이면 maya 로 간주, 그 외 벤더 상품이 들어오면 발급 사고 방지 위해 거부
+    if (planType.provider != null && planType.provider !== 'maya') {
+      throw createError({
+        statusCode: 409,
+        message: `Plan type is routed to provider '${planType.provider}' and cannot be issued here`,
+      })
+    }
+
     const mayaApi = useMayaApi()
     const quantity = order.quantity || 1
     const existingCount = order.esims?.length || 0

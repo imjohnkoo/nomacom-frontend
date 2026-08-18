@@ -79,6 +79,8 @@ export const esims = pgTable('esim', {
 
 export const planTypes = pgTable('plan-type', {
   planTypeId: varchar('planTypeId', { length: 255 }).primaryKey(),
+  // 발급 벤더 라우팅 스위치 (backend Spark Wave 1) — NULL ≡ maya, 'spark' 면 Spark 발급
+  provider: varchar('provider', { length: 255 }),
   planCode: varchar('planCode', { length: 100 }),
   dataCode: varchar('dataCode', { length: 100 }),
   durationCode: varchar('durationCode', { length: 100 }),
