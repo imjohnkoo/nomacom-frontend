@@ -15,6 +15,8 @@ export interface NBottomSheetProps {
   onClose: () => void
   title?: string
   children: React.ReactNode
+  /** 하단 고정 영역 (예: 선택 완료 CTA) */
+  footer?: React.ReactNode
   height?: number | string
 }
 
@@ -23,6 +25,7 @@ export function NBottomSheet({
   onClose,
   title,
   children,
+  footer,
   height = 'auto',
 }: NBottomSheetProps) {
   return (
@@ -41,6 +44,7 @@ export function NBottomSheet({
           </View>
         )}
         <View style={styles.content}>{children}</View>
+        {footer && <View style={styles.footer}>{footer}</View>}
       </View>
     </Modal>
   )
@@ -88,5 +92,11 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: theme.spacing[4],
+  },
+  footer: {
+    paddingHorizontal: theme.spacing[4],
+    paddingTop: theme.spacing[3],
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.neutral[100],
   },
 })
