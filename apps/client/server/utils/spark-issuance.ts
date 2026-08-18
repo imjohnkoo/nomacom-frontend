@@ -3,6 +3,7 @@ import { useDB, schema } from '../db'
 import { useSparkApi, SparkApiError, type SparkSimInfo } from './spark-api'
 import { mapSparkSimInfo } from './spark-mapping'
 import { createUTCDateTime, createLocalDateTime } from './date'
+import { logEvent } from './issuance-log'
 import type { Order } from '../db/schema'
 
 /**
@@ -86,6 +87,13 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
   const spark = useSparkApi()
   const { order, unitIndex } = params
   const idempotencyKey = `${order.productOrderId}-${unitIndex}`
+  const unitStartedAt = Date.now()
+  const traceBase = {
+    productOrderId: order.productOrderId,
+    idempotencyKey,
+    provider: 'spark',
+    unitIndex,
+  }
 
   const template = await resolveSparkTemplate(params.planTypeId)
   if (!template) {
@@ -142,11 +150,35 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
     throw e
   }
 
-  const ledger = async (state: string, patch: Record<string, unknown> = {}) => {
+  logEvent('ISSUANCE_STATE_CHANGED', 'info', `issuance ${idempotencyKey} → REQUESTED`, {
+    state: 'REQUESTED',
+    attempt,
+    ...traceBase,
+  })
+
+  const ledger = async (
+    state: string,
+    patch: Record<string, unknown> = {},
+    logMeta: Record<string, unknown> = {},
+  ) => {
     await db
       .update(schema.esimIssuance)
       .set({ state, updatedAt: new Date(), ...patch })
       .where(eq(schema.esimIssuance.esimIssuanceId, issuanceId))
+    if (state === 'ORPHANED') {
+      // 벤더 성공 + 로컬 실패 — 수동 종결 대상, 알람 이벤트
+      logEvent('ISSUANCE_ORPHANED', 'error', `issuance ${idempotencyKey} orphaned`, {
+        ...traceBase,
+        ...logMeta,
+      })
+    } else {
+      logEvent(
+        'ISSUANCE_STATE_CHANGED',
+        state === 'FAILED' ? 'warn' : 'info',
+        `issuance ${idempotencyKey} → ${state}`,
+        { state, ...traceBase, ...logMeta },
+      )
+    }
   }
 
   try {
@@ -211,11 +243,19 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
 
       // 벤더 성공 — 매핑/검증 전에 먼저 원장 전이 (락 TX 밖 즉시 커밋: 이후
       // 매핑·fulfill 실패가 벤더 성공 기록을 지우지 못하게 — FAILED 금지 규약)
-      await ledger('VENDOR_ACCEPTED', {
-        vendorRef: simInfo?.subscriberId != null ? String(simInfo.subscriberId) : null,
-        responsePayload,
-      })
-      await ledger('PROFILE_READY', { profilePayload: responsePayload })
+      await ledger(
+        'VENDOR_ACCEPTED',
+        {
+          vendorRef: simInfo?.subscriberId != null ? String(simInfo.subscriberId) : null,
+          responsePayload,
+        },
+        { subscriberId: simInfo?.subscriberId },
+      )
+      await ledger(
+        'PROFILE_READY',
+        { profilePayload: responsePayload },
+        { subscriberId: simInfo?.subscriberId, subsPackageId: simInfo?.subsPackageId },
+      )
 
       // FULFILLING 원자 클레임 — 반환행 확인
       const claimed = await db
@@ -308,16 +348,26 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
         return { esimPk, planId }
       } catch (e) {
         // 벤더 성공 후 fulfill 실패 — FAILED 금지, 수동 종결 대상
-        await ledger('ORPHANED', {
-          errorMessage: String((e as Error).message).slice(0, 500),
-        })
+        await ledger(
+          'ORPHANED',
+          { errorMessage: String((e as Error).message).slice(0, 500) },
+          { subscriberId: simInfo?.subscriberId },
+        )
         throw e
       }
     })
 
     // LINKED 는 fulfill TX 커밋 완료 후에만 기록 — 커밋 전 기록하면 크래시 시
     // "LINKED 인데 row 없음" 원장 신뢰성 역전 (backend markLinked 순서와 동일)
-    await ledger('LINKED', { esimId: fulfilled.esimPk, planId: fulfilled.planId })
+    await ledger(
+      'LINKED',
+      { esimId: fulfilled.esimPk, planId: fulfilled.planId },
+      {
+        esimId: fulfilled.esimPk,
+        planId: fulfilled.planId,
+        durationMs: Date.now() - unitStartedAt,
+      },
+    )
   } catch (e) {
     // REQUESTED 로 남아 있는 미전이 원장 (락 대기 timeout 등 affect 이전 실패) 정리
     const row = await db.query.esimIssuance.findFirst({

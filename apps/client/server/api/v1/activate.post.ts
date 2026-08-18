@@ -5,6 +5,7 @@ import { generateEsimTag } from '../../utils/string'
 import { createUTCDateTime, createLocalDateTime } from '../../utils/date'
 import { matchesOrderContact } from '../../utils/verification'
 import { issueSparkUnit } from '../../utils/spark-issuance'
+import { logEvent } from '../../utils/issuance-log'
 
 // 같은 productOrderId 에 대한 동시 발급 요청 직렬화 (더블클릭/재시도 race 방어).
 // 단일 Nitro 인스턴스 (CodeDeploy EC2 1대) 전제 — 다중 인스턴스 확장 시 DB 레벨
@@ -105,6 +106,12 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
   )
 
   try {
+    logEvent('ORDER_ACTIVATE_REQUESTED', 'info', `activate requested for ${body.productOrderId}`, {
+      orderId: body.orderId,
+      productOrderId: body.productOrderId,
+      optionManageCode: body.optionManageCode,
+    })
+
     // Verify order exists (lock 획득 후 조회 — esims 수가 최신이어야 resume 이 정확)
     const order = await db.query.orders.findFirst({
       where: eq(schema.orders.productOrderId, body.productOrderId),
@@ -114,6 +121,10 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
     })
 
     if (!order) {
+      logEvent('ORDER_ACTIVATE_REJECTED', 'warn', 'order not found', {
+        productOrderId: body.productOrderId,
+        reason: 'ORDER_NOT_FOUND',
+      })
       throw createError({
         statusCode: 404,
         message: 'Order not found',
@@ -127,6 +138,10 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       order.lastChangedType === 'CLAIM_COMPLETED' ||
       order.lastChangedType?.startsWith('CANCEL')
     ) {
+      logEvent('ORDER_ACTIVATE_REJECTED', 'warn', 'order cancelled or under claim', {
+        productOrderId: body.productOrderId,
+        reason: 'ORDER_CLAIMED',
+      })
       throw createError({
         statusCode: 409,
         message: 'Order is cancelled or under claim — issuance blocked',
@@ -171,6 +186,15 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
 
     const quantity = order.quantity || 1
     const existingCount = order.esims?.length || 0
+
+    logEvent('PROVIDER_RESOLVED', 'info', `provider ${provider} for ${planType.planTypeId}`, {
+      productOrderId: body.productOrderId,
+      planTypeId: planType.planTypeId,
+      dbProvider: planType.provider,
+      provider,
+      quantity,
+      existingEsimCount: existingCount,
+    })
 
     // 발급 완료 후 최신 상태 재조회 → 응답 (Maya/Spark 공용)
     const buildResponse = async (): Promise<ActivateOrderResponse> => {
@@ -231,16 +255,36 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       // UI 는 날짜만 받는 사양 (자정 고정) — body.startTime (-24, Maya 사전 활성화
       // 버퍼) 은 Maya 전용 규약이므로 Spark 에는 자정 (0) 을 명시 전달
       for (let i = existingCount; i < quantity; i++) {
-        await issueSparkUnit({
-          order,
+        try {
+          await issueSparkUnit({
+            order,
+            unitIndex: i,
+            planTypeId: planType.planTypeId,
+            startDate: body.startDate,
+            startTimeZone: body.startTimeZone,
+            startCountry: body.startCountry,
+            startTime: 0,
+          })
+        } catch (e) {
+          logEvent('ORDER_ACTIVATE_FAILED', 'error', String((e as Error).message), {
+            productOrderId: body.productOrderId,
+            provider,
+            unitIndex: i,
+          })
+          throw e
+        }
+        logEvent('ESIM_ISSUED', 'info', `unit ${i} issued (spark)`, {
+          productOrderId: body.productOrderId,
           unitIndex: i,
-          planTypeId: planType.planTypeId,
-          startDate: body.startDate,
-          startTimeZone: body.startTimeZone,
-          startCountry: body.startCountry,
-          startTime: 0,
+          provider,
         })
       }
+      logEvent('ORDER_ACTIVATE_COMPLETED', 'info', `all units issued for ${body.productOrderId}`, {
+        productOrderId: body.productOrderId,
+        provider,
+        quantity,
+        unitsIssued: quantity - existingCount,
+      })
       return buildResponse()
     }
 
@@ -300,9 +344,30 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
         await tx.insert(schema.esims).values(newEsim)
         await tx.insert(schema.plans).values(newPlan)
       })
+
+      logEvent('ESIM_ISSUED', 'info', `unit ${i} issued (maya)`, {
+        productOrderId: body.productOrderId,
+        unitIndex: i,
+        provider,
+      })
     }
 
+    logEvent('ORDER_ACTIVATE_COMPLETED', 'info', `all units issued for ${body.productOrderId}`, {
+      productOrderId: body.productOrderId,
+      provider,
+      quantity,
+      unitsIssued: quantity - existingCount,
+    })
     return buildResponse()
+  } catch (e) {
+    // 요청 수준 실패 로그 (거절 이벤트가 이미 찍힌 4xx 는 제외하고 관측 공백 방지)
+    const statusCode = (e as { statusCode?: number })?.statusCode
+    if (!statusCode || statusCode >= 500) {
+      logEvent('ORDER_ACTIVATE_FAILED', 'error', String((e as Error).message), {
+        productOrderId: body.productOrderId,
+      })
+    }
+    throw e
   } finally {
     inFlightActivations.delete(body.productOrderId)
     releaseLock()

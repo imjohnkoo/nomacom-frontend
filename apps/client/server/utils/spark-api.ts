@@ -14,18 +14,27 @@
  *  - listSubscriberPrepaidPackages / getSingleSubscriber: **flat** {subscriberId} (중첩은 code 2 거절)
  */
 
+import { sparkCodeName } from './spark-error-codes'
+import { logEvent } from './issuance-log'
+
+// 18 TIMEOUT 은 서버측 타임아웃 — 작업이 실제 수행됐을 수 있어 affect 재시도는
+// 이중 부여 위험. 100 은 백오프 필수. retryable 플래그는 참고용이며 이 클라이언트는
+// 자동 재시도하지 않음
 const RETRYABLE_CODES = new Set([18, 100])
 
 export class SparkApiError extends Error {
   code: number
+  codeName: string
   retryable: boolean
   method: string
 
   constructor(method: string, code: number, message: string) {
-    super(`Spark ${method} failed (code ${code}): ${message}`)
+    // 이름을 코드 옆에 — 원장 errorMessage 255자 절단에서도 이름이 살아남게
+    super(`spark ${method} code=${code}(${sparkCodeName(code)}): ${message}`)
     this.name = 'SparkApiError'
     this.method = method
     this.code = code
+    this.codeName = sparkCodeName(code)
     this.retryable = RETRYABLE_CODES.has(code)
   }
 }
@@ -78,6 +87,19 @@ export function useSparkApi() {
   ): Promise<T> {
     const base = opts.v2 ? endpoint!.replace(/\/v1$/, '/v2') : endpoint!
     const url = `${base}?token=${token}`
+    const startedAt = Date.now()
+
+    const fail = (code: number, message: string): never => {
+      const err = new SparkApiError(method, code, message)
+      logEvent('EXTERNAL_API_ERROR', 'error', err.message, {
+        service: 'spark',
+        sparkMethod: method,
+        sparkCode: err.code,
+        sparkCodeName: err.codeName,
+        durationMs: Date.now() - startedAt,
+      })
+      throw err
+    }
 
     let res: Response
     try {
@@ -90,19 +112,23 @@ export function useSparkApi() {
       })
     } catch (e) {
       // 네트워크 단 실패 — 벤더 도달 전으로 간주 가능하나 확신 불가하므로 terminal 처리
-      throw new SparkApiError(method, -1, maskSparkToken(String(e)))
+      return fail(-1, maskSparkToken(String(e)))
     }
 
     if (!res.ok) {
-      throw new SparkApiError(method, -res.status, `HTTP ${res.status}`)
+      return fail(-res.status, `HTTP ${res.status}`)
     }
 
     const body = (await res.json()) as { status?: SparkStatus } & Record<string, unknown>
     const status = body.status
     if (!status || status.code !== 0) {
-      const code = status?.code ?? -1
-      throw new SparkApiError(method, code, status?.msg || status?.message || 'unknown error')
+      return fail(status?.code ?? -1, status?.msg || status?.message || 'unknown error')
     }
+
+    logEvent('SPARK_API_CALL', 'info', `spark ${method} ok`, {
+      sparkMethod: method,
+      durationMs: Date.now() - startedAt,
+    })
     return (body[method] ?? {}) as T
   }
 
