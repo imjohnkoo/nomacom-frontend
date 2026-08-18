@@ -103,7 +103,7 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 
 - `apps/admin/CLAUDE.md` — admin 도메인 + dual DB 구조 (admin DB / eSIM 메인 DB) + 현재 미완 사항
 - `apps/client/CLAUDE.md` — eSIM 발급 4-step 흐름 + Maya API + Nuxt 4 마이그 결과 반영
-- `apps/mobile/CLAUDE.md` — 추후 작성 (B 트랙 mobile 부트스트랩과 함께)
+- `apps/mobile/CLAUDE.md` — mobile 4-step 흐름 + Universal Link 설치 + EAS 프로필 (B 트랙 MVP 반영)
 
 앱별 `.claude/rules/` 는 도메인이 충분히 굳기 전까지는 신설하지 않음 — 루트 `.claude/rules/` 단일 보관 (분리 결정 게이트: Phase 3 쿠팡 진입 이후 코드 폭증 또는 admin/client 도메인 명확 분리 시점).
 
@@ -158,6 +158,6 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 | `@imjohnkoo/design-*` 배포 파이프라인 (GitHub Packages)                             | ✅ 정책 채택 — (b) GH Packages (2026-05-21) | weekly C-1              |
 | `design-system-publish.yml` workflow 포팅                                           | ✅ 완료 — 0.4.0 첫 publish 성공 (2026-08-18) | weekly C-2              |
 | `apps/admin/CLAUDE.md` + `apps/client/CLAUDE.md`                                    | 작성 완료 (2026-05-19)                      | —                       |
-| `apps/mobile/CLAUDE.md`                                                             | 미작성                                      | weekly B 트랙과 함께    |
+| `apps/mobile/CLAUDE.md`                                                             | ✅ 작성 완료 (2026-08-19)                   | weekly B 트랙           |
 | `apps/*/.claude/rules/` 도메인 분리                                                 | 보류 (도메인 굳을 때)                       | —                       |
-| mobile EAS 배포 흐름 정의                                                           | 미시작                                      | weekly B 트랙 차주 이후 |
+| mobile EAS 배포 흐름 정의                                                           | eas.json 구축 — 실행 (eas init/build) 승인 대기 | weekly B 트랙       |
