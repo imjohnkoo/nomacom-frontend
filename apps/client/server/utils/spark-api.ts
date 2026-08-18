@@ -75,19 +75,26 @@ export function useSparkApi() {
   const endpoint = process.env.SPARK_API_ENDPOINT
   const token = process.env.SPARK_API_TOKEN
   const accountId = Number(process.env.SPARK_ACCOUNT_ID)
+  const hasProxy = Boolean(process.env.SPARK_PROXY_ENDPOINT)
 
-  if (!endpoint || !token || !accountId) {
+  // 프록시 모드에선 endpoint/token 을 backend 이 보유 — accountId 만 필수
+  if (!accountId || (!hasProxy && (!endpoint || !token))) {
     throw new Error('Spark API configuration is missing (SPARK_API_ENDPOINT/TOKEN/ACCOUNT_ID)')
   }
+
+  // 임시 우회 (Spark 소스 IP 화이트리스트 등록 전 공백 대응, john 승인 2026-08-20):
+  // SPARK_PROXY_ENDPOINT 가 설정되면 Spark 콜을 backend (화이트리스트 등록 IP) 프록시로
+  // 경유. 등록 완료 후 env 제거로 원복 — 코드 삭제 불필요, env 부재 시 직접 호출
+  const proxyEndpoint = process.env.SPARK_PROXY_ENDPOINT
+  const proxySecret = process.env.SPARK_PROXY_SECRET
 
   async function call<T = Record<string, unknown>>(
     method: string,
     params: Record<string, unknown>,
     opts: { v2?: boolean } = {},
   ): Promise<T> {
-    const base = opts.v2 ? endpoint!.replace(/\/v1$/, '/v2') : endpoint!
-    const url = `${base}?token=${token}`
     const startedAt = Date.now()
+    const viaProxy = Boolean(proxyEndpoint)
 
     const fail = (code: number, message: string): never => {
       const err = new SparkApiError(method, code, message)
@@ -97,19 +104,35 @@ export function useSparkApi() {
         sparkCode: err.code,
         sparkCodeName: err.codeName,
         durationMs: Date.now() - startedAt,
+        viaProxy,
       })
       throw err
     }
 
     let res: Response
     try {
-      res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [method]: params }),
-        // 벤더 행 (hang) 시 advisory lock 점유 방지
-        signal: AbortSignal.timeout(30_000),
-      })
+      if (viaProxy) {
+        // 프록시 계약: POST {proxyEndpoint}, body {method, params, v2} — backend 이
+        // Spark 를 대신 호출하고 벤더 원 응답 (status + body[method]) 을 그대로 반환
+        res = await fetch(proxyEndpoint!, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Internal-Proxy-Secret': proxySecret ?? '',
+          },
+          body: JSON.stringify({ method, params, v2: Boolean(opts.v2) }),
+          signal: AbortSignal.timeout(35_000),
+        })
+      } else {
+        const base = opts.v2 ? endpoint!.replace(/\/v1$/, '/v2') : endpoint!
+        res = await fetch(`${base}?token=${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [method]: params }),
+          // 벤더 행 (hang) 시 advisory lock 점유 방지
+          signal: AbortSignal.timeout(30_000),
+        })
+      }
     } catch (e) {
       // 네트워크 단 실패 — 벤더 도달 전으로 간주 가능하나 확신 불가하므로 terminal 처리
       return fail(-1, maskSparkToken(String(e)))
@@ -128,6 +151,7 @@ export function useSparkApi() {
     logEvent('SPARK_API_CALL', 'info', `spark ${method} ok`, {
       sparkMethod: method,
       durationMs: Date.now() - startedAt,
+      viaProxy,
     })
     return (body[method] ?? {}) as T
   }
