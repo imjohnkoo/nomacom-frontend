@@ -61,7 +61,8 @@ function handleClick(event: MouseEvent) {
   justify-content: center;
   gap: var(--spacing-2, 0.5rem);
   border: var(--borderWidth-1, 1px) solid transparent;
-  border-radius: var(--radius-md, 0.375rem);
+  /* 사이즈 불문 동일 굴곡 — xl CTA 와 통일 (john 피드백) */
+  border-radius: var(--radius-2xl, 1rem);
   font-family: var(--font-fontFamily-sans, sans-serif);
   font-weight: var(--font-fontWeight-medium, 500);
   line-height: var(--font-lineHeight-normal, 1.5);
@@ -99,7 +100,6 @@ function handleClick(event: MouseEvent) {
   padding: 0 var(--spacing-6, 1.5rem);
   font-size: 16px;
   font-weight: var(--font-fontWeight-semibold, 600);
-  border-radius: var(--radius-2xl, 1rem);
 }
 
 .n-button--xl.n-button--primary {
