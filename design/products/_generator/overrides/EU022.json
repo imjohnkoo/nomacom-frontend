@@ -1,0 +1,91 @@
+{
+  "zoneShort": "남유럽",
+  "zoneName": "남유럽 스페인·포르투갈",
+  "zoneFlags": "🇪🇸 🇵🇹",
+  "galleryVersion": "v3-EU",
+  "galleryNote": "카피 v2 + 디자인 5/19",
+  "heroTitleSmall": "🇪🇸 스페인 · 🇵🇹 포르투갈 한 번에",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "남유럽 2개국 · 무제한 · 여성 모델",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 2개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "13 항목 · EU Q12·Q13 추가",
+  "finalHint": "신뢰배지 + 두 나라 한 SIM + CS 번호",
+  "finalHeadline": "두 나라, 한 SIM.",
+  "reviewsTitle": "스페인·포르투갈로 떠난 분들",
+  "borderQ": "스페인 ↔ 포르투갈 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "마드리드 → 리스본 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.6",
+    "total": 220,
+    "asOf": "2026년 8월",
+    "rows": [
+      { "label": "무제한 (198건)", "pct": 93, "val": "4.64★" },
+      { "label": "종량제 (22건)", "pct": 95, "val": "4.77★" }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "7박9일 스페인, 포르투갈 패키지 여행하는 동안 잘 사용했습니다. 설명도 잘 돼있어 공항에서 와이파이 연결해 바로 설치, 사용가능했고, 오히려 와이파이보다 빨라 좋았습니다. 다만 국가 특성상 포르투갈에서는 스페인보다 느리다는 점 참고하시길..!",
+        "initial": "S",
+        "author": "ssun***",
+        "meta": "매일 1GB · 10일 · 2025년 12월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "포르투갈에 왔다가 로밍데이터가 바닥나서 바로 주문했는데 10분도 안걸려 연결 되었네요",
+        "initial": "S",
+        "author": "skyt*****",
+        "meta": "매일 2GB · 3일 · 2026년 4월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "새벽주문하고 qr코드도 바로왔아요. 지금 포르투갈 리스본인데 안터지는곳없이 팡팡 잘터지는중….",
+        "initial": "H",
+        "author": "hkki*****",
+        "meta": "종량제 20GB · 30일 · 2025년 3월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "바르셀, 세비야, 리스본, 카스카이스 여행에서 아무 문제없이 잘 쓰고 왔어요.",
+        "initial": "S",
+        "author": "syja****",
+        "meta": "매일 1GB · 15일 · 2025년 10월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "10기가 결제해서 스페인 7박 9일 다녀왔어요. 한 7기가 중반정도 쓴 듯합니다. 근데 그 중 1기가는 가족들 핫스팟 켜줬습니다.",
+        "initial": "B",
+        "author": "barb********",
+        "meta": "종량제 10GB · 30일 · 2024년 12월"
+      }
+    ],
+    "photos": [
+      { "src": "../assets/reviews/9380410731_4724084141_1.jpg", "alt": "구매자 사진 — 바르셀로나 구엘 공원", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9380410731_4673733216_1.jpg", "alt": "구매자 사진 — 리스본 트램 골목", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9380410731_4669609866_1.jpg", "alt": "구매자 사진 — 톨레도 대성당", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9350493687_4898296853_1.jpg", "alt": "구매자 사진 — 포르투갈 대서양 해안", "stars": "★★★★★" }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "이베리아 반도 전체 커버",
+    "coverageHint": "스페인 6 + 포르투갈 6 도시 · 1티어 자동 연결",
+    "mapImg": "../assets/maps/iberia-themed.svg",
+    "mapAlt": "이베리아 반도 지도 — 스페인·포르투갈",
+    "mapCap": "<b>2개국 · 현지 1티어 통신망</b> 자동 연결",
+    "pins": [
+      { "cls": " cv-pin--big", "pos": "left: 51%; top: 53%", "name": "마드리드", "labelStyle": "" },
+      { "cls": "", "pos": "left: 72%; top: 42%", "name": "바르셀로나", "labelStyle": "" },
+      { "cls": " cv-pin--right", "pos": "left: 41%; top: 72%", "name": "세비야", "labelStyle": "" },
+      { "cls": "", "pos": "left: 69%; top: 56%", "name": "발렌시아", "labelStyle": "" },
+      { "cls": "", "pos": "left: 50%; top: 74%", "name": "그라나다", "labelStyle": "" },
+      { "cls": "", "pos": "left: 48%; top: 80%", "name": "말라가", "labelStyle": " style=\"top: 8px\"" },
+      { "cls": " cv-pin--right", "pos": "left: 24%; top: 63%", "name": "리스본", "labelStyle": "" },
+      { "cls": " cv-pin--right", "pos": "left: 26%; top: 48%", "name": "포르토", "labelStyle": "" }
+    ],
+    "cards": [
+      { "flag": "🇪🇸", "name": "스페인", "cities": "<b>마드리드</b> · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가" },
+      { "flag": "🇵🇹", "name": "포르투갈", "cities": "<b>리스본</b> · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마" }
+    ]
+  }
+}

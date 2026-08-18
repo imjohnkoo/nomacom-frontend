@@ -42,3 +42,4 @@ docs/
 
 # Storage
 storage/
+design/products/_generator/.golden-out/
