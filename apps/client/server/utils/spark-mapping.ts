@@ -19,12 +19,13 @@ export interface NeutralEsimFields {
   manualCode: string; // 순수 활성화 코드
   smdpAddress: string;
   subscriberId: number;
+  ocsEsimId: number; // Spark 응답 esimId — 0 센티널 금지 (부재 시 throw → ORPHANED)
 }
 
 export function mapSparkSimInfo(simInfo: SparkSimInfo): NeutralEsimFields {
-  const { iccid, urlQrCode, activationCode, smdpServer, subscriberId } = simInfo;
+  const { iccid, urlQrCode, activationCode, smdpServer, subscriberId, esimId } = simInfo;
 
-  if (!iccid || !urlQrCode || !activationCode || !smdpServer || !subscriberId) {
+  if (!iccid || !urlQrCode || !activationCode || !smdpServer || !subscriberId || !esimId) {
     throw new Error(
       `Spark simInfo incomplete: ${JSON.stringify({
         iccid: !!iccid,
@@ -32,6 +33,7 @@ export function mapSparkSimInfo(simInfo: SparkSimInfo): NeutralEsimFields {
         activationCode: !!activationCode,
         smdpServer: !!smdpServer,
         subscriberId: !!subscriberId,
+        esimId: !!esimId,
       })}`,
     );
   }
@@ -49,5 +51,6 @@ export function mapSparkSimInfo(simInfo: SparkSimInfo): NeutralEsimFields {
     manualCode: activationCode,
     smdpAddress: smdpServer,
     subscriberId,
+    ocsEsimId: esimId,
   };
 }

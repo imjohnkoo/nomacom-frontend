@@ -8,6 +8,7 @@ const validSimInfo = {
   activationCode: 'K2-ABCDEF-GHIJKL',
   urlQrCode: 'LPA:1$consumer.e-sim.global$K2-ABCDEF-GHIJKL',
   subscriberId: 35759705,
+  esimId: 35778938,
 };
 
 describe('mapSparkSimInfo (QR 이름충돌 매핑)', () => {
@@ -46,6 +47,16 @@ describe('mapSparkSimInfo (QR 이름충돌 매핑)', () => {
     expect(() =>
       mapSparkSimInfo({ ...validSimInfo, subscriberId: 0 as never }),
     ).toThrow(/incomplete/);
+  });
+
+  it('esimId 부재 시 거부 — 0 센티널 금지 (벤더 상태조회 키 오염 방지)', () => {
+    expect(() =>
+      mapSparkSimInfo({ ...validSimInfo, esimId: undefined }),
+    ).toThrow(/incomplete/);
+  });
+
+  it('ocsEsimId 를 그대로 노출한다', () => {
+    expect(mapSparkSimInfo({ ...validSimInfo, esimId: 35778938 }).ocsEsimId).toBe(35778938);
   });
 });
 

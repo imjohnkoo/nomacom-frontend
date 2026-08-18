@@ -60,6 +60,8 @@ export const orders = pgTable('order', {
 })
 
 export const esims = pgTable('esim', {
+  // prod 실타입 BIGINT (backend 확인 2026-08-19) — Maya행 ICCID(8.9e18)가 JS Number
+  // 안전범위 밖이라 문자열로 다루기 위해 varchar 선언 유지 (postgres 암시적 캐스트)
   esimId: varchar('esimId', { length: 255 }).primaryKey(),
   apn: varchar('apn', { length: 255 }),
   tag: varchar('tag', { length: 255 }),

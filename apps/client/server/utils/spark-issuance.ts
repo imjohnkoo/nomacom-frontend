@@ -200,10 +200,10 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
         throw e
       }
 
-      // 벤더 성공 — 원장 전이 (락 TX 밖 즉시 커밋: 이후 실패해도 기록 보존)
-      const mapped = mapSparkSimInfo(simInfo)
+      // 벤더 성공 — 매핑/검증 전에 먼저 원장 전이 (락 TX 밖 즉시 커밋: 이후
+      // 매핑·fulfill 실패가 벤더 성공 기록을 지우지 못하게 — FAILED 금지 규약)
       await ledger('VENDOR_ACCEPTED', {
-        vendorRef: String(mapped.subscriberId),
+        vendorRef: simInfo?.subscriberId != null ? String(simInfo.subscriberId) : null,
         responsePayload,
       })
       await ledger('PROFILE_READY', { profilePayload: responsePayload })
@@ -224,18 +224,20 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
       }
 
       try {
+        // 매핑·검증 — 벤더 성공 이후이므로 실패 시 ORPHANED (0 센티널 금지: esimId 부재도 throw)
+        const mapped = mapSparkSimInfo(simInfo)
+
         // fulfill 단일 TX: esim PK 시퀀스 채번 → esim + spark_esim + plan + spark_plan
         const seqRows = (await tx.execute(
           sql`SELECT nextval('esim_pk_seq') AS id`,
         )) as unknown as Array<{ id: string | number }>
         const esimPk = Number(seqRows[0].id)
 
+        // tag/state 는 Maya 어휘 컬럼 — Spark행은 NULL (backend 규약: 운영 도구가
+        // tag 포맷으로 발급 경로를 판정하므로 userSimName 기입 금지)
         await tx.insert(schema.esims).values({
           esimId: String(esimPk),
           iccid: mapped.iccid,
-          apn: null,
-          tag: simInfo.userSimName ?? null,
-          state: 'AFFECTED',
           smdpAddress: mapped.smdpAddress,
           manualCode: mapped.manualCode,
           activationCode: mapped.activationCode,
@@ -246,7 +248,7 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
 
         await tx.insert(schema.sparkEsims).values({
           esimId: esimPk,
-          ocsEsimId: simInfo.esimId ?? 0,
+          ocsEsimId: mapped.ocsEsimId,
           subscriberId: mapped.subscriberId,
           iccid: mapped.iccid,
           sparkSmdpServer: mapped.smdpAddress,
