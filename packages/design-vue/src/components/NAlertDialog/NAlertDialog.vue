@@ -186,7 +186,13 @@ const open = defineModel<boolean>({ default: false })
   align-items: center;
   text-align: center;
   gap: 14px;
-  padding: 44px 24px 8px;
+  /* 상단 여백 = actions 하단 여백 (28px) — 상하 대칭 리듬 */
+  padding: 28px 24px 8px;
+}
+
+/* actions 슬롯이 없으면 body 가 마지막 요소 — 하단도 28px 로 대칭 유지 */
+.n-alert-dialog__body:last-child {
+  padding-bottom: 28px;
 }
 
 .n-alert-dialog__icon {
@@ -248,7 +254,7 @@ const open = defineModel<boolean>({ default: false })
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 14px 24px 24px;
+  padding: 14px 24px 28px;
 }
 
 .n-alert-dialog__actions > * {
