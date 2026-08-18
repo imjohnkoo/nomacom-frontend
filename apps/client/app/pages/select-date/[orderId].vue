@@ -133,10 +133,13 @@ const onSubmit = () => {
 }
 
 const onConfirm = async () => {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
   isConfirmOrderVisible.value = false
   isIssueQrCodesVisible.value = true
 
   if (!order.value) {
+    isSubmitting.value = false
     isIssueQrCodesVisible.value = false
     isNoOrderAlertVisible.value = true
     setTimeout(() => {
@@ -160,7 +163,6 @@ const onConfirm = async () => {
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
       if (activateVerified && details) {
-        isSubmitting.value = false
         isIssueQrCodesVisible.value = false
         orderStore.setSingleOrder(details[0])
 
@@ -172,8 +174,17 @@ const onConfirm = async () => {
         if (updatedOrders.details) orderStore.setOrders(updatedOrders.details)
 
         router.push(`/view/${orderId.value}`)
+      } else {
+        isSubmitting.value = false
+        isIssueQrCodesVisible.value = false
+        isNoOrderAlertVisible.value = true
+        setTimeout(() => {
+          isNoOrderAlertVisible.value = false
+          router.push(`/verify/${orderId.value}`)
+        }, 2000)
       }
     } else if (verified && cancelled) {
+      isSubmitting.value = false
       isIssueQrCodesVisible.value = false
       isCancelledOrderVisible.value = true
       setTimeout(() => {
@@ -181,6 +192,7 @@ const onConfirm = async () => {
         router.push(`/verify/${orderId.value}`)
       }, 2000)
     } else {
+      isSubmitting.value = false
       isIssueQrCodesVisible.value = false
       isNoOrderAlertVisible.value = true
       setTimeout(() => {
@@ -426,7 +438,7 @@ onMounted(() => {
       <template #actions>
         <div class="select-date-page__confirm-actions">
           <NButton variant="secondary" @click="isConfirmOrderVisible = false">뒤로</NButton>
-          <NButton variant="primary" @click="onConfirm">발급하기</NButton>
+          <NButton variant="primary" :disabled="isSubmitting" @click="onConfirm">발급하기</NButton>
         </div>
       </template>
     </NAlertDialog>
