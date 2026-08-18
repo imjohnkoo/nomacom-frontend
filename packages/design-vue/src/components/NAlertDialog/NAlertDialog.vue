@@ -5,7 +5,11 @@
         <DialogOverlay v-if="open" class="n-alert-dialog__overlay" />
       </Transition>
       <Transition name="n-alert-dialog-content">
-        <DialogContent v-if="open" class="n-alert-dialog__content">
+        <DialogContent
+          v-if="open"
+          class="n-alert-dialog__content"
+          :style="width ? { maxWidth: typeof width === 'number' ? `${width}px` : width } : undefined"
+        >
           <DialogClose v-if="closable" class="n-alert-dialog__close" aria-label="Close">
             <svg
               width="16"
@@ -106,6 +110,8 @@ export interface NAlertDialogProps {
   color?: NColor
   closable?: boolean
   modelValue?: boolean
+  /** content max-width 오버라이드 (px 숫자 또는 CSS 길이). 기본 280px */
+  width?: number | string
 }
 
 withDefaults(defineProps<NAlertDialogProps>(), {
@@ -114,6 +120,7 @@ withDefaults(defineProps<NAlertDialogProps>(), {
   color: 'info',
   closable: true,
   modelValue: undefined,
+  width: undefined,
 })
 
 defineEmits<{
