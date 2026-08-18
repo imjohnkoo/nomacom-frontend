@@ -19,8 +19,8 @@ export function normalizeName(value: string | null | undefined): string {
  *
  * 이름은 {구매자명, 수령인명} 중 하나와, 전화는 {구매자 전화, 수령인 전화} 중
  * 하나와 일치해야 통과. 선물 주문 (결제자≠수령인, backend 2026-06 CS 이력) 을
- * 커버하면서 이름만으로는 통과할 수 없게 유지. backend 52dbf65 는 군간도 OR
- * (완전 OR) 로 더 느슨함 — client 는 의도적으로 군간 AND.
+ * 커버하면서 이름만으로는 통과할 수 없게 유지. backend 52dbf65 와 동일 정책
+ * (2026-08-19 backend 세션 재검증으로 파리티 확인).
  */
 export function matchesOrderContact(
   input: { fullName: string; phoneNumber: string },
