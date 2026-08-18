@@ -1,12 +1,15 @@
 import {
   pgTable,
   bigint,
+  bigserial,
   varchar,
   timestamp,
   boolean,
   integer,
   text,
   serial,
+  jsonb,
+  numeric,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
@@ -70,6 +73,8 @@ export const esims = pgTable('esim', {
   networkStatus: varchar('networkStatus', { length: 100 }),
   serviceStatus: varchar('serviceStatus', { length: 100 }),
   activationCode: text('activationCode'),
+  // 발급 벤더 스탬프 (backend Spark Wave 1 additive) — NULL ≡ maya
+  provider: varchar('provider'),
 
   // TypeORM 기본 ManyToOne FK naming: `{relation}{ReferencedPK}` → `orderProductOrderId`
   orderId: bigint('orderProductOrderId', { mode: 'number' }).references(
@@ -111,6 +116,8 @@ export const planTypes = pgTable('plan-type', {
 export const plans = pgTable('plan', {
   planId: serial('planId').primaryKey(),
   id: varchar('id', { length: 255 }),
+  // 발급 벤더 스탬프 (backend Spark Wave 1 additive) — NULL ≡ maya
+  provider: varchar('provider'),
   isActivated: boolean('isActivated'),
   activatedAt: timestamp('activatedAt'),
   timeToBeActivatedInUTC: timestamp('timeToBeActivatedInUTC'),
@@ -135,6 +142,85 @@ export const plans = pgTable('plan', {
 
   createdAt: timestamp('createdAt').defaultNow(),
   updatedAt: timestamp('updatedAt').defaultNow(),
+})
+
+// ── Spark 벤더 원장 테이블 (backend vendor-core migration, prod 기적용) ──
+// 소유권 규약: spark_package_template / spark_plan_type 은 backend 소유 — client READ-ONLY.
+// client 가 쓰는 테이블: esim_issuance / esim / spark_esim / plan / spark_plan.
+
+// 공통 발급 원장 — 벤더 콜 1건 = 1행, FK 없음.
+// live 상태 (FAILED/ABANDONED/SUPERSEDED 외) 에 idempotency_key partial unique index
+// → 23505 = 동시 발급 진행 중 신호
+export const esimIssuance = pgTable('esim_issuance', {
+  esimIssuanceId: bigserial('esim_issuance_id', { mode: 'number' }).primaryKey(),
+  idempotencyKey: varchar('idempotency_key').notNull(), // '{productOrderId}-{unitIndex}' (0-base)
+  productOrderId: bigint('product_order_id', { mode: 'number' }),
+  planTypeId: varchar('plan_type_id'),
+  unitIndex: integer('unit_index'),
+  attempt: integer('attempt').notNull().default(1),
+  provider: varchar('provider').notNull(),
+  state: varchar('state').notNull(),
+  apiMethod: varchar('api_method'),
+  vendorRef: varchar('vendor_ref'), // spark:subscriberId
+  requestPayload: jsonb('request_payload'),
+  responsePayload: jsonb('response_payload'),
+  profilePayload: jsonb('profile_payload'),
+  statusCode: integer('status_code'),
+  errorMessage: varchar('error_message'),
+  esimId: bigint('esim_id', { mode: 'number' }),
+  planId: integer('plan_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }),
+})
+
+// 카탈로그 캐시 — backend cron 소유, client READ-ONLY
+export const sparkPackageTemplates = pgTable('spark_package_template', {
+  sparkPackageTemplateId: bigint('spark_package_template_id', { mode: 'number' }).primaryKey(),
+  templateName: varchar('template_name'),
+  dataByte: bigint('data_byte', { mode: 'number' }),
+  periodDays: integer('period_days'),
+  isRecurring: boolean('is_recurring'),
+  nbOccurrence: integer('nb_occurrence'),
+  deleted: boolean('deleted'),
+})
+
+// 상품 매핑 — backend/수동 관리, client READ-ONLY
+export const sparkPlanTypes = pgTable('spark_plan_type', {
+  sparkPlanTypeId: bigserial('spark_plan_type_id', { mode: 'number' }).primaryKey(),
+  planTypeId: varchar('plan_type_id').notNull(),
+  sparkPackageTemplateId: bigint('spark_package_template_id', { mode: 'number' }).notNull(),
+  enabled: boolean('enabled'),
+})
+
+// 발급 vendor-literal 레코드 (esim 1:1). CHECK: url_qr_code LIKE 'LPA:1$%',
+// activation_code NOT LIKE 'LPA:%' — 이름충돌 매핑 주의 (spark-mapping.ts)
+export const sparkEsims = pgTable('spark_esim', {
+  sparkEsimId: bigserial('spark_esim_id', { mode: 'number' }).primaryKey(),
+  esimId: bigint('esim_id', { mode: 'number' }).notNull(),
+  ocsEsimId: bigint('ocs_esim_id', { mode: 'number' }).notNull(),
+  subscriberId: bigint('subscriber_id', { mode: 'number' }).notNull(),
+  iccid: varchar('iccid').notNull(),
+  sparkSmdpServer: varchar('spark_smdp_server').notNull(),
+  sparkActivationCode: varchar('spark_activation_code').notNull(),
+  sparkUrlQrCode: varchar('spark_url_qr_code').notNull(),
+  userSimName: varchar('user_sim_name'),
+  confirmationCode: varchar('confirmation_code'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+})
+
+// 구매 (=recurring) 레코드 + 잔량 스냅샷 (plan 1:1)
+export const sparkPlans = pgTable('spark_plan', {
+  sparkPlanId: bigserial('spark_plan_id', { mode: 'number' }).primaryKey(),
+  planId: integer('plan_id').notNull(),
+  subscriberId: bigint('subscriber_id', { mode: 'number' }).notNull(),
+  sparkPackageTemplateId: bigint('spark_package_template_id', { mode: 'number' }).notNull(),
+  isRecurring: boolean('is_recurring').notNull().default(false),
+  firstSubsPackageId: bigint('first_subs_package_id', { mode: 'number' }),
+  recurringId: bigint('recurring_id', { mode: 'number' }), // v2 후속조회 backfill (backend 소관)
+  nbOccurrence: integer('nb_occurrence'),
+  startTimeUtc: timestamp('start_time_utc', { withTimezone: true }), // 사용자 입력 -12h
+  costEur: numeric('cost_eur'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 })
 
 export const ordersRelations = relations(orders, ({ many }) => ({

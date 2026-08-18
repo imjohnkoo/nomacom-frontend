@@ -4,6 +4,7 @@ import { useMayaApi } from '../../utils/maya-api'
 import { generateEsimTag } from '../../utils/string'
 import { createUTCDateTime, createLocalDateTime } from '../../utils/date'
 import { matchesOrderContact } from '../../utils/verification'
+import { issueSparkUnit } from '../../utils/spark-issuance'
 
 // 같은 productOrderId 에 대한 동시 발급 요청 직렬화 (더블클릭/재시도 race 방어).
 // 단일 Nitro 인스턴스 (CodeDeploy EC2 1대) 전제 — 다중 인스턴스 확장 시 DB 레벨
@@ -145,18 +146,90 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       })
     }
 
-    // 벤더 가드 (backend Spark Wave 1) — 이 엔드포인트는 Maya 발급 전용.
-    // provider 가 NULL 이면 maya 로 간주, 그 외 벤더 상품이 들어오면 발급 사고 방지 위해 거부
-    if (planType.provider != null && planType.provider !== 'maya') {
+    // 벤더 라우팅 (backend Spark Wave 1) — NULL ≡ maya, 'spark' 는 네이티브 Spark
+    // 발급 경로, 그 외 미지 벤더는 발급 사고 방지 위해 409 fail-closed
+    const provider = planType.provider ?? 'maya'
+    if (provider !== 'maya' && provider !== 'spark') {
       throw createError({
         statusCode: 409,
-        message: `Plan type is routed to provider '${planType.provider}' and cannot be issued here`,
+        message: `Plan type is routed to provider '${provider}' and cannot be issued here`,
       })
     }
 
-    const mayaApi = useMayaApi()
     const quantity = order.quantity || 1
     const existingCount = order.esims?.length || 0
+
+    // 발급 완료 후 최신 상태 재조회 → 응답 (Maya/Spark 공용)
+    const buildResponse = async (): Promise<ActivateOrderResponse> => {
+      const updatedOrder = await db.query.orders.findFirst({
+        where: eq(schema.orders.productOrderId, body.productOrderId),
+        with: {
+          esims: true,
+        },
+      })
+
+      if (!updatedOrder) {
+        throw createError({
+          statusCode: 500,
+          message: 'Failed to retrieve updated order',
+        })
+      }
+
+      const esimResponses: EsimResponse[] = (updatedOrder.esims || []).map((esim) => ({
+        apn: esim.apn || '',
+        manualCode: esim.manualCode || '',
+        smdpAddress: esim.smdpAddress || '',
+        networkStatus: esim.networkStatus || '',
+        serviceStatus: esim.serviceStatus || '',
+        activationCode: esim.activationCode || '',
+      }))
+
+      const orderDetail: OrderDetails = {
+        orderId: updatedOrder.orderId || 0,
+        productOrderId: updatedOrder.productOrderId,
+        productName: updatedOrder.productName || '',
+        placeOrderDate: updatedOrder.placeOrderDate || new Date(),
+        quantity: updatedOrder.quantity || 0,
+        totalPaymentAmount: updatedOrder.totalPaymentAmount || 0,
+        optionManageCode: updatedOrder.optionManageCode || '',
+        receiverName: updatedOrder.receiverName || '',
+        receiverPhoneNumber: updatedOrder.receiverPhoneNumber || '',
+        planNameKr: planType.planNameKr || '',
+        planDataTypeKr: planType.planDataTypeKr || '',
+        planDataLimitKr: planType.planDataLimitKr || '',
+        planDataDuration: planType.planDataDuration || 0,
+        planCountriesKr: planType.planCountriesKr || [],
+        planCountriesEng: planType.planCountriesEng || [],
+        planCountriesIso: planType.planCountriesIso || [],
+        timeZones: planType.timeZones || [],
+        planTypeId: planType.planTypeId,
+        esims: esimResponses,
+      }
+
+      return {
+        verified: true,
+        cancelled: false,
+        details: [orderDetail],
+      }
+    }
+
+    if (provider === 'spark') {
+      // Spark 경로 — 원장·동시성 규약 포함 유닛 발급 (utils/spark-issuance.ts)
+      for (let i = existingCount; i < quantity; i++) {
+        await issueSparkUnit({
+          order,
+          unitIndex: i,
+          planTypeId: planType.planTypeId,
+          startDate: body.startDate,
+          startTimeZone: body.startTimeZone,
+          startCountry: body.startCountry,
+          startTime: body.startTime,
+        })
+      }
+      return buildResponse()
+    }
+
+    const mayaApi = useMayaApi()
 
     // 부족분만 이어서 발급 (resume) — 이전 시도가 중간 실패로 부분 발급 상태여도
     // 재시도로 정상 완료 가능. 이미 전량 발급된 경우 루프를 건너뛰고 현재 상태 반환
@@ -214,58 +287,7 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       })
     }
 
-    // Return updated order with eSIMs
-    const updatedOrder = await db.query.orders.findFirst({
-      where: eq(schema.orders.productOrderId, body.productOrderId),
-      with: {
-        esims: true,
-      },
-    })
-
-    if (!updatedOrder) {
-      throw createError({
-        statusCode: 500,
-        message: 'Failed to retrieve updated order',
-      })
-    }
-
-    // Build response
-    const esimResponses: EsimResponse[] = (updatedOrder.esims || []).map((esim) => ({
-      apn: esim.apn || '',
-      manualCode: esim.manualCode || '',
-      smdpAddress: esim.smdpAddress || '',
-      networkStatus: esim.networkStatus || '',
-      serviceStatus: esim.serviceStatus || '',
-      activationCode: esim.activationCode || '',
-    }))
-
-    const orderDetail: OrderDetails = {
-      orderId: updatedOrder.orderId || 0,
-      productOrderId: updatedOrder.productOrderId,
-      productName: updatedOrder.productName || '',
-      placeOrderDate: updatedOrder.placeOrderDate || new Date(),
-      quantity: updatedOrder.quantity || 0,
-      totalPaymentAmount: updatedOrder.totalPaymentAmount || 0,
-      optionManageCode: updatedOrder.optionManageCode || '',
-      receiverName: updatedOrder.receiverName || '',
-      receiverPhoneNumber: updatedOrder.receiverPhoneNumber || '',
-      planNameKr: planType.planNameKr || '',
-      planDataTypeKr: planType.planDataTypeKr || '',
-      planDataLimitKr: planType.planDataLimitKr || '',
-      planDataDuration: planType.planDataDuration || 0,
-      planCountriesKr: planType.planCountriesKr || [],
-      planCountriesEng: planType.planCountriesEng || [],
-      planCountriesIso: planType.planCountriesIso || [],
-      timeZones: planType.timeZones || [],
-      planTypeId: planType.planTypeId,
-      esims: esimResponses,
-    }
-
-    return {
-      verified: true,
-      cancelled: false,
-      details: [orderDetail],
-    }
+    return buildResponse()
   } finally {
     inFlightActivations.delete(body.productOrderId)
     releaseLock()
