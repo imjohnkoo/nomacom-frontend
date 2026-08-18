@@ -460,6 +460,14 @@ onMounted(() => {
         <p>
           <b>발급 후에는 취소와 환불이 불가해요.</b><br />
           사용하실 기기가 eSIM 지원 기기인지 발급 전에 꼭 확인해 주세요.
+          <a
+            class="select-date-page__confirm-policy-link"
+            href="/supported-devices"
+            target="_blank"
+            rel="noopener"
+          >
+            지원 기기 목록 보기
+          </a>
         </p>
       </div>
       <div class="select-date-page__confirm-agree">
@@ -647,6 +655,15 @@ onMounted(() => {
   flex-shrink: 0;
   margin-top: 1px;
   color: #dc2626;
+}
+
+.select-date-page__confirm-policy-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-weight: 600;
+  color: #6239ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .select-date-page__confirm-policy b {

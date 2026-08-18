@@ -2,6 +2,15 @@
 // eSIM 지원 기기 목록 — 근거: docs/data/2026-08-19-esim-supported-devices-kr.md (웹검색 검증본)
 import { NPageHeading, NInfoChip } from '@imjohnkoo/design-vue'
 
+// 아코디언 상태 — 복수 열림 허용, 기본 전부 접힘 (view 페이지 multi-QR 패턴)
+const openKeys = ref<string[]>([])
+const isOpen = (key: string) => openKeys.value.includes(key)
+const toggle = (key: string) => {
+  openKeys.value = isOpen(key)
+    ? openKeys.value.filter((k) => k !== key)
+    : [...openKeys.value, key]
+}
+
 interface DeviceGroup {
   brand: string
   models: string[]
@@ -130,13 +139,31 @@ const unsupportedItems: UnsupportedItem[] = [
       </h2>
       <ul class="devices-page__groups">
         <li v-for="group in supportedGroups" :key="group.brand" class="devices-page__card">
-          <p class="devices-page__brand">{{ group.brand }}</p>
-          <ul class="devices-page__models">
-            <li v-for="model in group.models" :key="model" class="devices-page__model">
-              {{ model }}
-            </li>
-          </ul>
-          <p v-if="group.note" class="devices-page__note">{{ group.note }}</p>
+          <button class="devices-page__card-head" type="button" @click="toggle(group.brand)">
+            <span class="devices-page__brand">{{ group.brand }}</span>
+            <svg
+              class="devices-page__chev"
+              :class="{ 'devices-page__chev--open': isOpen(group.brand) }"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          <div v-show="isOpen(group.brand)" class="devices-page__card-body">
+            <ul class="devices-page__models">
+              <li v-for="model in group.models" :key="model" class="devices-page__model">
+                {{ model }}
+              </li>
+            </ul>
+            <p v-if="group.note" class="devices-page__note">{{ group.note }}</p>
+          </div>
         </li>
       </ul>
     </section>
@@ -153,8 +180,26 @@ const unsupportedItems: UnsupportedItem[] = [
           :key="item.title"
           class="devices-page__card devices-page__card--no"
         >
-          <p class="devices-page__brand devices-page__brand--no">{{ item.title }}</p>
-          <p class="devices-page__desc">{{ item.description }}</p>
+          <button class="devices-page__card-head" type="button" @click="toggle(item.title)">
+            <span class="devices-page__brand devices-page__brand--no">{{ item.title }}</span>
+            <svg
+              class="devices-page__chev devices-page__chev--no"
+              :class="{ 'devices-page__chev--open': isOpen(item.title) }"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          <div v-show="isOpen(item.title)" class="devices-page__card-body">
+            <p class="devices-page__desc">{{ item.description }}</p>
+          </div>
         </li>
       </ul>
     </section>
@@ -221,11 +266,41 @@ const unsupportedItems: UnsupportedItem[] = [
 .devices-page__card {
   background: #f9fafb;
   border-radius: 14px;
-  padding: 16px;
 }
 
 .devices-page__card--no {
   background: #fef2f2;
+}
+
+.devices-page__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.devices-page__card-body {
+  padding: 0 16px 16px;
+}
+
+.devices-page__chev {
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: transform 180ms ease;
+}
+
+.devices-page__chev--no {
+  color: #f0a3a3;
+}
+
+.devices-page__chev--open {
+  transform: rotate(180deg);
 }
 
 .devices-page__brand {
@@ -243,7 +318,7 @@ const unsupportedItems: UnsupportedItem[] = [
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 10px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -267,7 +342,7 @@ const unsupportedItems: UnsupportedItem[] = [
 }
 
 .devices-page__desc {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: 13px;
   color: #6b7280;
   line-height: 1.6;
