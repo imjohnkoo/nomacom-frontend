@@ -115,30 +115,31 @@ export function useSparkApi() {
     return call('listSubscriber', { accountId })
   }
 
-  /** recurring (일일형 U 계열) 패키지 부여 — subscriber 중첩 파라미터 */
+  /**
+   * recurring (일일형 U 계열) 패키지 부여 — subscriber 중첩 파라미터.
+   * first-use 모드 (john 결정 2026-08-19): activationAtFirstUse=true, 이 모드에선
+   * startTimeUTC 전달 금지 (문서 명시). 첫 패키지가 즉시 생성되어 응답에 포함됨
+   */
   async function affectRecurringPackage(params: {
     packageTemplateId: number
     subscriberId: number
-    startTimeUTC: string // 'YYYY-MM-DDTHH:mm:ss'
   }): Promise<{ packageInfo?: Record<string, unknown> | null; simInfo: SparkSimInfo }> {
-    // start 가 now+12h 밖이면 packageInfo 부재 — 호출부는 null 내성 필수
     return call('affectRecurringPackageToSubscriber', {
       packageTemplateId: params.packageTemplateId,
       subscriber: { subscriberId: params.subscriberId },
-      startTimeUTC: params.startTimeUTC,
-      activationAtFirstUse: false,
+      activationAtFirstUse: true,
     })
   }
 
-  /** 비recurring (총량형 L 계열) 패키지 부여 — 응답이 flat simInfo (래핑 없음) */
-  async function affectPackage(params: {
-    packageTemplateId: number
-    activePeriod: { start: string; end: string }
-  }): Promise<SparkSimInfo> {
+  /**
+   * 비recurring (총량형 L 계열) 패키지 부여 — 응답이 flat simInfo (래핑 없음).
+   * first-use 모드: activePeriod/validityPeriod 생략 = start 는 첫 사용 성공 시각,
+   * end 는 첫 사용 + 템플릿 validity 일수
+   */
+  async function affectPackage(params: { packageTemplateId: number }): Promise<SparkSimInfo> {
     return call('affectPackageToSubscriber', {
       packageTemplateId: params.packageTemplateId,
       accountForSubs: accountId,
-      activePeriod: params.activePeriod,
     })
   }
 

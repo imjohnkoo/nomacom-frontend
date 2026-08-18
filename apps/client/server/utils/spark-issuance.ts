@@ -27,13 +27,13 @@ export interface SparkIssueParams {
   order: Order
   unitIndex: number // 0-base — 기존 발급 수부터 (resume 정합)
   planTypeId: string
+  // first-use 모드 (john 결정 2026-08-19): 발급 파라미터에 시각이 들어가지 않음.
+  // 아래 날짜/시각 필드는 "고객 신고 여행일" 참고 기록 전용 — 실제 활성 시각의
+  // 사실원장은 usage sync 의 cur_ts_activation_utc
   startDate: string // YYYY-MM-DD (사용자 선택일)
   startTimeZone: string
   startCountry: string
-  // 사용자가 선택한 시각 (0 = 자정). Spark 유효 시각 = 이 값 − 12h (backend 동일식:
-  // createUTCDateTime(startDate, startTime − 12, tz)) — 기록·계산 일치를 위해
-  // plan.startTimeEntered 에도 이 값을 그대로 기록
-  startTime: number
+  startTime: number // 사용자 선택 시각 (현 UI 는 자정 = 0)
 }
 
 interface ResolvedTemplate {
@@ -69,11 +69,6 @@ export async function resolveSparkTemplate(planTypeId: string): Promise<Resolved
   }
 }
 
-/** 'YYYY-MM-DDTHH:mm:ss' (타임존 표기 없는 UTC — Spark transport 형식) */
-function toSparkUTCString(d: Date): string {
-  return d.toISOString().slice(0, 19)
-}
-
 function maskedRequestPayload(params: SparkIssueParams, templateId: number) {
   // PII (수취인/구매자) 는 원장에 넣지 않음 — 발급 파라미터만
   return {
@@ -100,10 +95,10 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
     })
   }
 
-  // Spark 시각 규약 (backend 동일식): 사용자 입력 시각 −12h
-  const startUTC = createUTCDateTime(
+  // 참고 기록용 — 고객 신고 여행일 (선택일 현지 자정, 버퍼 없음). 발급 파라미터 아님
+  const reportedStartUTC = createUTCDateTime(
     params.startDate,
-    params.startTime - 12,
+    params.startTime,
     params.startTimeZone,
   )
   const method = template.isRecurring
@@ -188,27 +183,18 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
       let packageInfo: Record<string, unknown> | null = null
       try {
         if (template.isRecurring) {
+          // first-use: 첫 패키지 즉시 생성 — packageInfo 가 응답에 포함됨 (null 내성은 유지)
           const res = await spark.affectRecurringPackage({
             packageTemplateId: template.templateId,
             subscriberId: pick.subscriberId,
-            startTimeUTC: toSparkUTCString(startUTC),
           })
-          // start 가 now+12h 밖이면 packageInfo 부재 — null 내성
           simInfo = res.simInfo
           packageInfo = res.packageInfo ?? null
           responsePayload = res
         } else {
-          const periodDays = template.periodDays ?? 0
-          if (periodDays <= 0) {
-            throw createError({
-              statusCode: 500,
-              message: `Spark template ${template.templateId} has no periodDays`,
-            })
-          }
-          const end = new Date(startUTC.getTime() + periodDays * 24 * 3600 * 1000)
+          // first-use: activePeriod 생략 — 첫 사용 시각부터 템플릿 validity 일수
           const res = await spark.affectPackage({
             packageTemplateId: template.templateId,
-            activePeriod: { start: toSparkUTCString(startUTC), end: toSparkUTCString(end) },
           })
           simInfo = res // flat simInfo (래핑 없음)
           responsePayload = res
@@ -298,10 +284,11 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
             startTimeZoneEntered: params.startTimeZone,
             startCountryEntered: params.startCountry,
             dataQuotaBytes,
-            timeToBeActivatedInUTC: startUTC, // 사용자 입력 −12h
+            // 참고 기록 (고객 신고 여행일) — first-use 라 실제 활성 시각은 usage sync 가 원장
+            timeToBeActivatedInUTC: reportedStartUTC,
             timeToBeActivatedInLocal: createLocalDateTime(
               params.startDate,
-              params.startTime - 12,
+              params.startTime,
               params.startTimeZone,
             ),
           })
@@ -314,7 +301,7 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
           sparkPackageTemplateId: template.templateId,
           isRecurring: template.isRecurring,
           firstSubsPackageId: simInfo.subsPackageId ?? null,
-          startTimeUtc: startUTC,
+          startTimeUtc: reportedStartUTC,
           costEur,
         })
 
