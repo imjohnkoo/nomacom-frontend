@@ -9,6 +9,7 @@ import {
   NDurationCalendar,
   NBottomSheet,
   NButton,
+  NCheckbox,
   NAlertDialog,
   NLoaderDialog,
 } from '@imjohnkoo/design-vue'
@@ -44,6 +45,7 @@ const errors = ref<{ country?: string; date?: string }>({})
 const isCountrySheetOpen = ref(false)
 const isDateSheetOpen = ref(false)
 const isSubmitting = ref(false)
+const isPolicyAgreed = ref(false)
 const isIssueQrCodesVisible = ref(false)
 const isNoOrderAlertVisible = ref(false)
 const isCancelledOrderVisible = ref(false)
@@ -122,6 +124,7 @@ const onSubmit = () => {
       startCountry: selectedCountry.value,
     }
     orderStore.setSingleOrder(updatedOrder)
+    isPolicyAgreed.value = false
     isConfirmOrderVisible.value = true
   } else {
     isNoOrderAlertVisible.value = true
@@ -133,7 +136,7 @@ const onSubmit = () => {
 }
 
 const onConfirm = async () => {
-  if (isSubmitting.value) return
+  if (isSubmitting.value || !isPolicyAgreed.value) return
   isSubmitting.value = true
   isConfirmOrderVisible.value = false
   isIssueQrCodesVisible.value = true
@@ -435,10 +438,25 @@ onMounted(() => {
           <span>수량</span><b>{{ order.quantity }}개</b>
         </div>
       </div>
+      <div class="select-date-page__confirm-policy">
+        <p>
+          <b>발급 후에는 취소와 환불이 불가해요.</b><br />
+          사용하실 기기가 eSIM 지원 기기인지 발급 전에 꼭 확인해 주세요.
+        </p>
+      </div>
+      <div class="select-date-page__confirm-agree">
+        <NCheckbox v-model="isPolicyAgreed" label="위 내용을 확인했고 동의해요" />
+      </div>
       <template #actions>
         <div class="select-date-page__confirm-actions">
           <NButton variant="secondary" @click="isConfirmOrderVisible = false">뒤로</NButton>
-          <NButton variant="primary" :disabled="isSubmitting" @click="onConfirm">발급하기</NButton>
+          <NButton
+            variant="primary"
+            :disabled="isSubmitting || !isPolicyAgreed"
+            @click="onConfirm"
+          >
+            발급하기
+          </NButton>
         </div>
       </template>
     </NAlertDialog>
@@ -590,6 +608,32 @@ onMounted(() => {
 .select-date-page__confirm-row b {
   font-weight: 600;
   color: #111827;
+}
+
+.select-date-page__confirm-policy {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #fef2f2;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #6b7280;
+  text-align: left;
+}
+
+.select-date-page__confirm-policy b {
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.select-date-page__confirm-agree {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 13px;
 }
 
 .select-date-page__confirm-actions {
