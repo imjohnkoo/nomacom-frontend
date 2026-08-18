@@ -440,6 +440,23 @@ onMounted(() => {
         </div>
       </div>
       <div class="select-date-page__confirm-policy">
+        <svg
+          class="select-date-page__confirm-policy-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
         <p>
           <b>발급 후에는 취소와 환불이 불가해요.</b><br />
           사용하실 기기가 eSIM 지원 기기인지 발급 전에 꼭 확인해 주세요.
@@ -612,6 +629,9 @@ onMounted(() => {
 }
 
 .select-date-page__confirm-policy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   width: 100%;
   margin-top: 10px;
   padding: 12px 14px;
@@ -621,6 +641,12 @@ onMounted(() => {
   line-height: 1.55;
   color: #6b7280;
   text-align: left;
+}
+
+.select-date-page__confirm-policy-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #dc2626;
 }
 
 .select-date-page__confirm-policy b {
