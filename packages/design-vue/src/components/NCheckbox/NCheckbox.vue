@@ -40,11 +40,12 @@ function handleUpdate(value: boolean | 'indeterminate') {
       { 'n-checkbox--disabled': disabled },
     ]"
   >
+    <!-- reka-ui v2: CheckboxRoot 는 checked 가 아닌 modelValue API 사용 -->
     <CheckboxRoot
-      :checked="checkedState"
+      :model-value="checkedState"
       :disabled="disabled"
       class="n-checkbox__control"
-      @update:checked="handleUpdate"
+      @update:model-value="handleUpdate"
     >
       <CheckboxIndicator class="n-checkbox__indicator">
         <svg
