@@ -30,13 +30,18 @@ export interface SparkIssueParams {
   startDate: string // YYYY-MM-DD (사용자 선택일)
   startTimeZone: string
   startCountry: string
-  startTime: number // 사용자 입력값 (원본 기록용 — Spark 시각 계산에는 미사용)
+  // 사용자가 선택한 시각 (0 = 자정). Spark 유효 시각 = 이 값 − 12h (backend 동일식:
+  // createUTCDateTime(startDate, startTime − 12, tz)) — 기록·계산 일치를 위해
+  // plan.startTimeEntered 에도 이 값을 그대로 기록
+  startTime: number
 }
 
 interface ResolvedTemplate {
   templateId: number
   isRecurring: boolean
   periodDays: number | null
+  dataByte: number | null
+  costEur: string | null
 }
 
 /** plan-type → spark_plan_type (enabled) → spark_package_template resolve. 매핑 없으면 null (벤더 콜 전 단락) */
@@ -59,6 +64,8 @@ export async function resolveSparkTemplate(planTypeId: string): Promise<Resolved
     templateId: template.sparkPackageTemplateId,
     isRecurring: template.isRecurring === true,
     periodDays: template.periodDays,
+    dataByte: template.dataByte,
+    costEur: template.costEur,
   }
 }
 
@@ -93,19 +100,31 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
     })
   }
 
-  // Spark 시각 규약: 사용자 입력 (선택일 현지 자정) −12h
-  const startUTC = createUTCDateTime(params.startDate, -12, params.startTimeZone)
+  // Spark 시각 규약 (backend 동일식): 사용자 입력 시각 −12h
+  const startUTC = createUTCDateTime(
+    params.startDate,
+    params.startTime - 12,
+    params.startTimeZone,
+  )
   const method = template.isRecurring
     ? 'affectRecurringPackageToSubscriber'
     : 'affectPackageToSubscriber'
 
   // ── 원장: 벤더 콜 전 REQUESTED (락 TX 밖 즉시 커밋) ──
+  // attempt = 동일 idempotency_key 의 기존 행 수 + 1 (시도 이력 가시화 — backend 동일)
+  const priorRows = await db
+    .select({ n: sql<number>`count(*)` })
+    .from(schema.esimIssuance)
+    .where(eq(schema.esimIssuance.idempotencyKey, idempotencyKey))
+  const attempt = Number(priorRows[0]?.n ?? 0) + 1
+
   let issuanceId: number
   try {
     const inserted = await db
       .insert(schema.esimIssuance)
       .values({
         idempotencyKey,
+        attempt,
         productOrderId: order.productOrderId,
         planTypeId: params.planTypeId,
         unitIndex,
@@ -137,13 +156,15 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
 
   try {
     // ── 발급 유닛 전체를 advisory xact lock 으로 직렬화 ──
-    await db.transaction(async (tx) => {
+    const fulfilled = await db.transaction(async (tx) => {
       await tx.execute(sql`SET LOCAL lock_timeout = '15s'`)
       await tx.execute(sql`SELECT pg_advisory_xact_lock(${LOCK_CLASS}, ${spark.accountId})`)
 
       // pick: FREE 후보 순회 + spark_esim 기배정 필터 (첫 건 고정 금지)
       const { subscriberList } = await spark.listSubscribers()
-      const freeCandidates = (subscriberList ?? []).filter((s) => s.sim?.status === 'FREE')
+      const freeCandidates = (subscriberList ?? []).filter(
+        (s) => String(s.sim?.status ?? '').toUpperCase() === 'FREE',
+      )
       if (freeCandidates.length === 0) {
         throw createError({ statusCode: 503, message: 'No FREE Spark subscriber available' })
       }
@@ -164,6 +185,7 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
       // affect: 벤더 쓰기 콜 — timeout 이어도 재시도 금지 (이중 부여 위험)
       let simInfo: SparkSimInfo
       let responsePayload: unknown
+      let packageInfo: Record<string, unknown> | null = null
       try {
         if (template.isRecurring) {
           const res = await spark.affectRecurringPackage({
@@ -173,6 +195,7 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
           })
           // start 가 now+12h 밖이면 packageInfo 부재 — null 내성
           simInfo = res.simInfo
+          packageInfo = res.packageInfo ?? null
           responsePayload = res
         } else {
           const periodDays = template.periodDays ?? 0
@@ -257,6 +280,12 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
           userSimName: simInfo.userSimName ?? null,
         })
 
+        // 잔량/원가 즉시 기입 — packageInfo (recurring, 있을 때만) 우선, 카탈로그 캐시 fallback
+        const pckDataByte = Number(packageInfo?.pckdatabyte ?? NaN)
+        const dataQuotaBytes = Number.isFinite(pckDataByte) ? pckDataByte : template.dataByte
+        const resellerCost = packageInfo?.resellerCost ?? packageInfo?.cost
+        const costEur = resellerCost != null ? String(resellerCost) : template.costEur
+
         const planRows = await tx
           .insert(schema.plans)
           .values({
@@ -268,10 +297,11 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
             startTimeEntered: params.startTime,
             startTimeZoneEntered: params.startTimeZone,
             startCountryEntered: params.startCountry,
+            dataQuotaBytes,
             timeToBeActivatedInUTC: startUTC, // 사용자 입력 −12h
             timeToBeActivatedInLocal: createLocalDateTime(
               params.startDate,
-              -12,
+              params.startTime - 12,
               params.startTimeZone,
             ),
           })
@@ -285,10 +315,10 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
           isRecurring: template.isRecurring,
           firstSubsPackageId: simInfo.subsPackageId ?? null,
           startTimeUtc: startUTC,
+          costEur,
         })
 
-        // LINKED (soft-ref 기록)
-        await ledger('LINKED', { esimId: esimPk, planId })
+        return { esimPk, planId }
       } catch (e) {
         // 벤더 성공 후 fulfill 실패 — FAILED 금지, 수동 종결 대상
         await ledger('ORPHANED', {
@@ -297,6 +327,10 @@ export async function issueSparkUnit(params: SparkIssueParams): Promise<void> {
         throw e
       }
     })
+
+    // LINKED 는 fulfill TX 커밋 완료 후에만 기록 — 커밋 전 기록하면 크래시 시
+    // "LINKED 인데 row 없음" 원장 신뢰성 역전 (backend markLinked 순서와 동일)
+    await ledger('LINKED', { esimId: fulfilled.esimPk, planId: fulfilled.planId })
   } catch (e) {
     // REQUESTED 로 남아 있는 미전이 원장 (락 대기 timeout 등 affect 이전 실패) 정리
     const row = await db.query.esimIssuance.findFirst({

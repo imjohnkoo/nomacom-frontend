@@ -27,10 +27,16 @@ describe('mapSparkSimInfo (QR 이름충돌 매핑)', () => {
     expect(m.smdpAddress).toBe('consumer.e-sim.global');
   });
 
-  it('urlQrCode 가 LPA:1$ 로 시작하지 않으면 거부', () => {
+  it('urlQrCode 가 smdpServer+activationCode 조립과 일치하지 않으면 거부', () => {
     expect(() =>
       mapSparkSimInfo({ ...validSimInfo, urlQrCode: 'K2-ABCDEF-GHIJKL' }),
-    ).toThrow(/LPA/);
+    ).toThrow(/does not assemble/);
+    expect(() =>
+      mapSparkSimInfo({
+        ...validSimInfo,
+        urlQrCode: 'LPA:1$other-server.example$K2-ABCDEF-GHIJKL',
+      }),
+    ).toThrow(/does not assemble/);
   });
 
   it('Spark activationCode 에 LPA 프리픽스가 있으면 매핑 뒤집힘으로 판단하고 거부', () => {

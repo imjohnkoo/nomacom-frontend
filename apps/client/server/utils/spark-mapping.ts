@@ -38,11 +38,14 @@ export function mapSparkSimInfo(simInfo: SparkSimInfo): NeutralEsimFields {
     );
   }
 
-  if (!urlQrCode.startsWith('LPA:1$')) {
-    throw new Error(`Spark urlQrCode is not an LPA string: ${urlQrCode.slice(0, 12)}...`);
-  }
   if (activationCode.startsWith('LPA:')) {
     throw new Error('Spark activationCode unexpectedly contains LPA prefix — mapping mismatch');
+  }
+  // LPA 전체 조립 일치 — 필드 스왑/오배선 검출 (backend 동일 assert)
+  if (urlQrCode !== `LPA:1$${smdpServer}$${activationCode}`) {
+    throw new Error(
+      `Spark urlQrCode does not assemble from smdpServer+activationCode: ${urlQrCode.slice(0, 20)}...`,
+    );
   }
 
   return {

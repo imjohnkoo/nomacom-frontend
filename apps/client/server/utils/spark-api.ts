@@ -76,7 +76,7 @@ export function useSparkApi() {
     params: Record<string, unknown>,
     opts: { v2?: boolean } = {},
   ): Promise<T> {
-    const base = opts.v2 ? endpoint!.replace('/v1', '/v2') : endpoint!
+    const base = opts.v2 ? endpoint!.replace(/\/v1$/, '/v2') : endpoint!
     const url = `${base}?token=${token}`
 
     let res: Response
@@ -85,6 +85,8 @@ export function useSparkApi() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [method]: params }),
+        // 벤더 행 (hang) 시 advisory lock 점유 방지
+        signal: AbortSignal.timeout(30_000),
       })
     } catch (e) {
       // 네트워크 단 실패 — 벤더 도달 전으로 간주 가능하나 확신 불가하므로 terminal 처리

@@ -1,16 +1,13 @@
 <script setup lang="ts">
 // 랜딩 안내 — 발급 흐름은 주문별 링크 (/verify/{orderId}) 로만 진입.
 // 직접 접속한 방문자에게 이용 방법을 안내한다.
+import { NLogo } from '@imjohnkoo/design-vue'
 </script>
 
 <template>
   <div class="landing-page">
     <div class="landing-page__card">
-      <img
-        src="~/assets/icons/esimmany-logo.png"
-        alt="eSIM마니"
-        class="landing-page__logo"
-      />
+      <NLogo variant="kor" size="lg" aria-label="eSIM마니" />
       <h1 class="landing-page__title">
         eSIM 발급은<br />
         주문 안내 링크로 접속해 주세요
@@ -65,11 +62,6 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-}
-
-.landing-page__logo {
-  height: 64px;
-  object-fit: contain;
 }
 
 .landing-page__title {

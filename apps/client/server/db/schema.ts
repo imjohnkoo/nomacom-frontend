@@ -183,6 +183,7 @@ export const sparkPackageTemplates = pgTable('spark_package_template', {
   periodDays: integer('period_days'),
   isRecurring: boolean('is_recurring'),
   nbOccurrence: integer('nb_occurrence'),
+  costEur: numeric('cost_eur'),
   deleted: boolean('deleted'),
 })
 

@@ -120,6 +120,19 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       })
     }
 
+    // 취소/클레임 주문 발급 가드 — API 직접 호출로 취소 주문이 발급되는 것 차단
+    // (backend 와 공통 반영, 원가 손실 방지)
+    if (
+      order.lastChangedType === 'CLAIM_REQUESTED' ||
+      order.lastChangedType === 'CLAIM_COMPLETED' ||
+      order.lastChangedType?.startsWith('CANCEL')
+    ) {
+      throw createError({
+        statusCode: 409,
+        message: 'Order is cancelled or under claim — issuance blocked',
+      })
+    }
+
     // 주문 연락처 대조 (군간 AND + 군내 OR) — productOrderId 만으로 타인 주문의
     // 발급 트리거 + activationCode 조회 차단
     if (
@@ -214,7 +227,9 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
     }
 
     if (provider === 'spark') {
-      // Spark 경로 — 원장·동시성 규약 포함 유닛 발급 (utils/spark-issuance.ts)
+      // Spark 경로 — 원장·동시성 규약 포함 유닛 발급 (utils/spark-issuance.ts).
+      // UI 는 날짜만 받는 사양 (자정 고정) — body.startTime (-24, Maya 사전 활성화
+      // 버퍼) 은 Maya 전용 규약이므로 Spark 에는 자정 (0) 을 명시 전달
       for (let i = existingCount; i < quantity; i++) {
         await issueSparkUnit({
           order,
@@ -223,7 +238,7 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
           startDate: body.startDate,
           startTimeZone: body.startTimeZone,
           startCountry: body.startCountry,
-          startTime: body.startTime,
+          startTime: 0,
         })
       }
       return buildResponse()
