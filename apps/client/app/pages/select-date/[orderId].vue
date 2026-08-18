@@ -458,7 +458,7 @@ onMounted(() => {
           <line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
         <p>
-          <b>발급 후에는 취소와 환불이 불가해요.</b><br />
+          <b>발급 후에는 취소와 환불이 불가해요.</b>
           사용하실 기기가 eSIM 지원 기기인지 발급 전에 꼭 확인해 주세요.
           <a
             class="select-date-page__confirm-policy-link"
@@ -665,6 +665,8 @@ onMounted(() => {
 }
 
 .select-date-page__confirm-policy b {
+  display: block;
+  margin-bottom: 6px;
   font-weight: 600;
   color: #dc2626;
 }
