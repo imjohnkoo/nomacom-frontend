@@ -21,6 +21,8 @@ const STATIC_ORIGINS = [
   'http://localhost:19006',
   // prod (CloudFront — A-4 결과)
   'https://d3un5i1lmp1eem.cloudfront.net',
+  // prod 커스텀 도메인 (app.esimmany.com 전환 대비 — same-origin fetch 도 Origin 헤더가 붙음)
+  'https://app.esimmany.com',
 ]
 
 /** Expo 네이티브 dev 의 origin 패턴 — exp:// 또는 http://192.168.x.x:8081 등 LAN IP */
