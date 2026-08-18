@@ -3,7 +3,7 @@ import { useDB, schema } from '../../db'
 import { useMayaApi } from '../../utils/maya-api'
 import { generateEsimTag } from '../../utils/string'
 import { createUTCDateTime, createLocalDateTime } from '../../utils/date'
-import { matchesReceiver } from '../../utils/verification'
+import { matchesOrderContact } from '../../utils/verification'
 
 // 같은 productOrderId 에 대한 동시 발급 요청 직렬화 (더블클릭/재시도 race 방어).
 // 단일 Nitro 인스턴스 (CodeDeploy EC2 1대) 전제 — 다중 인스턴스 확장 시 DB 레벨
@@ -119,11 +119,12 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
       })
     }
 
-    // 수신자 대조 — productOrderId 만으로 타인 주문의 발급 트리거 + activationCode 조회 차단
+    // 주문 연락처 대조 (군간 AND + 군내 OR) — productOrderId 만으로 타인 주문의
+    // 발급 트리거 + activationCode 조회 차단
     if (
-      !matchesReceiver(
+      !matchesOrderContact(
         { fullName: body.receiverName, phoneNumber: body.receiverPhoneNumber },
-        { receiverName: order.receiverName, receiverPhoneNumber: order.receiverPhoneNumber },
+        order,
       )
     ) {
       throw createError({

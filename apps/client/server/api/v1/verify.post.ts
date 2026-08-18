@@ -1,6 +1,6 @@
 import { eq, inArray } from 'drizzle-orm'
 import { useDB, schema } from '../../db'
-import { matchesReceiver } from '../../utils/verification'
+import { matchesOrderContact } from '../../utils/verification'
 
 interface VerifyOrderRequest {
   fullName: string
@@ -74,16 +74,14 @@ export default defineEventHandler(async (event): Promise<VerifyOrderResponse> =>
     }
   }
 
-  // 수신자 대조 — orderId 만으로 타인의 PII / activationCode 조회 차단.
-  // 불일치 시 취소 여부 등 어떤 정보도 노출하지 않고 verified:false 만 반환
-  const receiverMatched = ordersWithEsims.some((order) =>
-    matchesReceiver(
-      { fullName: body.fullName, phoneNumber: body.phoneNumber },
-      { receiverName: order.receiverName, receiverPhoneNumber: order.receiverPhoneNumber },
-    ),
+  // 주문 연락처 대조 (군간 AND + 군내 OR — 선물 주문 커버) — orderId 만으로
+  // 타인의 PII / activationCode 조회 차단. 불일치 시 취소 여부 등 어떤 정보도
+  // 노출하지 않고 verified:false 만 반환
+  const contactMatched = ordersWithEsims.some((order) =>
+    matchesOrderContact({ fullName: body.fullName, phoneNumber: body.phoneNumber }, order),
   )
 
-  if (!receiverMatched) {
+  if (!contactMatched) {
     return {
       verified: false,
     }

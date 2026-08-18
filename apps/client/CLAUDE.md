@@ -68,7 +68,7 @@ apps/client/
 
 ## 4-Step 발급 흐름
 
-1. **verify** — 고객이 이름 + 전화번호 입력 → `POST /api/v1/verify`. 서버가 `order.receiverName` / `receiverPhoneNumber` 와 **정규화 대조** (전화: 숫자만, 이름: NFC + 공백 제거 + 소문자). 불일치 시 `verified:false` 만 반환 (취소 여부도 미노출)
+1. **verify** — 고객이 이름 + 전화번호 입력 → `POST /api/v1/verify`. 서버가 주문 연락처와 **정규화 대조** (전화: 숫자만, 이름: NFC + 공백 제거 + 소문자). 매칭은 **군간 AND + 군내 OR** (john 결정 2026-08-19): 이름은 {구매자명, 수령인명} 중 하나, 전화는 {구매자 전화, 수령인 전화} 중 하나 — 선물 주문 (결제자≠수령인, backend 2026-06 CS 이력) 커버. backend `52dbf65` 는 군간도 OR 로 더 느슨 — client 는 의도적으로 군간 AND. 불일치 시 `verified:false` 만 반환 (취소 여부도 미노출)
 2. **details** — orderId 하위 상품주문 목록에서 선택. 선택 시 store 의 수신자 정보로 재검증 호출 (DB 원본값이므로 대조 통과)
 3. **select-date** — 시작 국가 + 날짜 선택 → confirm 모달 → `POST /api/v1/activate`. `startTime: -24` 로 전송 → `timeToBeActivatedInUTC` 가 (선택일 −1일) 00:00 현지시각 = eSIM 사전 활성화 버퍼 (`fa27295`)
 4. **view** — 발급된 eSIM QR 표시. quantity > 1 이면 accordion 으로 다중 QR

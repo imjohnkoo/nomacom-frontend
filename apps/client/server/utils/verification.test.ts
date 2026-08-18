@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizePhoneNumber, normalizeName, matchesReceiver } from './verification';
+import { normalizePhoneNumber, normalizeName, matchesOrderContact } from './verification';
 
 describe('normalizePhoneNumber', () => {
   it('하이픈 포맷 (클라이언트 formatter) 을 숫자만으로 정규화한다', () => {
@@ -41,64 +41,90 @@ describe('normalizeName', () => {
   });
 });
 
-describe('matchesReceiver', () => {
-  const receiver = { receiverName: '홍길동', receiverPhoneNumber: '010-1234-5678' };
+describe('matchesOrderContact (군간 AND + 군내 OR)', () => {
+  // 선물 주문 시나리오: 구매자 김철수 가 수령인 홍길동 에게 선물
+  const giftOrder = {
+    customerName: '김철수',
+    customerPhoneNumber: '010-9999-0000',
+    receiverName: '홍길동',
+    receiverPhoneNumber: '010-1234-5678',
+  };
 
-  it('이름 + 전화번호가 모두 일치하면 true', () => {
+  it('수령인 이름 + 수령인 전화로 통과', () => {
     expect(
-      matchesReceiver({ fullName: '홍길동', phoneNumber: '010-1234-5678' }, receiver),
+      matchesOrderContact({ fullName: '홍길동', phoneNumber: '010-1234-5678' }, giftOrder),
     ).toBe(true);
   });
 
-  it('DB 가 하이픈 없이 저장돼 있어도 클라이언트 하이픈 입력과 일치한다', () => {
+  it('구매자 이름 + 구매자 전화로 통과 (선물 주문 CS 케이스)', () => {
     expect(
-      matchesReceiver(
+      matchesOrderContact({ fullName: '김철수', phoneNumber: '010-9999-0000' }, giftOrder),
+    ).toBe(true);
+  });
+
+  it('크로스 조합 (수령인 이름 + 구매자 전화) 도 통과 — 군내 OR', () => {
+    expect(
+      matchesOrderContact({ fullName: '홍길동', phoneNumber: '010-9999-0000' }, giftOrder),
+    ).toBe(true);
+  });
+
+  it('이름만 맞고 전화가 4값 모두와 불일치하면 거부 — 군간 AND', () => {
+    expect(
+      matchesOrderContact({ fullName: '홍길동', phoneNumber: '010-0000-0000' }, giftOrder),
+    ).toBe(false);
+  });
+
+  it('전화만 맞고 이름이 불일치하면 거부 — 군간 AND', () => {
+    expect(
+      matchesOrderContact({ fullName: '아무개', phoneNumber: '010-1234-5678' }, giftOrder),
+    ).toBe(false);
+  });
+
+  it('DB 가 하이픈 없이 저장돼 있어도 하이픈 입력과 일치한다', () => {
+    expect(
+      matchesOrderContact(
         { fullName: '홍길동', phoneNumber: '010-1234-5678' },
-        { receiverName: '홍길동', receiverPhoneNumber: '01012345678' },
+        { ...giftOrder, receiverPhoneNumber: '01012345678' },
       ),
     ).toBe(true);
   });
 
   it('이름 공백 차이는 무시한다', () => {
     expect(
-      matchesReceiver({ fullName: ' 홍 길동 ', phoneNumber: '01012345678' }, receiver),
+      matchesOrderContact({ fullName: ' 홍 길동 ', phoneNumber: '01012345678' }, giftOrder),
     ).toBe(true);
   });
 
-  it('이름 불일치면 false', () => {
+  it('구매자 정보가 없는 주문 (수령인만) 도 수령인 값으로 통과', () => {
+    const receiverOnly = {
+      customerName: null,
+      customerPhoneNumber: null,
+      receiverName: '홍길동',
+      receiverPhoneNumber: '010-1234-5678',
+    };
     expect(
-      matchesReceiver({ fullName: '김철수', phoneNumber: '010-1234-5678' }, receiver),
-    ).toBe(false);
+      matchesOrderContact({ fullName: '홍길동', phoneNumber: '01012345678' }, receiverOnly),
+    ).toBe(true);
   });
 
-  it('전화번호 불일치면 false', () => {
-    expect(
-      matchesReceiver({ fullName: '홍길동', phoneNumber: '010-9999-5678' }, receiver),
-    ).toBe(false);
-  });
-
-  it('둘 중 하나만 맞으면 false (AND 조건)', () => {
-    expect(
-      matchesReceiver({ fullName: '홍길동', phoneNumber: '010-0000-0000' }, receiver),
-    ).toBe(false);
-    expect(matchesReceiver({ fullName: '아무개', phoneNumber: '01012345678' }, receiver)).toBe(
+  it('연락처 4값이 전부 null 이면 어떤 입력도 통과하지 못한다 (fail-closed)', () => {
+    const emptyOrder = {
+      customerName: null,
+      customerPhoneNumber: null,
+      receiverName: null,
+      receiverPhoneNumber: null,
+    };
+    expect(matchesOrderContact({ fullName: '홍길동', phoneNumber: '01012345678' }, emptyOrder)).toBe(
       false,
     );
-  });
-
-  it('DB 수취인 정보가 null 이면 어떤 입력도 통과하지 못한다 (fail-closed)', () => {
-    const emptyReceiver = { receiverName: null, receiverPhoneNumber: null };
-    expect(matchesReceiver({ fullName: '홍길동', phoneNumber: '01012345678' }, emptyReceiver)).toBe(
-      false,
-    );
-    expect(matchesReceiver({ fullName: '', phoneNumber: '' }, emptyReceiver)).toBe(false);
+    expect(matchesOrderContact({ fullName: '', phoneNumber: '' }, emptyOrder)).toBe(false);
   });
 
   it('빈 입력은 빈 DB 값과도 일치하지 않는다', () => {
     expect(
-      matchesReceiver(
+      matchesOrderContact(
         { fullName: '', phoneNumber: '' },
-        { receiverName: '', receiverPhoneNumber: '' },
+        { customerName: '', customerPhoneNumber: '', receiverName: '', receiverPhoneNumber: '' },
       ),
     ).toBe(false);
   });
