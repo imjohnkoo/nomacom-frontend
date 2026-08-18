@@ -115,6 +115,14 @@ const ctx = {
   planPickerHint: hasQuota ? `무제한/종량제 토글 + ${daysRangeIl} 가격표` : `무제한 ${daysRangeIl} 가격표`,
   quotesCount: (reviews.quotes ?? []).length,
   photosCount: (reviews.photos ?? []).length,
+  // 사진 4장이 기본 그리드. 그보다 적으면 열 수를 줄이는 modifier 를 붙인다.
+  photosCls: (() => {
+    const n = (reviews.photos ?? []).length;
+    return n === 4 ? '' : ` photos--${n}`;
+  })(),
+  cvWrapCls: (ov.coverage?.mapImg ? '' : ' cv-wrap--nomap'),
+  // trust strip 아이콘용 국기 (공백 제거 compact)
+  zoneFlagsCompact: (ov.zoneFlags ?? '').replace(/ /g, ''),
   // 기본값 (override 로 교체 가능)
   roamingPrice: '~35,000',
   usimPrice: '~28,000',
@@ -188,7 +196,9 @@ for (const f of readdirSync(join(tplDir, 'sections')).filter((f) => f.endsWith('
 writeFileSync(join(dest, 'index.html'), render(readFileSync(join(tplDir, 'index.html'), 'utf8'), ctx));
 rendered.push('index.html');
 cpSync(join(tplDir, 'shared'), join(dest, 'shared'), { recursive: true });
-console.log(`${zoneId} → ${dest} (${rendered.length} html + shared)`);
+// 전 상품 공통 자산 (로고·모델) — zone 별 assets 위에 병합 (기존 reviews 등 유지)
+cpSync(join(tplDir, 'assets'), join(dest, 'assets'), { recursive: true });
+console.log(`${zoneId} → ${dest} (${rendered.length} html + shared + assets)`);
 
 // ── golden diff ─────────────────────────────────────
 if (goldenRef) {

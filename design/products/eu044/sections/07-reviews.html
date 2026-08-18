@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>07 · Reviews · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .reviews__hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 26px 28px;
+        background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        border-radius: var(--radius-3xl);
+        margin-bottom: 28px;
+      }
+      .reviews__score {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .reviews__stars {
+        font-size: 22px;
+        letter-spacing: 4px;
+        color: #fbbf24;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .reviews__score-value {
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .reviews__score-sub {
+        margin-top: 6px;
+        font-size: 13px;
+        opacity: 0.78;
+      }
+      .reviews__breakdown {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        justify-content: center;
+      }
+      .reviews__row {
+        display: grid;
+        grid-template-columns: 88px 1fr 64px;
+        align-items: center;
+        gap: 10px;
+      }
+      .reviews__bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+      .reviews__bar-fill {
+        height: 100%;
+        background: #fbbf24;
+        border-radius: var(--radius-full);
+      }
+      .reviews__row-num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.85;
+      }
+
+      .quotes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .quote {
+        padding: 20px 22px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .quote--span {
+        grid-column: span 2;
+      }
+      .quote__stars {
+        font-size: 13px;
+        letter-spacing: 1.5px;
+        color: #f59e0b;
+        margin-bottom: 8px;
+      }
+      .quote__text {
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--color-neutral-800);
+        margin: 0 0 14px;
+      }
+      .quote__author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .quote__avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--color-primary-100);
+        color: var(--color-primary-700);
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+      }
+      .quote__meta {
+        font-size: 12px;
+        color: var(--color-neutral-500);
+        line-height: 1.5;
+      }
+      .quote__meta strong {
+        display: block;
+        color: var(--color-neutral-800);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .photos {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      /* 사진 수가 적은 zone 은 열 수를 줄여 카드가 과대해지지 않게 */
+      .photos--1 { grid-template-columns: repeat(2, 1fr); max-width: 50%; }
+      .photos--2 { grid-template-columns: repeat(2, 1fr); max-width: 50%; }
+      .photos--3 { grid-template-columns: repeat(3, 1fr); max-width: 75%; }
+      .photos--0 { display: none; }
+      .photo {
+        aspect-ratio: 1 / 1;
+        background: var(--color-neutral-200);
+        border-radius: var(--radius-xl);
+        position: relative;
+        overflow: hidden;
+      }
+      .photo__stars {
+        position: absolute;
+        inset: auto 8px 8px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        color: #f59e0b;
+        background: rgba(255, 255, 255, 0.88);
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        text-align: center;
+      }
+      .photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">07</span>
+        <span class="dev-toolbar__title">Reviews</span>
+        <span class="dev-toolbar__hint">실측 별점 · 실리뷰 5 (원문 발췌) · 구매자 사진 3장</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-07-reviews">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">Reviews</span>
+        <h2 class="section__title">
+          네덜란드·벨기에·독일로 떠난 분들
+        </h2>
+        <p class="section__lede">
+          네이버 스마트스토어 실제 구매 후기입니다 (원문 그대로 · 일부 발췌).
+          스토어에서 전체 후기를 확인하실 수 있어요.
+        </p>
+
+        <div class="reviews__hero">
+          <div class="reviews__score">
+            <div class="reviews__stars">★★★★★</div>
+            <div class="reviews__score-value">4.7</div>
+            <div class="reviews__score-sub">스마트스토어 후기 49개 기준 (2026년 8월)</div>
+          </div>
+          <div class="reviews__breakdown">
+            
+            <div class="reviews__row">
+              <span>무제한 (47건)</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 95%"></div></div>
+              <span class="reviews__row-num">4.74★</span>
+            </div>
+            
+            <div class="reviews__row">
+              <span>종량제 (2건)</span>
+              <div class="reviews__bar"><div class="reviews__bar-fill" style="width: 90%"></div></div>
+              <span class="reviews__row-num">4.5★</span>
+            </div>
+            
+          </div>
+        </div>
+
+        <div class="quotes">
+          
+          <div class="quote quote--span">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "외국 나갈일이 많은데 지난번에 아주 요긴하게 잘사용했습니다 속도빠르고 끈김없이 벨기에 네델란드 독일에서 아주잘썼습니다~ 다음에도 꼭 여기서 구매할께여~ 저렴한 가격은 덤 이네요~~"
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">J</div>
+              <div class="quote__meta">
+                <strong>js**** 님</strong>
+                매일 2GB · 1일 · 2026년 8월
+              </div>
+            </div>
+          </div>
+          
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "벨기에에서 다른 이심이 작동을 안해서 급하게 사서 바로 사용했습니다!! 감사합니다"
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">G</div>
+              <div class="quote__meta">
+                <strong>godg****** 님</strong>
+                매일 1GB · 5일 · 2025년 8월
+              </div>
+            </div>
+          </div>
+          
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "네번째 사용입니다. 이상없이 잘 사용했습니다."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">L</div>
+              <div class="quote__meta">
+                <strong>lasa****** 님</strong>
+                매일 1GB · 1일 · 2025년 12월
+              </div>
+            </div>
+          </div>
+          
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "QR코드 다운로드 설치가 가능해서 편리하게 이용했습니다."
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">B</div>
+              <div class="quote__meta">
+                <strong>bo0_*** 님</strong>
+                매일 1GB · 1일 · 2025년 8월
+              </div>
+            </div>
+          </div>
+          
+          <div class="quote">
+            <div class="quote__stars">★★★★★</div>
+            <p class="quote__text">
+              "사용량 적당히 딱 좋습니다"
+            </p>
+            <div class="quote__author">
+              <div class="quote__avatar">O</div>
+              <div class="quote__meta">
+                <strong>osae**** 님</strong>
+                종량제 5GB · 30일 · 2024년 2월
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        <div class="photos photos--3">
+          
+          <div class="photo">
+            <img src="../assets/reviews/9312991291_5034818417_1.jpg" alt="구매자 사진 — 독일 쇼핑 거리" />
+            <span class="photo__stars">★★★★★</span>
+          </div>
+          
+          <div class="photo">
+            <img src="../assets/reviews/9312991291_4873095826_1.jpg" alt="구매자 사진 — 암스테르담 스히폴 공항" />
+            <span class="photo__stars">★★★★★</span>
+          </div>
+          
+          <div class="photo">
+            <img src="../assets/reviews/9312991291_4786965873_1.jpg" alt="구매자 사진 — 운하에서 보낸 여름 오후" />
+            <span class="photo__stars">★★★★★</span>
+          </div>
+          
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

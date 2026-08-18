@@ -1,0 +1,83 @@
+{
+  "zoneShort": "북유럽 5국",
+  "zoneName": "북유럽 5국 스칸디나비아·아이슬란드",
+  "zoneFlags": "🇩🇰 🇫🇮 🇮🇸 🇳🇴 🇸🇪",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "🇩🇰 🇫🇮 🇮🇸 🇳🇴 🇸🇪 북유럽 5개국 한 번에",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "북유럽+아이슬란드 5개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 5개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·국경 자동 치환 (종량제 Q 제거)",
+  "finalHint": "신뢰배지 + 다섯 나라 한 SIM + CS 번호",
+  "finalHeadline": "다섯 나라, 한 SIM.",
+  "reviewsTitle": "북유럽·아이슬란드로 떠난 분들",
+  "borderQ": "노르웨이 ↔ 핀란드 ↔ 아이슬란드 이동해도 같은 eSIM 으로 됩니까?",
+  "borderExample": "오슬로 → 헬싱키 → 레이캬비크 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.78",
+    "total": 9,
+    "asOf": "2026년 8월",
+    "rows": [
+      { "label": "무제한 (9건)", "pct": 96, "val": "4.78★" }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "노르웨이 핀란드에서 잘 사용했어요. 한국과 다른 점을 전혀 모르겠을 정도로요😁 시내에서도 오로라투어하던 노지에서도 막힘없이 잘 사용했습니다. 최고!",
+        "initial": "P",
+        "author": "pr****",
+        "meta": "매일 1GB · 10일 · 2025년 1월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "북유럽 여행 중 대만족하게 썼습니다. 네이버쇼핑 최저가이면서도 가장 잘 썼습니다. 출장, 여행에 대만족 상품.",
+        "initial": "D",
+        "author": "dkth******",
+        "meta": "매일 2GB · 15일 · 2024년 9월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "북유럽 여행하는 동안 편하게 잘 사용했습니다",
+        "initial": "L",
+        "author": "leb4***",
+        "meta": "매일 1GB · 15일 · 2024년 12월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "빠르고 잘터져요 문의하면 답장도 빠르시네요👍",
+        "initial": "W",
+        "author": "wotm****",
+        "meta": "매일 1GB · 30일 · 2024년 6월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "스웨덴에서 잘 사용했습니다",
+        "initial": "C",
+        "author": "char*******",
+        "meta": "매일 2GB · 5일 · 2024년 2월"
+      }
+    ],
+    "photos": [
+      { "src": "../assets/reviews/9752087716_4734145806_1.jpg", "alt": "구매자 사진 — 코펜하겐 하버프런트", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9752087716_4640336169_1.jpg", "alt": "구매자 사진 — 노르웨이 트롬쇠 항구", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9752087716_4553645432_1.jpg", "alt": "구매자 사진 — 스칸디나비아 다도해", "stars": "★★★★★" }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "스칸디나비아부터 아이슬란드까지",
+    "coverageHint": "5개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      { "flag": "🇩🇰", "name": "덴마크", "cities": "<b>코펜하겐</b> · 오덴세 · 오르후스" },
+      { "flag": "🇫🇮", "name": "핀란드", "cities": "<b>헬싱키</b> · 로바니에미 · 탐페레" },
+      { "flag": "🇮🇸", "name": "아이슬란드", "cities": "<b>레이캬비크</b> · 비크 · 아쿠레이리" },
+      { "flag": "🇳🇴", "name": "노르웨이", "cities": "<b>오슬로</b> · 베르겐 · 트롬쇠" },
+      { "flag": "🇸🇪", "name": "스웨덴", "cities": "<b>스톡홀름</b> · 예테보리 · 말뫼" }
+    ]
+  }
+}

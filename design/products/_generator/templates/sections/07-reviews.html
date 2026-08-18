@@ -135,6 +135,11 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
       }
+      /* 사진 수가 적은 zone 은 열 수를 줄여 카드가 과대해지지 않게 */
+      .photos--1 { grid-template-columns: repeat(2, 1fr); max-width: 50%; }
+      .photos--2 { grid-template-columns: repeat(2, 1fr); max-width: 50%; }
+      .photos--3 { grid-template-columns: repeat(3, 1fr); max-width: 75%; }
+      .photos--0 { display: none; }
       .photo {
         aspect-ratio: 1 / 1;
         background: var(--color-neutral-200);
@@ -167,7 +172,7 @@
       <div class="dev-toolbar__info">
         <span class="dev-toolbar__num">07</span>
         <span class="dev-toolbar__title">Reviews</span>
-        <span class="dev-toolbar__hint">실측 별점 · 실리뷰 5 (원문 발췌) · 구매자 사진 4장</span>
+        <span class="dev-toolbar__hint">실측 별점 · 실리뷰 {{quotesCount}} (원문 발췌) · 구매자 사진 {{photosCount}}장</span>
       </div>
       <button class="dev-toolbar__btn" data-export="eu-07-reviews">
         <span class="label-default">PNG 저장</span>
@@ -221,7 +226,7 @@
           {{/each}}
         </div>
 
-        <div class="photos">
+        <div class="photos{{photosCls}}">
           {{#each photos}}
           <div class="photo">
             <img src="{{.src}}" alt="{{.alt}}" />

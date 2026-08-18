@@ -1,0 +1,83 @@
+{
+  "zoneShort": "동유럽 3국",
+  "zoneName": "동유럽 오스트리아·체코·헝가리",
+  "zoneFlags": "🇦🇹 🇨🇿 🇭🇺",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "🇦🇹 오스트리아 · 🇨🇿 체코 · 🇭🇺 헝가리 한 번에",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "동유럽 3개국 · 무제한/종량제",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 3개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·용량·국경 자동 치환",
+  "finalHint": "신뢰배지 + 세 나라 한 SIM + CS 번호",
+  "finalHeadline": "세 나라, 한 SIM.",
+  "reviewsTitle": "오스트리아·체코·헝가리로 떠난 분들",
+  "borderQ": "오스트리아 ↔ 체코 ↔ 헝가리 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "빈 → 프라하 → 부다페스트 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.5",
+    "total": 269,
+    "asOf": "2026년 8월",
+    "rows": [
+      { "label": "무제한 (248건)", "pct": 91, "val": "4.54★" },
+      { "label": "종량제 (21건)", "pct": 97, "val": "4.86★" }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "엄마가 유럽여행을 가는데 10일정도라 로밍은 너무 비싸고 유심을 교체하시기엔 걱정되서 이걸 해드렸는데 너무 간편하고 좋아하세요 가격도 저렴!!",
+        "initial": "S",
+        "author": "seon****",
+        "meta": "매일 2GB · 10일 · 2026년 6월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "프라하 빈 부다페스트 모두 안끊기고 너무 잘사용했어요 저렴하고 강추입니당",
+        "initial": "C",
+        "author": "cent*****",
+        "meta": "종량제 5GB · 30일 · 2024년 10월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "끊김없이 잘 터졌습니다! 3국다 잘됐어요!!",
+        "initial": "J",
+        "author": "jeeh********",
+        "meta": "종량제 10GB · 30일 · 2025년 5월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "항공기 안에서부터 잘터지네요 만족합니다",
+        "initial": "L",
+        "author": "ljsj*****",
+        "meta": "매일 2GB · 10일 · 2026년 4월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "인터넷 빨랐어요. 잘 썼습니다.",
+        "initial": "U",
+        "author": "uchu*****",
+        "meta": "매일 2GB · 10일 · 2026년 3월"
+      }
+    ],
+    "photos": [
+      { "src": "../assets/reviews/9313004003_4871712274_1.jpg", "alt": "구매자 사진 — 오스트리아 할슈타트", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9313004003_4852549791_1.jpg", "alt": "구매자 사진 — 프라하 성 비투스 대성당", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9380665061_4727069365_1.jpg", "alt": "구매자 사진 — 부다페스트 도나우강 전경", "stars": "★★★★★" },
+      { "src": "../assets/reviews/9380665061_4586215413_1.jpg", "alt": "구매자 사진 — 부다페스트 어부의 요새 야경", "stars": "★★★★★" }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "오스트리아·체코·헝가리 전역 커버",
+    "coverageHint": "3개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      { "flag": "🇦🇹", "name": "오스트리아", "cities": "<b>빈</b> · 잘츠부르크 · 할슈타트 · 인스브루크 · 그라츠" },
+      { "flag": "🇨🇿", "name": "체코", "cities": "<b>프라하</b> · 체스키크룸로프 · 카를로비바리 · 브르노" },
+      { "flag": "🇭🇺", "name": "헝가리", "cities": "<b>부다페스트</b> · 센텐드레 · 죄르 · 에게르" }
+    ]
+  }
+}

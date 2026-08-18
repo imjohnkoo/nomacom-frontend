@@ -17,6 +17,10 @@
         grid-template-columns: 1fr 1fr;
         gap: 14px;
       }
+      /* 지도 자산 미수급 zone: 국가 카드만 단일 컬럼으로 */
+      .cv-wrap--nomap {
+        grid-template-columns: 1fr;
+      }
       .cv-map {
         background: linear-gradient(135deg, #f1edff, #fff);
         border-radius: 16px;
@@ -167,7 +171,7 @@
       <div class="dev-toolbar__info">
         <span class="dev-toolbar__num">08</span>
         <span class="dev-toolbar__title">Coverage</span>
-        <span class="dev-toolbar__hint">지도 (Wikimedia) + 국가별 카드 · 통신사명 미기재 (벤더 중립)</span>
+        <span class="dev-toolbar__hint">{{#if mapImg}}지도 (Wikimedia) + {{/if}}국가별 카드 · 통신사명 미기재 (벤더 중립)</span>
       </div>
       <button class="dev-toolbar__btn" data-export="eu-08-coverage">
         <span class="label-default">PNG 저장</span>
@@ -184,7 +188,8 @@
           현지 1티어 통신망에 자동 연결됩니다.
         </p>
 
-        <div class="cv-wrap">
+        <div class="cv-wrap{{cvWrapCls}}">
+          {{#if mapImg}}
           <!-- 좌측: 지도 + 마커 -->
           <div class="cv-map">
             <div class="cv-map__inner">
@@ -202,6 +207,7 @@
             <div class="cv-map__cap">{{mapCap}}</div>
             <div class="cv-map__credit">지도 © Wikimedia Commons (CC BY-SA)</div>
           </div>
+          {{/if}}
 
           <!-- 우측: 국가별 카드 -->
           <div class="cv-info">

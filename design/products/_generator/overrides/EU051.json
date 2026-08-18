@@ -1,0 +1,81 @@
+{
+  "zoneShort": "발칸 5국",
+  "zoneName": "발칸 5국 체코·슬로베니아·크로아티아 등",
+  "zoneFlags": "🇨🇿 🇦🇹 🇸🇮 🇭🇷 🇭🇺",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "🇨🇿 🇦🇹 🇸🇮 🇭🇷 🇭🇺 발칸 5개국 한 번에",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "발칸 5개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 5개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·국경 자동 치환 (종량제 Q 제거)",
+  "finalHint": "신뢰배지 + 다섯 나라 한 SIM + CS 번호",
+  "finalHeadline": "다섯 나라, 한 SIM.",
+  "reviewsTitle": "발칸·중부유럽으로 떠난 분들",
+  "borderQ": "체코 ↔ 오스트리아 ↔ 크로아티아 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "프라하 → 빈 → 류블랴나 → 자그레브 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.53",
+    "total": 49,
+    "asOf": "2026년 8월",
+    "rows": [
+      { "label": "무제한 (49건)", "pct": 91, "val": "4.53★" }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "문의가 많아서 귀찮으셨을건데 너무 친절하고 빠르게 답변해주셔서 감사했습니다 덕분에 즐거운 여행하고 왔어요! 데이터도 빠르고 좋았어요",
+        "initial": "K",
+        "author": "kang*********",
+        "meta": "매일 2GB · 7일 · 2026년 1월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "체코 오스트리아 헝가리 슬로베니아 크로아티아 패키지 여행했는데 잘 사용했어요",
+        "initial": "J",
+        "author": "jung******",
+        "meta": "매일 2GB · 10일 · 2025년 11월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "슬로베니아랑 크로아티아(전역)으로 다 돌아다녔었는데 전반적으로 다 잘 쓰고 다녔습니다.",
+        "initial": "K",
+        "author": "kei0*****",
+        "meta": "매일 2GB · 10일 · 2026년 8월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "잘터지고정말좋았습니다~유럽갈때필수!",
+        "initial": "C",
+        "author": "chee****",
+        "meta": "매일 2GB · 10일 · 2025년 6월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "잘터지고 좋아요 국가도 바꿔주셨어요",
+        "initial": "K",
+        "author": "ko****",
+        "meta": "매일 2GB · 7일 · 2025년 6월"
+      }
+    ],
+    "photos": [
+      { "src": "../assets/reviews/9616609761_4877874510_1.jpg", "alt": "구매자 사진 — 슬로베니아 블레드 호수", "stars": "★★★★★" }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "프라하부터 아드리아해까지 커버",
+    "coverageHint": "5개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      { "flag": "🇨🇿", "name": "체코", "cities": "<b>프라하</b> · 체스키크룸로프 · 브르노" },
+      { "flag": "🇦🇹", "name": "오스트리아", "cities": "<b>빈</b> · 잘츠부르크 · 그라츠" },
+      { "flag": "🇸🇮", "name": "슬로베니아", "cities": "<b>류블랴나</b> · 블레드 · 피란" },
+      { "flag": "🇭🇷", "name": "크로아티아", "cities": "<b>자그레브</b> · 두브로브니크 · 스플리트 · 플리트비체" },
+      { "flag": "🇭🇺", "name": "헝가리", "cities": "<b>부다페스트</b> · 센텐드레" }
+    ]
+  }
+}

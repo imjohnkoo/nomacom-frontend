@@ -1,0 +1,80 @@
+{
+  "zoneShort": "북유럽 4국",
+  "zoneName": "북유럽 덴마크·노르웨이·스웨덴·핀란드",
+  "zoneFlags": "🇩🇰 🇳🇴 🇸🇪 🇫🇮",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "🇩🇰 🇳🇴 🇸🇪 🇫🇮 북유럽 4개국 한 번에",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "북유럽 4개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 4개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·국경 자동 치환 (종량제 Q 제거)",
+  "finalHint": "신뢰배지 + 네 나라 한 SIM + CS 번호",
+  "finalHeadline": "네 나라, 한 SIM.",
+  "reviewsTitle": "북유럽으로 떠난 분들",
+  "borderQ": "덴마크 ↔ 노르웨이 ↔ 스웨덴 ↔ 핀란드 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "코펜하겐 → 오슬로 → 스톡홀름 → 헬싱키 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.67",
+    "total": 173,
+    "asOf": "2026년 8월",
+    "rows": [
+      { "label": "무제한 (173건)", "pct": 93, "val": "4.67★" }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "무조건 고민하지마시고 여기로 하세요^^ 공항에 도착하자마자 결제했는데 결제하자마자 QR받고 바로 연결했어요. 갑자기 다른 나라로 하루 떠나게 되었는데 그 부분도 상담을 너무 잘 진행해주셨습니다.",
+        "initial": "M",
+        "author": "mick******",
+        "meta": "매일 2GB · 10일 · 2025년 10월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "불편감하나도 없이 덴마크랑 노르웨이에서 잘 사용했습니다",
+        "initial": "N",
+        "author": "nae5***",
+        "meta": "매일 2GB · 15일 · 2026년 7월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "노르웨이 출장 올때마다 사용 중입니다",
+        "initial": "D",
+        "author": "dudq******",
+        "meta": "매일 2GB · 5일 · 2026년 4월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "가성비 제품입니다 강추합니다",
+        "initial": "L",
+        "author": "leeg*****",
+        "meta": "매일 1GB · 7일 · 2026년 7월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "배송도빠르고 제품도 좋아요",
+        "initial": "B",
+        "author": "bond****",
+        "meta": "매일 2GB · 7일 · 2026년 2월"
+      }
+    ],
+    "photos": [
+      { "src": "../assets/reviews/9314233161_4985747918_1.jpg", "alt": "구매자 사진 — 노르웨이 피오르", "stars": "★★★★★" }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "북유럽 4개국 전역 커버",
+    "coverageHint": "4개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      { "flag": "🇩🇰", "name": "덴마크", "cities": "<b>코펜하겐</b> · 오덴세 · 오르후스" },
+      { "flag": "🇳🇴", "name": "노르웨이", "cities": "<b>오슬로</b> · 베르겐 · 트롬쇠 · 플롬 · 스타방게르" },
+      { "flag": "🇸🇪", "name": "스웨덴", "cities": "<b>스톡홀름</b> · 예테보리 · 말뫼" },
+      { "flag": "🇫🇮", "name": "핀란드", "cities": "<b>헬싱키</b> · 로바니에미 · 탐페레" }
+    ]
+  }
+}
