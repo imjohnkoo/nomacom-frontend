@@ -60,8 +60,8 @@ const open = defineModel<boolean>({ default: false })
   transform: translate(-50%, -50%);
   z-index: var(--zIndex-modal, 1050);
   width: 280px;
-  /* NAlertDialog 와 동일한 상하 대칭 리듬 (28px) */
-  padding: 28px 24px 28px;
+  /* NAlertDialog 와 동일한 상하 대칭 리듬 (32px) */
+  padding: 32px 24px 32px;
   border-radius: var(--radius-3xl, 1.5rem);
   background-color: var(--color-neutral-0, #ffffff);
   box-shadow: var(--shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
