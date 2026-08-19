@@ -8,18 +8,37 @@ ESIMmany 마케팅 자산 (네이버 스마트스토어 상품상세 PNG export 
 
 ---
 
-## 두 세대의 구조 (중요)
+## 두 트랙 (중요)
+
+`design/` 아래에는 목적이 다른 두 트랙이 있습니다.
+
+|           | **상세페이지** (`products/`) | **대표 썸네일** (`thumbnails/`)           |
+| --------- | ---------------------------- | ----------------------------------------- |
+| 캔버스    | 가로 860px · 세로 자유       | 1000 × 1000 정사각 고정                   |
+| 실제 노출 | 원본 크기                    | **120 × 120** (검색 결과)                 |
+| 검색 노출 | 안 됨                        | 됨 — 클릭률을 결정하는 유일한 면          |
+| 규정      | 느슨함                       | 네이버 「대표이미지 등록 기준」 직접 적용 |
+
+두 트랙은 **같은 디자인 토큰과 같은 보라 그라데이션**을 쓰고, **같은 `catalog.json` 정본**을
+봅니다. 규격·규정·가독성 기준만 다릅니다. 썸네일 트랙은 `thumbnails/README.md` 참조.
+
+> 대표이미지를 상세페이지 hero 로 겸용하면 안 됩니다 — 규격이 다르고, 네이버 CDN 이 정사각이
+> 아닌 이미지의 긴 변을 정중앙에서 조용히 크롭합니다.
+
+---
+
+## 상세페이지 — 두 세대의 구조 (중요)
 
 `products/` 아래에 **서로 다른 두 아키텍처**가 공존합니다. 신규 상품은 **southern-eu 패턴**을 따르세요.
 
-| | **japan-7day** (구) | **southern-eu** (신, 권장) |
-| --- | --- | --- |
-| 섹션 소스 | 상위 공유 `design/sections/` (`SECTION_BASE = '../../sections'`) | 상품 폴더 내 자체 `sections/` |
-| 합성 방식 | **iframe** (`?embed=1` 로 각 섹션을 iframe 으로 삽입) | **fetch + inject** — 섹션 HTML 을 fetch 해서 `.canvas` 만 추출, inline `<style>` 을 main head 에 주입. iframe 없음 → height 자동, 내부 스크롤 없음 |
-| shared / assets | 상위 `design/shared/` 공유 | 상품 폴더 내 자체 `shared/` + `assets/` (모델 사진·지도·로고) |
-| 섹션 수 | 14 (`04-payment-benefits` 포함) | 13 (`04` 폐기 — plan-picker 가 흡수) |
-| variations | 없음 | 섹션별 `*-variations.html` 탐색본 (A/B 후보) → 확정안만 `sections/NN-slug.html` 로 승격 |
-| 카피 | 일본 일반 | EU 특화 rewrite (24h rolling 갱신·2개국 자동 전환 등) |
+|                 | **japan-7day** (구)                                              | **southern-eu** (신, 권장)                                                                                                                         |
+| --------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 섹션 소스       | 상위 공유 `design/sections/` (`SECTION_BASE = '../../sections'`) | 상품 폴더 내 자체 `sections/`                                                                                                                      |
+| 합성 방식       | **iframe** (`?embed=1` 로 각 섹션을 iframe 으로 삽입)            | **fetch + inject** — 섹션 HTML 을 fetch 해서 `.canvas` 만 추출, inline `<style>` 을 main head 에 주입. iframe 없음 → height 자동, 내부 스크롤 없음 |
+| shared / assets | 상위 `design/shared/` 공유                                       | 상품 폴더 내 자체 `shared/` + `assets/` (모델 사진·지도·로고)                                                                                      |
+| 섹션 수         | 14 (`04-payment-benefits` 포함)                                  | 13 (`04` 폐기 — plan-picker 가 흡수)                                                                                                               |
+| variations      | 없음                                                             | 섹션별 `*-variations.html` 탐색본 (A/B 후보) → 확정안만 `sections/NN-slug.html` 로 승격                                                            |
+| 카피            | 일본 일반                                                        | EU 특화 rewrite (24h rolling 갱신·2개국 자동 전환 등)                                                                                              |
 
 > 새 상품은 southern-eu 를 복사해 시작하는 것을 권장 (자체 sections/shared/assets 로 self-contained,
 > 상품 간 간섭 없음). japan-7day 는 상위 공유 `sections/` 를 쓰므로 다른 상품과 섹션을 공유.
@@ -122,10 +141,10 @@ self-contained 라 다른 상품 섹션과 간섭 없음. `index.html` 의 `SECT
 
 각 섹션 standalone 파일이 인식하는 query string:
 
-| param            | 효과                                                                              |
-| ---------------- | --------------------------------------------------------------------------------- |
+| param            | 효과                                                                                                                                                        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `?embed=1`       | dev toolbar 숨김 · `<body>` 배경 투명. **(구) japan-7day 의 iframe 합성이 자동 부착.** southern-eu 의 fetch+inject 는 `.canvas` 만 추출하므로 embed 불필요. |
-| `?auto-export=1` | 페이지 로드 직후 (800ms 후) 첫 export 버튼을 자동 클릭. 검수 / 자동화용.            |
+| `?auto-export=1` | 페이지 로드 직후 (800ms 후) 첫 export 버튼을 자동 클릭. 검수 / 자동화용.                                                                                    |
 
 `?embed=1&auto-export=1` 동시 사용 시 export PNG 에 툴바가 안 들어가는 깔끔한 형태로 자동 캡처됨.
 

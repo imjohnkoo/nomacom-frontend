@@ -1,0 +1,157 @@
+# design/thumbnails/
+
+네이버 스마트스토어 **대표이미지(썸네일)** 제작 트랙. 상세페이지(`design/products/`)와
+같은 보라 그라데이션 테마를 쓰되, 규격·규정·가독성 기준은 전혀 다릅니다.
+
+> 규격과 규정의 근거는 nomacom-manager 세션이 작성한 「이미지 에셋 제작 가이드」(2026-08-20)
+> 입니다 — `nomacom-manager/마케팅/상품썸네일분석/2026-08-20_이미지에셋-제작가이드.html`.
+> 네이버 공식 「대표이미지 등록 기준」 PDF 원문 + 업로드 API 실측 + 경쟁사 47장 실측이 근거.
+
+---
+
+## 상세페이지 트랙과 무엇이 다른가
+
+|             | 상세페이지 (`products/`)    | 대표 썸네일 (여기)                    |
+| ----------- | --------------------------- | ------------------------------------- |
+| 캔버스      | 가로 860px · 세로 자유      | **1000 × 1000 정사각 고정**           |
+| 실제 노출   | 원본 크기 그대로            | **120 × 120** (검색 결과) — 8.3분의 1 |
+| 검색 노출   | 안 됨                       | **됨** — 클릭률을 결정하는 유일한 면  |
+| 규정        | 느슨함                      | 「대표이미지 등록 기준」 직접 적용    |
+| 상품당 장수 | N (섹션 수)                 | 1                                     |
+| 압축        | 용량이 곧 속도 → JPEG 75~82 | **압축 금지** — PNG-24 무손실         |
+
+**대표이미지를 상세페이지 hero 로 겸용하면 안 됩니다.** 규격이 다르고, 네이버 CDN 이
+정사각이 아닌 이미지의 긴 변을 정중앙에서 조용히 크롭합니다.
+
+---
+
+## 설계 규칙 (1000px 캔버스 기준)
+
+전부 「120px 에서 읽히는가」 하나에서 나온 수치입니다.
+
+| 항목              | 값                                       |
+| ----------------- | ---------------------------------------- |
+| 주역 텍스트(지명) | 글자 높이 **100~140px** · weight 800~900 |
+| 보조 텍스트       | 70~90px · **65px 미만은 넣지 말 것**     |
+| 텍스트 덩어리     | 최대 **3개**                             |
+| 의미 요소         | 최대 **4개** — 로고 · 지명 · 배지 · 모델 |
+| 안전 여백         | 사방 **50px** — 이 안에 로고·텍스트 금지 |
+| 최소 선 두께      | 8px                                      |
+
+### 넣지 않는 것 (규정 + 경쟁사 47장 실증 0건)
+
+가격 · 할인율 · 혜택가 · 배송 정보 · 순위/인기/1위 · 최상급 표현 · 이벤트 문구 ·
+**데이터 용량 수치(GB/MB)** · 지도 · 국기 이모지 · 테두리 · 장식 도형.
+
+용량·일수 표기는 규정상 §1.6a 로 방어되지만 **가독성 때문에** 뺍니다 — 120px 에서 8px 로
+줄어 읽히지 않고, 경쟁사 47장 중 넣은 곳이 0곳입니다. 그 정보는 추가이미지 4번이 담습니다.
+
+### 다국가 조합 표기
+
+- 1국 → 국가명 그대로
+- 2~3국 → 「{권역} {N}개국」 (국가명 나열은 3국까지만 허용)
+- 4국 이상 → 숫자로 압축. 개별 국가명 나열 금지
+
+라벨은 추측하지 않고 **실제 판매 중인 `naverName` 에서 뽑습니다**(`data/build-index.mjs`).
+
+---
+
+## 구조
+
+```
+design/thumbnails/
+├── studio.html          ← 작업·검수 화면. 슬라이더 조정 + 120px 전수 검수 시트
+├── template/rep.html    ← 배치 렌더 타깃 (쿼리 파라미터로 SKU·옵션 지정)
+├── render.mjs           ← Playwright 배치 렌더러 → out/{SKU}/{SKU}_00_rep.png
+├── shared/
+│   ├── tokens.css       - 상세페이지와 동일한 디자인 토큰 사본
+│   ├── thumb.css        - 1000×1000 캔버스 + 썸네일 컴포넌트
+│   └── thumb.js         - 캔버스 빌더 + 지명 자동 맞춤(fitTitle)
+├── data/
+│   ├── build-index.mjs  - catalog.json → thumbnails.json (라벨 산출 + 충돌 검사)
+│   └── thumbnails.json  - 56개 SKU 인덱스 (무제한 48 · 종량제 8)
+├── assets/              - 로고 3종 · 모델 2종 (products/southern-eu 에서 복사)
+└── out/                 - 렌더 결과. git 에 올리지 않음
+```
+
+`data/thumbnails.json` 의 원천은 **상세페이지 생성기와 같은**
+`design/products/_generator/data/catalog.json` 입니다. 두 트랙이 같은 정본을 봅니다.
+
+---
+
+## 사용법
+
+`studio.html` 과 `template/rep.html` 은 `fetch` 를 쓰므로 `file://` 로는 열리지 않습니다.
+리포 루트에서 정적 서버를 띄우세요.
+
+```bash
+# 1) 정적 서버 (리포 루트에서)
+python3 -m http.server 8788
+
+# 2) 작업·검수 화면
+open http://localhost:8788/design/thumbnails/studio.html
+
+# 3) 데이터 갱신 (catalog.json 이 바뀌었을 때)
+cd design/thumbnails/data && node build-index.mjs
+
+# 4) 배치 렌더 — 먼저 playwright 를 이 폴더에 로컬 설치 (한 번만)
+cd design/thumbnails
+npm install --prefix . --no-save playwright   # package.json 을 만들지 않음
+npx playwright install chromium
+
+node render.mjs                    # 전 56장
+node render.mjs EU022U ITA00U      # 지정 SKU 만
+node render.mjs --sheet            # out/sheet.html 검수 시트도 생성
+node render.mjs --scheme duo --model female --sub
+```
+
+> `--prefix . --no-save` 를 쓰는 이유: `design/` 은 turbo 빌드와 workspace 밖에 있고
+> 어떤 `package.json` 에도 등록되지 않는다는 원칙을 유지하기 위해서입니다.
+> `node_modules/` 만 생기고 `package.json` / lockfile 은 만들어지지 않습니다.
+
+### 렌더러가 지키는 것
+
+- `deviceScaleFactor: 1` — 네이버가 어차피 파생본을 다시 만들므로 2x 는 용량만 늘립니다
+- `#mount > .canvas` 요소만 캡처 — 전체 페이지를 찍으면 스크롤바가 섞여 정사각이 깨집니다
+- `document.fonts.ready` 대기 — 안 하면 폴백 폰트로 렌더된 채 저장됩니다
+- 지명 폭을 실제로 재서 줄이는 루프 — `clamp()` 로는 지명 길이 편차를 못 맞춥니다
+- 하한(100px)에서도 안 들어가면 **줄이지 않고 실패로 보고**합니다
+
+---
+
+## 검수 기준 3가지
+
+`studio.html` 하단 「120px 전수 검수 시트」 또는 `out/sheet.html` 로 한 장에서 봅니다.
+
+1. 120 × 120 으로 줄여서 **지명이 읽히는가** (200px 로 검증하지 말 것)
+2. 같은 지역 **무제한과 종량제가 120px 에서 구별되는가** — 글자가 아니라 색으로
+3. 흰 배경·실사 사진으로 가득한 검색 결과 그리드에서 **눈에 띄는가**
+
+---
+
+## 파일 네이밍 · 전달
+
+manager 세션 합의안입니다.
+
+```
+out/
+  EU022U/
+    EU022U_00_rep.png     ← 대표 (여기서 만드는 것)
+    EU022U_01_qr.png      ← 추가 1~9 (전 상품 공통 · 기존 자산 재사용)
+    …
+  _common/
+    01_qr.png … 09_support.png
+```
+
+- `{SKU}_{순번2자리}_{슬러그}.png` — 00 이 대표, 01~09 가 추가. 업로드 순서가 곧 노출 순서
+- PNG-24 · 1000×1000 · sRGB · **업로드 전 압축 금지**
+- 업로드는 `upload_product_images` (로컬 절대경로만 받음) · **계정당 1건씩 순차 호출**
+- 요청당 총 10 MiB 한도 → 3~4장씩 끊어 올릴 것
+- 반영 API 는 `update_channel_product`. `update_origin_product` 사용 금지
+- **PUT 전체 덮어쓰기** — `optionalImages` 9장을 함께 보내지 않으면 삭제됩니다
+
+---
+
+## 미결 사항
+
+`docs/plans/2026-08-20-thumbnail-track.md` 의 「결정 대기」 절 참조.
