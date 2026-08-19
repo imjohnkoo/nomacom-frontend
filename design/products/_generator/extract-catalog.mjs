@@ -15,6 +15,9 @@ if (!src) {
 const raw = JSON.parse(readFileSync(src, 'utf8'));
 const irregular = new Set((raw.gaps?.irregularProducts ?? []).map((p) => p.originProductNo));
 
+// backend export 의 구 국호를 현행 표기로 교정 (nomacom-manager 2026-08-20 handoff 확인분)
+const COUNTRY_KR_FIX = { 터키: '튀르키예' };
+
 const zones = {};
 for (const p of raw.products) {
   if (!p.productCode || irregular.has(p.originProductNo)) continue;
@@ -53,7 +56,7 @@ for (const p of raw.products) {
 
   const c = p.options.find((o) => o.db?.countriesKr?.length)?.db;
   if (c && !zones[zone].countriesKr.length) {
-    zones[zone].countriesKr = c.countriesKr;
+    zones[zone].countriesKr = c.countriesKr.map((n) => COUNTRY_KR_FIX[n] ?? n);
     zones[zone].countriesIso = c.countriesIso;
   }
 }
