@@ -279,6 +279,10 @@
           <button data-v="female">여</button>
           <button data-v="none">없음</button>
         </div>
+        <div class="seg" data-opt="modelLayer">
+          <button data-v="back" class="on">텍스트가 위</button>
+          <button data-v="front">모델이 위</button>
+        </div>
       </div>
 
       <div class="grp">
@@ -402,7 +406,14 @@
         VARS.map(([k]) => [k, document.getElementById(`r-${k}`).value]),
       )
 
-      const opts = { scheme: 'mono', model: 'male', logo: 'kor', showSub: false, guides: false }
+      const opts = {
+        scheme: 'mono',
+        model: 'male',
+        modelLayer: 'back',
+        logo: 'kor',
+        showSub: false,
+        guides: false,
+      }
       let index = null
       let current = null
 

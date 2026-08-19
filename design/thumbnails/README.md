@@ -103,11 +103,22 @@ node render.mjs                    # 전 56장
 node render.mjs EU022U ITA00U      # 지정 SKU 만
 node render.mjs --sheet            # out/sheet.html 검수 시트도 생성
 node render.mjs --scheme duo --model female --sub
+node render.mjs --model-layer front   # 모델을 카피 위로
 ```
 
 > `--prefix . --no-save` 를 쓰는 이유: `design/` 은 turbo 빌드와 workspace 밖에 있고
 > 어떤 `package.json` 에도 등록되지 않는다는 원칙을 유지하기 위해서입니다.
 > `node_modules/` 만 생기고 `package.json` / lockfile 은 만들어지지 않습니다.
+
+### 모델 레이어
+
+모델은 자기 컬럼(`--model-w`) 밖으로 나가도 **자르지 않습니다.** 키우거나 X 로 밀면 컬럼 폭을
+넘는데, 거기서 자르면 인물이 수직선으로 뚝 끊깁니다. 아트보드 밖으로는 `.canvas` 의
+`overflow: hidden` 이 막아 줍니다.
+
+z 순서는 기본이 **텍스트가 위**입니다 — 지명을 가리면 120px 가독성이라는 전제가 무너지기
+때문입니다. 인물 실루엣을 카피 앞에 세우는 구도를 볼 때만 「모델이 위」로 바꾸세요
+(스튜디오 토글 / `--model-layer front`).
 
 ### 렌더러가 지키는 것
 

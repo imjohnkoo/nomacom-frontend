@@ -3,7 +3,7 @@
 //
 //   node render.mjs                       # 전 SKU
 //   node render.mjs EU022U ITA00U         # 지정 SKU 만
-//   node render.mjs --scheme duo --model female
+//   node render.mjs --scheme duo --model female --model-layer front
 //   node render.mjs --sheet               # 120px 검수 시트도 함께 생성
 //
 // 사전 준비 (둘 다 필요):
@@ -28,6 +28,7 @@ const has = (name) => argv.includes(`--${name}`)
 const BASE = flag('base', 'http://localhost:8788/design/thumbnails')
 const scheme = flag('scheme', 'mono')
 const model = flag('model', 'male')
+const modelLayer = flag('model-layer', 'back')
 const logo = flag('logo', 'kor')
 const sub = has('sub') ? '1' : '0'
 const outRoot = join(HERE, flag('out', 'out'))
@@ -49,7 +50,7 @@ const page = await browser.newPage({
 
 const report = []
 for (const item of targets) {
-  const url = `${BASE}/template/rep.html?sku=${item.sku}&scheme=${scheme}&model=${model}&logo=${logo}&sub=${sub}`
+  const url = `${BASE}/template/rep.html?sku=${item.sku}&scheme=${scheme}&model=${model}&modelLayer=${modelLayer}&logo=${logo}&sub=${sub}`
   await page.goto(url, { waitUntil: 'networkidle' })
   await page.waitForSelector('body[data-ready="1"]', { timeout: 15000 })
 
@@ -104,12 +105,15 @@ if (has('sheet')) {
 
 writeFileSync(
   join(outRoot, 'render-report.json'),
-  JSON.stringify({ scheme, model, logo, sub: sub === '1', items: report }, null, 2) + '\n',
+  JSON.stringify({ scheme, model, modelLayer, logo, sub: sub === '1', items: report }, null, 2) +
+    '\n',
 )
 await browser.close()
 
 const failed = report.filter((r) => !r.fits)
-console.log(`\n${report.length}장 · 옵션 scheme=${scheme} model=${model} logo=${logo} sub=${sub}`)
+console.log(
+  `\n${report.length}장 · 옵션 scheme=${scheme} model=${model}/${modelLayer} logo=${logo} sub=${sub}`,
+)
 if (failed.length) {
   console.log(
     `⚠ 지명이 하한에서도 안 들어간 SKU ${failed.length}건 — 라벨 축약 필요: ${failed.map((f) => f.sku).join(', ')}`,

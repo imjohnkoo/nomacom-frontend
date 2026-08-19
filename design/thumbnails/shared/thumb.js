@@ -9,6 +9,7 @@
 export const DEFAULTS = {
   scheme: 'mono', // 'mono' | 'duo' — 플랜 유형 색 프리셋
   model: 'male', // 'male' | 'female' | 'none'
+  modelLayer: 'back', // 'back' = 텍스트가 위 (기본) | 'front' = 모델이 위
   logo: 'kor', // 'kor' | 'eng' | 'square'
   showSub: false, // 국가명 보조줄. 켜면 텍스트 덩어리 3개(하한)
   guides: false,
@@ -29,6 +30,7 @@ export function createCanvas(item, opts = {}, assetBase = 'assets') {
   el.dataset.plan = item.planType
   el.dataset.scheme = o.scheme
   el.dataset.model = o.model
+  el.dataset.modelLayer = o.modelLayer
   el.dataset.sku = item.sku
   if (o.guides) el.dataset.guides = 'on'
 

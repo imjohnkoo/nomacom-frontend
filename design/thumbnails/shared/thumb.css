@@ -181,8 +181,17 @@
   right: 0;
   width: var(--model-w);
   height: 100%;
-  overflow: hidden;
+  /* 여기서 자르지 않는다. 모델을 키우거나(--model-h) 좌측으로 밀면(--model-x)
+     인물이 컬럼 폭을 넘는데, overflow:hidden 이면 그 지점에서 수직선으로 뚝 끊긴다.
+     캔버스(.canvas)가 이미 overflow:hidden 이라 아트보드 밖으로는 못 나간다. */
   z-index: 1;
+}
+
+/* 모델을 텍스트 위로 올린다. 기본은 아래(z-index 1) — 지명을 가리면
+   120px 가독성이라는 전제가 무너지기 때문. 인물 실루엣을 카피 앞에 세우는
+   구도를 시험할 때만 켠다. */
+.thumb[data-model-layer='front'] .thumb__model {
+  z-index: 3;
 }
 .thumb__model::before {
   content: '';
