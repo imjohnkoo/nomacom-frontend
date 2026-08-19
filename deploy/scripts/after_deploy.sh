@@ -75,15 +75,20 @@ case "${APP_NAME}" in
 
   nomacom-client)
     # 깡통 빌드: runtimeConfig 미사용. 도메인 로직 부활 시 NUXT_PUBLIC_ alias 매핑 추가.
+    # awslogs: 재배포 시 컨테이너 교체로 로그 유실되던 갭 해소 — CloudWatch 영구 수집.
+    # docker dual logging 으로 로컬 `docker logs` 조회는 계속 동작. IAM 은 codeDeployRole
+    # 이 backend awslogs 운영으로 기실증 (create-group 포함).
     docker run \
       --publish 3000:3000 \
       --restart always \
       --detach \
       --name "${APP_NAME}" \
       --env-file "$ENV_FILE" \
-      --log-driver json-file \
-      --log-opt max-size=10m \
-      --log-opt max-file=10 \
+      --log-driver awslogs \
+      --log-opt awslogs-region=ap-northeast-2 \
+      --log-opt awslogs-group="/nomacom/${APP_NAME}" \
+      --log-opt awslogs-stream="$(hostname)-$(date +%Y%m%d)" \
+      --log-opt awslogs-create-group=true \
       --health-cmd="node -e 'process.exit(0)'" \
       --health-interval=10s \
       --health-timeout=5s \
