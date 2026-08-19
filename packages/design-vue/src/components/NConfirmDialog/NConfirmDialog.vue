@@ -98,9 +98,10 @@ function handleCancel() {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: var(--zIndex-modal, 1050);
+  /* NAlertDialog 와 동일 사이즈·리듬 (john 피드백 2026-08-20) */
   width: 90vw;
-  max-width: 400px;
-  border-radius: var(--radius-xl, 0.75rem);
+  max-width: 280px;
+  border-radius: var(--radius-3xl, 1.5rem);
   background-color: var(--color-neutral-0, #ffffff);
   box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
   font-family: var(--font-fontFamily-sans, sans-serif);
@@ -114,7 +115,8 @@ function handleCancel() {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: var(--spacing-8, 2rem) var(--spacing-6, 1.5rem) var(--spacing-5, 1.25rem);
+  /* 상단 36px — NAlertDialog 와 동일한 상하 대칭 리듬 */
+  padding: 36px var(--spacing-6, 1.5rem) 8px;
 }
 
 .n-confirm__icon {
@@ -155,7 +157,7 @@ function handleCancel() {
 .n-confirm__actions {
   display: flex;
   gap: var(--spacing-3, 0.75rem);
-  padding: var(--spacing-4, 1rem) var(--spacing-6, 1.5rem) var(--spacing-6, 1.5rem);
+  padding: 14px var(--spacing-6, 1.5rem) 36px;
   justify-content: center;
 }
 

@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 export interface NButtonProps {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success'
   size?: 'sm' | 'md' | 'lg' | 'xl'
   disabled?: boolean
   loading?: boolean
@@ -127,6 +127,18 @@ function handleClick(event: MouseEvent) {
 }
 .n-button--secondary:active:not(:disabled) {
   background-color: var(--color-neutral-300, #d4d4d4);
+}
+
+/* soft 초록 — NStatusPill success 와 동일 톤 (발급완료/주문완료 계열 액션) */
+.n-button--success {
+  background-color: var(--color-success-50, #ecfdf5);
+  color: var(--color-success-700, #059669);
+}
+.n-button--success:hover:not(:disabled) {
+  background-color: var(--color-success-100, #d1fae5);
+}
+.n-button--success:active:not(:disabled) {
+  background-color: var(--color-success-200, #a7f3d0);
 }
 
 .n-button--outline {
