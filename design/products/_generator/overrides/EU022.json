@@ -20,8 +20,16 @@
     "total": 220,
     "asOf": "2026년 8월",
     "rows": [
-      { "label": "무제한 (198건)", "pct": 93, "val": "4.64★" },
-      { "label": "종량제 (22건)", "pct": 95, "val": "4.77★" }
+      {
+        "label": "무제한 (198건)",
+        "pct": 93,
+        "val": "4.64★"
+      },
+      {
+        "label": "종량제 (22건)",
+        "pct": 95,
+        "val": "4.77★"
+      }
     ],
     "quotes": [
       {
@@ -61,10 +69,26 @@
       }
     ],
     "photos": [
-      { "src": "../assets/reviews/9380410731_4724084141_1.jpg", "alt": "구매자 사진 — 바르셀로나 구엘 공원", "stars": "★★★★★" },
-      { "src": "../assets/reviews/9380410731_4673733216_1.jpg", "alt": "구매자 사진 — 리스본 트램 골목", "stars": "★★★★★" },
-      { "src": "../assets/reviews/9380410731_4669609866_1.jpg", "alt": "구매자 사진 — 톨레도 대성당", "stars": "★★★★★" },
-      { "src": "../assets/reviews/9350493687_4898296853_1.jpg", "alt": "구매자 사진 — 포르투갈 대서양 해안", "stars": "★★★★★" }
+      {
+        "src": "../assets/reviews/9380410731_4724084141_1.jpg",
+        "alt": "구매자 사진 — 바르셀로나 구엘 공원",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9380410731_4673733216_1.jpg",
+        "alt": "구매자 사진 — 리스본 트램 골목",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9380410731_4669609866_1.jpg",
+        "alt": "구매자 사진 — 톨레도 대성당",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9350493687_4898296853_1.jpg",
+        "alt": "구매자 사진 — 포르투갈 대서양 해안",
+        "stars": "★★★★★"
+      }
     ]
   },
   "coverage": {
@@ -74,18 +98,69 @@
     "mapAlt": "이베리아 반도 지도 — 스페인·포르투갈",
     "mapCap": "<b>2개국 · 현지 1티어 통신망</b> 자동 연결",
     "pins": [
-      { "cls": " cv-pin--big", "pos": "left: 51%; top: 53%", "name": "마드리드", "labelStyle": "" },
-      { "cls": "", "pos": "left: 72%; top: 42%", "name": "바르셀로나", "labelStyle": "" },
-      { "cls": " cv-pin--right", "pos": "left: 41%; top: 72%", "name": "세비야", "labelStyle": "" },
-      { "cls": "", "pos": "left: 69%; top: 56%", "name": "발렌시아", "labelStyle": "" },
-      { "cls": "", "pos": "left: 50%; top: 74%", "name": "그라나다", "labelStyle": "" },
-      { "cls": "", "pos": "left: 48%; top: 80%", "name": "말라가", "labelStyle": " style=\"top: 8px\"" },
-      { "cls": " cv-pin--right", "pos": "left: 24%; top: 63%", "name": "리스본", "labelStyle": "" },
-      { "cls": " cv-pin--right", "pos": "left: 26%; top: 48%", "name": "포르토", "labelStyle": "" }
+      {
+        "cls": " cv-pin--big",
+        "pos": "left: 51%; top: 53%",
+        "name": "마드리드",
+        "labelStyle": ""
+      },
+      {
+        "cls": "",
+        "pos": "left: 72%; top: 42%",
+        "name": "바르셀로나",
+        "labelStyle": ""
+      },
+      {
+        "cls": " cv-pin--right",
+        "pos": "left: 41%; top: 72%",
+        "name": "세비야",
+        "labelStyle": ""
+      },
+      {
+        "cls": "",
+        "pos": "left: 69%; top: 56%",
+        "name": "발렌시아",
+        "labelStyle": ""
+      },
+      {
+        "cls": "",
+        "pos": "left: 50%; top: 74%",
+        "name": "그라나다",
+        "labelStyle": ""
+      },
+      {
+        "cls": "",
+        "pos": "left: 48%; top: 80%",
+        "name": "말라가",
+        "labelStyle": " style=\"top: 8px\""
+      },
+      {
+        "cls": " cv-pin--right",
+        "pos": "left: 24%; top: 63%",
+        "name": "리스본",
+        "labelStyle": ""
+      },
+      {
+        "cls": " cv-pin--right",
+        "pos": "left: 26%; top: 48%",
+        "name": "포르토",
+        "labelStyle": ""
+      }
     ],
     "cards": [
-      { "flag": "🇪🇸", "name": "스페인", "cities": "<b>마드리드</b> · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가" },
-      { "flag": "🇵🇹", "name": "포르투갈", "cities": "<b>리스본</b> · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마" }
+      {
+        "flag": "🇪🇸",
+        "name": "스페인",
+        "cities": "<b>마드리드</b> · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가"
+      },
+      {
+        "flag": "🇵🇹",
+        "name": "포르투갈",
+        "cities": "<b>리스본</b> · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마"
+      }
     ]
-  }
+  },
+  "bestCap": "1GB",
+  "bestDays": 10,
+  "bestSource": "nomacom-manager 2026-08-20 handoff — last365 70건 · 1GB/10일 20건 28.6%"
 }

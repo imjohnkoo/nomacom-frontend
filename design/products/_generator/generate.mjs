@@ -38,6 +38,9 @@ const u01 = u.plans.U01;
 const u02 = u.plans.U02;
 const daysArr = u01.map((p) => p.days);
 const maxDays = Math.max(...daysArr);
+// BEST 배지는 실판매 1위 옵션 (nomacom-manager 2026-08-20 handoff, last365 기준).
+// bestCap 이 어느 컬럼(1GB/2GB)에 붙일지를 정한다. 표본 부족 zone 은 override 미지정 → 기본값.
+const bestCap = ov.bestCap ?? '2GB';
 const bestDays = ov.bestDays ?? 7;
 const perDayMin = Math.floor(u01.at(-1).finalWon / maxDays);
 const secondMaxDays = daysArr.length > 1 ? daysArr.at(-2) : null;
@@ -46,14 +49,17 @@ const uRows = u01.map((p, i) => {
   const p2 = u02[i];
   const isMax = p.days === maxDays;
   const isSecond = p.days === secondMaxDays;
+  const isBest01 = bestCap === '1GB' && p.days === bestDays;
+  const isBest02 = bestCap === '2GB' && p.days === bestDays;
+  const bestTag = '<span class="tag-inline tag-best">BEST</span>';
   return {
     days: p.days,
     u01: comma(p.finalWon),
     u02: comma(p2.finalWon),
-    u01Attr: isMax ? ' class="cell-long"' : '',
-    u01Tag: isMax ? `<span class="tag-inline tag-long">₩${comma(perDayMin)}/일</span>` : '',
-    u02Attr: p.days === bestDays ? ' class="cell-best"' : isMax || isSecond ? ' class="cell-long"' : '',
-    u02Tag: p.days === bestDays ? '<span class="tag-inline tag-best">BEST</span>' : '',
+    u01Attr: isBest01 ? ' class="cell-best"' : isMax ? ' class="cell-long"' : '',
+    u01Tag: isBest01 ? bestTag : isMax ? `<span class="tag-inline tag-long">₩${comma(perDayMin)}/일</span>` : '',
+    u02Attr: isBest02 ? ' class="cell-best"' : isMax || isSecond ? ' class="cell-long"' : '',
+    u02Tag: isBest02 ? bestTag : '',
   };
 });
 
@@ -135,7 +141,11 @@ const ctx = {
   reviewRows: reviews.rows ?? [],
   quotes: (reviews.quotes ?? []).map((qt, i) => ({ spanCls: i === 0 ? ' quote--span' : '', ...qt })),
   photos: reviews.photos ?? [],
-  ...Object.fromEntries(Object.entries(ov).filter(([k]) => !['reviews', 'coverage', 'bestDays', 'bestGb', 'qMaxTag'].includes(k))),
+  ...Object.fromEntries(
+    Object.entries(ov).filter(
+      ([k]) => !['reviews', 'coverage', 'bestCap', 'bestDays', 'bestGb', 'bestSource', 'qMaxTag'].includes(k),
+    ),
+  ),
   ...(ov.coverage ?? {}),
 };
 
