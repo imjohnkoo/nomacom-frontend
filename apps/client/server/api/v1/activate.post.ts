@@ -6,6 +6,7 @@ import { createUTCDateTime, createLocalDateTime } from '../../utils/date'
 import { matchesOrderContact } from '../../utils/verification'
 import { issueSparkUnit } from '../../utils/spark-issuance'
 import { logEvent } from '../../utils/issuance-log'
+import { isOrderCancelled } from '../../utils/order-status'
 
 // 같은 productOrderId 에 대한 동시 발급 요청 직렬화 (더블클릭/재시도 race 방어).
 // 단일 Nitro 인스턴스 (CodeDeploy EC2 1대) 전제 — 다중 인스턴스 확장 시 DB 레벨
@@ -132,12 +133,8 @@ export default defineEventHandler(async (event): Promise<ActivateOrderResponse> 
     }
 
     // 취소/클레임 주문 발급 가드 — API 직접 호출로 취소 주문이 발급되는 것 차단
-    // (backend 와 공통 반영, 원가 손실 방지)
-    if (
-      order.lastChangedType === 'CLAIM_REQUESTED' ||
-      order.lastChangedType === 'CLAIM_COMPLETED' ||
-      order.lastChangedType?.startsWith('CANCEL')
-    ) {
+    // (backend 와 공통 반영, 원가 손실 방지. verify 표시와 동일 기준 공유)
+    if (isOrderCancelled(order.lastChangedType)) {
       logEvent('ORDER_ACTIVATE_REJECTED', 'warn', 'order cancelled or under claim', {
         productOrderId: body.productOrderId,
         reason: 'ORDER_CLAIMED',

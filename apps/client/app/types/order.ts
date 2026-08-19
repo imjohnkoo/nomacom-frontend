@@ -23,6 +23,10 @@ export interface Order {
   startTimeZone: string;
   planTypeId: string;
   esims: Esim[];
+  /** 상품주문 단위 취소/클레임 상태 — details 카드 "취소된 주문" disabled 표시 */
+  cancelled?: boolean;
+  /** 취소철회 가능 여부 — CANCEL_REQUEST 단계만 true (CANCEL_DONE 은 철회 불가) */
+  cancelWithdrawable?: boolean;
 }
 
 export interface Esim {

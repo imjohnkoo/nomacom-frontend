@@ -222,7 +222,8 @@ onMounted(() => {
       isNoOrderAlertVisible.value = false
       router.push(`/verify/${orderId.value}`)
     }, 3000)
-  } else if (order.value.esims && order.value.esims.length > 0) {
+  } else if ((order.value.esims?.length ?? 0) >= (order.value.quantity || 1)) {
+    // 전량 발급 완료된 주문만 차단 — 부분 발급 (resume) 은 재진입 허용
     router.push(`/details/${orderId.value}`)
   }
 })
@@ -389,6 +390,10 @@ onMounted(() => {
 
     <!-- Country bottom sheet -->
     <NBottomSheet v-model="isCountrySheetOpen" title="시작 국가 선택">
+      <p class="select-date-page__sheet-desc">
+        사용을 시작할 국가를 선택해 주세요.<br />
+        시작한 뒤에는 아래 어느 국가로 이동해도 재설치나 재선택 없이 자동으로 연결돼요.
+      </p>
       <div class="select-date-page__sheet-list">
         <button
           v-for="c in combinedCountries"
@@ -566,6 +571,16 @@ onMounted(() => {
 .select-date-page__cta {
   margin-top: auto;
   padding-top: 32px;
+}
+
+.select-date-page__sheet-desc {
+  margin: 0 0 12px;
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #64748b;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .select-date-page__sheet-list {
