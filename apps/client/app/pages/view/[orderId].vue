@@ -8,7 +8,6 @@ import {
   NCodeRow,
   NLinkCard,
   NButton,
-  NTrustNote,
 } from '@imjohnkoo/design-vue'
 import { useOrderStore } from '~/stores/order'
 
@@ -300,48 +299,30 @@ onMounted(() => {
     </div>
 
     <div class="view-page__notes">
-      <NTrustNote>
-        <template #icon>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 7v5l3 2" />
-          </svg>
-        </template>
-        <b style="color: #111827">사용 일수는 첫 연결 시점부터 24시간 단위로 차감돼요.</b><br />
-        현지에 도착해 처음 회선이 연결된 순간부터 24시간이 지나면 1일이 차감돼요.
-      </NTrustNote>
-      <div style="height: 8px" />
-      <NTrustNote>
-        <template #icon>
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M2 12h20" />
-            <path
-              d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-            />
-          </svg>
-        </template>
-        <b style="color: #111827">다국가 이심은 자동 로밍으로 그대로 사용할 수 있어요.</b><br />
-        한 번 개통된 다음에는 포함된 국가들을 오가도 추가 설치나 설정 변경 없이 자동으로 연결돼요.
-      </NTrustNote>
+      <h2 class="view-page__faq-title">자주 묻는 질문</h2>
+      <ul class="view-page__faq">
+        <li class="view-page__faq-item">
+          <p class="view-page__faq-q"><span>Q.</span>설치는 언제 하면 되나요?</p>
+          <p class="view-page__faq-a">
+            설치 시점과 사용 시점은 무관해요. 설치는 언제든 하셔도 돼요. 출국하시기 2~3일 전,
+            와이파이가 연결된 자택에서 미리 설치하시는 것을 권장드려요.
+          </p>
+        </li>
+        <li class="view-page__faq-item">
+          <p class="view-page__faq-q"><span>Q.</span>사용 일수는 언제부터 차감되나요?</p>
+          <p class="view-page__faq-a">
+            첫 연결 시점부터 24시간 단위로 차감돼요. 현지에 도착해 처음 회선이 연결된 순간부터
+            24시간이 지나면 1일이 차감돼요.
+          </p>
+        </li>
+        <li class="view-page__faq-item">
+          <p class="view-page__faq-q"><span>Q.</span>여러 국가를 오가며 써도 되나요?</p>
+          <p class="view-page__faq-a">
+            다국가 이심은 자동 로밍으로 그대로 사용할 수 있어요. 한 번 개통된 다음에는 포함된
+            국가들을 오가도 추가 설치나 설정 변경 없이 자동으로 연결돼요.
+          </p>
+        </li>
+      </ul>
     </div>
 
     <div class="view-page__back">
@@ -545,7 +526,50 @@ onMounted(() => {
 }
 
 .view-page__notes {
-  margin-top: 24px;
+  margin-top: 28px;
+}
+
+.view-page__faq-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.view-page__faq {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.view-page__faq-item {
+  padding: 14px 2px;
+}
+
+.view-page__faq-item + .view-page__faq-item {
+  border-top: 1px solid #f3f4f6;
+}
+
+.view-page__faq-q {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.5;
+}
+
+.view-page__faq-q span {
+  color: #6239ff;
+}
+
+.view-page__faq-a {
+  margin: 6px 0 0;
+  padding-left: 21px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.65;
 }
 
 .view-page__empty {
