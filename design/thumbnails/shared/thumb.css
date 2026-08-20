@@ -10,6 +10,9 @@
      · 텍스트 덩어리 최대 3 · 의미 요소 최대 4
    ==================================================================== */
 
+/* :root 의 조정 슬롯 기본값은 john 이 스튜디오에서 확정한 값이다 (2026-08-21).
+   스튜디오 슬라이더 초기값 · template/rep.html · render.mjs 가 전부 이 값을 따른다. */
+
 :root {
   /* ── 캔버스 ── */
   --canvas: 1000px;
@@ -17,20 +20,26 @@
 
   /* ── 조정 슬롯 (studio.html 이 실시간으로 덮어씀) ── */
   --logo-h: 120px; /* 권장 110~130 */
-  --title-size: 132px; /* 권장 110~140 — 하한 100 */
-  --title-lh: 0.92;
-  --title-track: -0.045em;
-  --sub-size: 78px; /* 권장 70~90 — 하한 65 */
-  --badge-size: 82px; /* 권장 75~90 */
-  --flag-size: 120px; /* 국기 이모지 글자 크기. 국가 수가 많으면 자동으로 줄어든다 */
+  --title-size: 130px; /* 권장 110~140 — 하한 100 */
+  --title-lh: 1.05;
+  /* 자간 — 에셋 가이드 §3: 「좁히지 말 것(-1% 이내). 2~4글자 짧은 지명은 넓히면 유리」
+     120px 로 줄면 조인 자간이 글자를 뭉쳐 붙인다. -0.01em 이 한도 상한이다. */
+  --title-track: -0.01em;
+  /* 「독일」·「체코」처럼 짧은 낱말은 넓혀야 덩어리로 안 보인다 */
+  --title-track-short: 0.02em;
+  --sub-track: -0.01em;
+  --badge-track: -0.01em;
+  --sub-size: 66px; /* 권장 70~90 — 하한 65 */
+  --badge-size: 88px; /* 권장 75~90 */
+  --flag-size: 60px; /* 국기 이모지 글자 크기. 국가 수가 많으면 자동으로 줄어든다 */
   --flag-gap: 0.14em;
-  --stack-gap: 26px;
-  --stack-y: 0px;
+  --stack-gap: 24px;
+  --stack-y: -44px;
 
-  --model-h: 1180px;
-  --model-x: 0px;
-  --model-y: -40px;
-  --model-w: 470px;
+  --model-h: 1370px;
+  --model-x: -22px;
+  --model-y: -400px;
+  --model-w: 460px;
   /* 텍스트 컬럼 폭. 모델 폭과 분리해 둔다 — 모델 영역 좌측은 대부분
      인물이 아니라 방사형 글로우라, 조금 겹쳐도 가독성에 손해가 없다.
      안쪽 실제 글자 폭 = --text-w - --safe * 2. */
@@ -161,12 +170,18 @@
   text-shadow: 0 6px 24px rgba(15, 5, 60, 0.45);
 }
 
+/* 2~4글자 한 낱말 지명 — 가이드가 「넓히면 유리」라고 짚은 경우.
+   thumb.js 가 라벨 길이를 보고 data-title-len 을 붙인다. */
+.thumb[data-title-len='short'] .thumb__title {
+  letter-spacing: var(--title-track-short);
+}
+
 /* ② 보조 — 국가명 (3국 이하에서만 노출, 기본 OFF) */
 .thumb__sub {
   font-size: var(--sub-size);
   line-height: 1.12;
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--sub-track);
   max-width: 100%;
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -181,7 +196,7 @@
   font-size: var(--badge-size);
   line-height: 1.08;
   font-weight: 900;
-  letter-spacing: -0.045em;
+  letter-spacing: var(--badge-track);
   padding: 0.28em 0.52em;
   border-radius: 0.34em;
   box-shadow: 0 16px 34px -12px rgba(10, 2, 40, 0.45);

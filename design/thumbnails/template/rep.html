@@ -37,6 +37,7 @@
         createCanvas,
         fitTitle,
         fitFlags,
+        fitStack,
         loadIndex,
         fontsReady,
         DEFAULTS,
@@ -65,10 +66,12 @@
       document.getElementById('mount').append(el)
 
       await fontsReady()
-      const fit = fitTitle(el)
+      const fit = fitTitle(el, { item })
       const flagFit = fitFlags(el)
+      const stackFit = fitStack(el)
       document.body.dataset.fit = JSON.stringify(fit)
       document.body.dataset.flagFit = JSON.stringify(flagFit)
+      document.body.dataset.stackFit = JSON.stringify(stackFit)
       document.body.dataset.ready = '1'
     </script>
   </body>

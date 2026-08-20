@@ -46,6 +46,39 @@
         margin: 4px 0 16px;
         line-height: 1.5;
       }
+      #saved-note {
+        font-size: 10px;
+        color: var(--color-success-700);
+        margin-top: 7px;
+        line-height: 1.5;
+      }
+      #export-out {
+        position: fixed;
+        inset: 8% 12%;
+        z-index: 999;
+        background: #14161f;
+        color: #dfe3f0;
+        border-radius: 12px;
+        padding: 18px;
+        font:
+          12px/1.6 'SF Mono',
+          ui-monospace,
+          Menlo,
+          monospace;
+        white-space: pre;
+        overflow: auto;
+        box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
+      }
+      #export-out button {
+        position: absolute;
+        top: 12px;
+        right: 14px;
+        font: inherit;
+        padding: 5px 12px;
+        border-radius: 7px;
+        border: 0;
+        cursor: pointer;
+      }
       .grp {
         padding: 14px 0;
         border-top: 1px dashed var(--color-neutral-200);
@@ -266,9 +299,9 @@
       <div class="grp">
         <div class="grp-t">플랜 색 구분</div>
         <div class="seg" data-opt="scheme">
-          <button data-v="mono" class="on">흰 / 베이지</button>
+          <button data-v="mono">흰 / 베이지</button>
           <button data-v="duo">시안 / 오렌지</button>
-          <button data-v="lime">흰 / 연두</button>
+          <button data-v="lime" class="on">흰 / 연두</button>
         </div>
       </div>
 
@@ -301,16 +334,16 @@
           <button data-v="0">숨김</button>
         </div>
         <div class="fld">
-          <label>국기 크기 (상한) <span class="v" id="v-flag-size">120px</span></label>
-          <input type="range" id="r-flag-size" min="60" max="220" value="120" step="2" />
+          <label>국기 크기 (상한) <span class="v" id="v-flag-size">60px</span></label>
+          <input type="range" id="r-flag-size" min="60" max="220" value="60" step="2" />
         </div>
       </div>
 
       <div class="grp">
         <div class="grp-t">보조 국가명 줄</div>
         <div class="seg" data-opt="showSub">
-          <button data-v="0" class="on">숨김</button>
-          <button data-v="1">표시</button>
+          <button data-v="0">숨김</button>
+          <button data-v="1" class="on">표시</button>
         </div>
         <div class="seg" data-opt="guides">
           <button data-v="0" class="on">여백선 off</button>
@@ -325,28 +358,63 @@
           <input type="range" id="r-logo-h" min="70" max="180" value="120" step="2" />
         </div>
         <div class="fld">
-          <label>지명 크기 (상한) <span class="v" id="v-title-size">132px</span></label>
-          <input type="range" id="r-title-size" min="80" max="200" value="132" step="2" />
+          <label>지명 크기 (상한) <span class="v" id="v-title-size">130px</span></label>
+          <input type="range" id="r-title-size" min="80" max="200" value="130" step="2" />
         </div>
         <div class="fld">
-          <label>지명 줄높이 <span class="v" id="v-title-lh">0.92</span></label>
-          <input type="range" id="r-title-lh" min="0.75" max="1.3" value="0.92" step="0.02" />
+          <label>지명 줄높이 <span class="v" id="v-title-lh">1.05</span></label>
+          <input type="range" id="r-title-lh" min="0.75" max="1.3" value="1.05" step="0.02" />
         </div>
         <div class="fld">
-          <label>보조줄 크기 <span class="v" id="v-sub-size">78px</span></label>
-          <input type="range" id="r-sub-size" min="50" max="110" value="78" step="2" />
+          <label>지명 자간 <span class="v" id="v-title-track">-0.01em</span></label>
+          <input
+            type="range"
+            id="r-title-track"
+            min="-0.01"
+            max="0.06"
+            value="-0.01"
+            step="0.005"
+          />
         </div>
         <div class="fld">
-          <label>배지 크기 <span class="v" id="v-badge-size">82px</span></label>
-          <input type="range" id="r-badge-size" min="50" max="120" value="82" step="2" />
+          <label
+            >짧은 지명(2~4자) 자간 <span class="v" id="v-title-track-short">0.02em</span></label
+          >
+          <input
+            type="range"
+            id="r-title-track-short"
+            min="-0.01"
+            max="0.12"
+            value="0.02"
+            step="0.005"
+          />
         </div>
         <div class="fld">
-          <label>덩어리 간격 <span class="v" id="v-stack-gap">26px</span></label>
-          <input type="range" id="r-stack-gap" min="0" max="90" value="26" step="2" />
+          <label>보조줄 크기 <span class="v" id="v-sub-size">66px</span></label>
+          <input type="range" id="r-sub-size" min="50" max="110" value="66" step="2" />
         </div>
         <div class="fld">
-          <label>카피 Y <span class="v" id="v-stack-y">0px</span></label>
-          <input type="range" id="r-stack-y" min="-320" max="80" value="0" step="2" />
+          <label>배지 크기 <span class="v" id="v-badge-size">88px</span></label>
+          <input type="range" id="r-badge-size" min="50" max="120" value="88" step="2" />
+        </div>
+        <div class="fld">
+          <label>배지 자간 <span class="v" id="v-badge-track">-0.01em</span></label>
+          <input
+            type="range"
+            id="r-badge-track"
+            min="-0.01"
+            max="0.06"
+            value="-0.01"
+            step="0.005"
+          />
+        </div>
+        <div class="fld">
+          <label>덩어리 간격 <span class="v" id="v-stack-gap">24px</span></label>
+          <input type="range" id="r-stack-gap" min="0" max="90" value="24" step="2" />
+        </div>
+        <div class="fld">
+          <label>카피 Y <span class="v" id="v-stack-y">-44px</span></label>
+          <input type="range" id="r-stack-y" min="-320" max="80" value="-44" step="2" />
         </div>
         <div class="fld">
           <label>텍스트 컬럼 폭 <span class="v" id="v-text-w">690px</span></label>
@@ -357,22 +425,24 @@
       <div class="grp">
         <div class="grp-t">모델 배치</div>
         <div class="fld">
-          <label>영역 폭 <span class="v" id="v-model-w">470px</span></label>
-          <input type="range" id="r-model-w" min="320" max="620" value="470" step="5" />
+          <label>영역 폭 <span class="v" id="v-model-w">460px</span></label>
+          <input type="range" id="r-model-w" min="320" max="620" value="460" step="5" />
         </div>
         <div class="fld">
-          <label>키 <span class="v" id="v-model-h">1180px</span></label>
-          <input type="range" id="r-model-h" min="700" max="1700" value="1180" step="10" />
+          <label>키 <span class="v" id="v-model-h">1370px</span></label>
+          <input type="range" id="r-model-h" min="700" max="1700" value="1370" step="10" />
         </div>
         <div class="fld">
-          <label>X <span class="v" id="v-model-x">0px</span></label>
-          <input type="range" id="r-model-x" min="-260" max="260" value="0" step="2" />
+          <label>X <span class="v" id="v-model-x">-22px</span></label>
+          <input type="range" id="r-model-x" min="-260" max="260" value="-22" step="2" />
         </div>
         <div class="fld">
-          <label>Y <span class="v" id="v-model-y">-40px</span></label>
-          <input type="range" id="r-model-y" min="-1000" max="400" value="-40" step="5" />
+          <label>Y <span class="v" id="v-model-y">-400px</span></label>
+          <input type="range" id="r-model-y" min="-1000" max="400" value="-400" step="5" />
         </div>
-        <button class="reset" id="reset">기본값으로</button>
+        <button class="reset" id="reset">기본값으로 (저장분 삭제)</button>
+        <button class="reset" id="export" style="margin-top: 6px">설정을 CSS 로 내보내기</button>
+        <div id="saved-note"></div>
       </div>
     </aside>
 
@@ -398,14 +468,35 @@
     </main>
 
     <script type="module">
-      import { createCanvas, fitTitle, fitFlags, loadIndex, fontsReady } from './shared/thumb.js'
+      // 모듈이 죽으면 화면이 통째로 비고 콘솔에도 안 남는 일이 반복돼서,
+      // 실패를 눈에 보이게 띄운다.
+      const boot = () => document.getElementById('boot')
+      const fail = (label, e) => {
+        const box = boot()
+        if (box)
+          box.innerHTML = `<div class="err"><b>${label}</b><br>${String(e && (e.stack || e.message || e)).replace(/</g, '&lt;')}</div>`
+      }
+      window.addEventListener('error', (e) => fail('스크립트 오류', e.error ?? e.message))
+      window.addEventListener('unhandledrejection', (e) => fail('처리되지 않은 오류', e.reason))
+
+      import {
+        createCanvas,
+        fitTitle,
+        fitFlags,
+        fitStack,
+        loadIndex,
+        fontsReady,
+      } from './shared/thumb.js'
 
       const VARS = [
         ['logo-h', 'px'],
         ['title-size', 'px'],
         ['title-lh', ''],
+        ['title-track', 'em'],
+        ['title-track-short', 'em'],
         ['sub-size', 'px'],
         ['badge-size', 'px'],
+        ['badge-track', 'em'],
         ['flag-size', 'px'],
         ['stack-gap', 'px'],
         ['stack-y', 'px'],
@@ -420,11 +511,11 @@
       )
 
       const opts = {
-        scheme: 'mono',
+        scheme: 'lime',
         model: 'female',
         modelLayer: 'back',
         logo: 'kor',
-        showSub: false,
+        showSub: true,
         showFlags: true,
         guides: false,
       }
@@ -476,14 +567,16 @@
           made.push(c)
         }
         // 세 캔버스 모두 동일하게 맞춘다. 측정은 실제 크기인 첫 번째 것으로.
-        const fit = fitTitle(made[0])
+        const fit = fitTitle(made[0], { item })
         const flagFit = fitFlags(made[0])
+        const stackFit = fitStack(made[0])
         for (const c of made.slice(1)) {
           c.querySelector('.thumb__title').style.fontSize = `${fit.size}px`
           const f = c.querySelector('.thumb__flags')
           if (f && flagFit.size) f.style.fontSize = `${flagFit.size}px`
+          fitStack(c)
         }
-        showMetrics(item, fit, flagFit)
+        showMetrics(item, fit, flagFit, stackFit)
         for (const el of document.querySelectorAll('.cell')) {
           el.classList.toggle('sel', el.dataset.sku === item.sku)
         }
@@ -499,7 +592,7 @@
         return '판독 불가'
       }
 
-      function showMetrics(item, fit, flagFit) {
+      function showMetrics(item, fit, flagFit, stackFit) {
         const read = (k) =>
           parseFloat(getComputedStyle(document.documentElement).getPropertyValue(`--${k}`)) || 0
         const rows = [
@@ -524,6 +617,18 @@
         if (!fit.fits)
           warn.push(
             `<b style="color:#b91c1c">지명이 하한 100px 에서도 ${fit.lines}줄로 넘칩니다 — 라벨 축약 필요.</b>`,
+          )
+        if (stackFit && !stackFit.fits)
+          warn.push(
+            `<b style="color:#b91c1c">카피 묶음이 로고 아래~안전여백 구간보다 ${stackFit.overBy}px 큽니다 — 간격·크기를 줄여야 합니다.</b>`,
+          )
+        else if (stackFit?.gapSqueezed)
+          warn.push(
+            `<b style="color:#b45309">덩어리 간격을 ${stackFit.gapSqueezed}px 조였습니다 (${stackFit.gap}px) — 요청값이면 안전여백을 넘칩니다.</b>`,
+          )
+        else if (stackFit?.clamped)
+          warn.push(
+            `<b style="color:#b45309">카피 Y 를 ${stackFit.movedBy > 0 ? '+' : ''}${stackFit.movedBy}px 되돌렸습니다 — 요청값이면 로고 또는 안전여백을 침범합니다.</b>`,
           )
         if (flagFit && !flagFit.fits)
           warn.push(
@@ -573,8 +678,9 @@
               `<div class="sales">${item.salesCount ? `${item.salesCount}건` : '판매 0'}</div>`,
           )
           sheet.append(cell)
-          fitTitle(c)
+          fitTitle(c, { item })
           fitFlags(c)
+          fitStack(c)
         }
       }
 
@@ -590,17 +696,59 @@
       }
 
       // ── 컨트롤 배선 ──
+      // ── 설정 보존 ──────────────────────────────────────────────
+      // 슬라이더는 documentElement 의 인라인 스타일에만 쓰이는 런타임 값이라
+      // 새로고침하면 사라진다. 조정한 값이 조용히 날아가 렌더 결과와 어긋나는 사고를
+      // 겪어서, localStorage 에 붙들어 두고 CSS 로 승격할 수단을 붙였다.
+      const STORE = 'thumb-studio-v1'
+      function saveState() {
+        const state = { sliders: {}, opts: { ...opts } }
+        for (const [k] of VARS) state.sliders[k] = document.getElementById(`r-${k}`).value
+        localStorage.setItem(STORE, JSON.stringify(state))
+        document.getElementById('saved-note').textContent =
+          '저장됨 — 새로고침해도 유지됩니다. 렌더러에 반영하려면 CSS 로 내보내세요.'
+      }
+      function restoreState() {
+        const raw = localStorage.getItem(STORE)
+        if (!raw) return false
+        try {
+          const state = JSON.parse(raw)
+          for (const [k] of VARS) {
+            if (state.sliders?.[k] == null) continue
+            const r = document.getElementById(`r-${k}`)
+            r.value = state.sliders[k]
+          }
+          Object.assign(opts, state.opts ?? {})
+          for (const seg of document.querySelectorAll('.seg[data-opt]')) {
+            const key = seg.dataset.opt
+            const v = opts[key]
+            const want = v === true ? '1' : v === false ? '0' : v
+            for (const b of seg.children) b.classList.toggle('on', b.dataset.v === String(want))
+          }
+          document.getElementById('saved-note').textContent = '저장된 설정을 불러왔습니다.'
+          return true
+        } catch {
+          return false
+        }
+      }
+
+      restoreState()
+
       for (const [k] of VARS) {
         const r = document.getElementById(`r-${k}`)
         const v = document.getElementById(`v-${k}`)
-        const unit = k === 'title-lh' ? '' : 'px'
+        // 자간은 em, 줄높이는 무단위, 나머지는 px
+        const unit = k === 'title-lh' ? '' : k.includes('track') ? 'em' : 'px'
         const apply = () => {
           document.documentElement.style.setProperty(`--${k}`, r.value + unit)
           v.textContent = r.value + unit
           renderPreviews()
           renderSheet()
         }
-        r.addEventListener('input', apply)
+        r.addEventListener('input', () => {
+          apply()
+          saveState()
+        })
         apply()
       }
 
@@ -614,6 +762,7 @@
           opts[key] = raw === '0' ? false : raw === '1' ? true : raw
           renderPreviews()
           renderSheet()
+          saveState()
         })
       }
 
@@ -625,8 +774,30 @@
         renderSheet()
       })
 
+      document.getElementById('export').addEventListener('click', () => {
+        const unit = (k) => (k === 'title-lh' ? '' : k.includes('track') ? 'em' : 'px')
+        const lines = VARS.map(
+          ([k]) => `  --${k}: ${document.getElementById(`r-${k}`).value}${unit(k)};`,
+        ).join('\n')
+        const box = document.createElement('div')
+        box.id = 'export-out'
+        box.textContent =
+          `/* shared/thumb.css 의 :root 에 붙여넣으세요 */\n:root {\n${lines}\n}\n\n` +
+          `/* shared/thumb.js DEFAULTS · render.mjs 기본값 */\n` +
+          `scheme: '${opts.scheme}'  model: '${opts.model}'  modelLayer: '${opts.modelLayer}'\n` +
+          `logo: '${opts.logo}'  showSub: ${opts.showSub}  showFlags: ${opts.showFlags}`
+        const btn = document.createElement('button')
+        btn.textContent = '닫기'
+        btn.onclick = () => box.remove()
+        box.append(btn)
+        document.body.append(box)
+      })
+
       sel.addEventListener('change', renderPreviews)
       document.getElementById('reset').addEventListener('click', () => {
+        localStorage.removeItem(STORE)
+        document.getElementById('saved-note').textContent =
+          '저장분을 지우고 CSS 기본값으로 되돌렸습니다.'
         for (const [k] of VARS) {
           const r = document.getElementById(`r-${k}`)
           r.value = DEFAULT_VALS[k]

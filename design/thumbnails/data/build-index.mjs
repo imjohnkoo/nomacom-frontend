@@ -55,11 +55,40 @@ function labelFromNaverName(name) {
 // 헤드리스 Chromium 에서도 Apple Color Emoji 로 렌더되는 것을 실측 확인했다.
 // 카탈로그는 ISO3 를 쓰는데 이모지는 ISO2 의 regional indicator 쌍이라 변환한다.
 const ISO3_TO_ISO2 = {
-  AUT: 'AT', BEL: 'BE', BGR: 'BG', CHE: 'CH', CYP: 'CY', CZE: 'CZ', DEU: 'DE',
-  DNK: 'DK', ESP: 'ES', EST: 'EE', FIN: 'FI', FRA: 'FR', GBR: 'GB', GRC: 'GR',
-  HRV: 'HR', HUN: 'HU', IRL: 'IE', ISL: 'IS', ITA: 'IT', LIE: 'LI', LTU: 'LT',
-  LUX: 'LU', LVA: 'LV', MKD: 'MK', MLT: 'MT', NLD: 'NL', NOR: 'NO', POL: 'PL',
-  PRT: 'PT', ROU: 'RO', SVK: 'SK', SVN: 'SI', SWE: 'SE', TUR: 'TR',
+  AUT: 'AT',
+  BEL: 'BE',
+  BGR: 'BG',
+  CHE: 'CH',
+  CYP: 'CY',
+  CZE: 'CZ',
+  DEU: 'DE',
+  DNK: 'DK',
+  ESP: 'ES',
+  EST: 'EE',
+  FIN: 'FI',
+  FRA: 'FR',
+  GBR: 'GB',
+  GRC: 'GR',
+  HRV: 'HR',
+  HUN: 'HU',
+  IRL: 'IE',
+  ISL: 'IS',
+  ITA: 'IT',
+  LIE: 'LI',
+  LTU: 'LT',
+  LUX: 'LU',
+  LVA: 'LV',
+  MKD: 'MK',
+  MLT: 'MT',
+  NLD: 'NL',
+  NOR: 'NO',
+  POL: 'PL',
+  PRT: 'PT',
+  ROU: 'RO',
+  SVK: 'SK',
+  SVN: 'SI',
+  SWE: 'SE',
+  TUR: 'TR',
 }
 const flagEmoji = (iso3) => {
   const i2 = ISO3_TO_ISO2[iso3]
@@ -129,7 +158,11 @@ for (const [zone, z] of Object.entries(catalog.zones)) {
       // 「N개국」 텍스트와 그림이 어긋나 개수를 오독한다.
       flags: (z.countriesIso ?? []).map(flagEmoji).filter(Boolean),
       label,
-      // 보조 국가명 줄 — 보고서 §4: 개별 국가명 나열은 3국까지
+      // 보조 국가명 줄.
+      //   2~3국 → 구성 국가 전부
+      //   4국+  → 지명에 못 들어간 나머지 국가 (아래 대표국 후처리에서 채운다)
+      // 지명이 「프랑스·이탈리아 4개국」인데 나머지 2개국이 어디인지 알 길이 없던
+      // 정보 공백을 메운다 (john 2026-08-21).
       sub: n >= 2 && n <= 3 ? countries.join(' · ') : '',
       badge: planType === 'unlimited' ? '무제한 데이터' : '종량제 데이터',
       naverName: node.naverName,
@@ -234,9 +267,21 @@ for (const z of zoneList) {
     }
   }
   const label = overrides[z.zone] ?? auto
+  // 지명에 오른 대표국을 뺀 나머지를 보조줄로. 카탈로그 순서를 유지해
+  // 상세페이지·상품명과 국가 나열 순서가 어긋나지 않게 한다.
+  const restKr = z.countries.filter((c) => c !== first && c !== second)
+
+  // 대표국 1개 대안. 2개짜리 지명이 2줄에 안 들어갈 때 렌더 단계에서 여기로 갈아탄다
+  // (john 2026-08-21 — 문제 SKU 만 1개로, 나머지는 2개 유지).
+  // 어느 SKU 가 해당하는지는 실제 폭을 재봐야 알 수 있어서 여기서 고르지 않는다.
+  const restSingle = z.countries.filter((c) => c !== first)
+
   for (const r of z.rows) {
     r.label = label
     r.reps = [first, second]
+    r.sub = restKr.join(' · ')
+    r.labelSingle = overrides[z.zone] ? null : `${first} ${z.n}개국`
+    r.subSingle = restSingle.join(' · ')
     r.labelSource = overrides[z.zone] ? 'override' : z.forced ? 'auto-discriminated' : 'auto-rarity'
   }
 }

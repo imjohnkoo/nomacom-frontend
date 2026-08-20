@@ -5,6 +5,7 @@
 //   node render.mjs EU022U ITA00U         # 지정 SKU 만
 //   node render.mjs --scheme duo --model female --model-layer front
 //   node render.mjs --no-flags            # 국기 줄 빼기
+//   node render.mjs --no-sub              # 보조 국가명 줄 빼기
 //   node render.mjs --sheet               # 120px 검수 시트도 함께 생성
 //
 // 사전 준비 (둘 다 필요):
@@ -28,11 +29,11 @@ const flag = (name, dflt) => {
 const has = (name) => argv.includes(`--${name}`)
 
 const BASE = flag('base', 'http://localhost:8788/design/thumbnails')
-const scheme = flag('scheme', 'mono')
+const scheme = flag('scheme', 'lime')
 const model = flag('model', 'female')
 const modelLayer = flag('model-layer', 'back')
 const logo = flag('logo', 'kor')
-const sub = has('sub') ? '1' : '0'
+const sub = has('no-sub') ? '0' : '1'
 const flags = has('no-flags') ? '0' : '1'
 const outRoot = join(HERE, flag('out', 'out'))
 
