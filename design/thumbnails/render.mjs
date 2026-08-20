@@ -27,7 +27,7 @@ const has = (name) => argv.includes(`--${name}`)
 
 const BASE = flag('base', 'http://localhost:8788/design/thumbnails')
 const scheme = flag('scheme', 'mono')
-const model = flag('model', 'male')
+const model = flag('model', 'female')
 const modelLayer = flag('model-layer', 'back')
 const logo = flag('logo', 'kor')
 const sub = has('sub') ? '1' : '0'

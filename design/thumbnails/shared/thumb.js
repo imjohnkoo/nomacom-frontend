@@ -8,7 +8,7 @@
 
 export const DEFAULTS = {
   scheme: 'mono', // 'mono' | 'duo' — 플랜 유형 색 프리셋
-  model: 'male', // 'male' | 'female' | 'none'
+  model: 'female', // 'male' | 'female' | 'none' — 여성 고정 (john 결정 2026-08-20)
   modelLayer: 'back', // 'back' = 텍스트가 위 (기본) | 'front' = 모델이 위
   logo: 'kor', // 'kor' | 'eng' | 'square'
   showSub: false, // 국가명 보조줄. 켜면 텍스트 덩어리 3개(하한)
