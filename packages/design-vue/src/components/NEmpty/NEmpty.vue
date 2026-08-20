@@ -66,7 +66,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-12) var(--spacing-6);
+  padding: var(--n-spacing-12) var(--n-spacing-6);
   text-align: center;
 }
 
@@ -76,14 +76,14 @@ export default defineComponent({
   justify-content: center;
   width: 56px;
   height: 56px;
-  margin-bottom: var(--spacing-4);
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-400);
+  margin-bottom: var(--n-spacing-4);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-100);
+  color: var(--n-color-neutral-400);
 }
 
 .n-empty__icon {
-  font-size: var(--font-fontSize-2xl);
+  font-size: var(--n-font-size-2xl);
   line-height: 1;
 }
 
@@ -93,28 +93,28 @@ export default defineComponent({
 }
 
 .n-empty__title {
-  margin: 0 0 var(--spacing-1) 0;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-base);
-  font-weight: var(--font-fontWeight-semibold);
-  color: var(--color-neutral-700);
+  margin: 0 0 var(--n-spacing-1) 0;
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-base);
+  font-weight: var(--n-font-weight-semibold);
+  color: var(--n-color-neutral-700);
   line-height: 1.4;
 }
 
 .n-empty__description {
   margin: 0;
   max-width: 360px;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-400);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-400);
   line-height: 1.6;
 }
 
 .n-empty__actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-5);
+  gap: var(--n-spacing-3);
+  margin-top: var(--n-spacing-5);
 }
 </style>

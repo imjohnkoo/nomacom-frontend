@@ -27,10 +27,10 @@ withDefaults(defineProps<NInfoChipProps>(), {
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: var(--radius-full, 9999px);
-  background-color: var(--color-primary-50, #f1edff);
-  color: var(--color-primary-700, #3f1cc0);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-full, 9999px);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-700, #3f1cc0);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -39,7 +39,7 @@ withDefaults(defineProps<NInfoChipProps>(), {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .n-info-chip__label {

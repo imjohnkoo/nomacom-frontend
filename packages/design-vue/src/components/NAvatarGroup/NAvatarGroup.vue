@@ -74,8 +74,8 @@ const overlapOffset = computed(() => {
 
 .n-avatar-group__item {
   position: relative;
-  border: 2px solid var(--color-neutral-0);
-  border-radius: var(--radius-full);
+  border: 2px solid var(--n-color-neutral-0);
+  border-radius: var(--n-radius-full);
 }
 
 .n-avatar-group__item + .n-avatar-group__item,
@@ -87,42 +87,42 @@ const overlapOffset = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-700);
-  font-family: var(--font-fontFamily-sans);
-  font-weight: var(--font-fontWeight-medium);
-  border: 2px solid var(--color-neutral-0);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-200);
+  color: var(--n-color-neutral-700);
+  font-family: var(--n-font-family-sans);
+  font-weight: var(--n-font-weight-medium);
+  border: 2px solid var(--n-color-neutral-0);
   flex-shrink: 0;
 }
 
 .n-avatar-group__overflow--xs {
   width: 24px;
   height: 24px;
-  font-size: var(--font-fontSize-xs);
+  font-size: var(--n-font-size-xs);
 }
 
 .n-avatar-group__overflow--sm {
   width: 32px;
   height: 32px;
-  font-size: var(--font-fontSize-xs);
+  font-size: var(--n-font-size-xs);
 }
 
 .n-avatar-group__overflow--md {
   width: 40px;
   height: 40px;
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--n-font-size-sm);
 }
 
 .n-avatar-group__overflow--lg {
   width: 48px;
   height: 48px;
-  font-size: var(--font-fontSize-base);
+  font-size: var(--n-font-size-base);
 }
 
 .n-avatar-group__overflow--xl {
   width: 64px;
   height: 64px;
-  font-size: var(--font-fontSize-lg);
+  font-size: var(--n-font-size-lg);
 }
 </style>

@@ -76,53 +76,53 @@ async function handleCopy() {
 .n-copy-button {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
-  border: var(--borderWidth-1, 1px) solid transparent;
-  border-radius: var(--radius-full, 9999px);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-weight: var(--font-fontWeight-medium, 500);
+  gap: var(--n-spacing-1, 0.25rem);
+  border: var(--n-border-width-1, 1px) solid transparent;
+  border-radius: var(--n-radius-full, 9999px);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-weight: var(--n-font-weight-medium, 500);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all var(--n-transition-fast, 150ms ease);
   outline: none;
   white-space: nowrap;
 }
 
 .n-copy-button--sm {
-  padding: var(--spacing-1, 0.25rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-xs, 0.75rem);
+  padding: var(--n-spacing-1, 0.25rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-xs, 0.75rem);
 }
 .n-copy-button--md {
-  padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-4, 1rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
 }
 
 .n-copy-button--primary {
-  background-color: var(--color-primary-600, #5530e6);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-primary-600, #5025e8);
+  color: var(--n-color-neutral-0, #ffffff);
 }
-.n-copy-button--primary:hover { background-color: var(--color-primary-700, #4826cc); }
+.n-copy-button--primary:hover { background-color: var(--n-color-primary-700, #3f1cc0); }
 
 .n-copy-button--outline {
   background-color: transparent;
-  border-color: var(--color-neutral-300, #d4d4d4);
-  color: var(--color-neutral-700, #404040);
+  border-color: var(--n-color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-700, #404040);
 }
 .n-copy-button--outline:hover {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .n-copy-button--ghost {
   background-color: transparent;
-  color: var(--color-neutral-600, #525252);
+  color: var(--n-color-neutral-600, #525252);
 }
 .n-copy-button--ghost:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-copy-button--copied {
-  background-color: var(--color-success-500, #22c55e) !important;
-  border-color: var(--color-success-500, #22c55e) !important;
-  color: var(--color-neutral-0, #ffffff) !important;
+  background-color: var(--n-color-success-500, #22c55e) !important;
+  border-color: var(--n-color-success-500, #22c55e) !important;
+  color: var(--n-color-neutral-0, #ffffff) !important;
 }
 
 .n-copy-button__icon {
@@ -130,6 +130,6 @@ async function handleCopy() {
 }
 
 .n-copy-button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-200, #ddd6fe);
+  box-shadow: 0 0 0 2px var(--n-color-primary-200, #c7b6ff);
 }
 </style>

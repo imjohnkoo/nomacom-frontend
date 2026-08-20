@@ -19,8 +19,8 @@ withDefaults(defineProps<NContainerProps>(), {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-4, 1rem);
-  padding-right: var(--spacing-4, 1rem);
+  padding-left: var(--n-spacing-4, 1rem);
+  padding-right: var(--n-spacing-4, 1rem);
 }
 
 .n-container--sm {

@@ -68,43 +68,43 @@ const emit = defineEmits<{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--spacing-1);
-  padding: var(--spacing-2) var(--spacing-3);
-  border: var(--borderWidth-1) solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
-  background-color: var(--color-neutral-0);
+  gap: var(--n-spacing-1);
+  padding: var(--n-spacing-2) var(--n-spacing-3);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-300);
+  border-radius: var(--n-radius-md);
+  background-color: var(--n-color-neutral-0);
   min-height: 40px;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--n-transition-fast), box-shadow var(--n-transition-fast);
 }
 
 .n-input-tags:focus-within {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-50);
+  border-color: var(--n-color-primary-500);
+  box-shadow: 0 0 0 2px var(--n-color-primary-50);
 }
 
 .n-input-tags--disabled {
   opacity: 0.5;
   pointer-events: none;
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
 }
 
 .n-input-tags__tag {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
-  padding: var(--spacing-0) var(--spacing-2);
+  gap: var(--n-spacing-1);
+  padding: var(--n-spacing-0) var(--n-spacing-2);
   height: 26px;
-  border-radius: var(--radius-sm);
-  background-color: var(--color-primary-50);
-  color: var(--color-primary-700);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-xs);
-  font-weight: var(--font-fontWeight-medium);
+  border-radius: var(--n-radius-sm);
+  background-color: var(--n-color-primary-50);
+  color: var(--n-color-primary-700);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-xs);
+  font-weight: var(--n-font-weight-medium);
   line-height: 1;
 }
 
 .n-input-tags__tag[data-state='active'] {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: -1px;
 }
 
@@ -122,14 +122,14 @@ const emit = defineEmits<{
   background: none;
   padding: 0;
   cursor: pointer;
-  color: var(--color-primary-500);
-  border-radius: var(--radius-sm);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  color: var(--n-color-primary-500);
+  border-radius: var(--n-radius-sm);
+  transition: background-color var(--n-transition-fast), color var(--n-transition-fast);
 }
 
 .n-input-tags__tag-delete:hover {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-700);
+  background-color: var(--n-color-primary-100);
+  color: var(--n-color-primary-700);
 }
 
 .n-input-tags__input {
@@ -138,32 +138,32 @@ const emit = defineEmits<{
   border: none;
   outline: none;
   background: transparent;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  color: var(--color-neutral-800);
-  padding: var(--spacing-1) 0;
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  color: var(--n-color-neutral-800);
+  padding: var(--n-spacing-1) 0;
 }
 
 .n-input-tags__input::placeholder {
-  color: var(--color-neutral-400);
+  color: var(--n-color-neutral-400);
 }
 
 .n-input-tags__clear {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-0) var(--spacing-2);
+  padding: var(--n-spacing-0) var(--n-spacing-2);
   height: 24px;
   border: none;
   background: none;
   cursor: pointer;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-xs);
-  color: var(--color-neutral-400);
-  transition: color var(--transition-fast);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-xs);
+  color: var(--n-color-neutral-400);
+  transition: color var(--n-transition-fast);
 }
 
 .n-input-tags__clear:hover {
-  color: var(--color-neutral-600);
+  color: var(--n-color-neutral-600);
 }
 </style>

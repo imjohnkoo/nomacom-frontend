@@ -191,17 +191,17 @@ export default defineComponent({
 .n-carousel {
   position: relative;
   width: 100%;
-  font-family: var(--font-fontFamily-sans);
+  font-family: var(--n-font-family-sans);
 }
 
 .n-carousel__viewport {
   overflow: hidden;
-  border-radius: var(--radius-lg);
+  border-radius: var(--n-radius-lg);
 }
 
 .n-carousel__track {
   display: flex;
-  transition: transform var(--transition-normal);
+  transition: transform var(--n-transition-normal);
   will-change: transform;
 }
 
@@ -220,34 +220,34 @@ export default defineComponent({
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: var(--borderWidth-1) solid var(--color-neutral-200);
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-0);
-  color: var(--color-neutral-700);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-200);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-0);
+  color: var(--n-color-neutral-700);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast);
+  box-shadow: var(--n-shadow-sm);
+  transition: background-color var(--n-transition-fast),
+    color var(--n-transition-fast),
+    box-shadow var(--n-transition-fast);
   z-index: 2;
 }
 
 .n-carousel__arrow:hover {
-  background-color: var(--color-neutral-50);
-  box-shadow: var(--shadow-md);
+  background-color: var(--n-color-neutral-50);
+  box-shadow: var(--n-shadow-md);
 }
 
 .n-carousel__arrow:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
 .n-carousel__arrow--prev {
-  left: var(--spacing-3);
+  left: var(--n-spacing-3);
 }
 
 .n-carousel__arrow--next {
-  right: var(--spacing-3);
+  right: var(--n-spacing-3);
 }
 
 /* ---- Dots ---- */
@@ -255,33 +255,33 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
-  margin-top: var(--spacing-4);
+  gap: var(--n-spacing-2);
+  margin-top: var(--n-spacing-4);
 }
 
 .n-carousel__dot {
   width: 8px;
   height: 8px;
   padding: 0;
-  border: var(--borderWidth-0) solid transparent;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-200);
+  border: var(--n-border-width-0) solid transparent;
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-200);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    transform var(--transition-fast);
+  transition: background-color var(--n-transition-fast),
+    transform var(--n-transition-fast);
 }
 
 .n-carousel__dot:hover {
-  background-color: var(--color-neutral-400);
+  background-color: var(--n-color-neutral-400);
 }
 
 .n-carousel__dot--active {
-  background-color: var(--color-primary-500);
+  background-color: var(--n-color-primary-500);
   transform: scale(1.25);
 }
 
 .n-carousel__dot:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 </style>

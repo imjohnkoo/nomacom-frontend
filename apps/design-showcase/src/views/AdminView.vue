@@ -241,13 +241,13 @@
                   width: 28px;
                   height: 28px;
                   border-radius: 50%;
-                  background: var(--color-primary-100, #ede8ff);
+                  background: var(--n-color-primary-100, #ede8ff);
                   display: flex;
                   align-items: center;
                   justify-content: center;
                   font-size: 12px;
                   font-weight: 600;
-                  color: var(--color-primary-600, #5530e6);
+                  color: var(--n-color-primary-600, #5530e6);
                 "
               >
                 {{ row.name.charAt(0) }}
@@ -554,33 +554,33 @@ function handleRowClick(row: Record<string, any>) {
 
 <style scoped>
 .admin-content {
-  padding: var(--spacing-6, 1.5rem);
+  padding: var(--n-spacing-6, 1.5rem);
 }
 
 .admin-content__header {
-  margin-bottom: var(--spacing-6, 1.5rem);
+  margin-bottom: var(--n-spacing-6, 1.5rem);
 }
 
 .admin-content__header h1 {
   margin: 0;
-  font-size: var(--font-fontSize-2xl, 1.5rem);
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-neutral-900, #171717);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-size: var(--n-font-size-2xl, 1.5rem);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-neutral-900, #171717);
+  font-family: var(--n-font-family-sans, sans-serif);
 }
 
 .admin-content__header p {
-  margin: var(--spacing-1, 0.25rem) 0 0;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-500, #737373);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  margin: var(--n-spacing-1, 0.25rem) 0 0;
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-500, #737373);
+  font-family: var(--n-font-family-sans, sans-serif);
 }
 
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-4, 1rem);
-  margin-bottom: var(--spacing-6, 1.5rem);
+  gap: var(--n-spacing-4, 1rem);
+  margin-bottom: var(--n-spacing-6, 1.5rem);
 }
 
 @media (max-width: 1200px) {
@@ -592,7 +592,7 @@ function handleRowClick(row: Record<string, any>) {
 .admin-table-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4, 1rem);
+  gap: var(--n-spacing-4, 1rem);
 }
 
 .admin-table-section__header {
@@ -600,90 +600,90 @@ function handleRowClick(row: Record<string, any>) {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: var(--spacing-3, 0.75rem);
+  gap: var(--n-spacing-3, 0.75rem);
 }
 
 .admin-table-section__header h2 {
   margin: 0;
-  font-size: var(--font-fontSize-lg, 1.125rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-900, #171717);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-size: var(--n-font-size-lg, 1.125rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-900, #171717);
+  font-family: var(--n-font-family-sans, sans-serif);
 }
 
 .admin-table-section__actions {
   display: flex;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .admin-btn {
   display: inline-flex;
   align-items: center;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  border-radius: var(--radius-md, 0.375rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  border-radius: var(--n-radius-md, 0.375rem);
+  font-family: var(--n-font-family-sans, sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
   cursor: pointer;
   transition: all 150ms ease;
-  border: var(--borderWidth-1, 1px) solid transparent;
+  border: var(--n-border-width-1, 1px) solid transparent;
 }
 
 .admin-btn--primary {
-  background-color: var(--color-primary-600, #5530e6);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-primary-600, #5530e6);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .admin-btn--primary:hover {
-  background-color: var(--color-primary-700, #4826cc);
+  background-color: var(--n-color-primary-700, #4826cc);
 }
 
 .admin-btn--outline {
-  background-color: var(--color-neutral-0, #ffffff);
-  border-color: var(--color-neutral-300, #d4d4d4);
-  color: var(--color-neutral-700, #404040);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border-color: var(--n-color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-700, #404040);
 }
 .admin-btn--outline:hover {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .admin-btn--danger {
-  background-color: var(--color-error-500, #ef4444);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-error-500, #ef4444);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .admin-btn--danger:hover {
-  background-color: var(--color-error-700, #b91c1c);
+  background-color: var(--n-color-error-700, #b91c1c);
 }
 
 .admin-badge {
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 9999px);
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  border-radius: var(--n-radius-full, 9999px);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-medium, 500);
   text-transform: capitalize;
 }
 
 .admin-badge--admin {
-  background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-700, #4826cc);
+  background-color: var(--n-color-primary-50, #f5f3ff);
+  color: var(--n-color-primary-700, #4826cc);
 }
 
 .admin-badge--editor {
-  background-color: var(--color-info-50, #f0f9ff);
-  color: var(--color-info-700, #0369a1);
+  background-color: var(--n-color-info-50, #f0f9ff);
+  color: var(--n-color-info-700, #0369a1);
 }
 
 .admin-badge--user {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-600, #525252);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-600, #525252);
 }
 
 .admin-status {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
   text-transform: capitalize;
 }
 
@@ -694,16 +694,16 @@ function handleRowClick(row: Record<string, any>) {
 }
 
 .admin-status--active {
-  color: var(--color-success-700, #15803d);
+  color: var(--n-color-success-700, #15803d);
 }
 .admin-status--active .admin-status__dot {
-  background-color: var(--color-success-500, #22c55e);
+  background-color: var(--n-color-success-500, #22c55e);
 }
 
 .admin-status--inactive {
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
 }
 .admin-status--inactive .admin-status__dot {
-  background-color: var(--color-neutral-400, #a3a3a3);
+  background-color: var(--n-color-neutral-400, #a3a3a3);
 }
 </style>

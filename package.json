@@ -12,7 +12,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "lint:tokens": "turbo run check --filter=@imjohnkoo/design-tokens"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

@@ -46,8 +46,8 @@ const percentage = computed(() => {
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-100);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-100);
 }
 
 .n-progress--sm {
@@ -64,27 +64,27 @@ const percentage = computed(() => {
 
 .n-progress__indicator {
   height: 100%;
-  border-radius: var(--radius-full);
-  transition: width var(--transition-normal) ease;
+  border-radius: var(--n-radius-full);
+  transition: width var(--n-transition-normal) ease;
 }
 
 .n-progress--primary .n-progress__indicator {
-  background-color: var(--color-primary-500);
+  background-color: var(--n-color-primary-500);
 }
 
 .n-progress--success .n-progress__indicator {
-  background-color: var(--color-success-500);
+  background-color: var(--n-color-success-500);
 }
 
 .n-progress--warning .n-progress__indicator {
-  background-color: var(--color-warning-500);
+  background-color: var(--n-color-warning-500);
 }
 
 .n-progress--error .n-progress__indicator {
-  background-color: var(--color-error-500);
+  background-color: var(--n-color-error-500);
 }
 
 .n-progress--info .n-progress__indicator {
-  background-color: var(--color-info-500);
+  background-color: var(--n-color-info-500);
 }
 </style>

@@ -71,7 +71,7 @@ provideFormField({
 .n-form-field {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1, 0.25rem);
+  gap: var(--n-spacing-1, 0.25rem);
   width: 100%;
 }
 
@@ -79,40 +79,40 @@ provideFormField({
 .n-form-field__label {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  line-height: var(--font-lineHeight-normal, 1.5);
-  color: var(--color-neutral-700, #404040);
+  gap: var(--n-spacing-1, 0.25rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  line-height: var(--n-font-line-height-normal, 1.5);
+  color: var(--n-color-neutral-700, #404040);
 }
 
 .n-form-field--disabled .n-form-field__label {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 /* --- Required indicator --- */
 .n-form-field__required {
-  color: var(--color-error-500, #ef4444);
-  font-weight: var(--font-fontWeight-bold, 700);
+  color: var(--n-color-error-500, #ef4444);
+  font-weight: var(--n-font-weight-bold, 700);
 }
 
 /* --- Hint --- */
 .n-form-field__hint {
   margin: 0;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  line-height: var(--font-lineHeight-normal, 1.5);
-  color: var(--color-neutral-500, #737373);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  line-height: var(--n-font-line-height-normal, 1.5);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 /* --- Error --- */
 .n-form-field__error {
   margin: 0;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  line-height: var(--font-lineHeight-normal, 1.5);
-  color: var(--color-error-500, #ef4444);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  line-height: var(--n-font-line-height-normal, 1.5);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 /* --- Control wrapper --- */

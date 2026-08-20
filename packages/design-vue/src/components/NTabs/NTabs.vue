@@ -72,58 +72,58 @@ function handleValueChange(value: string) {
 
 <style scoped>
 .n-tabs {
-  font-family: var(--font-fontFamily-sans);
+  font-family: var(--n-font-family-sans);
   width: 100%;
 }
 
 .n-tabs__list {
   display: flex;
   align-items: center;
-  border-bottom: var(--borderWidth-1) solid var(--color-neutral-200);
+  border-bottom: var(--n-border-width-1) solid var(--n-color-neutral-200);
   position: relative;
-  gap: var(--spacing-0);
+  gap: var(--n-spacing-0);
 }
 
 .n-tabs__trigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-1);
-  padding: var(--spacing-2) var(--spacing-4);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-medium);
-  color: var(--color-neutral-500);
+  gap: var(--n-spacing-1);
+  padding: var(--n-spacing-2) var(--n-spacing-4);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-medium);
+  color: var(--n-color-neutral-500);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
   cursor: pointer;
   transition:
-    color var(--transition-fast),
-    border-color var(--transition-fast);
+    color var(--n-transition-fast),
+    border-color var(--n-transition-fast);
   white-space: nowrap;
   position: relative;
   margin-bottom: -1px;
 }
 
 .n-tabs__trigger:hover:not(:disabled) {
-  color: var(--color-neutral-700);
+  color: var(--n-color-neutral-700);
 }
 
 .n-tabs__trigger[data-state='active'] {
-  color: var(--color-primary-600);
-  border-bottom-color: var(--color-primary-600);
+  color: var(--n-color-primary-600);
+  border-bottom-color: var(--n-color-primary-600);
 }
 
 .n-tabs__trigger:disabled {
-  color: var(--color-neutral-300);
+  color: var(--n-color-neutral-300);
   cursor: not-allowed;
 }
 
 .n-tabs__trigger:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: -2px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--n-radius-sm);
 }
 
 .n-tabs__indicator {
@@ -131,28 +131,28 @@ function handleValueChange(value: string) {
   bottom: 0;
   left: 0;
   height: 2px;
-  background-color: var(--color-primary-600);
-  border-radius: var(--radius-full);
+  background-color: var(--n-color-primary-600);
+  border-radius: var(--n-radius-full);
   transition:
-    transform var(--transition-fast),
-    width var(--transition-fast);
+    transform var(--n-transition-fast),
+    width var(--n-transition-fast);
 }
 
 .n-tabs__icon {
   display: inline-flex;
   align-items: center;
-  font-size: var(--font-fontSize-base);
+  font-size: var(--n-font-size-base);
 }
 
 .n-tabs__content {
-  padding: var(--spacing-4) var(--spacing-0);
-  font-size: var(--font-fontSize-base);
-  color: var(--color-neutral-700);
+  padding: var(--n-spacing-4) var(--n-spacing-0);
+  font-size: var(--n-font-size-base);
+  color: var(--n-color-neutral-700);
 }
 
 .n-tabs__content:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--n-radius-sm);
 }
 </style>

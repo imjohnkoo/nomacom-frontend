@@ -66,35 +66,35 @@ const emit = defineEmits<{
   position: relative;
   flex-grow: 1;
   height: 6px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-100);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-100);
 }
 
 .n-slider__range {
   position: absolute;
   height: 100%;
-  border-radius: var(--radius-full);
-  background-color: var(--color-primary-500);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-primary-500);
 }
 
 .n-slider__thumb {
   display: block;
   width: 18px;
   height: 18px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-0);
-  border: var(--borderWidth-2) solid var(--color-primary-500);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-0);
+  border: var(--n-border-width-2) solid var(--n-color-primary-500);
+  box-shadow: var(--n-shadow-sm);
   cursor: grab;
-  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+  transition: box-shadow var(--n-transition-fast), transform var(--n-transition-fast);
 }
 
 .n-slider__thumb:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--n-shadow-md);
 }
 
 .n-slider__thumb:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 

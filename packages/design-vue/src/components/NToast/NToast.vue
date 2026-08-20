@@ -58,16 +58,16 @@ defineEmits<{
 .n-toast {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-3, 0.75rem);
+  gap: var(--n-spacing-3, 0.75rem);
   width: 360px;
   max-width: 100vw;
-  padding: var(--spacing-4, 1rem);
-  border-radius: var(--radius-lg, 0.5rem);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e7eb);
-  background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  animation: n-toast-slide-in var(--transition-normal, 200ms) ease;
+  padding: var(--n-spacing-4, 1rem);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  animation: n-toast-slide-in var(--n-transition-normal, 250ms ease) ease;
 }
 
 .n-toast[data-swipe='move'] {
@@ -76,40 +76,40 @@ defineEmits<{
 
 .n-toast[data-swipe='cancel'] {
   transform: translateX(0);
-  transition: transform var(--transition-fast, 150ms) ease;
+  transition: transform var(--n-transition-fast, 150ms ease) ease;
 }
 
 .n-toast[data-swipe='end'] {
-  animation: n-toast-swipe-out var(--transition-fast, 150ms) ease forwards;
+  animation: n-toast-swipe-out var(--n-transition-fast, 150ms ease) ease forwards;
 }
 
 .n-toast[data-state='closed'] {
-  animation: n-toast-fade-out var(--transition-fast, 150ms) ease forwards;
+  animation: n-toast-fade-out var(--n-transition-fast, 150ms ease) ease forwards;
 }
 
 /* --- Color variants --- */
 .n-toast--neutral {
-  border-left: 3px solid var(--color-neutral-400, #9ca3af);
+  border-left: 3px solid var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-toast--primary {
-  border-left: 3px solid var(--color-primary-500, #3b82f6);
+  border-left: 3px solid var(--n-color-primary-500, #6239FF);
 }
 
 .n-toast--success {
-  border-left: 3px solid var(--color-success-500, #22c55e);
+  border-left: 3px solid var(--n-color-success-500, #22c55e);
 }
 
 .n-toast--warning {
-  border-left: 3px solid var(--color-warning-500, #f59e0b);
+  border-left: 3px solid var(--n-color-warning-500, #f59e0b);
 }
 
 .n-toast--error {
-  border-left: 3px solid var(--color-error-500, #ef4444);
+  border-left: 3px solid var(--n-color-error-500, #ef4444);
 }
 
 .n-toast--info {
-  border-left: 3px solid var(--color-info-500, #06b6d4);
+  border-left: 3px solid var(--n-color-info-500, #0ea5e9);
 }
 
 .n-toast__content {
@@ -119,16 +119,16 @@ defineEmits<{
 
 .n-toast__title {
   margin: 0;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-900, #111827);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-900, #171717);
   line-height: 1.4;
 }
 
 .n-toast__description {
-  margin-top: var(--spacing-1, 0.25rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-600, #4b5563);
+  margin-top: var(--n-spacing-1, 0.25rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-600, #525252);
   line-height: 1.5;
 }
 
@@ -140,21 +140,21 @@ defineEmits<{
   width: 24px;
   height: 24px;
   border: none;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
   background: transparent;
-  color: var(--color-neutral-400, #9ca3af);
+  color: var(--n-color-neutral-400, #a3a3a3);
   cursor: pointer;
-  transition: color var(--transition-fast, 150ms),
-              background-color var(--transition-fast, 150ms);
+  transition: color var(--n-transition-fast, 150ms ease),
+              background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-toast__close:hover {
-  background-color: var(--color-neutral-100, #f3f4f6);
-  color: var(--color-neutral-600, #4b5563);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-600, #525252);
 }
 
 .n-toast__close:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: 2px;
 }
 

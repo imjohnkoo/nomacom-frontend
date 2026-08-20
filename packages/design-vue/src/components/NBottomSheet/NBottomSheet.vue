@@ -46,7 +46,7 @@ const open = defineModel<boolean>({ default: false })
 .n-bottom-sheet__overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--zIndex-modal-backdrop, 1040);
+  z-index: var(--n-z-index-modal-backdrop, 1040);
   background-color: rgba(17, 17, 17, 0.32);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -57,14 +57,14 @@ const open = defineModel<boolean>({ default: false })
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  z-index: var(--zIndex-modal, 1050);
+  z-index: var(--n-z-index-modal, 1050);
   width: 100%;
   max-width: 420px;
   padding: 12px 20px 22px;
-  border-radius: var(--radius-3xl, 1.5rem) var(--radius-3xl, 1.5rem) 0 0;
-  background-color: var(--color-neutral-0, #ffffff);
+  border-radius: var(--n-radius-3xl, 1.5rem) var(--n-radius-3xl, 1.5rem) 0 0;
+  background-color: var(--n-color-neutral-0, #ffffff);
   box-shadow: 0 -10px 40px -10px rgba(0, 0, 0, 0.2);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   max-height: 90vh;
   overflow: auto;
 }
@@ -76,8 +76,8 @@ const open = defineModel<boolean>({ default: false })
 .n-bottom-sheet__grip {
   width: 44px;
   height: 4px;
-  border-radius: var(--radius-full, 9999px);
-  background-color: var(--color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-full, 9999px);
+  background-color: var(--n-color-neutral-200, #e5e5e5);
   margin: 0 auto 16px;
 }
 
@@ -89,7 +89,7 @@ const open = defineModel<boolean>({ default: false })
   margin: 0;
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
   text-align: center;
 }
 

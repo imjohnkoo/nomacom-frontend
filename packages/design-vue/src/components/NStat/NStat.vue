@@ -96,12 +96,12 @@ const formattedChange = computed(() => {
 .n-stat {
   display: flex;
   align-items: flex-start;
-  padding: var(--spacing-5, 1.25rem) var(--spacing-6, 1.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-xl, 0.75rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  gap: var(--spacing-4, 1rem);
+  padding: var(--n-spacing-5, 1.25rem) var(--n-spacing-6, 1.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-xl, 0.75rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  gap: var(--n-spacing-4, 1rem);
 }
 
 .n-stat__content {
@@ -110,41 +110,41 @@ const formattedChange = computed(() => {
 }
 
 .n-stat__label {
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-500, #737373);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-500, #737373);
   margin: 0;
 }
 
 .n-stat__value {
-  font-size: var(--font-fontSize-2xl, 1.5rem);
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-neutral-900, #171717);
-  margin: var(--spacing-1, 0.25rem) 0 0;
+  font-size: var(--n-font-size-2xl, 1.5rem);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-neutral-900, #171717);
+  margin: var(--n-spacing-1, 0.25rem) 0 0;
   line-height: 1.2;
 }
 
 .n-stat__footer {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  margin-top: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
+  margin-top: var(--n-spacing-2, 0.5rem);
 }
 
 .n-stat__change {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 
 .n-stat__change--positive {
-  color: var(--color-success-500, #22c55e);
+  color: var(--n-color-success-500, #22c55e);
 }
 
 .n-stat__change--negative {
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .n-stat__change-icon {
@@ -153,8 +153,8 @@ const formattedChange = computed(() => {
 }
 
 .n-stat__period {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  color: var(--color-neutral-400, #a3a3a3);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-stat__icon-accent {
@@ -163,9 +163,9 @@ const formattedChange = computed(() => {
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-lg, 0.5rem);
-  background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-500, #6239FF);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-500, #6239FF);
   flex-shrink: 0;
 }
 
@@ -175,7 +175,7 @@ const formattedChange = computed(() => {
   justify-content: center;
   width: 40px;
   height: 40px;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   flex-shrink: 0;
 }
 </style>

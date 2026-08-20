@@ -1,6 +1,6 @@
 {
   "name": "@imjohnkoo/design-vue",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Nomacom Vue 3 component library",
   "license": "UNLICENSED",
   "repository": {
@@ -18,17 +18,29 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./style.css": "./dist/design-vue.css"
+    "./style.css": "./dist/design-vue.css",
+    "./nuxt": {
+      "types": "./dist/nuxt.d.ts",
+      "import": "./dist/nuxt.js",
+      "require": "./dist/nuxt.cjs"
+    },
+    "./charts": {
+      "types": "./dist/charts.d.ts",
+      "import": "./dist/charts.js",
+      "require": "./dist/charts.cjs"
+    }
   },
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite build --watch",
     "clean": "rm -rf dist",
+    "dev": "vite build --watch",
+    "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@imjohnkoo/design-tokens": "workspace:*",
@@ -36,16 +48,29 @@
     "reka-ui": "^2.8.2"
   },
   "peerDependencies": {
-    "vue": "^3.5.0"
+    "@nuxt/kit": "^3.0.0 || ^4.0.0",
+    "vue": "^3.5.0",
+    "vue-chrts": "^2.1.4"
+  },
+  "peerDependenciesMeta": {
+    "@nuxt/kit": {
+      "optional": true
+    },
+    "vue-chrts": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@nuxt/kit": "^4.0.0",
     "@vitejs/plugin-vue": "^5.2.0",
     "@vue/test-utils": "^2.4.10",
     "happy-dom": "^20.9.0",
     "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
     "vitest": "^4.1.6",
-    "vue": "^3.5.0"
+    "vue": "^3.5.0",
+    "vue-chrts": "^2.1.4",
+    "vue-tsc": "^2.2.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

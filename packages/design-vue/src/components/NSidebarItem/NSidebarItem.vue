@@ -6,6 +6,8 @@
       :class="itemClasses"
       :title="collapsed ? label : undefined"
       :disabled="tag === 'button' ? disabled : undefined"
+      :aria-current="ariaCurrent"
+      :aria-expanded="hasChildren ? expanded : undefined"
       @click="onClick"
     >
       <span v-if="$slots.icon" class="n-sidebar-item__icon">
@@ -87,6 +89,16 @@ const linkAttrs = computed(() => {
   return { type: 'button' }
 })
 
+/**
+ * 활성 항목을 접근성 트리에 노출한다 (WCAG 2.4.8).
+ * 색상만으로 표시하면 낭독기 사용자는 「지금 어느 메뉴에 있는지」를 알 수 없다.
+ * 링크형은 `page`, 자식을 가진 그룹 토글은 위치를 주장하지 않으므로 제외.
+ */
+const ariaCurrent = computed(() => {
+  if (!props.active || hasChildren.value) return undefined
+  return 'page' as const
+})
+
 const itemClasses = computed(() => [
   'n-sidebar-item',
   {
@@ -124,22 +136,22 @@ function onClick(event: Event) {
 .n-sidebar-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3, 0.75rem);
+  gap: var(--n-spacing-3, 0.75rem);
   width: 100%;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-4, 1rem);
   margin: 0 0 2px;
   border: none;
-  border-radius: var(--radius-md, 0.375rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   background: transparent;
   color: inherit;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
   text-decoration: none;
   cursor: pointer;
   transition: background-color 150ms ease, color 150ms ease;
   text-align: left;
-  padding-left: calc(var(--spacing-4, 1rem) + var(--n-sidebar-depth, 0) * 12px);
+  padding-left: calc(var(--n-spacing-4, 1rem) + var(--n-sidebar-depth, 0) * 12px);
 }
 
 .n-sidebar-item:hover:not(.n-sidebar-item--disabled) {
@@ -148,16 +160,16 @@ function onClick(event: Event) {
 
 .n-sidebar-item--active {
   background-color: rgb(255 255 255 / 0.12);
-  color: var(--color-primary-300, #c4b5fd);
+  color: var(--n-color-primary-300, #a78bff);
 }
 
 .n-sidebar--light .n-sidebar-item:hover:not(.n-sidebar-item--disabled) {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-sidebar--light .n-sidebar-item--active {
-  background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-600, #5530e6);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-sidebar-item--disabled {
@@ -211,7 +223,7 @@ function onClick(event: Event) {
 }
 
 .n-sidebar-item__children-inner {
-  padding: var(--spacing-1, 0.25rem) 0 var(--spacing-1, 0.25rem) var(--spacing-6, 1.5rem);
+  padding: var(--n-spacing-1, 0.25rem) 0 var(--n-spacing-1, 0.25rem) var(--n-spacing-6, 1.5rem);
 }
 
 /* Collapsed state */
@@ -225,8 +237,8 @@ function onClick(event: Event) {
 
 .n-sidebar--collapsed .n-sidebar-item {
   justify-content: center;
-  padding-left: var(--spacing-4, 1rem);
-  padding-right: var(--spacing-4, 1rem);
+  padding-left: var(--n-spacing-4, 1rem);
+  padding-right: var(--n-spacing-4, 1rem);
 }
 
 .n-sidebar--collapsed .n-sidebar-item__children {

@@ -66,16 +66,16 @@ defineEmits<{
 
 <style>
 .n-context-menu__content {
-  z-index: var(--zIndex-dropdown, 1030);
+  z-index: var(--n-z-index-dropdown, 1000);
   min-width: 180px;
   max-width: 280px;
-  padding: var(--spacing-1, 0.25rem);
-  border-radius: var(--radius-lg, 0.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e7eb);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  animation: n-context-menu-enter var(--transition-fast, 150ms) ease;
+  padding: var(--n-spacing-1, 0.25rem);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  animation: n-context-menu-enter var(--n-transition-fast, 150ms ease) ease;
   will-change: transform, opacity;
 }
 
@@ -85,28 +85,28 @@ defineEmits<{
 
 .n-context-menu__separator {
   height: 1px;
-  margin: var(--spacing-1, 0.25rem) 0;
-  background-color: var(--color-neutral-200, #e5e7eb);
+  margin: var(--n-spacing-1, 0.25rem) 0;
+  background-color: var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-context-menu__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  border-radius: var(--radius-md, 0.375rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-700, #374151);
+  gap: var(--n-spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  border-radius: var(--n-radius-md, 0.375rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-700, #404040);
   cursor: pointer;
   user-select: none;
   outline: none;
-  transition: background-color var(--transition-fast, 150ms);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-context-menu__item:hover,
 .n-context-menu__item[data-highlighted] {
-  background-color: var(--color-neutral-100, #f3f4f6);
-  color: var(--color-neutral-900, #111827);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-context-menu__item[data-disabled] {
@@ -122,7 +122,7 @@ defineEmits<{
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: var(--color-neutral-500, #6b7280);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-context-menu__label {

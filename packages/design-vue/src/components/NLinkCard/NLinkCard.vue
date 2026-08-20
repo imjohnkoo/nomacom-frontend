@@ -57,10 +57,10 @@ defineEmits<{ click: [event: MouseEvent] }>()
   gap: 12px;
   padding: 14px 16px;
   border: 1px solid #f1f1f4;
-  border-radius: var(--radius-xl, 0.75rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  color: var(--color-neutral-900, #171717);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-xl, 0.75rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  color: var(--n-color-neutral-900, #171717);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   text-decoration: none;
   transition: border-color 160ms ease;
   width: 100%;
@@ -69,7 +69,7 @@ defineEmits<{ click: [event: MouseEvent] }>()
 }
 
 .n-link-card:hover {
-  border-color: var(--color-primary-300, #a78bff);
+  border-color: var(--n-color-primary-300, #a78bff);
 }
 
 .n-link-card--button {
@@ -79,8 +79,8 @@ defineEmits<{ click: [event: MouseEvent] }>()
 .n-link-card__icon {
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-lg, 0.5rem);
-  background-color: var(--color-neutral-50, #fafafa);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  background-color: var(--n-color-neutral-50, #fafafa);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,17 +98,17 @@ defineEmits<{ click: [event: MouseEvent] }>()
 .n-link-card__label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-link-card__sub {
   font-size: 11px;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-link-card__chev {
   margin-left: auto;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;

@@ -39,17 +39,17 @@ withDefaults(defineProps<NSeparatorProps>(), {
 <style scoped>
 .n-separator {
   border: none;
-  background-color: var(--color-neutral-200);
+  background-color: var(--n-color-neutral-200);
   flex-shrink: 0;
 }
 
 .n-separator--horizontal {
   width: 100%;
-  height: var(--borderWidth-1);
+  height: var(--n-border-width-1);
 }
 
 .n-separator--vertical {
-  width: var(--borderWidth-1);
+  width: var(--n-border-width-1);
   height: 100%;
   align-self: stretch;
 }
@@ -57,16 +57,16 @@ withDefaults(defineProps<NSeparatorProps>(), {
 .n-separator-labeled {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3, 0.75rem);
+  gap: var(--n-spacing-3, 0.75rem);
   width: 100%;
 }
 
 .n-separator-labeled__text {
   flex-shrink: 0;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-500, #737373);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-500, #737373);
   white-space: nowrap;
 }
 </style>

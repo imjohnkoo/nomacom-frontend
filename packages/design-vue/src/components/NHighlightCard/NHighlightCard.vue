@@ -27,21 +27,21 @@ withDefaults(defineProps<NHighlightCardProps>(), {
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: var(--radius-2xl, 1rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-2xl, 1rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-highlight-card--brand-gradient {
   background: linear-gradient(
     135deg,
-    var(--color-primary-50, #f1edff),
-    var(--color-neutral-0, #ffffff)
+    var(--n-color-primary-50, #f1edff),
+    var(--n-color-neutral-0, #ffffff)
   );
-  border: 1px solid var(--color-primary-100, #e3dbff);
+  border: 1px solid var(--n-color-primary-100, #e3dbff);
 }
 
 .n-highlight-card--plain {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
   border: 1px solid transparent;
 }
 
@@ -52,14 +52,14 @@ withDefaults(defineProps<NHighlightCardProps>(), {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-full, 9999px);
-  background-color: var(--color-neutral-0, #ffffff);
-  color: var(--color-primary-500, #6239ff);
+  border-radius: var(--n-radius-full, 9999px);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .n-highlight-card__body {
   font-size: 12.5px;
   line-height: 1.55;
-  color: var(--color-neutral-700, #404040);
+  color: var(--n-color-neutral-700, #404040);
 }
 </style>

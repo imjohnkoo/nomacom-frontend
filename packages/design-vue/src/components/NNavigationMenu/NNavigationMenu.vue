@@ -95,14 +95,14 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
 
 <style>
 .n-nav-menu {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   position: relative;
 }
 
 .n-nav-menu__list {
   display: flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
+  gap: var(--n-spacing-1, 0.25rem);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -116,43 +116,43 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
 .n-nav-menu__trigger {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-600, #525252);
+  gap: var(--n-spacing-1, 0.25rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-600, #525252);
   background: none;
   border: none;
-  border-radius: var(--radius-md, 0.375rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   cursor: pointer;
   text-decoration: none;
   transition:
-    color var(--transition-fast, 150ms ease),
-    background-color var(--transition-fast, 150ms ease);
+    color var(--n-transition-fast, 150ms ease),
+    background-color var(--n-transition-fast, 150ms ease);
   white-space: nowrap;
 }
 
 .n-nav-menu__link:hover,
 .n-nav-menu__trigger:hover {
-  color: var(--color-neutral-900, #171717);
-  background-color: var(--color-neutral-50, #fafafa);
+  color: var(--n-color-neutral-900, #171717);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .n-nav-menu__link:focus-visible,
 .n-nav-menu__trigger:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: 2px;
 }
 
 .n-nav-menu__trigger[data-state='open'] {
-  color: var(--color-primary-600, #2563eb);
-  background-color: var(--color-primary-50, #eff6ff);
+  color: var(--n-color-primary-600, #5025e8);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 
 .n-nav-menu__chevron {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  transition: transform var(--transition-fast, 150ms ease);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  transition: transform var(--n-transition-fast, 150ms ease);
 }
 
 .n-nav-menu__trigger[data-state='open'] .n-nav-menu__chevron {
@@ -163,7 +163,7 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: var(--zIndex-dropdown, 1000);
+  z-index: var(--n-z-index-dropdown, 1000);
   perspective: 2000px;
 }
 
@@ -172,11 +172,11 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
   min-width: 240px;
   height: var(--reka-navigation-menu-viewport-height);
   overflow: hidden;
-  margin-top: var(--spacing-1, 0.25rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  margin-top: var(--n-spacing-1, 0.25rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
   transition: height 250ms ease;
 }
 
@@ -189,7 +189,7 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
 }
 
 .n-nav-menu__content {
-  padding: var(--spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem);
   width: 100%;
 }
 
@@ -229,33 +229,33 @@ const props = withDefaults(defineProps<NNavigationMenuProps>(), {
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  border-radius: var(--radius-md, 0.375rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   text-decoration: none;
   transition:
-    color var(--transition-fast, 150ms ease),
-    background-color var(--transition-fast, 150ms ease);
+    color var(--n-transition-fast, 150ms ease),
+    background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-nav-menu__dropdown-link:hover {
-  background-color: var(--color-primary-50, #eff6ff);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 
 .n-nav-menu__dropdown-link:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: -2px;
 }
 
 .n-nav-menu__dropdown-label {
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-900, #171717);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-nav-menu__dropdown-description {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-regular, 400);
-  color: var(--color-neutral-500, #737373);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-normal, 400);
+  color: var(--n-color-neutral-500, #737373);
   line-height: 1.5;
 }
 </style>

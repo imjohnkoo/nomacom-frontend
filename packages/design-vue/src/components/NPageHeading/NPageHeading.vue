@@ -26,14 +26,14 @@ withDefaults(defineProps<NPageHeadingProps>(), {
 
 <style scoped>
 .n-page-heading {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-page-heading__eyebrow {
   margin: 0 0 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .n-page-heading__title {
@@ -41,8 +41,8 @@ withDefaults(defineProps<NPageHeadingProps>(), {
   font-size: 26px;
   line-height: 1.28;
   letter-spacing: -0.01em;
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-neutral-900, #171717);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-neutral-900, #171717);
   white-space: pre-line;
 }
 
@@ -50,7 +50,7 @@ withDefaults(defineProps<NPageHeadingProps>(), {
   margin: 12px 0 0;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
   white-space: pre-line;
 }
 </style>

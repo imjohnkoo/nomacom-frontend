@@ -56,7 +56,7 @@ function handleComplete(value: string[]) {
 <style scoped>
 .n-pin-input {
   display: inline-flex;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
 }
 
 .n-pin-input--disabled {
@@ -68,28 +68,28 @@ function handleComplete(value: string[]) {
   width: 44px;
   height: 44px;
   text-align: center;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-lg);
-  font-weight: var(--font-fontWeight-semibold);
-  color: var(--color-neutral-800);
-  background-color: var(--color-neutral-0);
-  border: var(--borderWidth-1) solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-lg);
+  font-weight: var(--n-font-weight-semibold);
+  color: var(--n-color-neutral-800);
+  background-color: var(--n-color-neutral-0);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-300);
+  border-radius: var(--n-radius-md);
+  transition: border-color var(--n-transition-fast), box-shadow var(--n-transition-fast);
   outline: none;
 }
 
 .n-pin-input__field::placeholder {
-  color: var(--color-neutral-300);
+  color: var(--n-color-neutral-300);
 }
 
 .n-pin-input__field:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-50);
+  border-color: var(--n-color-primary-500);
+  box-shadow: 0 0 0 2px var(--n-color-primary-50);
 }
 
 .n-pin-input__field[data-disabled] {
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
   cursor: not-allowed;
 }
 </style>

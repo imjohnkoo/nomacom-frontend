@@ -1,4 +1,6 @@
-/* Import design tokens */
+/* @imjohnkoo/design-vue — base styles */
+
+/* Design tokens (`--n-*`) */
 @import '@imjohnkoo/design-tokens/css';
 
 /* Base reset for components */
@@ -6,4 +8,71 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* Shared transition preset */
+.n-transition {
+  transition-property: background-color, border-color, color, opacity, box-shadow;
+  transition-duration: 0.15s;
+  transition-timing-function: ease;
+}
+
+/* Focus ring utility (opt-in) */
+.n-focus-ring:focus-visible {
+  outline: 2px solid var(--n-color-primary-500, #6239ff);
+  outline-offset: 2px;
+}
+
+/* 포커스 표시 기본값 (WCAG 2.4.7)
+ *
+ * `.n-focus-ring` 은 **옵트인**이라 그 클래스를 붙이지 않은 컨트롤은 표시가 없다.
+ * 여기서 전역 기본값을 주되 **`:where()` 로 감싸 명시도를 0** 으로 만든다 —
+ * 자기 포커스 스타일을 가진 컴포넌트(`.n-input`, `.n-button` 등 클래스 선택자)가 항상 이긴다.
+ *
+ * ⚠️ 명시도를 0 으로 두는 이유 (m8 이 2026-08-15 에 실제로 밟은 회귀):
+ * 소비 앱이 `input:focus-visible { outline }` 을 명시도 높게 걸면 DS 입력 **안쪽**까지
+ * 덮어써 둥근 링 위에 직사각형 링이 이중으로 뜬다. 그래서 여기서는
+ * (a) 명시도 0 (b) `outline` 단일 속성만 — 링을 «추가»하지 않고 «없을 때만» 채운다.
+ */
+:where(:focus-visible) {
+  outline: 2px solid var(--n-color-primary-500, #6239ff);
+  outline-offset: 2px;
+}
+
+/* 모션 민감 사용자 (WCAG 2.3.3 · prefers-reduced-motion)
+ *
+ * 컴포넌트마다 기억해야 하는 규칙은 신규 컴포넌트에서 반드시 빠진다.
+ * (마이그레이션 전 실측: nomacom DS 96개 컴포넌트 중 가드 보유 0곳)
+ * 그래서 전역 1곳으로 올린다.
+ *
+ * 0 이 아니라 0.01ms 인 이유 = `transitionend`/`animationend` 에 의존하는 코드가
+ * 계속 동작해야 한다. 0 이면 이벤트가 발화하지 않아 UI 가 멈춘다.
+ *
+ * ⚠️ `:where(*, *::before, *::after)` 로 쓰면 안 된다 — `:where()` 는 의사요소를 받지 못해
+ * 파서가 그 인자를 버리고 `:where(*)` 만 남긴다. 모든 선언이 !important 라
+ * 명시도를 낮출 이유도 없으므로 보편 선택자를 그대로 쓴다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen reader only — 시각적으로 감추되 접근성 트리에는 남긴다.
+ * `display: none` / `visibility: hidden` 은 낭독기에서도 사라지므로 쓰지 말 것. */
+.n-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

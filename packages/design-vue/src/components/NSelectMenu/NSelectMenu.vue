@@ -72,28 +72,28 @@ const selectedValue = computed({
 
 <style scoped>
 .n-select-menu {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   width: 100%;
 }
 
 .n-select-menu__content {
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-md, 0.375rem);
-  background-color: var(--color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-md, 0.375rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
   overflow: hidden;
 }
 
 .n-select-menu__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-800, #262626);
+  gap: var(--n-spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-800, #262626);
   cursor: pointer;
   outline: none;
-  transition: background-color var(--transition-fast, 150ms ease);
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-100, #f5f5f5);
+  transition: background-color var(--n-transition-fast, 150ms ease);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-select-menu__item:last-child {
@@ -101,19 +101,19 @@ const selectedValue = computed({
 }
 
 .n-select-menu__item[data-highlighted] {
-  background-color: var(--color-primary-50, #eff6ff);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 
 .n-select-menu__item[data-state='checked'] {
-  background-color: var(--color-primary-50, #eff6ff);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-primary-700, #1d4ed8);
+  background-color: var(--n-color-primary-50, #f1edff);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-select-menu__item[data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-select-menu__item-indicator {
@@ -122,7 +122,7 @@ const selectedValue = computed({
   justify-content: center;
   width: 16px;
   flex-shrink: 0;
-  color: var(--color-primary-600, #2563eb);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-select-menu__item-label {

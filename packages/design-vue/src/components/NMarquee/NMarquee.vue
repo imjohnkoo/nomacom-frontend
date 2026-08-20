@@ -91,7 +91,7 @@ export default defineComponent({
   overflow: hidden;
   width: 100%;
   position: relative;
-  font-family: var(--font-fontFamily-sans);
+  font-family: var(--n-font-family-sans);
 }
 
 .n-marquee__track {

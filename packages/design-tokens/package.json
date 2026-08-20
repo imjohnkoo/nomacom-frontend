@@ -1,6 +1,6 @@
 {
   "name": "@imjohnkoo/design-tokens",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Nomacom shared design tokens - colors, typography, spacing, shadows",
   "license": "UNLICENSED",
   "repository": {
@@ -26,11 +26,15 @@
   ],
   "scripts": {
     "build": "tsx src/build.ts",
+    "check": "tsx src/build.ts --check",
+    "fix": "tsx src/build.ts --fix",
     "clean": "rm -rf dist",
-    "dev": "tsx watch src/build.ts"
+    "dev": "tsx watch src/build.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

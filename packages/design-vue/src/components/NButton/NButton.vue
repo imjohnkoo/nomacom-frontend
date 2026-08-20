@@ -59,15 +59,15 @@ function handleClick(event: MouseEvent) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2, 0.5rem);
-  border: var(--borderWidth-1, 1px) solid transparent;
+  gap: var(--n-spacing-2, 0.5rem);
+  border: var(--n-border-width-1, 1px) solid transparent;
   /* 사이즈 불문 동일 굴곡 — xl CTA 와 통일 (john 피드백) */
-  border-radius: var(--radius-2xl, 1rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-weight: var(--font-fontWeight-medium, 500);
-  line-height: var(--font-lineHeight-normal, 1.5);
+  border-radius: var(--n-radius-2xl, 1rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-weight: var(--n-font-weight-medium, 500);
+  line-height: var(--n-font-line-height-normal, 1.5);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all var(--n-transition-fast, 150ms ease);
   outline: none;
   text-decoration: none;
   white-space: nowrap;
@@ -75,96 +75,96 @@ function handleClick(event: MouseEvent) {
 }
 
 .n-button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-200, #ddd6fe);
+  box-shadow: 0 0 0 2px var(--n-color-primary-200, #c7b6ff);
 }
 
 /* --- Sizes --- */
 .n-button--sm {
-  padding: var(--spacing-1, 0.25rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  padding: var(--n-spacing-1, 0.25rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
 }
 
 .n-button--md {
-  padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
-  font-size: var(--font-fontSize-base, 1rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-4, 1rem);
+  font-size: var(--n-font-size-base, 1rem);
 }
 
 .n-button--lg {
-  padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem);
-  font-size: var(--font-fontSize-lg, 1.125rem);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-6, 1.5rem);
+  font-size: var(--n-font-size-lg, 1.125rem);
 }
 
 /* CTA 사이즈 — sticky 하단 보라 그림자 포함, 토스풍 */
 .n-button--xl {
   height: 56px;
-  padding: 0 var(--spacing-6, 1.5rem);
+  padding: 0 var(--n-spacing-6, 1.5rem);
   font-size: 16px;
-  font-weight: var(--font-fontWeight-semibold, 600);
+  font-weight: var(--n-font-weight-semibold, 600);
 }
 
 .n-button--xl.n-button--primary {
-  box-shadow: var(--shadow-cta-brand, 0 10px 24px -10px rgba(98, 57, 255, 0.5));
+  box-shadow: var(--n-shadow-cta-brand, 0 10px 24px -10px rgba(98, 57, 255, 0.5));
 }
 
 /* --- Variants --- */
 .n-button--primary {
-  background-color: var(--color-primary-500, #6239ff);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-primary-500, #6239ff);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .n-button--primary:hover:not(:disabled) {
-  background-color: var(--color-primary-600, #5025e8);
+  background-color: var(--n-color-primary-600, #5025e8);
 }
 .n-button--primary:active:not(:disabled) {
-  background-color: var(--color-primary-700, #3f1cc0);
+  background-color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-button--secondary {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-800, #262626);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-800, #262626);
 }
 .n-button--secondary:hover:not(:disabled) {
-  background-color: var(--color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-200, #e5e5e5);
 }
 .n-button--secondary:active:not(:disabled) {
-  background-color: var(--color-neutral-300, #d4d4d4);
+  background-color: var(--n-color-neutral-300, #d4d4d4);
 }
 
 /* soft 초록 — NStatusPill success 와 동일 톤 (발급완료/주문완료 계열 액션) */
 .n-button--success {
-  background-color: var(--color-success-50, #ecfdf5);
-  color: var(--color-success-700, #059669);
+  background-color: var(--n-color-success-50, #f0fdf4);
+  color: var(--n-color-success-700, #15803d);
 }
 .n-button--success:hover:not(:disabled) {
-  background-color: var(--color-success-100, #d1fae5);
+  background-color: var(--n-color-success-100, #dcfce7);
 }
 .n-button--success:active:not(:disabled) {
-  background-color: var(--color-success-200, #a7f3d0);
+  background-color: var(--n-color-success-200, #bbf7d0);
 }
 
 .n-button--outline {
   background-color: transparent;
-  border-color: var(--color-neutral-300, #d4d4d4);
-  color: var(--color-neutral-800, #262626);
+  border-color: var(--n-color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-800, #262626);
 }
 .n-button--outline:hover:not(:disabled) {
-  background-color: var(--color-neutral-50, #fafafa);
-  border-color: var(--color-neutral-400, #a3a3a3);
+  background-color: var(--n-color-neutral-50, #fafafa);
+  border-color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-button--ghost {
   background-color: transparent;
-  color: var(--color-neutral-700, #404040);
+  color: var(--n-color-neutral-700, #404040);
 }
 .n-button--ghost:hover:not(:disabled) {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-button--danger {
-  background-color: var(--color-error-500, #ef4444);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-error-500, #ef4444);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .n-button--danger:hover:not(:disabled) {
-  background-color: var(--color-error-700, #b91c1c);
+  background-color: var(--n-color-error-700, #b91c1c);
 }
 
 /* --- States --- */

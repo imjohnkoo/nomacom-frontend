@@ -9,7 +9,7 @@
     "3xl": "1.5rem",
     "full": "9999px"
   },
-  "borderWidth": {
+  "border-width": {
     "0": "0",
     "1": "1px",
     "2": "2px"
@@ -19,7 +19,7 @@
     "normal": "250ms ease",
     "slow": "350ms ease"
   },
-  "zIndex": {
+  "z-index": {
     "dropdown": "1000",
     "sticky": "1020",
     "fixed": "1030",

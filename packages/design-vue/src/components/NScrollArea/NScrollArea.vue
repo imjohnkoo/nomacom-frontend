@@ -63,11 +63,11 @@ withDefaults(defineProps<NScrollAreaProps>(), {
   touch-action: none;
   user-select: none;
   padding: 2px;
-  transition: background-color var(--transition-fast, 150ms ease);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-scroll-area__scrollbar:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-scroll-area__scrollbar--vertical {
@@ -82,9 +82,9 @@ withDefaults(defineProps<NScrollAreaProps>(), {
 .n-scroll-area__thumb {
   position: relative;
   flex: 1;
-  border-radius: var(--radius-full, 9999px);
-  background-color: var(--color-neutral-300, #d4d4d4);
-  transition: background-color var(--transition-fast, 150ms ease);
+  border-radius: var(--n-radius-full, 9999px);
+  background-color: var(--n-color-neutral-300, #d4d4d4);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-scroll-area__thumb::before {
@@ -100,6 +100,6 @@ withDefaults(defineProps<NScrollAreaProps>(), {
 }
 
 .n-scroll-area__thumb:hover {
-  background-color: var(--color-neutral-400, #a3a3a3);
+  background-color: var(--n-color-neutral-400, #a3a3a3);
 }
 </style>

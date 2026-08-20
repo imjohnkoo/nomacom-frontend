@@ -143,63 +143,63 @@ const dateValue = computed({
 <style>
 .n-input-date {
   position: relative;
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   width: 100%;
 }
 
 .n-input-date__control {
   display: flex;
   align-items: center;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-300, #d4d4d4);
-  border-radius: var(--radius-md, 0.375rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  transition: border-color var(--transition-fast, 150ms ease);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-300, #d4d4d4);
+  border-radius: var(--n-radius-md, 0.375rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  transition: border-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-date__control:focus-within {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #6239FF);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #e3dbff);
 }
 
 .n-input-date__field {
   display: flex;
   align-items: center;
   flex: 1;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  gap: var(--spacing-1, 0.25rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  gap: var(--n-spacing-1, 0.25rem);
 }
 
 .n-input-date__segment {
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-800, #262626);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-800, #262626);
   padding: 1px 2px;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
   outline: none;
 }
 
 .n-input-date__segment:focus {
-  background-color: var(--color-primary-100, #dbeafe);
-  color: var(--color-primary-800, #1e40af);
+  background-color: var(--n-color-primary-100, #e3dbff);
+  color: var(--n-color-primary-800, #2f1499);
 }
 
 .n-input-date__segment[data-placeholder] {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-input-date__trigger {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem);
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--color-neutral-500, #737373);
-  transition: color var(--transition-fast, 150ms ease);
+  color: var(--n-color-neutral-500, #737373);
+  transition: color var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-date__trigger:hover {
-  color: var(--color-neutral-700, #404040);
+  color: var(--n-color-neutral-700, #404040);
 }
 
 .n-input-date__trigger:disabled {
@@ -208,11 +208,11 @@ const dateValue = computed({
 }
 
 .n-input-date__content {
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
-  padding: var(--spacing-3, 0.75rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  padding: var(--n-spacing-3, 0.75rem);
   z-index: 50;
 }
 
@@ -220,13 +220,13 @@ const dateValue = computed({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: var(--spacing-3, 0.75rem);
+  padding-bottom: var(--n-spacing-3, 0.75rem);
 }
 
 .n-input-date__heading {
-  font-size: var(--font-fontSize-base, 1rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-800, #262626);
+  font-size: var(--n-font-size-base, 1rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-800, #262626);
 }
 
 .n-input-date__nav-btn {
@@ -237,14 +237,14 @@ const dateValue = computed({
   height: 32px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-md, 0.375rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   cursor: pointer;
-  color: var(--color-neutral-600, #525252);
-  transition: background-color var(--transition-fast, 150ms ease);
+  color: var(--n-color-neutral-600, #525252);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-date__nav-btn:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-input-date__grid {
@@ -261,9 +261,9 @@ const dateValue = computed({
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-500, #737373);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-input-date__cell {
@@ -283,35 +283,35 @@ const dateValue = computed({
   height: 32px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-full, 9999px);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-800, #262626);
+  border-radius: var(--n-radius-full, 9999px);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-800, #262626);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-date__cell-trigger:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-input-date__cell-trigger:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: -2px;
 }
 
 .n-input-date__cell-trigger[data-selected] {
-  background-color: var(--color-primary-600, #2563eb);
-  color: var(--color-neutral-0, #ffffff);
-  font-weight: var(--font-fontWeight-medium, 500);
+  background-color: var(--n-color-primary-600, #5025e8);
+  color: var(--n-color-neutral-0, #ffffff);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 
 .n-input-date__cell-trigger[data-today] {
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-primary-600, #2563eb);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-input-date__cell-trigger[data-today][data-selected] {
-  color: var(--color-neutral-0, #ffffff);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 
 .n-input-date__cell-trigger[data-disabled] {
@@ -320,6 +320,6 @@ const dateValue = computed({
 }
 
 .n-input-date__cell-trigger[data-outside-month] {
-  color: var(--color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-300, #d4d4d4);
 }
 </style>

@@ -62,13 +62,13 @@ const layoutStyles = computed(() => ({
   position: sticky;
   top: 0;
   z-index: 5;
-  background-color: var(--color-neutral-0, #ffffff);
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-dashboard__content {
   grid-area: content;
   min-width: 0;
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 </style>

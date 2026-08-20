@@ -93,26 +93,26 @@ export default defineComponent({
 .n-tree-node__row {
   display: flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
-  padding: var(--spacing-1, 0.25rem) var(--spacing-2, 0.5rem);
-  border-radius: var(--radius-md, 0.375rem);
+  gap: var(--n-spacing-1, 0.25rem);
+  padding: var(--n-spacing-1, 0.25rem) var(--n-spacing-2, 0.5rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 150ms ease);
+  transition: background-color var(--n-transition-fast, 150ms ease);
   outline: none;
   user-select: none;
 }
 
 .n-tree-node__row:hover {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .n-tree-node__row:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--color-primary-500, #3b82f6);
+  box-shadow: inset 0 0 0 2px var(--n-color-primary-500, #6239FF);
 }
 
 .n-tree-node__row--selected {
-  background-color: var(--color-primary-50, #eff6ff);
-  color: var(--color-primary-700, #1d4ed8);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-tree-node__toggle {
@@ -125,13 +125,13 @@ export default defineComponent({
   background: transparent;
   cursor: pointer;
   padding: 0;
-  color: var(--color-neutral-500, #737373);
-  border-radius: var(--radius-sm, 0.25rem);
+  color: var(--n-color-neutral-500, #737373);
+  border-radius: var(--n-radius-sm, 0.25rem);
   flex-shrink: 0;
 }
 
 .n-tree-node__toggle:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-tree-node__spacer {
@@ -140,7 +140,7 @@ export default defineComponent({
 }
 
 .n-tree-node__chevron {
-  transition: transform var(--transition-fast, 150ms ease);
+  transition: transform var(--n-transition-fast, 150ms ease);
 }
 
 .n-tree-node__chevron--expanded {
@@ -148,12 +148,12 @@ export default defineComponent({
 }
 
 .n-tree-node__icon {
-  font-size: var(--font-fontSize-base, 1rem);
+  font-size: var(--n-font-size-base, 1rem);
   flex-shrink: 0;
 }
 
 .n-tree-node__label {
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
   color: inherit;
   line-height: 1.5;
 }

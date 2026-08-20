@@ -44,7 +44,7 @@ function handleSubmit(event: Event) {
 .n-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4, 1rem);
+  gap: var(--n-spacing-4, 1rem);
   width: 100%;
 }
 

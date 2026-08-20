@@ -83,7 +83,7 @@ function handleStepChange(value: number | undefined) {
 
 <style scoped>
 .n-stepper {
-  font-family: var(--font-fontFamily-sans);
+  font-family: var(--n-font-family-sans);
   width: 100%;
 }
 
@@ -111,22 +111,22 @@ function handleStepChange(value: number | undefined) {
 .n-stepper__trigger {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: var(--n-spacing-3);
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--spacing-2);
-  border-radius: var(--radius-md);
-  transition: background-color var(--transition-fast);
+  padding: var(--n-spacing-2);
+  border-radius: var(--n-radius-md);
+  transition: background-color var(--n-transition-fast);
   white-space: nowrap;
 }
 
 .n-stepper__trigger:hover {
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
 }
 
 .n-stepper__trigger:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
@@ -136,29 +136,29 @@ function handleStepChange(value: number | undefined) {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-full);
-  border: var(--borderWidth-2) solid var(--color-neutral-300);
-  background-color: var(--color-neutral-0);
-  color: var(--color-neutral-500);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-semibold);
+  border-radius: var(--n-radius-full);
+  border: var(--n-border-width-2) solid var(--n-color-neutral-300);
+  background-color: var(--n-color-neutral-0);
+  color: var(--n-color-neutral-500);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-semibold);
   transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
+    background-color var(--n-transition-fast),
+    border-color var(--n-transition-fast),
+    color var(--n-transition-fast);
   flex-shrink: 0;
 }
 
 [data-state='active'] .n-stepper__indicator {
-  border-color: var(--color-primary-600);
-  background-color: var(--color-primary-600);
-  color: var(--color-neutral-0);
+  border-color: var(--n-color-primary-600);
+  background-color: var(--n-color-primary-600);
+  color: var(--n-color-neutral-0);
 }
 
 [data-state='completed'] .n-stepper__indicator {
-  border-color: var(--color-primary-600);
-  background-color: var(--color-primary-50);
-  color: var(--color-primary-600);
+  border-color: var(--n-color-primary-600);
+  background-color: var(--n-color-primary-50);
+  color: var(--n-color-primary-600);
 }
 
 .n-stepper__number {
@@ -172,35 +172,35 @@ function handleStepChange(value: number | undefined) {
 }
 
 .n-stepper__title {
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-semibold);
-  color: var(--color-neutral-700);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-semibold);
+  color: var(--n-color-neutral-700);
 }
 
 [data-state='active'] .n-stepper__title {
-  color: var(--color-primary-600);
+  color: var(--n-color-primary-600);
 }
 
 .n-stepper__description {
-  font-size: var(--font-fontSize-xs);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-500);
-  margin-top: var(--spacing-0);
+  font-size: var(--n-font-size-xs);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-500);
+  margin-top: var(--n-spacing-0);
 }
 
 .n-stepper__separator {
   flex: 1;
   height: 2px;
   min-width: 24px;
-  background-color: var(--color-neutral-200);
-  margin: var(--spacing-0) var(--spacing-2);
-  border-radius: var(--radius-full);
-  transition: background-color var(--transition-fast);
+  background-color: var(--n-color-neutral-200);
+  margin: var(--n-spacing-0) var(--n-spacing-2);
+  border-radius: var(--n-radius-full);
+  transition: background-color var(--n-transition-fast);
 }
 
 [data-state='completed'] ~ .n-stepper__separator,
 .n-stepper__separator[data-state='completed'] {
-  background-color: var(--color-primary-600);
+  background-color: var(--n-color-primary-600);
 }
 
 .n-stepper--vertical .n-stepper__separator {
@@ -208,6 +208,6 @@ function handleStepChange(value: number | undefined) {
   height: auto;
   min-height: 24px;
   flex: none;
-  margin: var(--spacing-1) var(--spacing-0) var(--spacing-1) calc(var(--spacing-2) + 17px);
+  margin: var(--n-spacing-1) var(--n-spacing-0) var(--n-spacing-1) calc(var(--n-spacing-2) + 17px);
 }
 </style>
