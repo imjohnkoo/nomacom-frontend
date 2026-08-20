@@ -234,7 +234,7 @@ export type { NMobileLayoutProps, MobileDevicePreset } from './NMobileLayout'
 
 // Dashboard / Admin Components
 export { NStat } from './NStat'
-export type { NStatProps } from './NStat'
+export type { NStatProps, NStatTrend } from './NStat'
 
 export { NTableSkeleton } from './NSkeleton'
 export type { NTableSkeletonProps } from './NSkeleton'
@@ -246,7 +246,7 @@ export { NAsyncSection } from './NAsyncSection'
 export type { NAsyncSectionProps } from './NAsyncSection'
 
 export { NKpi } from './NKpi'
-export type { NKpiProps, NKpiAccent, NKpiDeltaDirection } from './NKpi'
+export type { NKpiProps, NKpiAccent, NKpiDeltaDirection, NKpiTrend } from './NKpi'
 
 export { NKpiStrip } from './NKpiStrip'
 export type { NKpiStripProps } from './NKpiStrip'

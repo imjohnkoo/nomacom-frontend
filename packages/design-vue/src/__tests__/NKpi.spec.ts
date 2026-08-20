@@ -76,3 +76,42 @@ describe('NKpi', () => {
     expect(wrapper.find('.n-kpi__value').exists()).toBe(false)
   })
 })
+
+describe('NKpi — trend (상승이 좋은지 나쁜지)', () => {
+  // 회귀 방지: 상승 = 초록으로 고정하면 취소율·실패율 급등이 「좋아졌다」로 읽힌다.
+  it('기본(up-good)은 상승을 positive 로 칠한다', () => {
+    const w = mount(NKpi, { props: { label: '매출', value: '1', delta: '+8.2%' } })
+    expect(w.find('.n-kpi__delta').classes()).toContain('n-kpi__delta--positive')
+  })
+
+  it('up-bad 는 상승을 negative 로 칠한다', () => {
+    const w = mount(NKpi, {
+      props: { label: '취소율', value: '2.1', delta: '+0.3%p', trend: 'up-bad' },
+    })
+    const cls = w.find('.n-kpi__delta').classes()
+    expect(cls).toContain('n-kpi__delta--negative')
+    expect(cls).not.toContain('n-kpi__delta--positive')
+  })
+
+  it('up-bad 는 하락을 positive 로 칠한다', () => {
+    const w = mount(NKpi, {
+      props: { label: '취소율', value: '1.8', delta: '-0.3%p', trend: 'up-bad' },
+    })
+    expect(w.find('.n-kpi__delta').classes()).toContain('n-kpi__delta--positive')
+  })
+
+  it('neutral 은 좋고 나쁨을 주장하지 않는다', () => {
+    const w = mount(NKpi, {
+      props: { label: '접속자', value: '120', delta: '+12', trend: 'neutral' },
+    })
+    expect(w.find('.n-kpi__delta').classes()).toContain('n-kpi__delta--muted')
+  })
+
+  it('색과 무관하게 방향 기호·낭독 문구는 실제 증감을 따른다', () => {
+    const w = mount(NKpi, {
+      props: { label: '취소율', value: '2.1', delta: '+0.3%p', trend: 'up-bad' },
+    })
+    expect(w.find('.n-kpi__delta').classes()).toContain('n-kpi__delta--up')
+    expect(w.text()).toContain('증가')
+  })
+})

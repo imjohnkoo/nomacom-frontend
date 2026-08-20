@@ -55,12 +55,27 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+/**
+ * 지표의 «상승»이 좋은 일인지 나쁜 일인지. NKpi 의 `NKpiTrend` 와 동일한 값 집합이다.
+ *
+ * 방향과 색을 분리하는 이유: 어드민 대시보드에는 상승이 나쁜 지표가 흔하다
+ * (이탈률·취소율·실패율·환불 건수). 상승 = 초록으로 고정하면
+ * **악화가 「좋아졌다」로 읽힌다** — 운영 판단을 정면으로 오도한다.
+ */
+export type NStatTrend = 'up-good' | 'up-bad' | 'neutral'
+
 export interface NStatProps {
   label: string
   value: string | number
   change?: number
   changePeriod?: string
-  trend?: 'up-good' | 'up-bad'
+  /**
+   * 상승이 좋은 지표인지 나쁜 지표인지. 기본 `up-good`.
+   * 이탈률·취소율처럼 오르면 나쁜 지표에는 `up-bad` 를 줄 것 —
+   * 안 그러면 악화가 초록으로 표시돼 운영 판단을 오도한다.
+   * `neutral` 은 좋고 나쁨을 주장하지 않는다. (NKpi 의 `trend` 와 동일한 API)
+   */
+  trend?: NStatTrend
   variant?: 'minimal' | 'icon-accent'
 }
 
@@ -80,6 +95,7 @@ const changeDirection = computed(() => {
 
 const changeClasses = computed(() => {
   if (props.change === undefined) return []
+  if (props.trend === 'neutral' || props.change === 0) return 'n-stat__change--muted'
   const isUp = props.change > 0
   const goodWhenUp = props.trend !== 'up-bad'
   const isPositive = goodWhenUp ? isUp : !isUp
@@ -145,6 +161,11 @@ const formattedChange = computed(() => {
 
 .n-stat__change--negative {
   color: var(--n-color-error-500, #ef4444);
+}
+
+/* trend="neutral" — 좋고 나쁨을 주장하지 않는 지표. 방향 화살표는 그대로 나온다. */
+.n-stat__change--muted {
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-stat__change-icon {

@@ -41,6 +41,8 @@ const navItems = [
   { path: '/overlay', label: 'Overlay' },
   { path: '/layout', label: 'Layout' },
   { path: '/utility', label: 'Utility' },
+  { path: '/admin-patterns', label: 'Admin Patterns' },
+  { path: '/charts', label: 'Charts' },
   { path: '/admin', label: 'Admin Dashboard' },
 ]
 </script>

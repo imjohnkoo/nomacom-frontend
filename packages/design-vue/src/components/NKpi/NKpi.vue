@@ -9,7 +9,14 @@
       <template v-else>
         <span class="n-kpi__value">{{ value }}</span>
         <span v-if="suffix" class="n-kpi__suffix">{{ suffix }}</span>
-        <span v-if="delta" class="n-kpi__delta" :class="`n-kpi__delta--${resolvedDeltaDirection}`">
+        <span
+          v-if="delta"
+          class="n-kpi__delta"
+          :class="[
+            `n-kpi__delta--${resolvedDeltaDirection}`,
+            `n-kpi__delta--${deltaSentiment}`,
+          ]"
+        >
           <!-- 색상만으로 증감을 전달하지 않는다 — 기호(시각) + sr-only(낭독기) 병행 -->
           <span v-if="deltaSymbol" class="n-kpi__delta-symbol" aria-hidden="true">
             {{ deltaSymbol }}
@@ -31,8 +38,21 @@ import { computed } from 'vue'
 
 export type NKpiAccent = 'default' | 'success' | 'warning' | 'danger' | 'primary'
 
-/** 델타 방향 — 색상/기호/낭독 문구를 함께 결정한다 */
+/** 델타 방향 — 기호(▲▼)와 낭독 문구(증가/감소)를 결정한다 */
 export type NKpiDeltaDirection = 'up' | 'down' | 'flat'
+
+/**
+ * 지표의 «상승»이 좋은 일인지 나쁜 일인지.
+ *
+ * 방향과 색을 분리하는 이유: 어드민 대시보드에는 상승이 나쁜 지표가 흔하다
+ * (취소율·개통 실패율·이탈률·환불 건수). 상승 = 초록으로 고정하면
+ * **취소율 급등이 「좋아졌다」로 읽힌다** — 운영 판단을 정면으로 오도한다.
+ *
+ * - `up-good` (기본): 매출·발급량처럼 오르면 좋은 지표
+ * - `up-bad`: 취소율·실패율처럼 오르면 나쁜 지표 — 색이 뒤집힌다
+ * - `neutral`: 좋고 나쁨을 주장하지 않는다 (재고 수량, 접속자 수 등)
+ */
+export type NKpiTrend = 'up-good' | 'up-bad' | 'neutral'
 
 export interface NKpiProps {
   label: string
@@ -49,6 +69,12 @@ export interface NKpiProps {
    */
   deltaDirection?: NKpiDeltaDirection
   /**
+   * 상승이 좋은 지표인지 나쁜 지표인지. 기본 `up-good`. (NStat 의 `trend` 와 동일한 API)
+   * 취소율·실패율·이탈률 같은 지표에는 반드시 `up-bad` 를 줄 것 —
+   * 안 그러면 악화가 초록으로 표시된다.
+   */
+  trend?: NKpiTrend
+  /**
    * Small sub text rendered after the value (e.g. "/ 11" or "원").
    */
   sub?: string
@@ -64,6 +90,7 @@ const props = withDefaults(defineProps<NKpiProps>(), {
   suffix: undefined,
   delta: undefined,
   deltaDirection: undefined,
+  trend: 'up-good',
   sub: undefined,
   hint: undefined,
   accent: 'default',
@@ -92,6 +119,17 @@ const deltaSrLabel = computed(() => {
   if (resolvedDeltaDirection.value === 'up') return '증가'
   if (resolvedDeltaDirection.value === 'down') return '감소'
   return ''
+})
+
+/**
+ * 색을 결정하는 «감정». 방향(up/down)이 아니라 이것이 초록/빨강을 정한다.
+ * up-bad 지표는 상승이 negative 로 칠해진다.
+ */
+const deltaSentiment = computed<'positive' | 'negative' | 'muted'>(() => {
+  const dir = resolvedDeltaDirection.value
+  if (dir === 'flat' || props.trend === 'neutral') return 'muted'
+  const good = props.trend === 'up-good' ? 'up' : 'down'
+  return dir === good ? 'positive' : 'negative'
 })
 </script>
 
@@ -153,12 +191,18 @@ const deltaSrLabel = computed(() => {
   line-height: 1;
 }
 
-.n-kpi__delta--up {
+/* 색은 방향(up/down)이 아니라 감정(positive/negative)이 정한다 — trend 참조.
+   토큰 이름의 up/down 은 하위호환을 위해 유지한다 (up = 좋음, down = 나쁨 의미). */
+.n-kpi__delta--positive {
   color: var(--n-kpi-delta-up-color, var(--n-color-success-600, #16a34a));
 }
 
-.n-kpi__delta--down {
+.n-kpi__delta--negative {
   color: var(--n-kpi-delta-down-color, var(--n-color-error-600, #dc2626));
+}
+
+.n-kpi__delta--muted {
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-kpi__sub {
