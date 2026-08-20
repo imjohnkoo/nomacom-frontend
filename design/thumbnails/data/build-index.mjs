@@ -9,15 +9,18 @@
 // 지명(label) 산출 규칙 — 에셋 정의 보고서 §4 「다국가 조합 상품 표기」 준수:
 //   1국    → catalog 의 countriesKr[0] (정식 국가명)
 //   2~3국  → naverName 의 권역 라벨 (예: 「남유럽2개국」) + 국가명 보조줄
-//   4국+   → naverName 의 권역 라벨. 국가명 나열 금지(3국까지만 허용)
+//   4국+   → 「{대표국}·{대표국} {N}개국」 (john 결정 2026-08-20). 아래 대표국 산출 참조
 // naverName 은 실제 판매 중인 상품명이라 마케팅 권역 표기의 정본으로 취급한다.
-import { readFileSync, writeFileSync } from 'node:fs'
+// data/label-overrides.json 에 { "EU044": "네덜란드·벨기에 4개국" } 형태로 적으면
+// 자동 산출을 덮어쓴다 — 마케팅 판단이 자동 규칙과 다를 때 쓰는 탈출구.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const CATALOG = join(HERE, '..', '..', 'products', '_generator', 'data', 'catalog.json')
 const SALES = join(HERE, 'sales-rank.json')
+const OVERRIDES = join(HERE, 'label-overrides.json')
 const OUT = join(HERE, 'thumbnails.json')
 const checkOnly = process.argv.includes('--check')
 
@@ -26,6 +29,7 @@ const catalog = JSON.parse(readFileSync(CATALOG, 'utf8'))
 // 전부 재작업이다. 상위 10개가 전체 판매의 81.3%.
 const sales = JSON.parse(readFileSync(SALES, 'utf8'))
 const rankBySku = new Map(sales.ranks.map((r) => [r.sku, r]))
+const overrides = existsSync(OVERRIDES) ? JSON.parse(readFileSync(OVERRIDES, 'utf8')) : {}
 
 // naverName 에서 권역 라벨만 뽑는다. 선행 브랜드 prefix 제거 후,
 // 상품 속성 키워드가 처음 나오는 지점 앞까지가 라벨.
@@ -115,11 +119,131 @@ for (const [zone, z] of Object.entries(catalog.zones)) {
 // 판매 실적 내림차순. 실적 없는 SKU(종량제 8개 — 2025년 0건)는 뒤로.
 rows.sort((a, b) => b.salesCount - a.salesCount || a.sku.localeCompare(b.sku))
 
+// ── 4개국 이상: 「{대표국}·{대표국} {N}개국」 ────────────────────────
+// 권역 라벨만 쓰면 EU042/EU044(둘 다 「유럽 4개국」), EU061/EU062(둘 다 「서유럽 6개국」)
+// 처럼 서로 다른 상품이 글자 단위로 같아진다 — 「공용 이미지」 판정 리스크에 직결.
+// 대표국 2개를 앞세워 가른다 (john 결정 2026-08-20).
+//
+// 대표국 선정 근거 두 축:
+//   ① 희소성 — 4개국 이상 라인업 안에서 그 나라가 몇 번 등장하는가. 적게 나올수록
+//      그 SKU 를 특정한다. 「체코」는 5개 상품에 들어 있어 대표로 쓰면 아무것도 못 가른다.
+//   ② 인지도 — 그 나라 단독 SKU 의 2025 실판매 건수. 우리 고객이 실제로 고른 순서라
+//      「어느 나라가 유명한가」를 추측하지 않아도 된다. 희소성 동률일 때 쓴다.
+//
+// 그 다음 혼동쌍(구성이 겹치는 두 zone)을 유사도 높은 순으로 훑으며, 각자 상대에게
+// 없는 「고유국」을 앞자리에 강제한다. 유사도 순서가 중요하다 — EU062 는 EU041 과도
+// EU061 과도 혼동되는데, 더 닮은 EU061 기준(체코)으로 갈라야 실제로 구별된다.
+const demandByCountry = new Map()
+for (const r of rows) {
+  if (r.countryCount === 1 && r.planType === 'unlimited') {
+    demandByCountry.set(r.countriesKr[0], r.salesCount)
+  }
+}
+const demand = (c) => demandByCountry.get(c) ?? 0
+
+// zone 단위로 묶는다 — 같은 zone 의 무제한/종량제는 같은 라벨을 쓴다.
+const multiZones = new Map()
+for (const r of rows) {
+  if (r.countryCount < 4) continue
+  if (!multiZones.has(r.zone)) {
+    multiZones.set(r.zone, { zone: r.zone, countries: r.countriesKr, n: r.countryCount, rows: [] })
+  }
+  multiZones.get(r.zone).rows.push(r)
+}
+const zoneList = [...multiZones.values()]
+
+const freq = new Map()
+for (const z of zoneList) for (const c of z.countries) freq.set(c, (freq.get(c) ?? 0) + 1)
+
+// 희소성 오름차순 → 인지도 내림차순 → 이름순(결정적)
+const rank = (list) =>
+  [...list].sort((a, b) => freq.get(a) - freq.get(b) || demand(b) - demand(a) || a.localeCompare(b))
+
+const jaccard = (a, b) => {
+  const A = new Set(a.countries)
+  const B = new Set(b.countries)
+  const inter = [...A].filter((x) => B.has(x)).length
+  return inter / new Set([...A, ...B]).size
+}
+
+const pairs = []
+for (let i = 0; i < zoneList.length; i++) {
+  for (let j = i + 1; j < zoneList.length; j++) {
+    const x = zoneList[i]
+    const y = zoneList[j]
+    const A = new Set(x.countries)
+    const B = new Set(y.countries)
+    const inter = [...A].filter((c) => B.has(c)).length
+    // 포함관계이거나 절반 이상 겹치면 혼동쌍. 3개국 이상 공유도 실무상 혼동된다.
+    if (inter === A.size || inter === B.size || jaccard(x, y) >= 0.4 || inter >= 3) {
+      pairs.push({ x, y, sim: jaccard(x, y) })
+    }
+  }
+}
+pairs.sort((p, q) => q.sim - p.sim)
+
+for (const { x, y } of pairs) {
+  const ux = rank(x.countries.filter((c) => !y.countries.includes(c)))
+  const uy = rank(y.countries.filter((c) => !x.countries.includes(c)))
+  if (ux.length && !x.forced) x.forced = ux[0]
+  if (uy.length && !y.forced) y.forced = uy[0]
+  if (!ux.length) x.subsetOf = y.zone
+  if (!uy.length) y.subsetOf = x.zone
+}
+
+// 라벨 길이 예산. 한글 1자 = 1, 숫자 = 1 로 세고 12 를 넘으면 지명이 하한 100px 에서도
+// 3줄로 밀린다(EU051 「크로아티아·슬로베니아 5개국」 = 13 에서 실측 확인).
+// 앞자리(구별 담당)는 고정하고 뒷자리만 예산 안에서 짧은 후보로 바꾼다.
+const LABEL_BUDGET = 12
+const labelCost = (s) => (s.match(/[가-힣0-9]/g) ?? []).length
+
+for (const z of zoneList) {
+  const ranked = rank(z.countries)
+  const first = z.forced ?? ranked[0]
+  const rest = ranked.filter((c) => c !== first)
+  const fits = (c) => labelCost(`${first}·${c} ${z.n}개국`) <= LABEL_BUDGET
+  const second = rest.find(fits) ?? rest[0]
+  const auto = `${first}·${second} ${z.n}개국`
+  if (labelCost(auto) > LABEL_BUDGET) {
+    for (const r of z.rows) {
+      r.review.push(
+        `라벨 「${auto}」 이 길어 지명이 하한(100px)에서 3줄로 밀린다 — label-overrides.json 으로 축약 필요`,
+      )
+    }
+  }
+  const label = overrides[z.zone] ?? auto
+  for (const r of z.rows) {
+    r.label = label
+    r.reps = [first, second]
+    r.labelSource = overrides[z.zone] ? 'override' : z.forced ? 'auto-discriminated' : 'auto-rarity'
+  }
+}
+
+// 혼동쌍이 결과적으로 갈렸는지 확인. 앞자리(가장 먼저 읽히는 자리)가 같으면 실패.
+for (const { x, y } of pairs) {
+  const [xf] = x.rows[0].reps
+  const [yf] = y.rows[0].reps
+  if (xf === yf) {
+    for (const r of [...x.rows, ...y.rows]) {
+      r.review.push(
+        `${x.zone}/${y.zone} 가 대표국 앞자리(${xf})를 공유 — 120px 에서 구별 불가. label-overrides.json 으로 지정 필요`,
+      )
+    }
+  } else if (x.rows[0].reps.some((c) => y.rows[0].reps.includes(c))) {
+    for (const r of [...x.rows, ...y.rows]) {
+      r.review.push(
+        `${x.zone}/${y.zone} 라벨에 같은 국가가 함께 등장 — 앞자리는 다르므로 구별은 되나 확인 권장`,
+      )
+    }
+  }
+}
+
 // 라벨 충돌 검사 — 보고서 「공용 이미지」 리스크. 같은 라벨 + 같은 플랜유형이면
 // 120px 에서 두 상품이 구별되지 않아 서로를 잠식한다.
 const seen = new Map()
 for (const r of rows) {
-  const key = `${r.label}|${r.planType}`
+  // 대표국 조합이 같으면 숫자 한 글자만 다른 라벨이 되어 120px 에서 구별되지 않는다.
+  const key = r.reps ? `${r.reps.join('|')}|${r.planType}` : `${r.label}|${r.planType}`
   if (seen.has(key)) {
     const other = seen.get(key)
     const msg = `라벨 충돌 — ${other.sku} 와 동일한 「${r.label}」. 120px 에서 구별 불가`
