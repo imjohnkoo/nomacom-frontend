@@ -15,6 +15,7 @@
 // 출력: out/{SKU}/{SKU}_00_rep.png   — 네이밍은 manager 세션 합의안
 import { chromium } from 'playwright'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { crc32 } from 'node:zlib'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -50,6 +51,39 @@ const page = await browser.newPage({
   deviceScaleFactor: 1,
 })
 
+// Playwright 스크린샷은 ICC 프로파일이 없는 무태그 PNG 를 낸다. 대부분의 뷰어가
+// 무태그를 sRGB 로 가정하긴 하지만, 에셋 가이드가 「반드시 sRGB 로 저장」을 명시했고
+// 현행 자산 11장에도 sRGB IEC61966-2.1 이 박혀 있다. 맞춰 둔다.
+//
+// 픽셀은 건드리지 않는다 — IHDR 뒤에 sRGB / gAMA / cHRM 청크만 끼워 넣는 메타데이터
+// 조작이라 무손실이다. (gAMA·cHRM 은 sRGB 청크를 모르는 디코더용 폴백)
+const pngChunk = (type, data) => {
+  const len = Buffer.alloc(4)
+  len.writeUInt32BE(data.length)
+  const body = Buffer.concat([Buffer.from(type, 'ascii'), data])
+  const crc = Buffer.alloc(4)
+  crc.writeUInt32BE(crc32(body) >>> 0)
+  return Buffer.concat([len, body, crc])
+}
+const u32 = (...vals) => {
+  const b = Buffer.alloc(vals.length * 4)
+  vals.forEach((v, i) => b.writeUInt32BE(v, i * 4))
+  return b
+}
+const SRGB_CHUNKS = Buffer.concat([
+  pngChunk('sRGB', Buffer.from([0])), // rendering intent 0 = perceptual
+  pngChunk('gAMA', u32(45455)), // 1/2.2
+  pngChunk('cHRM', u32(31270, 32900, 64000, 33000, 30000, 60000, 15000, 6000)),
+])
+function tagSrgb(file) {
+  const buf = readFileSync(file)
+  if (buf.includes(Buffer.from('sRGB', 'ascii'), 8)) return false
+  // 8바이트 시그니처 + IHDR(길이4 + 타입4 + 데이터13 + CRC4 = 25) 직후에 삽입
+  const at = 8 + 25
+  writeFileSync(file, Buffer.concat([buf.subarray(0, at), SRGB_CHUNKS, buf.subarray(at)]))
+  return true
+}
+
 const report = []
 for (const item of targets) {
   const url = `${BASE}/template/rep.html?sku=${item.sku}&scheme=${scheme}&model=${model}&modelLayer=${modelLayer}&logo=${logo}&sub=${sub}&flags=${flags}`
@@ -67,6 +101,7 @@ for (const item of targets) {
 
   // 전체 페이지가 아니라 캔버스 요소만 — 스크롤바가 섞이면 1000px 정사각이 깨진다.
   await page.locator('#mount > .canvas').screenshot({ path: file })
+  tagSrgb(file)
 
   const at120 = Math.round(fit.size * 1.2) / 10
   report.push({
