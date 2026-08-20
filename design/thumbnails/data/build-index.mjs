@@ -146,8 +146,20 @@ for (const [zone, z] of Object.entries(catalog.zones)) {
       sku: node.productCode,
       salesRank: rank?.rank ?? null,
       salesCount: rank?.count ?? 0,
-      // top10 = 1차 제작 대상 (판매 81.3%) · top20 = 2차 (93.5%) · tail = 이후
+      // top10 = 판매 81.3% · top20 = 93.5% · tail = 이후
       tier: rank ? (rank.rank <= 10 ? 'top10' : rank.rank <= 20 ? 'top20' : 'tail') : 'none',
+      // 제작·업로드 대상 여부 (오너 승인 2026-08-21 — 무제한 48장 전량).
+      //
+      // 종량제 8개는 제외한다. 같은 zone 의 무제한과 배지 하나만 달라 120px 에서
+      // 다른 픽셀이 6.7% 뿐인데, EP 가이드가 「동일 이미지를 가진 상품 전체가 노출 중단」
+      // 이라 적발되면 짝이 되는 무제한 주력 상품까지 함께 내려간다.
+      // 「팔 때 다시 보자」가 아니라 「올리지 않는다」가 성립 조건이다.
+      // 배경색까지 갈라 재설계한 뒤에 다시 연다.
+      produce: planType === 'unlimited',
+      produceHold:
+        planType === 'quota'
+          ? '종량제 — 무제한과 120px 구별 불가, 공용 이미지 판정 시 무제한까지 노출 중단'
+          : null,
       zone,
       planType,
       channelProductNo: node.channelProductNo ?? null,
@@ -329,6 +341,8 @@ const out = {
     unlimited: rows.filter((r) => r.planType === 'unlimited').length,
     quota: rows.filter((r) => r.planType === 'quota').length,
   },
+  produceCount: rows.filter((r) => r.produce).length,
+  holdCount: rows.filter((r) => !r.produce).length,
   byTier: {
     top10: rows.filter((r) => r.tier === 'top10').length,
     top20: rows.filter((r) => r.tier === 'top20').length,
@@ -344,7 +358,8 @@ if (!checkOnly) {
   writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n', 'utf8')
   console.log(
     `thumbnails.json — ${rows.length}개 SKU (무제한 ${out.byPlanType.unlimited} · 종량제 ${out.byPlanType.quota})\n` +
-      `우선순위: 1차 top10 ${out.byTier.top10}장 · 2차 top20 ${out.byTier.top20}장 · 이후 ${out.byTier.tail}장 · 실적없음 ${out.byTier.none}장`,
+      `제작 대상 ${out.produceCount}장 · 보류 ${out.holdCount}장(종량제)\n` +
+      `우선순위: top10 ${out.byTier.top10} · top20 ${out.byTier.top20} · 이후 ${out.byTier.tail} · 실적없음 ${out.byTier.none}`,
   )
 }
 console.log(`\n검토 필요 ${flagged.length}건:`)

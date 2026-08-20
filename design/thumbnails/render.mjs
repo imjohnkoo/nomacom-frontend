@@ -6,6 +6,7 @@
 //   node render.mjs --scheme duo --model female --model-layer front
 //   node render.mjs --no-flags            # 국기 줄 빼기
 //   node render.mjs --no-sub              # 보조 국가명 줄 빼기
+//   node render.mjs --include-hold        # 보류분(종량제 8장)까지 — 업로드 금지
 //   node render.mjs --sheet               # 120px 검수 시트도 함께 생성
 //
 // 사전 준비 (둘 다 필요):
@@ -39,7 +40,10 @@ const outRoot = join(HERE, flag('out', 'out'))
 
 const index = JSON.parse(readFileSync(join(HERE, 'data', 'thumbnails.json'), 'utf8'))
 const picked = argv.filter((a) => /^[A-Z]{3}\d{2}[UL]$|^EU\d{3}[UL]$/.test(a))
-const targets = picked.length ? index.items.filter((i) => picked.includes(i.sku)) : index.items
+// 기본은 제작 승인분(무제한 48장)만. 종량제는 --include-hold 로만 뽑는다 —
+// 실수로 올라가면 짝이 되는 무제한까지 노출 중단될 수 있다.
+const pool = has('include-hold') ? index.items : index.items.filter((i) => i.produce)
+const targets = picked.length ? index.items.filter((i) => picked.includes(i.sku)) : pool
 if (!targets.length) {
   console.error('대상 SKU 가 없습니다.')
   process.exit(1)
