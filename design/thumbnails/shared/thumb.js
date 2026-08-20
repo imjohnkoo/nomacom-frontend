@@ -12,6 +12,7 @@ export const DEFAULTS = {
   modelLayer: 'back', // 'back' = 텍스트가 위 (기본) | 'front' = 모델이 위
   logo: 'kor', // 'kor' | 'eng' | 'square'
   showSub: false, // 국가명 보조줄. 켜면 텍스트 덩어리 3개(하한)
+  showFlags: true, // 지명 위 국기 줄. 구성 국가 전부 (john 결정 2026-08-20)
   guides: false,
   maxTitleLines: 2,
 }
@@ -35,6 +36,10 @@ export function createCanvas(item, opts = {}, assetBase = 'assets') {
   if (o.guides) el.dataset.guides = 'on'
 
   const sub = o.showSub && item.sub ? `<div class="thumb__sub">${item.sub}</div>` : ''
+  const flags =
+    o.showFlags && item.flags?.length
+      ? `<div class="thumb__flags">${item.flags.join('')}</div>`
+      : ''
   const model =
     o.model === 'none'
       ? ''
@@ -44,6 +49,7 @@ export function createCanvas(item, opts = {}, assetBase = 'assets') {
     <div class="thumb__text">
       <span class="thumb__logo"><img src="${assetBase}/logo/${LOGO_SRC[o.logo]}" alt="eSIM마니" /></span>
       <div class="thumb__stack">
+        ${flags}
         <div class="thumb__title">${item.label}</div>
         ${sub}
         <div class="thumb__badge">${item.badge}</div>
@@ -88,6 +94,26 @@ export function fitTitle(canvasEl, { min = 100, max = null, maxLines = null } = 
     overflowX: el.scrollWidth > el.clientWidth + 1,
     maxLines: lines_,
   }
+}
+
+/**
+ * 국기 줄을 텍스트 컬럼 폭 안에 넣는다.
+ * 6개국이면 이모지 6개가 한 줄에 들어가야 하므로 개수만큼 작아진다.
+ * 하한 60px — 120px 노출에서 7.2px 이라 이보다 작으면 색 덩어리로도 안 읽힌다.
+ */
+export function fitFlags(canvasEl, { min = 60, max = null } = {}) {
+  const el = canvasEl.querySelector('.thumb__flags')
+  if (!el) return { fits: true, size: null }
+  const ceiling =
+    max ?? (parseFloat(getComputedStyle(canvasEl).getPropertyValue('--flag-size')) || 120)
+
+  el.style.fontSize = ''
+  for (let size = ceiling; size >= min; size -= 2) {
+    el.style.fontSize = `${size}px`
+    if (el.scrollWidth <= el.clientWidth + 1) return { fits: true, size }
+  }
+  el.style.fontSize = `${min}px`
+  return { fits: false, size: min, overflowX: el.scrollWidth > el.clientWidth + 1 }
 }
 
 /** 데이터 인덱스 로드 */

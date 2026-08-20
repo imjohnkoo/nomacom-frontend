@@ -49,6 +49,24 @@ function labelFromNaverName(name) {
   return taken.join(' ').trim()
 }
 
+// ── 국기 (john 결정 2026-08-20) ──────────────────────────────────
+// 에셋 형식은 이모지. SVG 세트를 수급·관리할 필요가 없고, 문장(紋章)이 든
+// 스페인·포르투갈·크로아티아·영국·튀르키예까지 전부 정확히 나온다.
+// 헤드리스 Chromium 에서도 Apple Color Emoji 로 렌더되는 것을 실측 확인했다.
+// 카탈로그는 ISO3 를 쓰는데 이모지는 ISO2 의 regional indicator 쌍이라 변환한다.
+const ISO3_TO_ISO2 = {
+  AUT: 'AT', BEL: 'BE', BGR: 'BG', CHE: 'CH', CYP: 'CY', CZE: 'CZ', DEU: 'DE',
+  DNK: 'DK', ESP: 'ES', EST: 'EE', FIN: 'FI', FRA: 'FR', GBR: 'GB', GRC: 'GR',
+  HRV: 'HR', HUN: 'HU', IRL: 'IE', ISL: 'IS', ITA: 'IT', LIE: 'LI', LTU: 'LT',
+  LUX: 'LU', LVA: 'LV', MKD: 'MK', MLT: 'MT', NLD: 'NL', NOR: 'NO', POL: 'PL',
+  PRT: 'PT', ROU: 'RO', SVK: 'SK', SVN: 'SI', SWE: 'SE', TUR: 'TR',
+}
+const flagEmoji = (iso3) => {
+  const i2 = ISO3_TO_ISO2[iso3]
+  if (!i2) return null
+  return String.fromCodePoint(...[...i2].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65))
+}
+
 // 「남유럽2개국」 → 「남유럽 2개국」. 붙어 있으면 큰 타이포에서 뭉쳐 보인다.
 function spaceLabel(s) {
   return s.replace(/([가-힣A-Za-z])(\d+개?국)/g, '$1 $2').trim()
@@ -106,6 +124,10 @@ for (const [zone, z] of Object.entries(catalog.zones)) {
       channelProductNo: node.channelProductNo ?? null,
       countryCount: n,
       countriesKr: countries,
+      countriesIso: z.countriesIso ?? [],
+      // 구성 국가 전부. 6개국이면 6개 다 넣는다 (john 결정) — 일부만 넣으면
+      // 「N개국」 텍스트와 그림이 어긋나 개수를 오독한다.
+      flags: (z.countriesIso ?? []).map(flagEmoji).filter(Boolean),
       label,
       // 보조 국가명 줄 — 보고서 §4: 개별 국가명 나열은 3국까지
       sub: n >= 2 && n <= 3 ? countries.join(' · ') : '',

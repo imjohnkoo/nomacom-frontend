@@ -32,6 +32,16 @@
         "체코",
         "헝가리"
       ],
+      "countriesIso": [
+        "AUT",
+        "CZE",
+        "HUN"
+      ],
+      "flags": [
+        "🇦🇹",
+        "🇨🇿",
+        "🇭🇺"
+      ],
       "label": "동유럽 3개국",
       "sub": "오스트리아 · 체코 · 헝가리",
       "badge": "무제한 데이터",
@@ -52,6 +62,18 @@
         "노르웨이",
         "스웨덴",
         "핀란드"
+      ],
+      "countriesIso": [
+        "DNK",
+        "NOR",
+        "SWE",
+        "FIN"
+      ],
+      "flags": [
+        "🇩🇰",
+        "🇳🇴",
+        "🇸🇪",
+        "🇫🇮"
       ],
       "label": "노르웨이·핀란드 4개국",
       "sub": "",
@@ -78,6 +100,12 @@
       "countriesKr": [
         "네덜란드"
       ],
+      "countriesIso": [
+        "NLD"
+      ],
+      "flags": [
+        "🇳🇱"
+      ],
       "label": "네덜란드",
       "sub": "",
       "badge": "무제한 데이터",
@@ -96,6 +124,14 @@
       "countriesKr": [
         "스페인",
         "포르투갈"
+      ],
+      "countriesIso": [
+        "ESP",
+        "PRT"
+      ],
+      "flags": [
+        "🇪🇸",
+        "🇵🇹"
       ],
       "label": "남유럽 2개국",
       "sub": "스페인 · 포르투갈",
@@ -117,6 +153,16 @@
         "이탈리아",
         "스위스"
       ],
+      "countriesIso": [
+        "FRA",
+        "ITA",
+        "CHE"
+      ],
+      "flags": [
+        "🇫🇷",
+        "🇮🇹",
+        "🇨🇭"
+      ],
       "label": "서유럽 3개국",
       "sub": "프랑스 · 이탈리아 · 스위스",
       "badge": "무제한 데이터",
@@ -134,6 +180,12 @@
       "countryCount": 1,
       "countriesKr": [
         "크로아티아"
+      ],
+      "countriesIso": [
+        "HRV"
+      ],
+      "flags": [
+        "🇭🇷"
       ],
       "label": "크로아티아",
       "sub": "",
@@ -156,6 +208,20 @@
         "슬로베니아",
         "크로아티아",
         "헝가리"
+      ],
+      "countriesIso": [
+        "CZE",
+        "AUT",
+        "SVN",
+        "HRV",
+        "HUN"
+      ],
+      "flags": [
+        "🇨🇿",
+        "🇦🇹",
+        "🇸🇮",
+        "🇭🇷",
+        "🇭🇺"
       ],
       "label": "크로아티아·헝가리 5개국",
       "sub": "",
@@ -185,6 +251,18 @@
         "벨기에",
         "체코"
       ],
+      "countriesIso": [
+        "DEU",
+        "NLD",
+        "BEL",
+        "CZE"
+      ],
+      "flags": [
+        "🇩🇪",
+        "🇳🇱",
+        "🇧🇪",
+        "🇨🇿"
+      ],
       "label": "네덜란드·벨기에 4개국",
       "sub": "",
       "badge": "무제한 데이터",
@@ -211,6 +289,18 @@
         "체코",
         "헝가리"
       ],
+      "countriesIso": [
+        "DEU",
+        "AUT",
+        "CZE",
+        "HUN"
+      ],
+      "flags": [
+        "🇩🇪",
+        "🇦🇹",
+        "🇨🇿",
+        "🇭🇺"
+      ],
       "label": "독일·헝가리 4개국",
       "sub": "",
       "badge": "무제한 데이터",
@@ -236,6 +326,12 @@
       "countriesKr": [
         "프랑스"
       ],
+      "countriesIso": [
+        "FRA"
+      ],
+      "flags": [
+        "🇫🇷"
+      ],
       "label": "프랑스",
       "sub": "",
       "badge": "무제한 데이터",
@@ -253,6 +349,12 @@
       "countryCount": 1,
       "countriesKr": [
         "그리스"
+      ],
+      "countriesIso": [
+        "GRC"
+      ],
+      "flags": [
+        "🇬🇷"
       ],
       "label": "그리스",
       "sub": "",
@@ -272,6 +374,12 @@
       "countriesKr": [
         "폴란드"
       ],
+      "countriesIso": [
+        "POL"
+      ],
+      "flags": [
+        "🇵🇱"
+      ],
       "label": "폴란드",
       "sub": "",
       "badge": "무제한 데이터",
@@ -290,6 +398,12 @@
       "countriesKr": [
         "노르웨이"
       ],
+      "countriesIso": [
+        "NOR"
+      ],
+      "flags": [
+        "🇳🇴"
+      ],
       "label": "노르웨이",
       "sub": "",
       "badge": "무제한 데이터",
@@ -307,6 +421,12 @@
       "countryCount": 1,
       "countriesKr": [
         "독일"
+      ],
+      "countriesIso": [
+        "DEU"
+      ],
+      "flags": [
+        "🇩🇪"
       ],
       "label": "독일",
       "sub": "",
@@ -328,6 +448,16 @@
         "노르웨이",
         "스웨덴"
       ],
+      "countriesIso": [
+        "DNK",
+        "NOR",
+        "SWE"
+      ],
+      "flags": [
+        "🇩🇰",
+        "🇳🇴",
+        "🇸🇪"
+      ],
       "label": "북유럽 3개국",
       "sub": "덴마크 · 노르웨이 · 스웨덴",
       "badge": "무제한 데이터",
@@ -346,6 +476,12 @@
       "countriesKr": [
         "오스트리아"
       ],
+      "countriesIso": [
+        "AUT"
+      ],
+      "flags": [
+        "🇦🇹"
+      ],
       "label": "오스트리아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -363,6 +499,12 @@
       "countryCount": 1,
       "countriesKr": [
         "포르투갈"
+      ],
+      "countriesIso": [
+        "PRT"
+      ],
+      "flags": [
+        "🇵🇹"
       ],
       "label": "포르투갈",
       "sub": "",
@@ -386,6 +528,22 @@
         "영국",
         "오스트리아",
         "독일"
+      ],
+      "countriesIso": [
+        "FRA",
+        "ITA",
+        "CHE",
+        "GBR",
+        "AUT",
+        "DEU"
+      ],
+      "flags": [
+        "🇫🇷",
+        "🇮🇹",
+        "🇨🇭",
+        "🇬🇧",
+        "🇦🇹",
+        "🇩🇪"
       ],
       "label": "독일·프랑스 6개국",
       "sub": "",
@@ -413,6 +571,12 @@
       "countriesKr": [
         "아일랜드"
       ],
+      "countriesIso": [
+        "IRL"
+      ],
+      "flags": [
+        "🇮🇪"
+      ],
       "label": "아일랜드",
       "sub": "",
       "badge": "무제한 데이터",
@@ -432,6 +596,16 @@
         "프랑스",
         "스페인",
         "포르투갈"
+      ],
+      "countriesIso": [
+        "FRA",
+        "ESP",
+        "PRT"
+      ],
+      "flags": [
+        "🇫🇷",
+        "🇪🇸",
+        "🇵🇹"
       ],
       "label": "유럽 3개국",
       "sub": "프랑스 · 스페인 · 포르투갈",
@@ -454,6 +628,20 @@
         "아이슬란드",
         "노르웨이",
         "스웨덴"
+      ],
+      "countriesIso": [
+        "DNK",
+        "FIN",
+        "ISL",
+        "NOR",
+        "SWE"
+      ],
+      "flags": [
+        "🇩🇰",
+        "🇫🇮",
+        "🇮🇸",
+        "🇳🇴",
+        "🇸🇪"
       ],
       "label": "아이슬란드·노르웨이 5개국",
       "sub": "",
@@ -480,6 +668,12 @@
       "countriesKr": [
         "키프로스"
       ],
+      "countriesIso": [
+        "CYP"
+      ],
+      "flags": [
+        "🇨🇾"
+      ],
       "label": "키프로스",
       "sub": "",
       "badge": "무제한 데이터",
@@ -497,6 +691,12 @@
       "countryCount": 1,
       "countriesKr": [
         "체코"
+      ],
+      "countriesIso": [
+        "CZE"
+      ],
+      "flags": [
+        "🇨🇿"
       ],
       "label": "체코",
       "sub": "",
@@ -516,6 +716,12 @@
       "countriesKr": [
         "핀란드"
       ],
+      "countriesIso": [
+        "FIN"
+      ],
+      "flags": [
+        "🇫🇮"
+      ],
       "label": "핀란드",
       "sub": "",
       "badge": "무제한 데이터",
@@ -533,6 +739,12 @@
       "countryCount": 1,
       "countriesKr": [
         "루마니아"
+      ],
+      "countriesIso": [
+        "ROU"
+      ],
+      "flags": [
+        "🇷🇴"
       ],
       "label": "루마니아",
       "sub": "",
@@ -552,6 +764,12 @@
       "countriesKr": [
         "이탈리아"
       ],
+      "countriesIso": [
+        "ITA"
+      ],
+      "flags": [
+        "🇮🇹"
+      ],
       "label": "이탈리아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -569,6 +787,12 @@
       "countryCount": 1,
       "countriesKr": [
         "헝가리"
+      ],
+      "countriesIso": [
+        "HUN"
+      ],
+      "flags": [
+        "🇭🇺"
       ],
       "label": "헝가리",
       "sub": "",
@@ -588,6 +812,12 @@
       "countriesKr": [
         "에스토니아"
       ],
+      "countriesIso": [
+        "EST"
+      ],
+      "flags": [
+        "🇪🇪"
+      ],
       "label": "에스토니아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -605,6 +835,12 @@
       "countryCount": 1,
       "countriesKr": [
         "튀르키예"
+      ],
+      "countriesIso": [
+        "TUR"
+      ],
+      "flags": [
+        "🇹🇷"
       ],
       "label": "튀르키예",
       "sub": "",
@@ -626,6 +862,18 @@
         "이탈리아",
         "스위스",
         "영국"
+      ],
+      "countriesIso": [
+        "FRA",
+        "ITA",
+        "CHE",
+        "GBR"
+      ],
+      "flags": [
+        "🇫🇷",
+        "🇮🇹",
+        "🇨🇭",
+        "🇬🇧"
       ],
       "label": "프랑스·이탈리아 4개국",
       "sub": "",
@@ -653,6 +901,12 @@
       "countriesKr": [
         "리투아니아"
       ],
+      "countriesIso": [
+        "LTU"
+      ],
+      "flags": [
+        "🇱🇹"
+      ],
       "label": "리투아니아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -670,6 +924,12 @@
       "countryCount": 1,
       "countriesKr": [
         "북마케도니아"
+      ],
+      "countriesIso": [
+        "MKD"
+      ],
+      "flags": [
+        "🇲🇰"
       ],
       "label": "북마케도니아",
       "sub": "",
@@ -691,6 +951,12 @@
       "countriesKr": [
         "벨기에"
       ],
+      "countriesIso": [
+        "BEL"
+      ],
+      "flags": [
+        "🇧🇪"
+      ],
       "label": "벨기에",
       "sub": "",
       "badge": "무제한 데이터",
@@ -710,6 +976,14 @@
         "영국",
         "프랑스"
       ],
+      "countriesIso": [
+        "GBR",
+        "FRA"
+      ],
+      "flags": [
+        "🇬🇧",
+        "🇫🇷"
+      ],
       "label": "유럽 2개국",
       "sub": "영국 · 프랑스",
       "badge": "무제한 데이터",
@@ -727,6 +1001,12 @@
       "countryCount": 1,
       "countriesKr": [
         "스위스"
+      ],
+      "countriesIso": [
+        "CHE"
+      ],
+      "flags": [
+        "🇨🇭"
       ],
       "label": "스위스",
       "sub": "",
@@ -746,6 +1026,12 @@
       "countriesKr": [
         "불가리아"
       ],
+      "countriesIso": [
+        "BGR"
+      ],
+      "flags": [
+        "🇧🇬"
+      ],
       "label": "불가리아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -763,6 +1049,12 @@
       "countryCount": 1,
       "countriesKr": [
         "덴마크"
+      ],
+      "countriesIso": [
+        "DNK"
+      ],
+      "flags": [
+        "🇩🇰"
       ],
       "label": "덴마크",
       "sub": "",
@@ -782,6 +1074,12 @@
       "countriesKr": [
         "영국"
       ],
+      "countriesIso": [
+        "GBR"
+      ],
+      "flags": [
+        "🇬🇧"
+      ],
       "label": "영국",
       "sub": "",
       "badge": "무제한 데이터",
@@ -799,6 +1097,12 @@
       "countryCount": 1,
       "countriesKr": [
         "라트비아"
+      ],
+      "countriesIso": [
+        "LVA"
+      ],
+      "flags": [
+        "🇱🇻"
       ],
       "label": "라트비아",
       "sub": "",
@@ -818,6 +1122,12 @@
       "countriesKr": [
         "몰타"
       ],
+      "countriesIso": [
+        "MLT"
+      ],
+      "flags": [
+        "🇲🇹"
+      ],
       "label": "몰타",
       "sub": "",
       "badge": "무제한 데이터",
@@ -835,6 +1145,12 @@
       "countryCount": 1,
       "countriesKr": [
         "슬로바키아"
+      ],
+      "countriesIso": [
+        "SVK"
+      ],
+      "flags": [
+        "🇸🇰"
       ],
       "label": "슬로바키아",
       "sub": "",
@@ -854,6 +1170,14 @@
       "countriesKr": [
         "불가리아",
         "루마니아"
+      ],
+      "countriesIso": [
+        "BGR",
+        "ROU"
+      ],
+      "flags": [
+        "🇧🇬",
+        "🇷🇴"
       ],
       "label": "동유럽 2개국",
       "sub": "불가리아 · 루마니아",
@@ -877,6 +1201,22 @@
         "영국",
         "오스트리아",
         "체코"
+      ],
+      "countriesIso": [
+        "FRA",
+        "ITA",
+        "CHE",
+        "GBR",
+        "AUT",
+        "CZE"
+      ],
+      "flags": [
+        "🇫🇷",
+        "🇮🇹",
+        "🇨🇭",
+        "🇬🇧",
+        "🇦🇹",
+        "🇨🇿"
       ],
       "label": "체코·프랑스 6개국",
       "sub": "",
@@ -904,6 +1244,12 @@
       "countriesKr": [
         "슬로베니아"
       ],
+      "countriesIso": [
+        "SVN"
+      ],
+      "flags": [
+        "🇸🇮"
+      ],
       "label": "슬로베니아",
       "sub": "",
       "badge": "무제한 데이터",
@@ -921,6 +1267,12 @@
       "countryCount": 1,
       "countriesKr": [
         "스웨덴"
+      ],
+      "countriesIso": [
+        "SWE"
+      ],
+      "flags": [
+        "🇸🇪"
       ],
       "label": "스웨덴",
       "sub": "",
@@ -945,6 +1297,22 @@
         "루마니아",
         "불가리아"
       ],
+      "countriesIso": [
+        "CZE",
+        "TUR",
+        "AUT",
+        "HUN",
+        "ROU",
+        "BGR"
+      ],
+      "flags": [
+        "🇨🇿",
+        "🇹🇷",
+        "🇦🇹",
+        "🇭🇺",
+        "🇷🇴",
+        "🇧🇬"
+      ],
       "label": "루마니아·튀르키예 6개국",
       "sub": "",
       "badge": "무제한 데이터",
@@ -968,6 +1336,12 @@
       "countriesKr": [
         "리히텐슈타인"
       ],
+      "countriesIso": [
+        "LIE"
+      ],
+      "flags": [
+        "🇱🇮"
+      ],
       "label": "리히텐슈타인",
       "sub": "",
       "badge": "무제한 데이터",
@@ -985,6 +1359,12 @@
       "countryCount": 1,
       "countriesKr": [
         "룩셈부르크"
+      ],
+      "countriesIso": [
+        "LUX"
+      ],
+      "flags": [
+        "🇱🇺"
       ],
       "label": "룩셈부르크",
       "sub": "",
@@ -1004,6 +1384,12 @@
       "countriesKr": [
         "체코"
       ],
+      "countriesIso": [
+        "CZE"
+      ],
+      "flags": [
+        "🇨🇿"
+      ],
       "label": "체코",
       "sub": "",
       "badge": "종량제 데이터",
@@ -1022,6 +1408,14 @@
       "countriesKr": [
         "스페인",
         "포르투갈"
+      ],
+      "countriesIso": [
+        "ESP",
+        "PRT"
+      ],
+      "flags": [
+        "🇪🇸",
+        "🇵🇹"
       ],
       "label": "남유럽 2개국",
       "sub": "스페인 · 포르투갈",
@@ -1043,6 +1437,16 @@
         "체코",
         "헝가리"
       ],
+      "countriesIso": [
+        "AUT",
+        "CZE",
+        "HUN"
+      ],
+      "flags": [
+        "🇦🇹",
+        "🇨🇿",
+        "🇭🇺"
+      ],
       "label": "동유럽 3개국",
       "sub": "오스트리아 · 체코 · 헝가리",
       "badge": "종량제 데이터",
@@ -1063,6 +1467,18 @@
         "오스트리아",
         "체코",
         "헝가리"
+      ],
+      "countriesIso": [
+        "DEU",
+        "AUT",
+        "CZE",
+        "HUN"
+      ],
+      "flags": [
+        "🇩🇪",
+        "🇦🇹",
+        "🇨🇿",
+        "🇭🇺"
       ],
       "label": "독일·헝가리 4개국",
       "sub": "",
@@ -1092,6 +1508,18 @@
         "벨기에",
         "체코"
       ],
+      "countriesIso": [
+        "DEU",
+        "NLD",
+        "BEL",
+        "CZE"
+      ],
+      "flags": [
+        "🇩🇪",
+        "🇳🇱",
+        "🇧🇪",
+        "🇨🇿"
+      ],
       "label": "네덜란드·벨기에 4개국",
       "sub": "",
       "badge": "종량제 데이터",
@@ -1115,6 +1543,12 @@
       "countriesKr": [
         "헝가리"
       ],
+      "countriesIso": [
+        "HUN"
+      ],
+      "flags": [
+        "🇭🇺"
+      ],
       "label": "헝가리",
       "sub": "",
       "badge": "종량제 데이터",
@@ -1133,6 +1567,12 @@
       "countriesKr": [
         "폴란드"
       ],
+      "countriesIso": [
+        "POL"
+      ],
+      "flags": [
+        "🇵🇱"
+      ],
       "label": "폴란드",
       "sub": "",
       "badge": "종량제 데이터",
@@ -1150,6 +1590,12 @@
       "countryCount": 1,
       "countriesKr": [
         "슬로바키아"
+      ],
+      "countriesIso": [
+        "SVK"
+      ],
+      "flags": [
+        "🇸🇰"
       ],
       "label": "슬로바키아",
       "sub": "",

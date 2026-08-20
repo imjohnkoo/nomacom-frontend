@@ -22,6 +22,8 @@
   --title-track: -0.045em;
   --sub-size: 78px; /* 권장 70~90 — 하한 65 */
   --badge-size: 82px; /* 권장 75~90 */
+  --flag-size: 120px; /* 국기 이모지 글자 크기. 국가 수가 많으면 자동으로 줄어든다 */
+  --flag-gap: 0.14em;
   --stack-gap: 26px;
   --stack-y: 0px;
 
@@ -130,6 +132,19 @@
      긴 지명이 모델 위로 조용히 넘친다. */
   width: 100%;
   transform: translateY(var(--stack-y));
+}
+
+/* ⓪ 국기 — 구성 국가 전부. 에셋은 이모지라 별도 파일이 없다.
+   Apple Color Emoji 를 직접 쓰므로 폰트 스택에 Pretendard 를 두면 안 된다. */
+.thumb__flags {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  font-size: var(--flag-size);
+  line-height: 1;
+  letter-spacing: var(--flag-gap);
+  white-space: nowrap;
+  max-width: 100%;
+  /* 보라 배경에서 국기가 떠 보이게 — 흰 테두리 없이 그림자만 */
+  filter: drop-shadow(0 8px 18px rgba(10, 2, 40, 0.45));
 }
 
 /* ① 주역 — 지명 */

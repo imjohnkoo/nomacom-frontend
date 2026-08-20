@@ -295,6 +295,18 @@
       </div>
 
       <div class="grp">
+        <div class="grp-t">국기 (구성 국가 전부)</div>
+        <div class="seg" data-opt="showFlags">
+          <button data-v="1" class="on">표시</button>
+          <button data-v="0">숨김</button>
+        </div>
+        <div class="fld">
+          <label>국기 크기 (상한) <span class="v" id="v-flag-size">120px</span></label>
+          <input type="range" id="r-flag-size" min="60" max="220" value="120" step="2" />
+        </div>
+      </div>
+
+      <div class="grp">
         <div class="grp-t">보조 국가명 줄</div>
         <div class="seg" data-opt="showSub">
           <button data-v="0" class="on">숨김</button>
@@ -386,7 +398,7 @@
     </main>
 
     <script type="module">
-      import { createCanvas, fitTitle, loadIndex, fontsReady } from './shared/thumb.js'
+      import { createCanvas, fitTitle, fitFlags, loadIndex, fontsReady } from './shared/thumb.js'
 
       const VARS = [
         ['logo-h', 'px'],
@@ -394,6 +406,7 @@
         ['title-lh', ''],
         ['sub-size', 'px'],
         ['badge-size', 'px'],
+        ['flag-size', 'px'],
         ['stack-gap', 'px'],
         ['stack-y', 'px'],
         ['text-w', 'px'],
@@ -412,6 +425,7 @@
         modelLayer: 'back',
         logo: 'kor',
         showSub: false,
+        showFlags: true,
         guides: false,
       }
       let index = null
@@ -463,10 +477,13 @@
         }
         // 세 캔버스 모두 동일하게 맞춘다. 측정은 실제 크기인 첫 번째 것으로.
         const fit = fitTitle(made[0])
+        const flagFit = fitFlags(made[0])
         for (const c of made.slice(1)) {
           c.querySelector('.thumb__title').style.fontSize = `${fit.size}px`
+          const f = c.querySelector('.thumb__flags')
+          if (f && flagFit.size) f.style.fontSize = `${flagFit.size}px`
         }
-        showMetrics(item, fit)
+        showMetrics(item, fit, flagFit)
         for (const el of document.querySelectorAll('.cell')) {
           el.classList.toggle('sel', el.dataset.sku === item.sku)
         }
@@ -482,7 +499,7 @@
         return '판독 불가'
       }
 
-      function showMetrics(item, fit) {
+      function showMetrics(item, fit, flagFit) {
         const read = (k) =>
           parseFloat(getComputedStyle(document.documentElement).getPropertyValue(`--${k}`)) || 0
         const rows = [
@@ -491,6 +508,8 @@
           ['로고', read('logo-h')],
         ]
         if (opts.showSub && item.sub) rows.splice(1, 0, ['보조 국가명', read('sub-size')])
+        if (opts.showFlags && flagFit?.size)
+          rows.push([`국기 ${item.flags.length}개`, flagFit.size])
 
         const body = rows
           .map(
@@ -499,17 +518,22 @@
           .join(' &nbsp;|&nbsp; ')
 
         const chunks = 1 + (opts.showSub && item.sub ? 1 : 0) + 1 // 지명 + (보조) + 배지
+        // 국기는 지명과 같은 정보(어느 나라인가)라 하나의 의미 단위로 묶어 센다.
         const elems = chunks + 1 + (opts.model === 'none' ? 0 : 1) // + 로고 + 모델
         const warn = []
         if (!fit.fits)
           warn.push(
             `<b style="color:#b91c1c">지명이 하한 100px 에서도 ${fit.lines}줄로 넘칩니다 — 라벨 축약 필요.</b>`,
           )
+        if (flagFit && !flagFit.fits)
+          warn.push(
+            `<b style="color:#b91c1c">국기 ${item.flags.length}개가 하한 60px 에서도 안 들어갑니다.</b>`,
+          )
         if (chunks > 3) warn.push('<b style="color:#b45309">텍스트 덩어리 3개 초과.</b>')
         if (elems > 4) warn.push('<b style="color:#b45309">의미 요소 4개 초과.</b>')
 
         document.getElementById('metrics').innerHTML =
-          `${body}<br>텍스트 덩어리 ${chunks} / 3 · 의미 요소 ${elems} / 4` +
+          `${body}<br>텍스트 덩어리 ${chunks} / 3 · 의미 요소 ${elems} / 4 (국기는 지명과 한 단위)` +
           (warn.length ? `<br>${warn.join(' ')}` : '')
       }
 
@@ -550,6 +574,7 @@
           )
           sheet.append(cell)
           fitTitle(c)
+          fitFlags(c)
         }
       }
 

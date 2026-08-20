@@ -70,6 +70,33 @@
 
 자동 산출이 마케팅 판단과 다르면 `data/label-overrides.json` 에 zone 별로 적어 덮어씁니다.
 
+### 국기
+
+지명 위에 **구성 국가 전부**의 국기를 넣습니다 (john 결정 2026-08-20). 4개국이면 4개,
+6개국이면 6개 — 일부만 넣으면 「N개국」 텍스트와 그림이 어긋나 개수를 오독합니다.
+
+**에셋 형식은 이모지입니다.** SVG 세트를 수급·관리할 필요가 없고, 문장(紋章)이 들어가
+CSS 로는 근사조차 안 되는 스페인·포르투갈·크로아티아·영국·튀르키예까지 정확히 나옵니다.
+헤드리스 Chromium 에서 Apple Color Emoji 로 렌더되는 것을 실측 확인했습니다.
+
+카탈로그는 ISO3 를 쓰는데 이모지는 ISO2 의 regional indicator 쌍이라
+`data/build-index.mjs` 가 변환해 `flags` 필드에 넣습니다 (34개국 전부 매핑).
+
+국기 줄은 `fitFlags()` 가 텍스트 컬럼 폭에 맞춰 자동으로 줄입니다. 실측값:
+
+| 국가 수 | SKU | 국기 크기 | 120px 노출  |
+| ------- | --- | --------- | ----------- |
+| 1~4개국 | 51  | 120px     | 개당 14.4px |
+| 5개국   | 2   | 102px     | 개당 12.2px |
+| 6개국   | 3   | 86px      | 개당 10.3px |
+
+6개국은 개별 식별까지는 안 되지만 **색 시그니처**로 기능합니다 — 120px 그리드에서
+같은 권역 상품끼리 갈라 보는 데 보탬이 됩니다.
+
+> 국기는 「어느 나라인가」를 지명과 똑같이 말하므로 **의미 요소 카운트에서 지명과 한 단위**로
+> 셉니다. 스튜디오 검산 표시도 그 기준입니다. 규정상으로도 §2.6 「불필요한 뱃지」가 아니라
+> 상품 식별 정보이고, 경쟁사(말톡·유심스토어)도 국기를 씁니다.
+
 현재 4국 이상 9개 zone 전부 자동 산출로 충돌 없이 갈렸습니다 — 「네덜란드·벨기에 4개국」,
 「독일·헝가리 4개국」, 「독일·프랑스 6개국」, 「체코·프랑스 6개국」 등.
 
@@ -104,8 +131,8 @@ design/thumbnails/
 리포 루트에서 정적 서버를 띄우세요.
 
 ```bash
-# 1) 정적 서버 (리포 루트에서)
-python3 -m http.server 8788
+# 1) 정적 서버 (리포 루트에서) — no-cache
+node design/thumbnails/serve.mjs
 
 # 2) 작업·검수 화면
 open http://localhost:8788/design/thumbnails/studio.html
@@ -128,6 +155,12 @@ node render.mjs --model-layer front   # 모델을 카피 위로
 > `--prefix . --no-save` 를 쓰는 이유: `design/` 은 turbo 빌드와 workspace 밖에 있고
 > 어떤 `package.json` 에도 등록되지 않는다는 원칙을 유지하기 위해서입니다.
 > `node_modules/` 만 생기고 `package.json` / lockfile 은 만들어지지 않습니다.
+
+> **`python3 -m http.server` 를 쓰지 마세요.** `Cache-Control` 을 안 보내서 브라우저가
+> `shared/thumb.js` 를 캐시합니다. 그 상태로 export 를 추가하면 브라우저는 옛 파일을 들고
+> 있어 `import { newThing }` 이 SyntaxError 로 죽고 **페이지가 통째로 빈 화면**이 됩니다.
+> 콘솔에도 안 남아서 원인을 찾기 어렵습니다. `serve.mjs` 는 `no-store` 를 보냅니다.
+> (이미 캐시된 상태라면 콘솔에서 `fetch('shared/thumb.js',{cache:'reload'})` 후 새로고침)
 
 ### 모델 레이어
 

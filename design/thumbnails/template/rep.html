@@ -33,7 +33,14 @@
     -->
     <div id="mount"></div>
     <script type="module">
-      import { createCanvas, fitTitle, loadIndex, fontsReady, DEFAULTS } from '../shared/thumb.js'
+      import {
+        createCanvas,
+        fitTitle,
+        fitFlags,
+        loadIndex,
+        fontsReady,
+        DEFAULTS,
+      } from '../shared/thumb.js'
 
       const q = new URLSearchParams(location.search)
       const opts = {
@@ -42,6 +49,7 @@
         modelLayer: q.get('modelLayer') ?? DEFAULTS.modelLayer,
         logo: q.get('logo') ?? DEFAULTS.logo,
         showSub: q.get('sub') === '1',
+        showFlags: q.get('flags') !== '0',
         guides: false,
       }
 
@@ -58,7 +66,9 @@
 
       await fontsReady()
       const fit = fitTitle(el)
+      const flagFit = fitFlags(el)
       document.body.dataset.fit = JSON.stringify(fit)
+      document.body.dataset.flagFit = JSON.stringify(flagFit)
       document.body.dataset.ready = '1'
     </script>
   </body>

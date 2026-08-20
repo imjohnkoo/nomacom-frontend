@@ -4,6 +4,7 @@
 //   node render.mjs                       # 전 SKU
 //   node render.mjs EU022U ITA00U         # 지정 SKU 만
 //   node render.mjs --scheme duo --model female --model-layer front
+//   node render.mjs --no-flags            # 국기 줄 빼기
 //   node render.mjs --sheet               # 120px 검수 시트도 함께 생성
 //
 // 사전 준비 (둘 다 필요):
@@ -31,6 +32,7 @@ const model = flag('model', 'female')
 const modelLayer = flag('model-layer', 'back')
 const logo = flag('logo', 'kor')
 const sub = has('sub') ? '1' : '0'
+const flags = has('no-flags') ? '0' : '1'
 const outRoot = join(HERE, flag('out', 'out'))
 
 const index = JSON.parse(readFileSync(join(HERE, 'data', 'thumbnails.json'), 'utf8'))
@@ -50,7 +52,7 @@ const page = await browser.newPage({
 
 const report = []
 for (const item of targets) {
-  const url = `${BASE}/template/rep.html?sku=${item.sku}&scheme=${scheme}&model=${model}&modelLayer=${modelLayer}&logo=${logo}&sub=${sub}`
+  const url = `${BASE}/template/rep.html?sku=${item.sku}&scheme=${scheme}&model=${model}&modelLayer=${modelLayer}&logo=${logo}&sub=${sub}&flags=${flags}`
   await page.goto(url, { waitUntil: 'networkidle' })
   await page.waitForSelector('body[data-ready="1"]', { timeout: 15000 })
 
@@ -58,6 +60,7 @@ for (const item of targets) {
   await page.evaluate(() => document.fonts.ready)
 
   const fit = JSON.parse(await page.getAttribute('body', 'data-fit'))
+  const flagFit = JSON.parse(await page.getAttribute('body', 'data-flag-fit'))
   const dir = join(outRoot, item.sku)
   mkdirSync(dir, { recursive: true })
   const file = join(dir, `${item.sku}_00_rep.png`)
@@ -73,11 +76,13 @@ for (const item of targets) {
     at120,
     lines: fit.lines,
     fits: fit.fits,
+    flagSize: flagFit.size,
+    flagFits: flagFit.fits,
     file,
   })
-  const mark = !fit.fits ? '✗' : at120 < 10 ? '△' : '·'
+  const mark = !fit.fits || !flagFit.fits ? '✗' : at120 < 10 ? '△' : '·'
   console.log(
-    `${mark} ${item.sku.padEnd(8)} ${String(item.label).padEnd(14)} ${fit.size}px → ${at120}px@120  ${fit.lines}줄`,
+    `${mark} ${item.sku.padEnd(8)} ${String(item.label).padEnd(14)} ${fit.size}px → ${at120}px@120  ${fit.lines}줄  국기 ${flagFit.size ?? '-'}px`,
   )
 }
 
@@ -105,8 +110,11 @@ if (has('sheet')) {
 
 writeFileSync(
   join(outRoot, 'render-report.json'),
-  JSON.stringify({ scheme, model, modelLayer, logo, sub: sub === '1', items: report }, null, 2) +
-    '\n',
+  JSON.stringify(
+    { scheme, model, modelLayer, logo, sub: sub === '1', flags: flags === '1', items: report },
+    null,
+    2,
+  ) + '\n',
 )
 await browser.close()
 
