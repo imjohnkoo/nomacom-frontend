@@ -129,6 +129,9 @@ const ctx = {
   cvWrapCls: (ov.coverage?.mapImg ? '' : ' cv-wrap--nomap'),
   // trust strip 아이콘용 국기 (공백 제거 compact)
   zoneFlagsCompact: (ov.zoneFlags ?? '').replace(/ /g, ''),
+  // 국기 1개의 가로폭 = font-size × 1.0 (실측). 셀 내폭 149px 에 여유 5px 를 두고
+  // 개수만큼 나눠 한 줄에 들어가는 최대 크기를 구한다. 기본 30px 를 넘기지 않는다.
+  flagsSize: Math.max(12, Math.min(30, Math.floor(144 / Math.max(1, countryCount)))),
   // 기본값 (override 로 교체 가능)
   roamingPrice: '~35,000',
   usimPrice: '~28,000',
