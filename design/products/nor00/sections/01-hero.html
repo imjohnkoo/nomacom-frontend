@@ -147,6 +147,24 @@
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.82);
         margin: 0 0 22px;
+        padding: 0;
+        list-style: none;
+      }
+      /* 줄마다 체크 마커. flex 행이라 줄바꿈돼도 본문이 마커 아래로 흘러들지 않음 */
+      .hero__sub li {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+      }
+      .hero__sub li + li {
+        margin-top: 3px;
+      }
+      .hero__sub li::before {
+        content: '✓';
+        flex: none;
+        color: #fff;
+        font-weight: 800;
+        font-size: 14px;
       }
       .hero__price {
         display: inline-flex;
@@ -261,11 +279,11 @@
               <small>🇳🇴 노르웨이 어디서나</small>
               데이터 넉넉히, 길게.
             </h1>
-            <p class="hero__sub">
-              매일 1GB · 2GB + 소진 후 <b style="color:#fff">500Kbps 무제한</b><br />
-              1~30일 자유 선택<br />
-              카카오톡 1분 발급 · 당일 자동 발송 · 테더링 OK
-            </p>
+            <ul class="hero__sub">
+              <li>매일 1GB · 2GB + 소진 후 <b style="color:#fff">500Kbps 무제한</b></li>
+              <li>1~30일 자유 선택</li>
+              <li>카카오톡 1분 발급 · 당일 자동 발송 · 테더링 OK</li>
+            </ul>
             <div class="hero__price">
               <span class="hero__price-now"
                 >2,600원<small> 부터 (1일 1GB)</small></span
