@@ -89,9 +89,7 @@ if (q) {
     qTiers,
     quotaDays: q.tiers[0].days,
     quotaRangeGb: `${minGb}~${maxGb}GB`,
-    quotaGuideGb: `${bestGb}~${maxGb}GB`,
-    quotaGuideRec: `${bestGb}GB`,
-    quotaMinPerGb: comma(Math.min(...qTiers.map((t) => Number(t.perGb.replace(/,/g, ''))))),
+    quotaGuideRec: `${bestGb}GB`, // 13-faq 에서 사용
   };
 }
 
