@@ -122,6 +122,7 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 | 모노리포 단기 PR 단위 계획     | `docs/plans/YYYY-MM-DD-<topic>.md`                     | —                                               |
 | app-specific 단기 PR 단위 계획 | `docs/plans/<app-name>/YYYY-MM-DD-<topic>.md`          | —                                               |
 | 주간 업무 계획                 | `docs/plans/weekly/current-week.html` + archive        | (현재 운영 중)                                  |
+| 운영 절차서 (runbook)          | `docs/runbooks/YYYY-MM-DD-<topic>.md`                  | `docs/runbooks/2026-09-02-dockerhub-pat-rotation.md` |
 
 **원칙**:
 
