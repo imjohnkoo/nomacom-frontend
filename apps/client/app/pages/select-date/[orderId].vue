@@ -324,7 +324,7 @@ onMounted(() => {
           </svg>
         </template>
         eSIM 사용 예상 기간은
-        <b style="color: var(--color-primary-700)">{{ startDateLabel }} ~ {{ endDateLabel }}</b>
+        <b style="color: var(--n-color-primary-700)">{{ startDateLabel }} ~ {{ endDateLabel }}</b>
         이에요.
       </NHighlightCard>
     </div>
@@ -557,7 +557,7 @@ onMounted(() => {
 .select-date-page__err {
   margin: 6px 0 0 4px;
   font-size: 12px;
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .select-date-page__preview {
@@ -608,7 +608,7 @@ onMounted(() => {
 }
 
 .select-date-page__sheet-row--active {
-  background: var(--color-primary-50, #f3efff);
+  background: var(--n-color-primary-50, #f3efff);
 }
 
 .select-date-page__sheet-row-main {

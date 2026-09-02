@@ -97,34 +97,34 @@ const emit = defineEmits<{
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
   min-width: 180px;
   height: 40px;
-  padding: 0 var(--spacing-3);
-  border: var(--borderWidth-1) solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
-  background-color: var(--color-neutral-0);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  color: var(--color-neutral-800);
+  padding: 0 var(--n-spacing-3);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-300);
+  border-radius: var(--n-radius-md);
+  background-color: var(--n-color-neutral-0);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  color: var(--n-color-neutral-800);
   cursor: pointer;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--n-transition-fast), box-shadow var(--n-transition-fast);
   outline: none;
 }
 
 .n-select__trigger:hover:not(.n-select__trigger--disabled) {
-  border-color: var(--color-neutral-400);
+  border-color: var(--n-color-neutral-400);
 }
 
 .n-select__trigger:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-50);
+  border-color: var(--n-color-primary-500);
+  box-shadow: 0 0 0 2px var(--n-color-primary-50);
 }
 
 .n-select__trigger--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
 }
 
 .n-select__value {
@@ -137,7 +137,7 @@ const emit = defineEmits<{
 
 .n-select__chevron {
   flex-shrink: 0;
-  color: var(--color-neutral-400);
+  color: var(--n-color-neutral-400);
 }
 
 .n-select__content {
@@ -145,48 +145,48 @@ const emit = defineEmits<{
   min-width: var(--reka-select-trigger-width);
   max-height: 300px;
   overflow: hidden;
-  background-color: var(--color-neutral-0);
-  border: var(--borderWidth-1) solid var(--color-neutral-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  background-color: var(--n-color-neutral-0);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-200);
+  border-radius: var(--n-radius-md);
+  box-shadow: var(--n-shadow-lg);
 }
 
 .n-select__content[data-state='open'] {
-  animation: n-select-fadeIn var(--transition-fast) ease-out;
+  animation: n-select-fadeIn var(--n-transition-fast) ease-out;
 }
 
 .n-select__content[data-state='closed'] {
-  animation: n-select-fadeOut var(--transition-fast) ease-in;
+  animation: n-select-fadeOut var(--n-transition-fast) ease-in;
 }
 
 .n-select__viewport {
-  padding: var(--spacing-1);
+  padding: var(--n-spacing-1);
 }
 
 .n-select__item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-3);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  color: var(--color-neutral-800);
+  gap: var(--n-spacing-2);
+  padding: var(--n-spacing-2) var(--n-spacing-3);
+  border-radius: var(--n-radius-sm);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  color: var(--n-color-neutral-800);
   cursor: pointer;
   user-select: none;
   outline: none;
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--n-transition-fast);
 }
 
 .n-select__item:hover,
 .n-select__item[data-highlighted] {
-  background-color: var(--color-primary-50);
-  color: var(--color-primary-700);
+  background-color: var(--n-color-primary-50);
+  color: var(--n-color-primary-700);
 }
 
 .n-select__item[data-state='checked'] {
-  font-weight: var(--font-fontWeight-medium);
+  font-weight: var(--n-font-weight-medium);
 }
 
 .n-select__item[data-disabled] {
@@ -197,7 +197,7 @@ const emit = defineEmits<{
 .n-select__item-indicator {
   display: inline-flex;
   align-items: center;
-  color: var(--color-primary-500);
+  color: var(--n-color-primary-500);
 }
 
 @keyframes n-select-fadeIn {

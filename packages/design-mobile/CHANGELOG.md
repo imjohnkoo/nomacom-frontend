@@ -1,0 +1,35 @@
+# Changelog
+
+`@imjohnkoo/design-mobile` 변경 사항. Semantic-ish (0.x: breaking = minor / 그 외 = patch). 날짜는 한국 시각 기준.
+
+## 0.3.1 — 2026-08-19
+
+mobile 4-step 발급 흐름 (weekly B 트랙) 을 위한 **design-vue 0.4.0 "토스풍 세트" 의 RN 포팅**. 전부 additive — breaking 없음.
+
+### Added — 신규 컴포넌트 (12)
+
+| 컴포넌트            | 용도                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| `NStepProgress`     | 4-bar progress + "n / total · label" 라벨                                                  |
+| `NPageHeading`      | eyebrow + 큰 헤딩 + 보조 설명 (`\n` 줄바꿈 — RN Text 기본 동작)                            |
+| `NInfoChip`         | rounded-full chip — `label` + `value` + `icon`. brand-50 bg / brand-700 text               |
+| `NStatusPill`       | status pill — `color: success \| info \| warning \| error \| primary \| neutral` + `dot`   |
+| `NTrustNote`        | neutral-50 카드 + 좌측 brand icon-circle + `title`/`children` — 보안/정책 안내             |
+| `NHighlightCard`    | brand-50 카드 — 요약/사용 기간 미리보기                                                    |
+| `NFieldCard`        | 탭형 dropdown trigger — `label`/`value`/`placeholder`/`active`/`error`                     |
+| `NAlertDialog`      | 중앙 Modal 다이얼로그 — `title`/`color`/`closable`/`actions`/`width`                       |
+| `NLoaderDialog`     | 백드롭 + 흰 카드 + 브랜드 스피너 — `title`/`description`                                   |
+| `NDurationCalendar` | 시작일 선택 + `duration` 자동 range. `CalDate` 타입 동봉. 과거 disable, spillover dim      |
+| `NCodeRow`          | 라벨 + mono value + 복사 버튼. 클립보드는 `onCopy` 콜백으로 앱이 주입 (패키지 무의존 유지) |
+| `NLinkCard`         | 아이콘 박스 + 제목 + 보조 + chevron — 외부 가이드 링크 카드                                |
+
+### Changed — 기존 컴포넌트 확장 (additive)
+
+- **`NButton`** — `size: 'xl'` 추가 (minHeight 56 + radius 2xl + font 16/600 CTA — design-vue xl 대응)
+- **`NBottomSheet`** — `footer` prop 추가 (하단 고정 CTA 영역, 상단 divider)
+- **`NAlert`** — 좌측 4px 액센트 바 제거, 배경 + radius 만 남긴 심플 박스로 변경 (john 디자인 피드백 2026-08-23). `colorMap` 의 미사용 `border` 키도 정리
+- **`NInput`** — 웹(react-native-web) 한정 `outlineStyle: 'none'` 주입. RNW 가 `TextInput` 을 `<input>` 으로 렌더해 브라우저 UA 가 포커스 시 `outline: auto` (Chrome/macOS `#E59700` 주황) 를 그리던 것을 차단. 포커스 표시는 컨테이너 보더 (`primary/500`) 가 단독 담당. `Platform.select` 로 web 에만 적용하므로 네이티브 렌더는 불변
+
+## 0.3.0 — 이전
+
+RN 기본 컴포넌트 16종 (NButton, NBottomSheet, NScreen, NInput, NTabBar 등) + design-tokens 기반 `theme`.

@@ -10,7 +10,7 @@
     "Items": [
       {
         "Id": "ec2-client-origin",
-        "DomainName": "ec2-13-209-65-31.ap-northeast-2.compute.amazonaws.com",
+        "DomainName": "client-origin.esimmany.com",
         "OriginPath": "",
         "CustomHeaders": {
           "Quantity": 0

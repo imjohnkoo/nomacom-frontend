@@ -134,7 +134,7 @@ const open = defineModel<boolean>({ default: false })
 .n-alert-dialog__overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--zIndex-modal-backdrop, 1040);
+  z-index: var(--n-z-index-modal-backdrop, 1040);
   background-color: rgba(17, 17, 17, 0.32);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -145,13 +145,13 @@ const open = defineModel<boolean>({ default: false })
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: var(--zIndex-modal, 1050);
+  z-index: var(--n-z-index-modal, 1050);
   width: 90vw;
   max-width: 280px;
-  border-radius: var(--radius-3xl, 1.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-3xl, 1.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  box-shadow: var(--n-shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   overflow: hidden;
 }
 
@@ -161,23 +161,23 @@ const open = defineModel<boolean>({ default: false })
 
 .n-alert-dialog__close {
   position: absolute;
-  top: var(--spacing-3, 0.75rem);
-  right: var(--spacing-3, 0.75rem);
+  top: var(--n-spacing-3, 0.75rem);
+  right: var(--n-spacing-3, 0.75rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
   background: transparent;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 150ms);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 .n-alert-dialog__close:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-700, #404040);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-700, #404040);
 }
 
 .n-alert-dialog__body {
@@ -207,46 +207,46 @@ const open = defineModel<boolean>({ default: false })
   justify-content: center;
   width: 64px;
   height: 64px;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--n-radius-full, 9999px);
 }
 
 .n-alert-dialog__icon-default--error {
-  background-color: var(--color-error-50, #fef2f2);
-  color: var(--color-error-500, #ef4444);
+  background-color: var(--n-color-error-50, #fef2f2);
+  color: var(--n-color-error-500, #ef4444);
 }
 .n-alert-dialog__icon-default--warning {
-  background-color: var(--color-warning-50, #fffbeb);
-  color: var(--color-warning-500, #f59e0b);
+  background-color: var(--n-color-warning-50, #fffbeb);
+  color: var(--n-color-warning-500, #f59e0b);
 }
 .n-alert-dialog__icon-default--success {
-  background-color: var(--color-success-50, #f0fdf4);
-  color: var(--color-success-500, #22c55e);
+  background-color: var(--n-color-success-50, #f0fdf4);
+  color: var(--n-color-success-500, #22c55e);
 }
 .n-alert-dialog__icon-default--info {
-  background-color: var(--color-info-50, #f0f9ff);
-  color: var(--color-info-500, #0ea5e9);
+  background-color: var(--n-color-info-50, #f0f9ff);
+  color: var(--n-color-info-500, #0ea5e9);
 }
 .n-alert-dialog__icon-default--primary {
-  background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-500, #6239ff);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 .n-alert-dialog__icon-default--neutral {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-500, #737373);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-alert-dialog__title {
   margin: 0;
   font-size: 17px;
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-neutral-900, #171717);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-neutral-900, #171717);
   line-height: 1.4;
 }
 
 .n-alert-dialog__description {
   margin-top: -6px;
   font-size: 13px;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
   line-height: 1.55;
 }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { theme } from '../../theme'
 
 export interface NAlertProps {
@@ -11,17 +11,17 @@ export interface NAlertProps {
 }
 
 const colorMap = {
-  info: { bg: theme.colors.info[50], border: theme.colors.info[500], text: theme.colors.info[700] },
-  success: { bg: theme.colors.success[50], border: theme.colors.success[500], text: theme.colors.success[700] },
-  warning: { bg: theme.colors.warning[50], border: theme.colors.warning[500], text: theme.colors.warning[700] },
-  error: { bg: theme.colors.error[50], border: theme.colors.error[500], text: theme.colors.error[700] },
+  info: { bg: theme.colors.info[50], text: theme.colors.info[700] },
+  success: { bg: theme.colors.success[50], text: theme.colors.success[700] },
+  warning: { bg: theme.colors.warning[50], text: theme.colors.warning[700] },
+  error: { bg: theme.colors.error[50], text: theme.colors.error[700] },
 }
 
 export function NAlert({ title, description, color = 'info', icon, onClose }: NAlertProps) {
   const c = colorMap[color]
 
   return (
-    <View style={[styles.container, { backgroundColor: c.bg, borderLeftColor: c.border }]}>
+    <View style={[styles.container, { backgroundColor: c.bg }]}>
       {icon && <View style={styles.icon}>{icon}</View>}
       <View style={styles.content}>
         <Text style={[styles.title, { color: c.text }]}>{title}</Text>
@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     padding: theme.spacing[3],
     borderRadius: theme.radius.lg,
-    borderLeftWidth: 4,
   },
   icon: {
     marginRight: theme.spacing[3],

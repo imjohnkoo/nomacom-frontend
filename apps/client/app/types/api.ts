@@ -37,7 +37,7 @@ export interface ActivateOrderRequest {
   totalPaymentAmount: number;
 }
 
-export interface ActivateOrderResponse extends VerifyOrderResponse {}
+export type ActivateOrderResponse = VerifyOrderResponse;
 
 // Withdraw Cancel (취소철회) — CANCEL_REQUEST 대기 건만 가능
 export interface WithdrawCancelRequest {

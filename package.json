@@ -12,11 +12,16 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "lint:tokens": "turbo run check --filter=@imjohnkoo/design-tokens",
+    "typecheck:baseline": "bash .github/scripts/typecheck-gate.sh",
+    "typecheck:gate:test": "bash .github/scripts/typecheck-gate.test.sh",
+    "hooks:test": "bash .claude/hooks/guard-prod-push.test.sh"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-vue": "^9.32.0",
     "prettier": "^3.4.0",
     "turbo": "^2.3.0",

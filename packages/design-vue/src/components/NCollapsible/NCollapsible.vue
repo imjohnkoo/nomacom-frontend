@@ -71,24 +71,24 @@ const emit = defineEmits<{
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--n-spacing-3) var(--n-spacing-4);
   background: none;
-  border: var(--borderWidth-1) solid var(--color-neutral-200);
-  border-radius: var(--radius-md);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-200);
+  border-radius: var(--n-radius-md);
   cursor: pointer;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-medium);
-  color: var(--color-neutral-800);
-  transition: background-color var(--transition-fast);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-medium);
+  color: var(--n-color-neutral-800);
+  transition: background-color var(--n-transition-fast);
 }
 
 .n-collapsible__trigger:hover {
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
 }
 
 .n-collapsible__chevron {
-  transition: transform var(--transition-fast);
+  transition: transform var(--n-transition-fast);
   flex-shrink: 0;
 }
 
@@ -101,15 +101,15 @@ const emit = defineEmits<{
 }
 
 .n-collapsible__content[data-state='open'] {
-  animation: n-collapsible-slideDown var(--transition-fast) ease-out;
+  animation: n-collapsible-slideDown var(--n-transition-fast) ease-out;
 }
 
 .n-collapsible__content[data-state='closed'] {
-  animation: n-collapsible-slideUp var(--transition-fast) ease-out;
+  animation: n-collapsible-slideUp var(--n-transition-fast) ease-out;
 }
 
 .n-collapsible__content-inner {
-  padding: var(--spacing-3) var(--spacing-4);
+  padding: var(--n-spacing-3) var(--n-spacing-4);
 }
 
 @keyframes n-collapsible-slideDown {

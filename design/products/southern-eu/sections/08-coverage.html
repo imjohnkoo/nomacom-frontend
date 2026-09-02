@@ -17,6 +17,10 @@
         grid-template-columns: 1fr 1fr;
         gap: 14px;
       }
+      /* 지도 자산 미수급 zone: 국가 카드만 단일 컬럼으로 */
+      .cv-wrap--nomap {
+        grid-template-columns: 1fr;
+      }
       .cv-map {
         background: linear-gradient(135deg, #f1edff, #fff);
         border-radius: 16px;
@@ -58,7 +62,7 @@
         position: absolute;
         left: 14px;
         top: -8px;
-        font-size: 9.5px;
+        font-size: 11.5px;
         font-weight: 800;
         color: var(--color-primary-900);
         background: rgba(255, 255, 255, 0.92);
@@ -74,7 +78,7 @@
       }
       .cv-map__cap {
         margin-top: 10px;
-        font-size: 12px;
+        font-size: 14px;
         color: var(--color-neutral-500);
         text-align: center;
       }
@@ -84,7 +88,7 @@
       }
       .cv-map__credit {
         margin-top: 4px;
-        font-size: 9.5px;
+        font-size: 11.5px;
         color: var(--color-neutral-400);
         text-align: center;
       }
@@ -107,17 +111,17 @@
         margin-bottom: 10px;
       }
       .cv-card__flag {
-        font-size: 26px;
+        font-size: 28px;
         line-height: 1;
       }
       .cv-card__h {
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 800;
         color: var(--color-neutral-900);
       }
       .cv-card__h small {
         display: inline-block;
-        font-size: 10.5px;
+        font-size: 12.5px;
         font-weight: 700;
         color: var(--color-primary-700);
         background: var(--color-primary-50);
@@ -137,11 +141,11 @@
         background: var(--color-neutral-100);
         color: var(--color-neutral-800);
         border-radius: 9999px;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
       }
       .cv-card__cities {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--color-neutral-600);
         line-height: 1.7;
       }
@@ -155,7 +159,7 @@
         padding: 12px 16px;
         background: var(--color-neutral-50);
         border-radius: 10px;
-        font-size: 12px;
+        font-size: 14px;
         color: var(--color-neutral-600);
         line-height: 1.65;
         text-align: center;
@@ -167,7 +171,7 @@
       <div class="dev-toolbar__info">
         <span class="dev-toolbar__num">08</span>
         <span class="dev-toolbar__title">Coverage</span>
-        <span class="dev-toolbar__hint">지도 (Wikimedia) + 국가별 카드 · Maya 공식 carrier</span>
+        <span class="dev-toolbar__hint">지도 (Wikimedia) + 국가별 카드 · 통신사명 미기재 (벤더 중립)</span>
       </div>
       <button class="dev-toolbar__btn" data-export="eu-08-coverage">
         <span class="label-default">PNG 저장</span>
@@ -206,11 +210,11 @@
               <span class="cv-pin" style="left: 69%; top: 56%">
                 <span>발렌시아</span>
               </span>
-              <span class="cv-pin cv-pin--right" style="left: 50%; top: 74%">
+              <span class="cv-pin" style="left: 50%; top: 74%">
                 <span>그라나다</span>
               </span>
               <span class="cv-pin" style="left: 48%; top: 80%">
-                <span>말라가</span>
+                <span style="top: 8px">말라가</span>
               </span>
               <!-- 포르투갈 도시 -->
               <span class="cv-pin cv-pin--right" style="left: 24%; top: 63%">
@@ -220,7 +224,7 @@
                 <span>포르토</span>
               </span>
             </div>
-            <div class="cv-map__cap"><b>2개국 · 1티어 통신사 4개</b> 자동 연결</div>
+            <div class="cv-map__cap"><b>2개국 · 현지 1티어 통신망</b> 자동 연결</div>
             <div class="cv-map__credit">지도 © Wikimedia Commons (CC BY-SA)</div>
           </div>
 
@@ -232,8 +236,7 @@
                 <span class="cv-card__h">스페인<small>3G · 4G LTE · 5G</small></span>
               </div>
               <div class="cv-card__brands">
-                <span class="cv-card__brand">Vodafone</span>
-                <span class="cv-card__brand">Orange</span>
+                <span class="cv-card__brand">현지 1티어 자동 연결</span>
               </div>
               <div class="cv-card__cities">
                 <b>마드리드</b> · 바르셀로나 · 세비야 · 발렌시아 · 그라나다 · 말라가
@@ -245,8 +248,7 @@
                 <span class="cv-card__h">포르투갈<small>3G · 4G LTE · 5G</small></span>
               </div>
               <div class="cv-card__brands">
-                <span class="cv-card__brand">NOS</span>
-                <span class="cv-card__brand">MEO</span>
+                <span class="cv-card__brand">현지 1티어 자동 연결</span>
               </div>
               <div class="cv-card__cities">
                 <b>리스본</b> · 포르토 · 신트라 · 코임브라 · 알가르브 · 파티마
@@ -256,7 +258,7 @@
         </div>
 
         <p class="cv-note">
-          현지 도착 시 가장 강한 신호의 1티어 통신사로 자동 연결 · Maya 공식 라우팅
+          현지 도착 시 가장 강한 신호의 1티어 통신망에 자동 연결 · 별도 설정 불필요
         </p>
       </section>
     </div>

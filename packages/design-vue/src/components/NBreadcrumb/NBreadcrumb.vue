@@ -88,15 +88,15 @@ const props = withDefaults(defineProps<NBreadcrumbProps>(), {
 
 <style scoped>
 .n-breadcrumb {
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
 }
 
 .n-breadcrumb__list {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--spacing-1);
+  gap: var(--n-spacing-1);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -105,58 +105,58 @@ const props = withDefaults(defineProps<NBreadcrumbProps>(), {
 .n-breadcrumb__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-1);
+  gap: var(--n-spacing-1);
 }
 
 .n-breadcrumb__separator {
-  color: var(--color-neutral-400);
+  color: var(--n-color-neutral-400);
   user-select: none;
-  font-weight: var(--font-fontWeight-regular);
+  font-weight: var(--n-font-weight-normal);
 }
 
 .n-breadcrumb__link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
-  color: var(--color-neutral-500);
+  gap: var(--n-spacing-1);
+  color: var(--n-color-neutral-500);
   text-decoration: none;
-  font-weight: var(--font-fontWeight-medium);
-  border-radius: var(--radius-sm);
-  padding: var(--spacing-0) var(--spacing-1);
-  transition: color var(--transition-fast), background-color var(--transition-fast);
+  font-weight: var(--n-font-weight-medium);
+  border-radius: var(--n-radius-sm);
+  padding: var(--n-spacing-0) var(--n-spacing-1);
+  transition: color var(--n-transition-fast), background-color var(--n-transition-fast);
 }
 
 .n-breadcrumb__link:hover {
-  color: var(--color-primary-600);
-  background-color: var(--color-primary-50);
+  color: var(--n-color-primary-600);
+  background-color: var(--n-color-primary-50);
 }
 
 .n-breadcrumb__link:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
 .n-breadcrumb__text {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
-  color: var(--color-neutral-500);
-  font-weight: var(--font-fontWeight-medium);
-  padding: var(--spacing-0) var(--spacing-1);
+  gap: var(--n-spacing-1);
+  color: var(--n-color-neutral-500);
+  font-weight: var(--n-font-weight-medium);
+  padding: var(--n-spacing-0) var(--n-spacing-1);
 }
 
 .n-breadcrumb__current {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1);
-  color: var(--color-neutral-900);
-  font-weight: var(--font-fontWeight-semibold);
-  padding: var(--spacing-0) var(--spacing-1);
+  gap: var(--n-spacing-1);
+  color: var(--n-color-neutral-900);
+  font-weight: var(--n-font-weight-semibold);
+  padding: var(--n-spacing-0) var(--n-spacing-1);
 }
 
 .n-breadcrumb__icon {
   display: inline-flex;
   align-items: center;
-  font-size: var(--font-fontSize-base);
+  font-size: var(--n-font-size-base);
 }
 </style>

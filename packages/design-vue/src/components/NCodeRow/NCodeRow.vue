@@ -79,8 +79,8 @@ async function onCopy() {
   align-items: center;
   gap: 10px;
   padding: 14px 0;
-  border-bottom: 1px solid var(--color-neutral-100, #f3f4f6);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-bottom: 1px solid var(--n-color-neutral-100, #f5f5f5);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-code-row:last-of-type {
@@ -98,15 +98,15 @@ async function onCopy() {
 .n-code-row__label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .n-code-row__value {
   font-size: 13px;
-  color: var(--color-neutral-900, #171717);
-  font-family: var(--font-fontFamily-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  color: var(--n-color-neutral-900, #171717);
+  font-family: var(--n-font-family-mono, 'JetBrains Mono', 'Fira Code', Consolas, monospace);
   word-break: break-all;
   line-height: 1.5;
 }
@@ -116,9 +116,9 @@ async function onCopy() {
   height: 32px;
   padding: 0 12px;
   border: 0;
-  border-radius: var(--radius-lg, 0.5rem);
-  background: var(--color-primary-50, #f1edff);
-  color: var(--color-primary-500, #6239ff);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  background: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-500, #6239ff);
   font-size: 12px;
   font-weight: 600;
   display: inline-flex;
@@ -131,11 +131,11 @@ async function onCopy() {
 }
 
 .n-code-row__copy:hover {
-  background: var(--color-primary-100, #e3dbff);
+  background: var(--n-color-primary-100, #e3dbff);
 }
 
 .n-code-row__copy--copied {
-  background: var(--color-success-50, #dcfce7);
-  color: var(--color-success-700, #059669);
+  background: var(--n-color-success-50, #f0fdf4);
+  color: var(--n-color-success-700, #15803d);
 }
 </style>

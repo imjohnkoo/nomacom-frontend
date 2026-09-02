@@ -1,0 +1,100 @@
+{
+  "zoneShort": "네덜란드",
+  "zoneName": "네덜란드",
+  "zoneFlags": "🇳🇱",
+  "galleryVersion": "v2-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "네덜란드 어디서나 🇳🇱",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "네덜란드 1개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 전역)",
+  "comparisonHint": "6 행 · 로밍/유심 대비",
+  "faqHint": "기간 자동 치환 (종량제·국경 Q 제거)",
+  "finalHint": "신뢰배지 + 최저 단가 + CS 번호",
+  "finalHeadline": "네덜란드, 한 SIM 으로.",
+  "reviewsTitle": "네덜란드로 떠난 분들",
+  "reviews": {
+    "avg": "4.88",
+    "total": 105,
+    "asOf": "2026년 8월",
+    "rows": [
+      {
+        "label": "무제한 (105건)",
+        "pct": 98,
+        "val": "4.88★"
+      }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "세번째 사용입니다. 암스테르담 갈때마다 쓰네요. 이번에도 편하게 잘 썻습니다. 감사합니다.",
+        "initial": "L",
+        "author": "lasa******",
+        "meta": "매일 1GB · 1일 · 2025년 10월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "바로 도착하고 작동방식도 쉽게 잘 설명되어 있어서 좋았습니다!",
+        "initial": "L",
+        "author": "lumi****",
+        "meta": "매일 2GB · 15일 · 2026년 1월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "아주 잘터집니다 강추!!!",
+        "initial": "L",
+        "author": "love*******",
+        "meta": "매일 1GB · 7일 · 2026년 2월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "잘터지고 빨라서 좋습니다 다음에 또 이용",
+        "initial": "S",
+        "author": "sh****",
+        "meta": "매일 1GB · 3일 · 2025년 12월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "편리하고 빠르게 잘 사용했어요",
+        "initial": "V",
+        "author": "vb****",
+        "meta": "매일 1GB · 1일 · 2026년 2월"
+      }
+    ],
+    "photos": [
+      {
+        "src": "../assets/reviews/9395267842_4834538826_1.jpg",
+        "alt": "구매자 사진 — 운하 크루즈에서 본 국립미술관",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9395267842_4909841858_1.jpg",
+        "alt": "구매자 사진 — 반 고흐 미술관",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9395267842_5024853579_1.jpg",
+        "alt": "구매자 사진 — 네덜란드 거리 카페",
+        "stars": "★★★★★"
+      }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "네덜란드 전역 커버",
+    "coverageHint": "1개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      {
+        "flag": "🇳🇱",
+        "name": "네덜란드",
+        "cities": "<b>암스테르담</b> · 로테르담 · 헤이그 · 위트레흐트 · 잔세스칸스 · 큐켄호프"
+      }
+    ]
+  },
+  "bestCap": "1GB",
+  "bestDays": 3,
+  "bestSource": "nomacom-manager 2026-08-20 handoff — last365 89건 · 1GB/3일 22건 24.7% (단일국 단기 편중)"
+}

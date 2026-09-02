@@ -59,42 +59,42 @@ const initials = computed(() => {
   vertical-align: middle;
   user-select: none;
   flex-shrink: 0;
-  background-color: var(--color-neutral-100);
-  border-radius: var(--radius-md);
+  background-color: var(--n-color-neutral-100);
+  border-radius: var(--n-radius-md);
 }
 
 .n-avatar--rounded {
-  border-radius: var(--radius-full);
+  border-radius: var(--n-radius-full);
 }
 
 .n-avatar--xs {
   width: 24px;
   height: 24px;
-  font-size: var(--font-fontSize-xs);
+  font-size: var(--n-font-size-xs);
 }
 
 .n-avatar--sm {
   width: 32px;
   height: 32px;
-  font-size: var(--font-fontSize-xs);
+  font-size: var(--n-font-size-xs);
 }
 
 .n-avatar--md {
   width: 40px;
   height: 40px;
-  font-size: var(--font-fontSize-sm);
+  font-size: var(--n-font-size-sm);
 }
 
 .n-avatar--lg {
   width: 48px;
   height: 48px;
-  font-size: var(--font-fontSize-base);
+  font-size: var(--n-font-size-base);
 }
 
 .n-avatar--xl {
   width: 64px;
   height: 64px;
-  font-size: var(--font-fontSize-lg);
+  font-size: var(--n-font-size-lg);
 }
 
 .n-avatar__image {
@@ -110,10 +110,10 @@ const initials = computed(() => {
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-family: var(--font-fontFamily-sans);
-  font-weight: var(--font-fontWeight-medium);
-  color: var(--color-neutral-600);
-  background-color: var(--color-neutral-100);
+  font-family: var(--n-font-family-sans);
+  font-weight: var(--n-font-weight-medium);
+  color: var(--n-color-neutral-600);
+  background-color: var(--n-color-neutral-100);
   line-height: 1;
 }
 </style>

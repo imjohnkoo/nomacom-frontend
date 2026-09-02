@@ -111,14 +111,14 @@ const frameStyles = computed(() => {
   display: flex;
   justify-content: center;
   width: 100%;
-  background-color: var(--color-neutral-100, #f5f5f5);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-mobile-layout__frame {
   width: 100%;
   min-height: inherit;
-  background-color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-neutral-0, #ffffff);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -155,8 +155,8 @@ const frameStyles = computed(() => {
 @media (min-width: 560px) {
   .n-mobile-layout__frame--shadow {
     box-shadow:
-      0 0 0 1px var(--color-neutral-200, #e5e5e5),
-      var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
+      0 0 0 1px var(--n-color-neutral-200, #e5e5e5),
+      var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
   }
 }
 
@@ -197,11 +197,11 @@ const frameStyles = computed(() => {
 }
 
 .n-mobile-layout__content::-webkit-scrollbar-thumb {
-  background: var(--color-neutral-300, #d4d4d4);
+  background: var(--n-color-neutral-300, #d4d4d4);
   border-radius: 4px;
 }
 
 .n-mobile-layout__content::-webkit-scrollbar-thumb:hover {
-  background: var(--color-neutral-400, #a3a3a3);
+  background: var(--n-color-neutral-400, #a3a3a3);
 }
 </style>

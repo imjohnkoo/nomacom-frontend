@@ -34,11 +34,30 @@ logs
 .env.*
 !.env.example
 
-# Claude
-.claude/*
+# Claude — 개인 설정/런타임 상태만 ignore, 나머지 .claude/ 는 전부 추적
+# (스킬·훅·rules 가 git 에 없으면 워크트리 간 전파도 이력도 없다 — 2026-09-02 전환)
+**/.claude/settings.local.json
+**/.claude/scheduled_tasks.lock
 
-# Internal documentation — local only (root docs/)
-docs/
+# Internal documentation — 로컬 전용, EXCEPT 기획문서 (docs/specs/ 기능정의서 + docs/plans/ 코딩계획서 — git 공유)
+# 부모 docs/ 를 통째로 ignore 하면 자식을 되살릴 수 없으므로 직접 자식만 ignore + 기획문서만 예외
+/docs/*
+!/docs/specs/
+!/docs/plans/
+# ⛔ 시크릿이 평문으로 들어 있는 5월 문서 2건은 공유하지 않는다 (2026-09-02).
+# GitHub push protection 이 DockerHub PAT 를 차단해 발견 — origin 에는 올라간 적 없다.
+# 로컬에는 남아 있으니 필요하면 열어 볼 수 있다. 시크릿을 지운 뒤에도 되살리지 말 것 —
+# 문서 목적(당시 부트스트랩 기록)상 공유 가치가 낮다.
+/docs/plans/admin/2026-05-18-deploy-bootstrap.md
+/docs/plans/weekly/2026-05-18-week.html
+
+# 앱/패키지 로컬 docs 는 여전히 금지 (실수로 생성돼도 무시)
+apps/*/docs/
+packages/*/docs/
 
 # Storage
 storage/
+design/products/_generator/.golden-out/
+
+# 썸네일 렌더 결과 (PNG 대량 · 재생성 가능)
+design/thumbnails/out/

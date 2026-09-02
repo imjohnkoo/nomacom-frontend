@@ -1,0 +1,112 @@
+{
+  "zoneShort": "서유럽 3국",
+  "zoneName": "서유럽 프랑스·이탈리아·스위스",
+  "zoneFlags": "🇫🇷 🇮🇹 🇨🇭",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "프랑스 · 이탈리아 · 스위스 한 번에 🇫🇷 🇮🇹 🇨🇭",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "서유럽 3개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 3개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·국경 자동 치환 (종량제 Q 제거)",
+  "finalHint": "신뢰배지 + 세 나라 한 SIM + CS 번호",
+  "finalHeadline": "세 나라, 한 SIM.",
+  "reviewsTitle": "프랑스·이탈리아·스위스로 떠난 분들",
+  "borderQ": "프랑스 ↔ 스위스 ↔ 이탈리아 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "파리 → 인터라켄 → 밀라노 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.96",
+    "total": 45,
+    "asOf": "2026년 8월",
+    "rows": [
+      {
+        "label": "무제한 (45건)",
+        "pct": 99,
+        "val": "4.96★"
+      }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "이탈리아-스위스 여행했습니다 너무너무 만족합니다 걱정많이 했는데 무색할만큼 연결 잘 돼서 편하게 여행했습니다-!",
+        "initial": "R",
+        "author": "reas*****",
+        "meta": "매일 2GB · 7일 · 2025년 10월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "스위스에서 매우 잘터져요. 한국에서 쓰던 속도라고 보심되요",
+        "initial": "Y",
+        "author": "yeli****",
+        "meta": "매일 1GB · 10일 · 2025년 8월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "스위스와 프랑스 2개국에서 불편함 없이 잘 사용했어요.",
+        "initial": "K",
+        "author": "kys9*****",
+        "meta": "매일 1GB · 10일 · 2025년 7월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "유럽에서 잘 썼어요~!! 2G 결제했는데 넉넉했어요~ 다음에 또 사용할게요",
+        "initial": "L",
+        "author": "le****",
+        "meta": "매일 2GB · 10일 · 2025년 6월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "서유럽 다녀왔는데 좋습니다",
+        "initial": "C",
+        "author": "cj****",
+        "meta": "매일 1GB · 10일 · 2025년 6월"
+      }
+    ],
+    "photos": [
+      {
+        "src": "../assets/reviews/9312919651_4822454953_1.jpg",
+        "alt": "구매자 사진 — 스위스 그린델발트",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9312919651_4744555778_1.jpg",
+        "alt": "구매자 사진 — 피렌체 두오모",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9312919651_4756194755_1.jpg",
+        "alt": "구매자 사진 — 몽생미셸",
+        "stars": "★★★★★"
+      }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "파리부터 로마까지 전역 커버",
+    "coverageHint": "3개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      {
+        "flag": "🇫🇷",
+        "name": "프랑스",
+        "cities": "<b>파리</b> · 니스 · 리옹 · 몽생미셸 · 스트라스부르"
+      },
+      {
+        "flag": "🇮🇹",
+        "name": "이탈리아",
+        "cities": "<b>로마</b> · 피렌체 · 베네치아 · 밀라노 · 나폴리"
+      },
+      {
+        "flag": "🇨🇭",
+        "name": "스위스",
+        "cities": "<b>취리히</b> · 인터라켄 · 그린델발트 · 루체른 · 제네바"
+      }
+    ]
+  },
+  "bestCap": "1GB",
+  "bestDays": 10,
+  "bestSource": "nomacom-manager 2026-08-20 handoff — last365 39건 · 1GB/10일 9건 23.1%"
+}

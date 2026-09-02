@@ -392,7 +392,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   padding: 18px;
-  border-radius: var(--radius-xl, 18px);
+  border-radius: var(--n-radius-xl, 18px);
   background: #ffffff;
   border: 1px solid #eef2f7;
   box-shadow:

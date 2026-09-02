@@ -245,7 +245,7 @@ function nextMonth() {
 
 <style scoped>
 .n-duration-calendar {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-duration-calendar__head {
@@ -258,7 +258,7 @@ function nextMonth() {
 .n-duration-calendar__title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-duration-calendar__nav {
@@ -268,17 +268,17 @@ function nextMonth() {
   align-items: center;
   justify-content: center;
   border: 0;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--n-radius-full, 9999px);
   background: transparent;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
   cursor: pointer;
   transition:
     background 160ms ease,
     color 160ms ease;
 }
 .n-duration-calendar__nav:hover:not(:disabled) {
-  background: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-900, #171717);
+  background: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-900, #171717);
 }
 .n-duration-calendar__nav:disabled {
   opacity: 0.3;
@@ -294,14 +294,14 @@ function nextMonth() {
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   padding: 4px 0;
 }
 .n-duration-calendar__wday--sun {
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 .n-duration-calendar__wday--sat {
-  color: var(--color-info-500, #3b82f6);
+  color: var(--n-color-info-500, #0ea5e9);
 }
 
 .n-duration-calendar__grid {
@@ -317,10 +317,10 @@ function nextMonth() {
   justify-content: center;
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
   background: transparent;
   border: 0;
-  border-radius: var(--radius-xl, 0.75rem);
+  border-radius: var(--n-radius-xl, 0.75rem);
   cursor: pointer;
   position: relative;
   transition:
@@ -328,24 +328,24 @@ function nextMonth() {
     color 120ms ease;
 }
 .n-duration-calendar__cell:hover:not(:disabled) {
-  background: var(--color-neutral-100, #f5f5f5);
+  background: var(--n-color-neutral-100, #f5f5f5);
 }
 .n-duration-calendar__cell--dim {
-  color: var(--color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-300, #d4d4d4);
   cursor: default;
 }
 .n-duration-calendar__cell--dim:hover {
   background: transparent;
 }
 .n-duration-calendar__cell--disabled {
-  color: var(--color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-300, #d4d4d4);
   cursor: not-allowed;
 }
 .n-duration-calendar__cell--disabled:hover {
   background: transparent;
 }
 .n-duration-calendar__cell--today {
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
   font-weight: 700;
 }
 .n-duration-calendar__cell--today::after {
@@ -354,29 +354,29 @@ function nextMonth() {
   bottom: 6px;
   width: 4px;
   height: 4px;
-  border-radius: var(--radius-full, 9999px);
-  background: var(--color-primary-500, #6239ff);
+  border-radius: var(--n-radius-full, 9999px);
+  background: var(--n-color-primary-500, #6239ff);
 }
 .n-duration-calendar__cell--range {
-  background: var(--color-primary-50, #f1edff);
-  color: var(--color-primary-600, #5025e8);
+  background: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-600, #5025e8);
   border-radius: 0;
 }
 .n-duration-calendar__cell--range-start {
-  border-radius: var(--radius-xl, 0.75rem) 0 0 var(--radius-xl, 0.75rem);
+  border-radius: var(--n-radius-xl, 0.75rem) 0 0 var(--n-radius-xl, 0.75rem);
 }
 .n-duration-calendar__cell--range-end {
-  border-radius: 0 var(--radius-xl, 0.75rem) var(--radius-xl, 0.75rem) 0;
+  border-radius: 0 var(--n-radius-xl, 0.75rem) var(--n-radius-xl, 0.75rem) 0;
 }
 .n-duration-calendar__cell--selected {
-  background: var(--color-primary-500, #6239ff);
-  color: var(--color-neutral-0, #ffffff) !important;
+  background: var(--n-color-primary-500, #6239ff);
+  color: var(--n-color-neutral-0, #ffffff) !important;
   font-weight: 700;
 }
 .n-duration-calendar__cell--selected.n-duration-calendar__cell--range-start {
-  border-radius: var(--radius-xl, 0.75rem);
+  border-radius: var(--n-radius-xl, 0.75rem);
 }
 .n-duration-calendar__cell--selected::after {
-  background: var(--color-neutral-0, #ffffff);
+  background: var(--n-color-neutral-0, #ffffff);
 }
 </style>

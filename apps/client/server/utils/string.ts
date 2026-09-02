@@ -1,5 +1,3 @@
-import type { Order } from '../db/schema';
-
 /**
  * Generate unique eSIM tag from order data
  * Format: {customerId}{last4PhoneDigits}_{orderId}_{optionManageCode}_{index}

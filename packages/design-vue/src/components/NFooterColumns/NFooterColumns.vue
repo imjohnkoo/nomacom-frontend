@@ -62,14 +62,14 @@ export default defineComponent({
 <style scoped>
 .n-footer-columns {
   width: 100%;
-  padding: var(--spacing-10) var(--spacing-6);
-  font-family: var(--font-fontFamily-sans);
+  padding: var(--n-spacing-10) var(--n-spacing-6);
+  font-family: var(--n-font-family-sans);
 }
 
 .n-footer-columns__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--spacing-8);
+  gap: var(--n-spacing-8);
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -80,10 +80,10 @@ export default defineComponent({
 }
 
 .n-footer-columns__title {
-  margin: 0 0 var(--spacing-4) 0;
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-semibold);
-  color: var(--color-neutral-900);
+  margin: 0 0 var(--n-spacing-4) 0;
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-semibold);
+  color: var(--n-color-neutral-900);
   line-height: 1.4;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -95,7 +95,7 @@ export default defineComponent({
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
 }
 
 .n-footer-columns__item {
@@ -103,26 +103,26 @@ export default defineComponent({
 }
 
 .n-footer-columns__link {
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-500);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-500);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--n-transition-fast);
 }
 
 .n-footer-columns__link:hover {
-  color: var(--color-primary-500);
+  color: var(--n-color-primary-500);
 }
 
 .n-footer-columns__link:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--n-radius-sm);
 }
 
 .n-footer-columns__text {
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-400);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-400);
 }
 </style>

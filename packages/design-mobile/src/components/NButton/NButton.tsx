@@ -6,13 +6,12 @@ import {
   StyleSheet,
   View,
   type ViewStyle,
-  type TextStyle,
 } from 'react-native'
 import { theme } from '../../theme'
 
 export interface NButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   disabled?: boolean
   loading?: boolean
   fullWidth?: boolean
@@ -42,12 +41,20 @@ const sizeStyle: Record<string, ViewStyle> = {
   sm: { paddingVertical: theme.spacing[1.5] ?? 6, paddingHorizontal: theme.spacing[3] },
   md: { paddingVertical: theme.spacing[2.5] ?? 10, paddingHorizontal: theme.spacing[4] },
   lg: { paddingVertical: theme.spacing[3], paddingHorizontal: theme.spacing[6] },
+  // xl = h56 CTA — design-vue NButton xl 대응 (radius 2xl)
+  xl: {
+    paddingVertical: theme.spacing[4],
+    paddingHorizontal: theme.spacing[6],
+    minHeight: 56,
+    borderRadius: theme.radius['2xl'],
+  },
 }
 
 const sizeFontMap: Record<string, number> = {
   sm: theme.fontSize.sm,
   md: theme.fontSize.base,
   lg: theme.fontSize.lg,
+  xl: theme.fontSize.base,
 }
 
 export function NButton({

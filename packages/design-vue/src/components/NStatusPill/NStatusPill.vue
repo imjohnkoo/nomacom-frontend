@@ -30,8 +30,8 @@ withDefaults(defineProps<NStatusPillProps>(), {
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border-radius: var(--radius-full, 9999px);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-full, 9999px);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.4;
@@ -46,13 +46,13 @@ withDefaults(defineProps<NStatusPillProps>(), {
 .n-status-pill__dot {
   width: 6px;
   height: 6px;
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--n-radius-full, 9999px);
   background-color: currentColor;
 }
 
 .n-status-pill--success {
-  background-color: var(--color-success-50, #ecfdf5);
-  color: var(--color-success-700, #059669);
+  background-color: var(--n-color-success-50, #f0fdf4);
+  color: var(--n-color-success-700, #15803d);
 }
 
 .n-status-pill--info {
@@ -61,22 +61,22 @@ withDefaults(defineProps<NStatusPillProps>(), {
 }
 
 .n-status-pill--warning {
-  background-color: var(--color-warning-50, #fff7ed);
-  color: var(--color-warning-700, #b45309);
+  background-color: var(--n-color-warning-50, #fffbeb);
+  color: var(--n-color-warning-700, #b45309);
 }
 
 .n-status-pill--error {
-  background-color: var(--color-error-50, #fef2f2);
-  color: var(--color-error-700, #b91c1c);
+  background-color: var(--n-color-error-50, #fef2f2);
+  color: var(--n-color-error-700, #b91c1c);
 }
 
 .n-status-pill--primary {
-  background-color: var(--color-primary-50, #f1edff);
-  color: var(--color-primary-700, #3f1cc0);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-status-pill--neutral {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-700, #404040);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-700, #404040);
 }
 </style>

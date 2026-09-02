@@ -50,14 +50,14 @@ function handleClick(event: MouseEvent) {
 .n-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-1, 0.25rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-weight: var(--font-fontWeight-medium, 500);
-  line-height: var(--font-lineHeight-normal, 1.5);
+  gap: var(--n-spacing-1, 0.25rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-weight: var(--n-font-weight-medium, 500);
+  line-height: var(--n-font-line-height-normal, 1.5);
   text-decoration: none;
   cursor: pointer;
-  transition: color var(--transition-fast, 150ms ease),
-    text-decoration-color var(--transition-fast, 150ms ease);
+  transition: color var(--n-transition-fast, 150ms ease),
+    text-decoration-color var(--n-transition-fast, 150ms ease);
 }
 
 /* --- Underline --- */
@@ -69,39 +69,39 @@ function handleClick(event: MouseEvent) {
 
 /* --- Primary color --- */
 .n-link--primary {
-  color: var(--color-primary-600, #2563eb);
-  text-decoration-color: var(--color-primary-300, #93c5fd);
+  color: var(--n-color-primary-600, #5025e8);
+  text-decoration-color: var(--n-color-primary-300, #a78bff);
 }
 
 .n-link--primary:hover:not(.n-link--disabled) {
-  color: var(--color-primary-700, #1d4ed8);
-  text-decoration-color: var(--color-primary-600, #2563eb);
+  color: var(--n-color-primary-700, #3f1cc0);
+  text-decoration-color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-link--primary:active:not(.n-link--disabled) {
-  color: var(--color-primary-800, #1e40af);
+  color: var(--n-color-primary-800, #2f1499);
 }
 
 /* --- Neutral color --- */
 .n-link--neutral {
-  color: var(--color-neutral-700, #404040);
-  text-decoration-color: var(--color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-700, #404040);
+  text-decoration-color: var(--n-color-neutral-300, #d4d4d4);
 }
 
 .n-link--neutral:hover:not(.n-link--disabled) {
-  color: var(--color-neutral-900, #171717);
-  text-decoration-color: var(--color-neutral-700, #404040);
+  color: var(--n-color-neutral-900, #171717);
+  text-decoration-color: var(--n-color-neutral-700, #404040);
 }
 
 .n-link--neutral:active:not(.n-link--disabled) {
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 /* --- Focus --- */
 .n-link:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: 2px;
-  border-radius: var(--radius-sm, 0.125rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
 }
 
 /* --- Disabled --- */

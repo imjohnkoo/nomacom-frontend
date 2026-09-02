@@ -88,7 +88,7 @@ function handleCancel() {
 .n-confirm__overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--zIndex-modal-backdrop, 1040);
+  z-index: var(--n-z-index-modal-backdrop, 1040);
   background-color: rgb(0 0 0 / 0.5);
 }
 
@@ -97,14 +97,14 @@ function handleCancel() {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: var(--zIndex-modal, 1050);
+  z-index: var(--n-z-index-modal, 1050);
   /* NAlertDialog 와 동일 사이즈·리듬 (john 피드백 2026-08-20) */
   width: 90vw;
   max-width: 280px;
-  border-radius: var(--radius-3xl, 1.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-3xl, 1.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  box-shadow: var(--n-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   overflow: hidden;
 }
 
@@ -116,7 +116,7 @@ function handleCancel() {
   align-items: center;
   text-align: center;
   /* 상단 36px — NAlertDialog 와 동일한 상하 대칭 리듬 */
-  padding: 36px var(--spacing-6, 1.5rem) 8px;
+  padding: 36px var(--n-spacing-6, 1.5rem) 8px;
 }
 
 .n-confirm__icon {
@@ -125,39 +125,39 @@ function handleCancel() {
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-full, 9999px);
-  margin-bottom: var(--spacing-4, 1rem);
+  border-radius: var(--n-radius-full, 9999px);
+  margin-bottom: var(--n-spacing-4, 1rem);
 }
 
 .n-confirm__icon--default {
-  background-color: var(--color-primary-50, #f5f3ff);
-  color: var(--color-primary-500, #6239FF);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-500, #6239FF);
 }
 
 .n-confirm__icon--danger {
-  background-color: var(--color-error-50, #fef2f2);
-  color: var(--color-error-500, #ef4444);
+  background-color: var(--n-color-error-50, #fef2f2);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .n-confirm__title {
   margin: 0;
-  font-size: var(--font-fontSize-lg, 1.125rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-900, #171717);
+  font-size: var(--n-font-size-lg, 1.125rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-900, #171717);
   line-height: 1.4;
 }
 
 .n-confirm__message {
-  margin-top: var(--spacing-2, 0.5rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-500, #737373);
+  margin-top: var(--n-spacing-2, 0.5rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-500, #737373);
   line-height: 1.5;
 }
 
 .n-confirm__actions {
   display: flex;
-  gap: var(--spacing-3, 0.75rem);
-  padding: 14px var(--spacing-6, 1.5rem) 36px;
+  gap: var(--n-spacing-3, 0.75rem);
+  padding: 14px var(--n-spacing-6, 1.5rem) 36px;
   justify-content: center;
 }
 
@@ -166,44 +166,44 @@ function handleCancel() {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-4, 1rem);
-  border-radius: var(--radius-md, 0.375rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-4, 1rem);
+  border-radius: var(--n-radius-md, 0.375rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-medium, 500);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
-  border: var(--borderWidth-1, 1px) solid transparent;
+  transition: all var(--n-transition-fast, 150ms ease);
+  border: var(--n-border-width-1, 1px) solid transparent;
   outline: none;
 }
 
 .n-confirm__btn:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-200, #ddd6fe);
+  box-shadow: 0 0 0 2px var(--n-color-primary-200, #c7b6ff);
 }
 
 .n-confirm__btn--cancel {
-  background-color: var(--color-neutral-100, #f5f5f5);
-  color: var(--color-neutral-700, #404040);
-  border-color: var(--color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-700, #404040);
+  border-color: var(--n-color-neutral-200, #e5e5e5);
 }
 .n-confirm__btn--cancel:hover {
-  background-color: var(--color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-confirm__btn--default {
-  background-color: var(--color-primary-600, #5530e6);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-primary-600, #5025e8);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .n-confirm__btn--default:hover {
-  background-color: var(--color-primary-700, #4826cc);
+  background-color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-confirm__btn--danger {
-  background-color: var(--color-error-500, #ef4444);
-  color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-error-500, #ef4444);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 .n-confirm__btn--danger:hover {
-  background-color: var(--color-error-700, #b91c1c);
+  background-color: var(--n-color-error-700, #b91c1c);
 }
 
 /* Transitions */

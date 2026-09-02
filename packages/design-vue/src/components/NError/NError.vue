@@ -81,7 +81,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-12) var(--spacing-6);
+  padding: var(--n-spacing-12) var(--n-spacing-6);
   text-align: center;
 }
 
@@ -91,14 +91,14 @@ export default defineComponent({
   justify-content: center;
   width: 64px;
   height: 64px;
-  margin-bottom: var(--spacing-5);
-  border-radius: var(--radius-full);
-  background-color: var(--color-error-50);
-  color: var(--color-error-500);
+  margin-bottom: var(--n-spacing-5);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-error-50);
+  color: var(--n-color-error-500);
 }
 
 .n-error__icon {
-  font-size: var(--font-fontSize-2xl);
+  font-size: var(--n-font-size-2xl);
   line-height: 1;
 }
 
@@ -108,21 +108,21 @@ export default defineComponent({
 }
 
 .n-error__title {
-  margin: 0 0 var(--spacing-2) 0;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-xl);
-  font-weight: var(--font-fontWeight-semibold);
-  color: var(--color-neutral-900);
+  margin: 0 0 var(--n-spacing-2) 0;
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-xl);
+  font-weight: var(--n-font-weight-semibold);
+  color: var(--n-color-neutral-900);
   line-height: 1.4;
 }
 
 .n-error__description {
-  margin: 0 0 var(--spacing-6) 0;
+  margin: 0 0 var(--n-spacing-6) 0;
   max-width: 420px;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-500);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-500);
   line-height: 1.6;
 }
 
@@ -130,25 +130,25 @@ export default defineComponent({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2) var(--spacing-5);
-  border: var(--borderWidth-1) solid transparent;
-  border-radius: var(--radius-md);
-  background-color: var(--color-error-500);
-  color: var(--color-neutral-0);
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-medium);
+  padding: var(--n-spacing-2) var(--n-spacing-5);
+  border: var(--n-border-width-1) solid transparent;
+  border-radius: var(--n-radius-md);
+  background-color: var(--n-color-error-500);
+  color: var(--n-color-neutral-0);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-medium);
   cursor: pointer;
-  transition: background-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+  transition: background-color var(--n-transition-fast),
+    box-shadow var(--n-transition-fast);
 }
 
 .n-error__retry:hover {
-  background-color: var(--color-error-700);
+  background-color: var(--n-color-error-700);
 }
 
 .n-error__retry:focus-visible {
-  outline: 2px solid var(--color-error-500);
+  outline: 2px solid var(--n-color-error-500);
   outline-offset: 2px;
 }
 

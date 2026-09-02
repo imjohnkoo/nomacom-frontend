@@ -38,11 +38,11 @@ const { toasts, remove } = useToast()
   position: fixed;
   bottom: 0;
   right: 0;
-  z-index: var(--zIndex-toast, 1200);
+  z-index: var(--n-z-index-toast, 1080);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3, 0.75rem);
-  padding: var(--spacing-6, 1.5rem);
+  gap: var(--n-spacing-3, 0.75rem);
+  padding: var(--n-spacing-6, 1.5rem);
   margin: 0;
   list-style: none;
   max-height: 100vh;

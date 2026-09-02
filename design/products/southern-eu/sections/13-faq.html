@@ -16,6 +16,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        counter-reset: faq;
       }
       .faq__item {
         background: #fff;
@@ -25,16 +26,17 @@
       }
       .faq__q {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 12px;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 700;
         letter-spacing: -0.015em;
         margin: 0 0 10px;
         color: var(--color-neutral-900);
       }
       .faq__q::before {
-        content: 'Q';
+        counter-increment: faq;
+        content: counter(faq);
         flex: 0 0 22px;
         height: 22px;
         background: var(--color-primary-500);
@@ -42,13 +44,12 @@
         border-radius: 6px;
         display: grid;
         place-items: center;
-        font-size: 11.5px;
+        font-size: 13.5px;
         font-weight: 800;
-        margin-top: 2px;
       }
       .faq__a {
         padding-left: 34px;
-        font-size: 13.5px;
+        font-size: 15.5px;
         line-height: 1.75;
         color: var(--color-neutral-600);
         margin: 0;
@@ -136,8 +137,8 @@
           <div class="faq__item">
             <p class="faq__q">얼마나 길게 쓸 수 있나요?</p>
             <p class="faq__a">
-              <b>1일 ~ 90일</b> 자유 선택. 30일까지는 1일 단위 선택, 그 이상은 60일·90일 옵션이
-              있어요. 추가 구매로 연장도 가능합니다.
+              <b>1~30일</b> 중 7개 기간 (1·3·5·7·10·15·30일) 에서 선택할 수 있어요.
+              추가 구매로 연장도 가능합니다.
             </p>
           </div>
           <div class="faq__item">
@@ -157,8 +158,8 @@
           <div class="faq__item">
             <p class="faq__q">무제한 vs 종량제, 뭘 사야 하나요?</p>
             <p class="faq__a">
-              짧은 일정 (1주↓) = 무제한 매일 1·2GB / 장기·다국가 = 종량제 10·20·30GB 추천 /
-              <b>워홀·어학연수 = 60·90일 무제한</b>. 매일 사용량 변동이 크면 종량제가 효율적입니다.
+              짧은 일정 (1주↓) = 무제한 매일 1·2GB / 장기·다국가 = 종량제 1~30GB (10GB 이상 추천).
+              매일 사용량 변동이 크면 종량제가 효율적입니다.
             </p>
           </div>
           <div class="faq__item">

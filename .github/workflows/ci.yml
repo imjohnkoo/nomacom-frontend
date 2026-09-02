@@ -1,0 +1,123 @@
+name: ci
+
+# PR 과 main push 에 대한 검사.
+#
+# 도입 전(2026-09-02)까지 이 리포에는 **PR·main 게이트가 0 건**이었다. 있는 워크플로는
+# 배포용 3개(prod 트리거 2 + DS publish 1)뿐이라, 로컬에서 `turbo run lint typecheck test`
+# 를 돌리지 않고 push 하면 아무도 잡지 않았다 — 사람 규율이 유일한 게이트였다.
+#
+# ⚠️ 배포 경로(Dockerfile)에는 아직 게이트가 없다(INF-3 미착수). 즉 이 워크플로가
+#    **현재 유일한 기계 검증**이다. 실패를 무시하고 prod 로 올리면 막을 것이 없다.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# CI 는 배포와 반대로 **취소해도 안전**하다 — 같은 ref 에 새 푸시가 오면 앞의 실행을 버린다.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # 수 초 만에 끝나므로 별도 job 으로 분리해 gate 와 병렬로 돌린다.
+  lint:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ⚠️ corepack 을 setup-node **앞**에 두는 것은 의도적이다 — 뒤집지 말 것.
+      #    `cache: yarn` 은 setup-node 실행 시점에 `yarn` 을 호출해 캐시 폴더를 알아내므로,
+      #    그 전에 corepack 이 켜져 있어야 한다.
+      - name: Enable Corepack
+        run: corepack enable
+
+      # Node 버전 단일 출처: 이 값 · 두 Dockerfile · root package.json engines(>=22).
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+
+      # ⚠️ --mode=skip-build 로 설치한다. 앱의 postinstall(`nuxt prepare`)이
+      #    `@imjohnkoo/design-vue` 빌드 산출물을 요구하는데 그건 DS 를 **빌드해야** 생긴다.
+      #    lint 는 `.nuxt` 가 필요 없으므로 prepare 를 아예 돌리지 않는다.
+      - name: Install (skip build scripts)
+        run: yarn install --immutable --mode=skip-build
+
+      # ⚠️ 반드시 **turbo 로** 돌린다. `yarn workspace <name> run lint` 는 그 워크스페이스의
+      #    node_modules/.bin 만 보므로 hoist 된 eslint 를 못 찾아 `command not found` 로
+      #    죽는다 (2026-09-02 실측 — design-vue·design-mobile·mobile 전부). turbo 는
+      #    루트 .bin 을 PATH 에 넣어준다. 이 워크플로 전체가 turbo 명령으로 통일된 이유다.
+      #
+      # lint 는 **baseline 을 쓰지 않는다** — 현재 전 워크스페이스 에러 0 이고, 기준선을
+      # 만드는 순간 부채가 쌓일 자리가 생긴다. 경고(design-vue 813 / client 288 / mobile 1)는
+      # 대부분 vue 포맷팅이라 차단하지 않는다(prettier 훅이 포맷을 담당).
+      # lint 는 `dependsOn: ["^build"]` 지만 데모 워크스페이스에 lint script 가 없어
+      # 실제로 도는 것은 DS·앱뿐이다 (CI 첫 실행에서 lint job 은 통과했다). 필터 불필요.
+      - name: Lint — 전 워크스페이스 (에러 0 요구)
+        run: yarn turbo run lint
+
+  # typecheck + 테스트.
+  gate:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # corepack ↔ setup-node 순서 근거는 위 lint job 주석 참조 (뒤집지 말 것).
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: yarn
+
+      - name: Install (skip build scripts)
+        run: yarn install --immutable --mode=skip-build
+
+      # 테스트(수 초)를 typecheck(수십 초)보다 앞에 — 빨리 깨질 수 있는 것부터.
+      # 현재 실체: design-vue 129 + client 28 = 157건 (admin 은 도메인 코드가 아직 없어 0건).
+      #
+      # ⚠️ `--filter` 로 좁히는 것은 의도적이다. turbo 의 `test` 는 `dependsOn: ["build"]`
+      #    라, 필터 없이 돌리면 **테스트가 없는 데모 워크스페이스의 build 까지** 끌고 온다
+      #    (design-demo · design-showcase · design-storybook-mobile). 그중
+      #    `design-storybook-mobile` 은 `--mode=skip-build` 설치 환경에서
+      #    `@storybook/react-vite/preset` 을 찾지 못해 죽는다 (2026-09-02 CI 첫 실행에서 확인).
+      #    데모 워크스페이스는 배포 대상도 검증 대상도 아니므로 게이트에서 제외한다.
+      - name: Test — design-vue · client · admin (157건)
+        run: yarn turbo run test --filter=@imjohnkoo/design-vue --filter=nomacom-client --filter=nomacom-admin
+
+      # `typecheck` 는 `dependsOn: ["^build"]` 라 DS 빌드가 선행되고,
+      # admin/client 의 typecheck script 가 `.github/scripts/typecheck-gate.sh` 를 부른다
+      # (게이트가 내부에서 `nuxt prepare` 도 수행 — Nuxt 4 는 tsconfig 에 파일 목록을
+      #  고정 기록하므로 prepare 를 건너뛰면 새 파일이 검사에서 빠진다).
+      # 기준선: admin 0 / client 7 — 그 위로 늘어나는 신규 에러만 차단한다.
+      # DS(tokens·vue)·mobile·design-mobile 은 기준선 없이 에러 0 을 요구한다.
+      # 데모 워크스페이스 제외 이유는 위 Test 스텝 주석 참조 (`^build` 로 같은 문제가 난다).
+      - name: Typecheck — DS · 앱 · mobile (admin/client 는 baseline 게이트)
+        run: >
+          yarn turbo run typecheck
+          --filter=@imjohnkoo/design-tokens
+          --filter=@imjohnkoo/design-vue
+          --filter=@imjohnkoo/design-mobile
+          --filter=nomacom-admin
+          --filter=nomacom-client
+          --filter=nomacom-mobile
+
+      # 게이트 스크립트 자체의 회귀 테스트. 게이트가 조용히 통과만 시키면 없는 것과 같다.
+      # (실제로 2026-09-02 에 이 테스트가 «새 파일이 타입체크에서 빠지는» 결함을 잡았다.)
+      - name: Gate 스크립트 회귀 테스트
+        run: bash .github/scripts/typecheck-gate.test.sh
+
+      # 훅은 로컬 개발 안전장치라 CI 가 강제하지는 않지만, 판정 로직이 깨지면
+      # prod 차단이 조용히 사라지므로 여기서 함께 지킨다 (ALLOW 22 / BLOCK 15).
+      - name: guard 훅 회귀 테스트
+        run: bash .claude/hooks/guard-prod-push.test.sh

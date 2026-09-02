@@ -355,7 +355,7 @@ onMounted(() => {
   margin-top: 24px;
   padding: 20px 18px 22px;
   border: 1px solid #eef2f7;
-  border-radius: var(--radius-xl, 18px);
+  border-radius: var(--n-radius-xl, 18px);
   background: #ffffff;
   box-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),
@@ -395,7 +395,7 @@ onMounted(() => {
 }
 
 .view-page__row--open {
-  border-color: var(--color-primary-300, #a78bff);
+  border-color: var(--n-color-primary-300, #a78bff);
   box-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),
     0 8px 24px -16px rgba(15, 23, 42, 0.12);
@@ -432,7 +432,7 @@ onMounted(() => {
 
 .view-page__chev--open {
   transform: rotate(180deg);
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .view-page__row-body {

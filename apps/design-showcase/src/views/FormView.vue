@@ -51,13 +51,13 @@
               :value="phone.formatted.value"
               @input="phone.handleInput"
             />
-            <div style="font-size: 13px; color: var(--color-neutral-500);">
+            <div style="font-size: 13px; color: var(--n-color-neutral-500);">
               포매팅: <span class="showcase-code">{{ phone.formatted.value || '—' }}</span>
             </div>
-            <div style="font-size: 13px; color: var(--color-neutral-500);">
+            <div style="font-size: 13px; color: var(--n-color-neutral-500);">
               원본: <span class="showcase-code">{{ phone.raw.value || '—' }}</span>
             </div>
-            <div :style="{ fontSize: '13px', color: phone.isValid.value ? 'var(--color-success-500)' : 'var(--color-error-500)' }">
+            <div :style="{ fontSize: '13px', color: phone.isValid.value ? 'var(--n-color-success-500)' : 'var(--n-color-error-500)' }">
               {{ phone.isValid.value ? '유효한 전화번호' : '유효하지 않은 전화번호' }}
             </div>
           </div>
@@ -80,14 +80,14 @@ const phone = usePhoneFormat()
   width: 100%;
   padding: 8px 12px;
   font-size: 16px;
-  border: 1px solid var(--color-neutral-300, #d4d4d4);
+  border: 1px solid var(--n-color-neutral-300, #d4d4d4);
   border-radius: 8px;
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, sans-serif);
   outline: none;
   transition: border-color 0.15s ease;
 }
 .phone-demo-input:focus {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #dbeafe);
 }
 </style>

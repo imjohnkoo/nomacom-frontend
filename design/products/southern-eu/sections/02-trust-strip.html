@@ -37,7 +37,7 @@
         background: var(--color-neutral-200);
       }
       .trust__value {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: 800;
         letter-spacing: -0.03em;
         line-height: 1.15;
@@ -45,7 +45,7 @@
         font-variant-numeric: tabular-nums;
       }
       .trust__value small {
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 600;
         opacity: 0.55;
         margin-left: 2px;
@@ -56,7 +56,7 @@
       }
       .trust__label {
         margin-top: 6px;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 500;
         color: var(--color-neutral-500);
         letter-spacing: -0.005em;
@@ -64,12 +64,19 @@
 
       /* D — 아이콘 + 텍스트 */
       .trust__icon {
-        font-size: 28px;
+        font-size: 30px;
         line-height: 1;
         margin-bottom: 10px;
+        /* 국기 줄은 개수가 늘어도 절대 줄바꿈하지 않는다 — 크기는 생성기가 인라인으로 축소 */
+        white-space: nowrap;
+        /* 국기가 축소돼도 아래 텍스트 시작선이 다른 칸과 어긋나지 않도록 높이 고정 */
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .trust--icon .trust__value {
-        font-size: 18px;
+        font-size: 20px;
       }
       .trust--icon .trust__label {
         margin-top: 4px;
@@ -108,7 +115,7 @@
             <div class="trust__label">매일 정확히</div>
           </div>
           <div class="trust__item">
-            <div class="trust__icon">🇪🇸🇵🇹</div>
+            <div class="trust__icon" style="font-size: 30px">🇪🇸🇵🇹</div>
             <div class="trust__value">2개국 자동</div>
             <div class="trust__label">국경 이동 자동</div>
           </div>

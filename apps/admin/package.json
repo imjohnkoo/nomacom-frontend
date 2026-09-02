@@ -7,7 +7,13 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "typecheck": "bash ../../.github/scripts/typecheck-gate.sh admin",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "typecheck:raw": "nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.json",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@imjohnkoo/design-tokens": "workspace:*",
@@ -15,5 +21,9 @@
     "nuxt": "^4.4.2",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.2.0"
   }
 }

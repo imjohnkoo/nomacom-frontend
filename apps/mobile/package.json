@@ -9,13 +9,19 @@
     "dev:ios": "expo start --ios",
     "dev:android": "expo start --android",
     "start": "expo start",
-    "build": "echo 'Use EAS Build for production (npx eas build). Placeholder no-op.'",
-    "typecheck": "tsc --noEmit"
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "eas:build:dev": "eas build --profile development --platform ios",
+    "eas:build:preview": "eas build --profile preview --platform all",
+    "eas:build:prod": "eas build --profile production --platform all",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@imjohnkoo/design-mobile": "workspace:*",
     "@imjohnkoo/design-tokens": "workspace:*",
     "expo": "~55.0.0",
+    "expo-clipboard": "~55.0.16",
     "expo-constants": "~55.0.13",
     "expo-linking": "~55.0.12",
     "expo-router": "~55.0.12",

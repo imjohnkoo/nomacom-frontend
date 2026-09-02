@@ -233,7 +233,7 @@ const onSubmit = async () => {
 .verify-page__err {
   margin: 6px 0 0;
   font-size: 12px;
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .verify-page__note {

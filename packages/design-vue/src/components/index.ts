@@ -155,7 +155,7 @@ export { NPopover } from './NPopover'
 export type { NPopoverProps } from './NPopover'
 
 export { NModal } from './NModal'
-export type { NModalProps } from './NModal'
+export type { NModalProps, NModalSize } from './NModal'
 
 export { NDrawer } from './NDrawer'
 export type { NDrawerProps } from './NDrawer'
@@ -234,10 +234,52 @@ export type { NMobileLayoutProps, MobileDevicePreset } from './NMobileLayout'
 
 // Dashboard / Admin Components
 export { NStat } from './NStat'
-export type { NStatProps } from './NStat'
+export type { NStatProps, NStatTrend } from './NStat'
 
 export { NTableSkeleton } from './NSkeleton'
 export type { NTableSkeletonProps } from './NSkeleton'
+
+export { NDetailSkeleton } from './NSkeleton'
+export type { NDetailSkeletonProps } from './NSkeleton'
+
+export { NAsyncSection } from './NAsyncSection'
+export type { NAsyncSectionProps } from './NAsyncSection'
+
+export { NKpi } from './NKpi'
+export type { NKpiProps, NKpiAccent, NKpiDeltaDirection, NKpiTrend } from './NKpi'
+
+export { NKpiStrip } from './NKpiStrip'
+export type { NKpiStripProps } from './NKpiStrip'
+
+export { NDetailHeader } from './NDetailHeader'
+export type { NDetailHeaderProps, NDetailHeaderMeta } from './NDetailHeader'
+
+export { NDescriptionList } from './NDescriptionList'
+export type { NDescriptionListProps, DescriptionItem } from './NDescriptionList'
+
+export { NSegmentedControl } from './NSegmentedControl'
+export type { NSegmentedControlProps, NSegmentedOption } from './NSegmentedControl'
+
+export { NFilterPill } from './NFilterPill'
+export type { NFilterPillProps } from './NFilterPill'
+
+export { NEditableField } from './NEditableField'
+export type {
+  NEditableFieldProps,
+  NEditableFieldOption,
+  NEditableFieldType,
+  NEditableFieldValue,
+} from './NEditableField'
+
+export { NFormModal } from './NFormModal'
+export type { NFormModalProps } from './NFormModal'
+
+export { NDateRangeFilter } from './NDateRangeFilter'
+export type {
+  NDateRangeFilterProps,
+  NDateRangeFilterValue,
+  NDateRangeFilterPreset,
+} from './NDateRangeFilter'
 
 export { NSidebar } from './NSidebar'
 export type { NSidebarProps } from './NSidebar'

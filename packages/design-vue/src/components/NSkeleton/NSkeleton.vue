@@ -30,17 +30,17 @@ const skeletonStyle = computed(() => ({
 .n-skeleton {
   background: linear-gradient(
     90deg,
-    var(--color-neutral-100, #f5f5f5) 25%,
-    var(--color-neutral-200, #e5e5e5) 50%,
-    var(--color-neutral-100, #f5f5f5) 75%
+    var(--n-color-neutral-100, #f5f5f5) 25%,
+    var(--n-color-neutral-200, #e5e5e5) 50%,
+    var(--n-color-neutral-100, #f5f5f5) 75%
   );
   background-size: 200% 100%;
   animation: n-skeleton-pulse 1.5s ease-in-out infinite;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
 }
 
 .n-skeleton--rounded {
-  border-radius: var(--radius-full, 9999px);
+  border-radius: var(--n-radius-full, 9999px);
 }
 
 @keyframes n-skeleton-pulse {

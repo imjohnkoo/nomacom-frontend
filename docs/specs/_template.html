@@ -1,0 +1,470 @@
+<!doctype html>
+<!--
+  기능정의서 (Feature Definition Document) — 복사용 템플릿
+  ──────────────────────────────────────────────────────────
+  사용법:
+    1. 이 파일을 docs/specs/<app-name>/YYYY-MM-DD-<topic>.html 로 복사
+       (크로스앱이면 docs/specs/YYYY-MM-DD-<topic>.html — 앱 서브폴더 없이)
+    2. [대괄호] / "여기 채우기" / 가이드 주석을 실제 내용으로 교체
+    3. 작성 흐름(권장): 기획자가 §1~4 초안 → 개발자가 §5 화면정의·예외 보강 → 함께 LOCK
+    4. 완성되면 상태 pill 을 draft → locked 로 변경하고 구현(Plan) 착수
+
+  경량 모드 — 작은 기능에서 잘라내도 되는 것:
+    - §1.5 의존성: 선행/배포순서 없으면 생략 (단, 외부 연동이 끼면 생략 금지)
+    - §3 사용자 시나리오: 분기가 없으면 생략하고 §4 처리내용에 흡수
+      (단, error/권한/empty 분기가 하나라도 있으면 그 분기는 §5 상태 블록에 반드시 남긴다)
+    - §4 기능 요구사항 표: 기능이 3개 미만이면 표 대신 불릿 / 전제조건 표는 상태머신·권한·외부연동 없으면 생략
+    - §6 비기능·한계: 목록·배치·대량 기능이 아니면 생략
+    - §7 성공지표: 생략하려면 "측정하지 않기로 결정"을 §7 에 한 줄로 명시 (무단 생략 금지 —
+      지표를 쓸 거면 계측(instrumentation)이 이번 scope 인지도 이 시점에 판정)
+  절대 안 자르는 핵심 4개:
+    - §2 사용자와 목적 (이게 없으면 "왜"가 사라짐)
+    - §5 상태 블록 (Empty/Loading/Error/Success/권한 — Nuxt 분기를 그대로 결정)
+    - §6 범위 밖 (안 만드는 것을 못 박아야 스코프가 안 샌다)
+    - §7 E2E 검증 절차 (에이전트가 스스로 돌릴 수 있는 체크로 문서가 끝나야 함 —
+      검증 기준이 없으면 "되어 보임"이 유일한 신호가 된다. LOCK 조건에 포함)
+  이 문서 자체가 불필요한 경우(면제 기준): README §2 참조 — 버그픽스·리팩터·소규모 변경은 기존 Plan 으로 충분
+
+  as-built / 메뉴 개요 변형 (기존 메뉴·서브시스템 전체를 정리할 때):
+    - 헤더 상태 pill 을 draft 대신 'as-built', 제목에 "(현행 as-built + 개선 백로그)" 표기
+    - §5 앞에 "화면 인덱스 표"(화면ID·이름·진입·역할)를 두고 스파인 화면만 깊게 / 나머지는 압축 (§5 주석 스켈레톤)
+    - ⑨ 개선 백로그 섹션 활성화 (현행과 개선을 분리; §8 뒤 주석 스켈레톤 + TOC 에 ⑨ 추가)
+    - 신선도는 화면마다 반복하지 말고 §1.5 "공통 신선도 정책"에 1회 선언 + 화면은 예외만 표기
+    - "구현됐지만 막힌/미연결" 기능은 stub pill( class="pill stub" )로 표기 (draft=문서상태와 구분)
+-->
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>[기능명] 기능정의서 (YYYY-MM-DD)</title>
+    <style>
+      :root {
+        --ink: #1c1917;
+        --muted: #57534e;
+        --line: #e7e5e4;
+        --soft: #fafaf9;
+        --brand: #7c3aed;
+        --brand-soft: #f5f3ff;
+        --ok: #15803d;
+        --ok-soft: #f0fdf4;
+        --warn: #b45309;
+        --warn-soft: #fffbeb;
+        --danger: #b91c1c;
+        --danger-soft: #fef2f2;
+        --info: #0369a1;
+        --info-soft: #f0f9ff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        color: var(--ink);
+        line-height: 1.62;
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 32px 28px 80px;
+        background: #fff;
+        font-size: 15px;
+      }
+      h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+      h2 {
+        font-size: 19px; margin: 38px 0 12px; padding-bottom: 6px;
+        border-bottom: 2px solid var(--line); letter-spacing: -0.01em;
+      }
+      h3 { font-size: 16px; margin: 22px 0 8px; }
+      code {
+        background: var(--soft); border: 1px solid var(--line); border-radius: 4px;
+        padding: 1px 5px; font-size: 0.86em; font-family: "SF Mono", ui-monospace, Menlo, monospace;
+      }
+      pre {
+        background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 14px 16px;
+        overflow-x: auto; font-size: 12.5px; line-height: 1.5;
+      }
+      pre code { background: none; border: none; color: inherit; padding: 0; }
+      table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; }
+      th, td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; vertical-align: top; }
+      th { background: var(--soft); font-weight: 600; }
+      blockquote {
+        margin: 14px 0; padding: 10px 14px; border-left: 4px solid var(--brand);
+        background: var(--brand-soft); border-radius: 0 6px 6px 0;
+      }
+      blockquote p { margin: 4px 0; }
+      .meta { color: var(--muted); font-size: 13px; margin: 2px 0; }
+      .pill {
+        display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px;
+        border-radius: 999px; vertical-align: middle; letter-spacing: 0.02em;
+      }
+      .pill.brand { background: var(--brand-soft); color: var(--brand); }
+      .pill.ok { background: var(--ok-soft); color: var(--ok); }
+      .pill.warn { background: var(--warn-soft); color: var(--warn); }
+      .pill.danger { background: var(--danger-soft); color: var(--danger); }
+      .pill.info { background: var(--info-soft); color: var(--info); }
+      .pill.locked { background: #ecfccb; color: #3f6212; }
+      .pill.draft { background: #f1f5f9; color: #475569; }
+      .pill.asbuilt { background: #eef2ff; color: #3730a3; }
+      .pill.stub { background: #f5f5f4; color: #78716c; border: 1px dashed #a8a29e; }
+      .card {
+        border: 1px solid var(--line); border-left: 4px solid var(--brand);
+        border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; background: #fff;
+      }
+      .card .t { font-weight: 700; margin-bottom: 4px; }
+      .why { color: var(--muted); font-size: 13.5px; }
+      .guide { color: var(--info); font-size: 12.5px; font-style: italic; }
+      .lead { font-size: 15.5px; }
+      ul { margin: 6px 0; padding-left: 22px; }
+      li { margin: 3px 0; }
+      ol { margin: 6px 0; padding-left: 22px; }
+      hr { border: none; border-top: 1px solid var(--line); margin: 30px 0; }
+      .toc { background: var(--soft); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; font-size: 13.5px; }
+      .toc a { color: var(--info); text-decoration: none; margin-right: 14px; }
+      /* 화면정의 — 상태 블록 */
+      .screen {
+        border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 16px 0; background: #fff;
+      }
+      .screen > .sh { font-weight: 700; font-size: 15.5px; }
+      .states { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin: 10px 0; }
+      .state { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: var(--soft); }
+      .state .sn { font-weight: 700; font-size: 12px; margin-bottom: 3px; }
+      .state.empty .sn { color: var(--muted); }
+      .state.loading .sn { color: var(--info); }
+      .state.error .sn { color: var(--danger); }
+      .state.success .sn { color: var(--ok); }
+      .state.perm .sn { color: var(--warn); }
+      .state.partial .sn { color: var(--brand); }
+      .state .sd { font-size: 12.5px; }
+      .sev-high { color: var(--danger); font-weight: 700; }
+      .sev-med { color: var(--warn); font-weight: 700; }
+      .sev-low { color: var(--muted); font-weight: 700; }
+      /* §3 플로우차트 — 세로 위주, 컨테이너 폭에 맞춰 가로 스크롤 없이 */
+      .mermaid {
+        margin: 16px 0; padding: 10px; text-align: center; overflow-x: auto;
+        background: var(--soft); border: 1px solid var(--line); border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>[기능명] 기능정의서</h1>
+      <p class="meta">
+        <span class="pill draft">draft</span>
+        <!-- 합의 완료 후: <span class="pill locked">locked</span> -->
+        <span class="pill brand">T2</span>
+        <!-- Tier 기록 (필수): T2=표준 spec 경로 / T3=Proposal+spec+plan — 판정 기준은 .claude/skills/nomacomfe-spec-session -->
+        &nbsp; YYYY-MM-DD · <code>apps/admin</code> 또는 <code>apps/client</code> · 작성자 [이름]
+        &nbsp;·&nbsp; 연계 트랙 [예: V 트랙 / 없음]
+      </p>
+      <p class="meta">
+        선행/근거: [선행 PR · 관련 proposal · 외부 API docs 경로 등 — 없으면 삭제]
+      </p>
+      <p class="meta">
+        수정이력: YYYY-MM-DD 최초작성 <!-- LOCK 후 변경 시 한 줄씩 추가: YYYY-MM-DD <변경요약> -->
+      </p>
+    </header>
+
+    <blockquote>
+      <p class="lead">
+        <strong>한 줄 요약 —</strong> [이 기능이 누구에게 무엇을 가능하게 하는지 한 문장. 기획자·개발자가
+        이 줄만 읽어도 "무엇을 만드는지" 알 수 있어야 한다.]
+      </p>
+    </blockquote>
+
+    <div class="toc">
+      <strong>목차</strong> &nbsp;
+      <a href="#s1">①배경/문제</a><a href="#s1b">①.5 의존성</a><a href="#s2">②사용자와 목적</a><a href="#s3">③사용자 시나리오</a><a href="#s4">④기능 요구사항</a><a href="#s5">⑤화면정의</a><a href="#s6">⑥범위 밖</a><a href="#s7">⑦성공지표/완료기준</a><a href="#s8">⑧결정사항</a>
+    </div>
+
+    <h2 id="s1">① 배경 / 문제</h2>
+    <p class="guide">왜 지금 이걸 만드는가. 현재 상태와 사용자가 겪는 pain point 1~3개. (해결책이 아니라 "문제"를 쓴다)</p>
+    <ul>
+      <li><strong>현재 상태</strong>: [지금은 어떻게 돌아가는가 / 무엇이 없는가]</li>
+      <li><strong>문제 1</strong>: [사용자가 겪는 구체적 불편 — 가능하면 빈도·규모 포함]</li>
+      <li><strong>문제 2</strong>: [선택]</li>
+      <li><strong>왜 지금</strong>: [트리거 — 인시던트 / 고객 요청 / 선행 트랙 완료 등]</li>
+    </ul>
+
+    <h2 id="s1b">①.5 의존성 / 선행조건 <span class="pill warn">선행·배포순서 있으면</span></h2>
+    <p class="guide">
+      배포 전 반드시 끝나야 하는 것. "빌드 가능해 보이지만 실제론 막힌" 상황을 방지. 없으면 통째로 삭제.
+      <strong>외부 연동이 끼면 생략 금지.</strong>
+    </p>
+    <ul>
+      <li><strong>백엔드 / DB</strong>: [마이그 번호 · seed · 타팀 협조 DDL · GRANT — 소유자 표기]</li>
+      <li><strong>외부 벤더</strong>: [템플릿 등록 · 컷오버 · API host/auth 준비 여부]</li>
+      <li><strong>배포 순서 / branch-from</strong>: [무엇이 먼저 라이브여야 / 어느 베이스에서 분기 / 깨지면 안 되는 공유코드]</li>
+      <li><strong>공통 신선도 정책</strong>: [이 기능/메뉴 전반의 읽기 신선도 — 예: 기본 replica(eventual) · mutation 직후만 sticky-master 5s · 특정 집계는 N분 캐시]. §5 화면은 이와 <strong>다를 때만</strong> 신선도 pill 표기. (단일 화면 기능이면 생략 가능)</li>
+    </ul>
+
+    <h2 id="s2">② 사용자와 목적 <span class="pill danger">필수</span></h2>
+    <p class="guide">
+      JTBD job story 형식. "기능"이 아니라 사용자가 이루려는 "결과"를 적는다. 사용자 유형이 여럿이면(예: admin
+      운영자 vs 쇼핑몰 운영자) 각각.
+    </p>
+    <div class="card">
+      <div class="t">주 사용자: [예: 쇼핑몰 운영자 / admin 내부 운영자]</div>
+      <p>
+        <strong>[상황]</strong>일 때, <strong>[사용자]</strong>는 <strong>[동기/하고 싶은 것]</strong>하고 싶다,
+        그래서 <strong>[기대 결과]</strong>.
+      </p>
+      <p class="why">
+        예) "출국 전날 밤 eSIM 을 받았을 때, 여행자는 개통 날짜를 직접 고르고 싶다, 그래서 현지 도착 시각에 맞춰 데이터가 살아 있게 한다."
+      </p>
+    </div>
+    <!-- 사용자가 둘 이상이면 card 복제. 같은 목적·다른 인증경로(예: 운영자 프리뷰)는 카드 복제 대신 "접근 컨텍스트" 한 줄로. -->
+
+    <h2 id="s3">③ 사용자 시나리오 <span class="pill warn">분기 없으면 생략 가능</span></h2>
+    <p class="guide">
+      목적을 이루기까지의 단계(main success scenario) + 갈라지는 예외/대안. 이 섹션이 §5 화면정의의 뼈대.
+      <strong>분기·상태전이가 많으면 아래 Mermaid 플로우차트</strong>, 단순 선형이면 번호 목록(맨 아래 주석)으로.
+      <br />작성 팁: <strong>세로(TD)로 길게</strong> + 예외는 곁가지 노드로 빼지 말고 본선 노드 라벨 안
+      <code>&lt;br/&gt;⚠ …</code> / <code>실패: …</code> 줄로 접어 <strong>폭을 최대 2열로</strong> 유지(가로 스크롤 방지).
+      배치/대량 단계는 분기 대신 "복합 결과"(N성공·M실패)로 서술.
+    </p>
+    <pre class="mermaid">
+flowchart TD
+  A([시작]) --> S1["[운영자] [행동 1]"]
+  S1 --> S2["[운영자] [행동 2]"]
+  S2 --> D1{"[분기 조건?]"}
+  D1 -- "아니오/실패" --> E1[/"[예외 결과 · 한국어 메시지]"/]
+  D1 -- "예/통과" --> S3["[시스템] [처리]<br/>⚠ [주의·개선후보 한 줄 — 예: stale 가능 (IMP-N)]"]
+  S3 --> Z([완료: [최종 상태]])
+
+  classDef exc fill:#fef2f2,stroke:#b91c1c,color:#7f1d1d;
+  classDef sys fill:#f0f9ff,stroke:#0369a1,color:#0c4a6e;
+  classDef op fill:#f5f3ff,stroke:#7c3aed,color:#4c1d95;
+  class E1 exc;
+  class S3 sys;
+  class S1,S2 op;
+    </pre>
+    <!--
+      대안 — 분기 거의 없는 단순 플로우면 위 Mermaid 대신 번호 목록 사용:
+      <h3>정상 흐름</h3>
+      <ol><li>[사용자가 …한다]</li><li>[시스템이 …]</li><li>[목적 달성 — 최종 상태]</li></ol>
+      <h3>예외 / 대안 흐름</h3>
+      <ul><li><strong>2a.</strong> [조건] → [결과/복구]</li></ul>
+    -->
+    <p class="guide">행위자 색: <span class="pill brand">운영자/사용자(op)</span> · <span class="pill info">시스템(sys)</span> · <span class="pill danger">예외(exc)</span>. 노드 모양: <code>[]</code>=행동 · <code>{}</code>=분기 · <code>[/ /]</code>=예외/결과 · <code>([ ])</code>=시작/끝.</p>
+
+    <h2 id="s4">④ 기능 요구사항 <span class="pill warn">3개 미만이면 불릿으로</span></h2>
+    <p class="guide">
+      기능ID 스파인. 각 행이 "검증 가능한 한 가지 동작". 기능ID는 §5 화면ID와 상호 참조한다. 우선순위로 MVP/후속을
+      가른다. 한 화면이 discriminator 로 다른 폼을 그리면(예: 메시지 타입별) 변형별 행으로 쪼갠다.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:9%">기능ID</th>
+          <th style="width:16%">기능명</th>
+          <th>처리내용 / 정책 (무엇을 / 어떤 규칙으로)</th>
+          <th style="width:14%">입력 → 출력</th>
+          <th style="width:11%">관련 화면</th>
+          <th style="width:9%">우선순위</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>F-1</code></td>
+          <td>[기능명]</td>
+          <td>[동작과 규칙. "정상이면 X, …이면 Y"까지]</td>
+          <td>[입력] → [출력]</td>
+          <td><code>S-1</code></td>
+          <td><span class="pill brand">MVP</span></td>
+        </tr>
+        <tr>
+          <td><code>F-2</code></td>
+          <td>[…]</td>
+          <td>[…]</td>
+          <td>[…]</td>
+          <td><code>S-1</code></td>
+          <td><span class="pill info">후속</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>전제조건 · 불변식 <span class="pill warn">상태머신/권한/외부연동/PII 있으면</span></h3>
+    <p class="guide">
+      액션별 전제조건(적격 상태)과 서버 측 불변식("반드시" / "절대 안 됨"). 화면 없는 보안 규칙(주문 소유권 검증·PII 마스킹),
+      노출 PII·마스킹 규칙(없으면 "PII 없음" 명시), 로깅/관측 레벨이 여기 산다. 단순 CRUD면 생략.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:42%">전제조건 / 불변식</th>
+          <th style="width:28%">위반 시 동작</th>
+          <th>회귀 테스트 / 비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>[예: orderId 소유권은 주문번호+이름+전화 3요소로만 검증 · 클라가 보낸 소유자 정보 신뢰 금지]</td>
+          <td>[예: 401 / 404]</td>
+          <td>[예: 타인 주문번호 접근 차단 확인 = 머지 게이트]</td>
+        </tr>
+        <tr>
+          <td>[예: 수정은 portal_status='A' 에서만 · 활성화는 inspectionStatus='APR']</td>
+          <td>[예: 버튼 disabled+툴팁 / 서버 400]</td>
+          <td>[…]</td>
+        </tr>
+        <tr>
+          <td>[예: 노출 PII = 수신번호(중간 마스킹) · 이메일(AES 복호 후 마스킹) / 또는 "PII 없음"]</td>
+          <td>[예: 마스킹 누락 시 노출]</td>
+          <td>[예: 마스킹 단위테스트]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="s5">⑤ 화면정의 <span class="pill danger">상태 블록 필수</span></h2>
+    <p class="guide">
+      화면별로 정의. <strong>상태 블록(Empty/Loading/Error/Success/권한)은 반드시 채운다</strong> — 이게 Nuxt 의
+      <code>v-if</code> / suspense / error 분기를 그대로 결정한다. 시각자료는 Figma 링크로 첨부(선택), 텍스트 서술은 필수.
+      형제 화면이 많으면 공유 구성요소/검증은 한 번만 쓰고 화면별로 "차이점만" 적는다.
+    </p>
+    <!-- as-built / 메뉴 개요 변형이면 화면이 많으므로 여기에 "화면 인덱스 표"를 먼저 두고, 스파인만 깊게 / 나머지 압축:
+    <table>
+      <thead><tr><th style="width:9%">화면ID</th><th style="width:24%">화면명</th><th>진입</th><th style="width:18%">역할</th></tr></thead>
+      <tbody>
+        <tr><td>S-1</td><td>[목록]</td><td>[경로/메뉴]</td><td>스파인(깊게)</td></tr>
+        <tr><td>S-2</td><td>[세부]</td><td>[행 클릭]</td><td>스파인(깊게)</td></tr>
+        <tr><td>S-6</td><td>[하위 화면]</td><td>[경로]</td><td>하위(압축)</td></tr>
+        <tr><td>S-8</td><td>[미구현]</td><td>[경로]</td><td>관련 · stub</td></tr>
+      </tbody>
+    </table>
+    -->
+
+    <div class="screen">
+      <div class="sh">
+        <code>S-1</code> · [화면명]
+        &nbsp;<span class="pill info">진입: [경로/메뉴]</span>
+        <span class="pill warn">접근: [페이지 볼 수 있는 사람]</span>
+        <span class="pill brand">액션게이트: [실행 가능 + 비즈니스 전제 — §4 전제조건 참조]</span>
+        <span class="pill info">신선도: [§1.5 공통과 다를 때만 표기 — 실시간 / 폴링·캐시 / 일배치]</span>
+      </div>
+
+      <h3>레이아웃 / 주요 요소</h3>
+      <p class="guide">텍스트 서술 필수. Figma 있으면 링크: <a href="#">[Figma 링크]</a> (선택)</p>
+      <ul>
+        <li>[영역 1 — 무엇이 보이는가]</li>
+        <li>[영역 2 — …]</li>
+      </ul>
+
+      <h3>요소 · 이벤트</h3>
+      <p class="guide">삭제·교체·비가역 외부호출은 confirm 동선과 undo 유무를 반드시 명시.</p>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">요소</th>
+            <th style="width:26%">사용자 액션</th>
+            <th>시스템 반응 (호출 기능ID)</th>
+            <th style="width:16%">확인 · undo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>[버튼/입력/행]</td>
+            <td>[클릭/입력/선택]</td>
+            <td>[무엇이 일어나는가 — 어떤 기능ID 호출]</td>
+            <td>[confirm 모달 한국어 copy / 되돌릴 수 없음 / N/A]</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>상태 블록 <span class="guide">(데이터 fetch 상태 + 도메인 상태)</span></h3>
+      <div class="states">
+        <div class="state empty"><div class="sn">Empty</div><div class="sd">[데이터 0건일 때 — 무엇을 보여주고 다음 액션 유도]</div></div>
+        <div class="state loading"><div class="sn">Loading</div><div class="sd">[로딩 중 — 스켈레톤/스피너 · (선택)낙관적 업데이트 또는 서버 확정 후 refetch]</div></div>
+        <div class="state error"><div class="sn">Error</div><div class="sd">[실패 시 — 메시지 + 재시도 동선]</div></div>
+        <div class="state success"><div class="sn">Success</div><div class="sd">[성공 시 — 확정 표시 / 토스트 / 이동]</div></div>
+        <div class="state perm"><div class="sn">권한 차단</div><div class="sd">[권한 없음 — 숨김 vs 비활성 vs 차단 화면]</div></div>
+        <div class="state partial"><div class="sn">부분 / 특수 상태</div><div class="sd">[best-effort 부분성공(N성공·F실패+항목별 사유) · 비동기 검수중 · 범위 clamp 등 5개 fetch 상태에 안 맞는 도메인 상태. 해당 없으면 삭제]</div></div>
+      </div>
+
+      <h3>예외처리 / 검증</h3>
+      <p class="guide">
+        다중항목/2단계 작업은 "N중 M성공 + 항목별 사유"와 외부 성공·로컬 실패(orphan) 복구 경로까지.
+        외부 벤더면 결과코드 → 한국어 메시지 매핑을 한 행씩.
+      </p>
+      <table>
+        <thead><tr><th style="width:30%">조건 / 검증 규칙</th><th style="width:38%">사용자에게 보이는 메시지 (한국어)</th><th>복구 액션</th></tr></thead>
+        <tbody>
+          <tr><td>[예: 필수값 누락 / 벤더 결과코드 713]</td><td>"[실제 노출될 한국어 문구]"</td><td>[어떻게 회복하나]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 화면이 여럿이면 .screen 블록 복제 -->
+
+    <h2 id="s6">⑥ 범위 밖 (Non-goals) <span class="pill danger">필수</span></h2>
+    <p class="guide">이번에 "안 만드는 것"을 명시. 스코프 크리프 방지 + 리뷰어 오해 방지. (외부 연동 세부 host/auth/코드는 Plan 으로, 여기엔 사용자 영향만)</p>
+    <ul>
+      <li>[이번 범위 아님 1 — 왜 미루는지 한 줄]</li>
+      <li>[이번 범위 아님 2]</li>
+    </ul>
+
+    <h3>비기능 / 한계 <span class="pill warn">목록·배치·대량이면</span></h3>
+    <p class="guide">예상 데이터량 · 페이지네이션 여부 · 상한(blast-radius cap) · truncation 주의. 한 줄이면 충분.</p>
+    <ul>
+      <li>[예: 최대 ~92행(3개월), 서버 페이지네이션 없음 · select-all 은 로딩된 행만 · bulk 상한 500]</li>
+    </ul>
+
+    <h2 id="s7">⑦ 성공지표 / 완료기준</h2>
+    <h3>성공지표 <span class="pill warn">내부 도구면 생략 가능</span></h3>
+    <p class="guide">측정 가능한 1~2개. "출시했다"가 아니라 "목적이 달성됐는지" 판단 기준.</p>
+    <ul>
+      <li>[지표 1 — 예: 발급 완료까지 걸리는 시간 / 설치 실패 문의 건수 감소]</li>
+    </ul>
+    <h3>완료 기준 (Definition of Done) <span class="pill danger">신규 플로우면 생략 불가</span></h3>
+    <p class="guide">"출시"가 아니라 "머지 가능" 기준. 보안/불변식(§4)의 회귀 테스트를 여기로 끌어온다.</p>
+    <ul>
+      <li>[ ] [예: 타인 주문 접근 차단 확인 · 날짜 계산 단위테스트 · 빌드/typecheck 통과]</li>
+    </ul>
+    <h3 id="s7-e2e">E2E 검증 절차 <span class="pill danger">필수 — LOCK 조건</span></h3>
+    <p class="guide">
+      구현 세션·QA 세션이 <strong>그대로 따라 돌릴 수 있는</strong> 검증 스텝. "무엇을 누르고 무슨 값이 보여야
+      하는지"까지 구체적으로 — 검증 기준이 없으면 "되어 보임"이 유일한 신호가 된다. §5 상태 블록의
+      Empty/Loading/Error/권한/부분성공 커버리지 확인을 포함한다.
+    </p>
+    <ol>
+      <li><strong>준비</strong>: [기동 커맨드·시드 데이터·전제 상태 — 예: <code>yarn workspace nomacom-client run dev</code> · 주문번호 X 로 verify 통과]</li>
+      <li><strong>정상 경로</strong>: [화면 진입 → 조작 → 기대 결과(구체 값) — §3 시나리오 번호와 대응]</li>
+      <li><strong>상태/예외</strong>: [Empty·Error·권한없음·부분성공을 유발하는 방법과 각각의 기대 표시]</li>
+      <li><strong>데이터 대조</strong>: [화면 값 ↔ DB/API 원본 대조 방법 — 집계·요금 등 데이터를 만드는 기능이면 필수]</li>
+    </ol>
+
+    <h2 id="s8">⑧ 결정사항 / 미해결 질문</h2>
+    <p class="guide">결정 대기 + 이미 정해진 결정 모두 기록. resolved 는 지우지 말고 상태만 바꿔 결정 이력으로 남긴다. <strong>LOCK 조건: open 0건.</strong></p>
+    <p class="guide">
+      ⚠️ <strong>미답은 가정으로 메우지 않는다.</strong> 사용자가 답을 보류한 항목은 여기 <code>open</code> 행으로 남기고,
+      <em>본문의 해당 위치</em>에도 <code>[NEEDS CLARIFICATION: 구체 질문]</code> 을 그대로 써 둔다.
+      LOCK 게이트가 이 문자열을 grep 으로 확인하므로, 마커가 하나라도 남으면 <code>locked</code> 로 갈 수 없다.
+      (예: <code>[NEEDS CLARIFICATION: 개통 후 날짜 변경도 허용하나? 아니면 미개통만?]</code>)
+    </p>
+    <table>
+      <thead><tr><th style="width:34%">결정사항</th><th style="width:24%">권장 (기본값)</th><th style="width:24%">근거</th><th style="width:18%">상태</th></tr></thead>
+      <tbody>
+        <tr><td>[질문/결정]</td><td>[권장 답]</td><td>[왜]</td><td><span class="pill warn">open</span></td></tr>
+        <tr><td>[예: 결정된 항목]</td><td>[택한 답]</td><td>[근거]</td><td><span class="pill ok">resolved</span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- ⑨ 개선 백로그 — as-built / 감사(audit) 변형 전용. 신규 기능 정의서면 이 주석 블록 통째로 삭제.
+         현행(§1~8)과 개선을 분리해 읽히게 한다. 활성화: 주석 풀고 TOC 에 ⑨ 링크 추가. 등급색 sev-high/med/low.
+    <h2 id="s9">⑨ 개선 백로그 (Improvement Backlog)</h2>
+    <p class="guide">현행 코드/운영에서 도출. 등급 = 운영 영향 + 위험. 각 항목은 추후 Plan(PR 단위)로 전개.</p>
+    <table>
+      <thead><tr><th style="width:6%">ID</th><th style="width:7%">등급</th><th style="width:22%">제목</th><th>문제 → 제안</th></tr></thead>
+      <tbody>
+        <tr><td>IMP-1</td><td class="sev-med">MED</td><td>[제목]</td><td>[문제] → [제안]</td></tr>
+        <tr><td>IMP-2</td><td class="sev-low">LOW</td><td>[제목]</td><td>[문제] → [제안]</td></tr>
+      </tbody>
+    </table>
+    -->
+
+    <!-- §3 Mermaid 플로우차트 렌더 (CDN). 오프라인이면 소스가 텍스트로 표시됨. -->
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs'
+      mermaid.initialize({
+        startOnLoad: true,
+        securityLevel: 'loose',
+        themeVariables: { fontSize: '14px' },
+        flowchart: { htmlLabels: true, useMaxWidth: true, nodeSpacing: 35, rankSpacing: 48 },
+      })
+    </script>
+  </body>
+</html>

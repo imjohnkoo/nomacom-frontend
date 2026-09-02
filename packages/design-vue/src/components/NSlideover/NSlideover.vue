@@ -75,7 +75,7 @@ const open = defineModel<boolean>({ default: false })
 .n-slideover__overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--zIndex-modal-backdrop, 1040);
+  z-index: var(--n-z-index-modal-backdrop, 1040);
   background-color: rgb(0 0 0 / 0.5);
 }
 
@@ -84,14 +84,14 @@ const open = defineModel<boolean>({ default: false })
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: var(--zIndex-modal, 1050);
+  z-index: var(--n-z-index-modal, 1050);
   display: flex;
   flex-direction: column;
   max-width: 100vw;
-  background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-xl, 0 20px 25px -5px rgb(0 0 0 / 0.1));
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  color: var(--color-neutral-800, #1f2937);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  box-shadow: var(--n-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  color: var(--n-color-neutral-800, #262626);
   overflow: hidden;
 }
 
@@ -103,51 +103,51 @@ const open = defineModel<boolean>({ default: false })
   position: relative;
   display: flex;
   align-items: center;
-  padding: var(--spacing-5, 1.25rem) var(--spacing-6, 1.5rem);
-  padding-right: var(--spacing-12, 3rem);
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e7eb);
+  padding: var(--n-spacing-5, 1.25rem) var(--n-spacing-6, 1.5rem);
+  padding-right: var(--n-spacing-12, 3rem);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-slideover__title {
   margin: 0;
-  font-size: var(--font-fontSize-lg, 1.125rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-900, #111827);
+  font-size: var(--n-font-size-lg, 1.125rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-900, #171717);
   line-height: 1.4;
 }
 
 .n-slideover__close {
   position: absolute;
-  top: var(--spacing-4, 1rem);
-  right: var(--spacing-4, 1rem);
+  top: var(--n-spacing-4, 1rem);
+  right: var(--n-spacing-4, 1rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
   border: none;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
   background: transparent;
-  color: var(--color-neutral-500, #6b7280);
+  color: var(--n-color-neutral-500, #737373);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 150ms);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-slideover__close:hover {
-  background-color: var(--color-neutral-100, #f3f4f6);
-  color: var(--color-neutral-700, #374151);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
+  color: var(--n-color-neutral-700, #404040);
 }
 
 .n-slideover__close:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: 2px;
 }
 
 .n-slideover__body {
   flex: 1;
-  padding: var(--spacing-5, 1.25rem) var(--spacing-6, 1.5rem);
+  padding: var(--n-spacing-5, 1.25rem) var(--n-spacing-6, 1.5rem);
   overflow-y: auto;
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
   line-height: 1.5;
 }
 
@@ -155,15 +155,15 @@ const open = defineModel<boolean>({ default: false })
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing-3, 0.75rem);
-  padding: var(--spacing-4, 1rem) var(--spacing-6, 1.5rem);
-  border-top: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e7eb);
+  gap: var(--n-spacing-3, 0.75rem);
+  padding: var(--n-spacing-4, 1rem) var(--n-spacing-6, 1.5rem);
+  border-top: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 /* --- Transition: Backdrop --- */
 .n-slideover-backdrop-enter-active,
 .n-slideover-backdrop-leave-active {
-  transition: opacity var(--transition-normal, 200ms) ease;
+  transition: opacity var(--n-transition-normal, 250ms ease) ease;
 }
 .n-slideover-backdrop-enter-from,
 .n-slideover-backdrop-leave-to {
@@ -173,7 +173,7 @@ const open = defineModel<boolean>({ default: false })
 /* --- Transition: Panel --- */
 .n-slideover-panel-enter-active,
 .n-slideover-panel-leave-active {
-  transition: transform var(--transition-normal, 200ms) ease;
+  transition: transform var(--n-transition-normal, 250ms ease) ease;
 }
 .n-slideover-panel-enter-from,
 .n-slideover-panel-leave-to {

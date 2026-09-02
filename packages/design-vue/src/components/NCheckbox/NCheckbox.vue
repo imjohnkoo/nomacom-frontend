@@ -91,7 +91,7 @@ function handleUpdate(value: boolean | 'indeterminate') {
 .n-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
   cursor: pointer;
   user-select: none;
 }
@@ -107,34 +107,34 @@ function handleUpdate(value: boolean | 'indeterminate') {
   justify-content: center;
   width: 18px;
   height: 18px;
-  border: var(--borderWidth-2) solid var(--color-neutral-300);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-neutral-0);
-  transition: all var(--transition-fast);
+  border: var(--n-border-width-2) solid var(--n-color-neutral-300);
+  border-radius: var(--n-radius-sm);
+  background-color: var(--n-color-neutral-0);
+  transition: all var(--n-transition-fast);
   flex-shrink: 0;
   cursor: inherit;
 }
 
 .n-checkbox__control:hover:not([data-disabled]) {
-  border-color: var(--color-primary-500);
+  border-color: var(--n-color-primary-500);
 }
 
 .n-checkbox__control:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
 .n-checkbox__control[data-state='checked'],
 .n-checkbox__control[data-state='indeterminate'] {
-  background-color: var(--color-primary-500);
-  border-color: var(--color-primary-500);
+  background-color: var(--n-color-primary-500);
+  border-color: var(--n-color-primary-500);
 }
 
 .n-checkbox__indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-neutral-0);
+  color: var(--n-color-neutral-0);
 }
 
 .n-checkbox__check-icon {
@@ -142,10 +142,10 @@ function handleUpdate(value: boolean | 'indeterminate') {
 }
 
 .n-checkbox__label {
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-800);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-800);
   line-height: 1.4;
 }
 </style>

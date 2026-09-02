@@ -57,7 +57,7 @@ const emit = defineEmits<{
 <style scoped>
 .n-radio-group {
   display: flex;
-  gap: var(--spacing-3);
+  gap: var(--n-spacing-3);
 }
 
 .n-radio-group--vertical {
@@ -72,7 +72,7 @@ const emit = defineEmits<{
 .n-radio-group__item {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
   cursor: pointer;
   user-select: none;
 }
@@ -88,41 +88,41 @@ const emit = defineEmits<{
   justify-content: center;
   width: 18px;
   height: 18px;
-  border-radius: var(--radius-full);
-  border: var(--borderWidth-2) solid var(--color-neutral-300);
-  background-color: var(--color-neutral-0);
+  border-radius: var(--n-radius-full);
+  border: var(--n-border-width-2) solid var(--n-color-neutral-300);
+  background-color: var(--n-color-neutral-0);
   cursor: inherit;
   flex-shrink: 0;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--n-transition-fast);
   padding: 0;
 }
 
 .n-radio-group__control:hover:not([data-disabled]) {
-  border-color: var(--color-primary-500);
+  border-color: var(--n-color-primary-500);
 }
 
 .n-radio-group__control:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
 .n-radio-group__control[data-state='checked'] {
-  border-color: var(--color-primary-500);
+  border-color: var(--n-color-primary-500);
 }
 
 .n-radio-group__indicator {
   display: block;
   width: 8px;
   height: 8px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-primary-500);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-primary-500);
 }
 
 .n-radio-group__label {
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-800);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-800);
   line-height: 1.4;
 }
 </style>

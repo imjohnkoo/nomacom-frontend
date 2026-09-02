@@ -28,9 +28,9 @@ withDefaults(defineProps<NHeaderProps>(), {
 .n-header {
   display: flex;
   align-items: center;
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  z-index: var(--zIndex-sticky, 100);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  z-index: var(--n-z-index-sticky, 1020);
   flex-shrink: 0;
 }
 
@@ -40,6 +40,6 @@ withDefaults(defineProps<NHeaderProps>(), {
 }
 
 .n-header--bordered {
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 </style>

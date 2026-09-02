@@ -186,30 +186,30 @@ function formatSize(bytes: number): string {
 
 <style scoped>
 .n-file-upload {
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  border: var(--borderWidth-2, 2px) dashed var(--color-neutral-300, #d4d4d4);
-  border-radius: var(--radius-lg, 0.5rem);
-  padding: var(--spacing-6, 1.5rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  border: var(--n-border-width-2, 2px) dashed var(--n-color-neutral-300, #d4d4d4);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  padding: var(--n-spacing-6, 1.5rem);
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
-  background-color: var(--color-neutral-0, #ffffff);
+  transition: all var(--n-transition-fast, 150ms ease);
+  background-color: var(--n-color-neutral-0, #ffffff);
   outline: none;
 }
 
 .n-file-upload:hover:not(.n-file-upload--disabled) {
-  border-color: var(--color-primary-300, #93c5fd);
-  background-color: var(--color-primary-50, #eff6ff);
+  border-color: var(--n-color-primary-300, #a78bff);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 
 .n-file-upload:focus-visible {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #6239FF);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #e3dbff);
 }
 
 .n-file-upload--dragging {
-  border-color: var(--color-primary-500, #3b82f6);
-  background-color: var(--color-primary-50, #eff6ff);
+  border-color: var(--n-color-primary-500, #6239FF);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 
 .n-file-upload--disabled {
@@ -225,70 +225,70 @@ function formatSize(bytes: number): string {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .n-file-upload__icon {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-file-upload--dragging .n-file-upload__icon,
 .n-file-upload:hover:not(.n-file-upload--disabled) .n-file-upload__icon {
-  color: var(--color-primary-500, #3b82f6);
+  color: var(--n-color-primary-500, #6239FF);
 }
 
 .n-file-upload__text {
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-600, #525252);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-600, #525252);
   margin: 0;
 }
 
 .n-file-upload__link {
-  color: var(--color-primary-600, #2563eb);
-  font-weight: var(--font-fontWeight-medium, 500);
+  color: var(--n-color-primary-600, #5025e8);
+  font-weight: var(--n-font-weight-medium, 500);
   text-decoration: underline;
 }
 
 .n-file-upload__hint {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  color: var(--color-neutral-400, #a3a3a3);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  color: var(--n-color-neutral-400, #a3a3a3);
   margin: 0;
 }
 
 .n-file-upload__files {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
   text-align: left;
 }
 
 .n-file-upload__file {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  background-color: var(--color-neutral-50, #fafafa);
-  border-radius: var(--radius-md, 0.375rem);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  gap: var(--n-spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  background-color: var(--n-color-neutral-50, #fafafa);
+  border-radius: var(--n-radius-md, 0.375rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-file-upload__file-icon {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   flex-shrink: 0;
 }
 
 .n-file-upload__file-name {
   flex: 1;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-800, #262626);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-800, #262626);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .n-file-upload__file-size {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  color: var(--color-neutral-400, #a3a3a3);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  color: var(--n-color-neutral-400, #a3a3a3);
   flex-shrink: 0;
 }
 
@@ -300,16 +300,16 @@ function formatSize(bytes: number): string {
   height: 24px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-sm, 0.25rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
   cursor: pointer;
-  color: var(--color-neutral-400, #a3a3a3);
-  transition: all var(--transition-fast, 150ms ease);
+  color: var(--n-color-neutral-400, #a3a3a3);
+  transition: all var(--n-transition-fast, 150ms ease);
   flex-shrink: 0;
   padding: 0;
 }
 
 .n-file-upload__file-remove:hover {
-  background-color: var(--color-error-50, #fef2f2);
-  color: var(--color-error-500, #ef4444);
+  background-color: var(--n-color-error-50, #fef2f2);
+  color: var(--n-color-error-500, #ef4444);
 }
 </style>

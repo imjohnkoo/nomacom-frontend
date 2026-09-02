@@ -13,6 +13,8 @@ import OverlayView from './views/OverlayView.vue'
 import LayoutView from './views/LayoutView.vue'
 import UtilityView from './views/UtilityView.vue'
 import AdminView from './views/AdminView.vue'
+import AdminPatternsView from './views/AdminPatternsView.vue'
+import ChartsView from './views/ChartsView.vue'
 
 const routes = [
   { path: '/', name: 'Overview', component: OverviewView },
@@ -24,6 +26,8 @@ const routes = [
   { path: '/layout', name: 'Layout', component: LayoutView },
   { path: '/utility', name: 'Utility', component: UtilityView },
   { path: '/admin', name: 'Admin', component: AdminView },
+  { path: '/admin-patterns', name: 'AdminPatterns', component: AdminPatternsView },
+  { path: '/charts', name: 'Charts', component: ChartsView },
 ]
 
 const router = createRouter({

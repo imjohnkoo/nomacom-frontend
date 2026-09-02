@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch(*)",
+      "Bash(yarn install*)",
+      "Bash(yarn build*)",
+      "Bash(yarn dev*)",
+      "Bash(yarn test*)",
+      "Bash(yarn lint*)",
+      "Bash(yarn turbo*)",
+      "Bash(yarn workspace*)",
+      "Bash(yarn dlx*)",
+      "Bash(yarn why*)",
+      "Bash(yarn dedupe*)",
+      "Bash(yarn up*)",
+      "Bash(yarn nuxt*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git fetch*)",
+      "Bash(git stash*)",
+      "Bash(git worktree*)",
+      "Bash(git checkout*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git rebase*)",
+      "Bash(git merge*)",
+      "Bash(git pull*)",
+      "Bash(git push*)",
+      "Bash(aws ssm get-parameter*)",
+      "Bash(aws ssm get-parameters*)",
+      "Bash(aws ssm describe-parameters*)",
+      "Bash(aws logs*)",
+      "Bash(aws s3 ls*)",
+      "Bash(aws s3 cp*)",
+      "Bash(docker ps*)",
+      "Bash(docker logs*)",
+      "Bash(docker images*)",
+      "Bash(docker inspect*)",
+      "Bash(ls*)",
+      "Bash(pwd)",
+      "Bash(wc*)",
+      "Bash(jq*)",
+      "Bash(node -*)",
+      "Bash(npx tsc*)",
+      "Bash(npx vue-tsc*)",
+      "Bash(npx vitest*)",
+      "Bash(npx nuxt*)",
+      "Bash(npx prettier*)",
+      "Bash(npx expo*)",
+      "Bash(expo*)",
+      "Bash(yarn expo*)",
+      "Bash(corepack*)",
+      "Bash(gh pr*)",
+      "Bash(gh issue*)",
+      "Bash(gh run*)",
+      "Bash(gh api*)"
+    ],
+    "ask": ["Bash(rm -rf *)", "Bash(rm -r *)", "Bash(git worktree remove*)"],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push origin prod*)",
+      "Bash(git push origin HEAD:prod*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git branch -D*)",
+      "Bash(docker push*)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(rm -rf ../*)",
+      "Bash(aws ssm put-parameter*)",
+      "Bash(aws ssm delete-parameter*)"
+    ]
+  },
+  "attribution": {
+    "commit": ""
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/format-on-edit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-prod-push.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

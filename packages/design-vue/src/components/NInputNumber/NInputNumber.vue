@@ -56,22 +56,22 @@ const emit = defineEmits<{
 .n-input-number {
   display: inline-flex;
   align-items: center;
-  border: var(--borderWidth-1) solid var(--color-neutral-300);
-  border-radius: var(--radius-md);
+  border: var(--n-border-width-1) solid var(--n-color-neutral-300);
+  border-radius: var(--n-radius-md);
   overflow: hidden;
-  background-color: var(--color-neutral-0);
-  transition: border-color var(--transition-fast);
+  background-color: var(--n-color-neutral-0);
+  transition: border-color var(--n-transition-fast);
 }
 
 .n-input-number:focus-within {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px var(--color-primary-50);
+  border-color: var(--n-color-primary-500);
+  box-shadow: 0 0 0 2px var(--n-color-primary-50);
 }
 
 .n-input-number--disabled {
   opacity: 0.5;
   pointer-events: none;
-  background-color: var(--color-neutral-50);
+  background-color: var(--n-color-neutral-50);
 }
 
 .n-input-number__button {
@@ -81,24 +81,24 @@ const emit = defineEmits<{
   width: 36px;
   height: 36px;
   border: none;
-  background-color: var(--color-neutral-50);
-  color: var(--color-neutral-600);
+  background-color: var(--n-color-neutral-50);
+  color: var(--n-color-neutral-600);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--n-transition-fast), color var(--n-transition-fast);
 }
 
 .n-input-number__button:hover:not([disabled]) {
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-800);
+  background-color: var(--n-color-neutral-100);
+  color: var(--n-color-neutral-800);
 }
 
 .n-input-number__button:active:not([disabled]) {
-  background-color: var(--color-neutral-200);
+  background-color: var(--n-color-neutral-200);
 }
 
 .n-input-number__button[disabled] {
-  color: var(--color-neutral-300);
+  color: var(--n-color-neutral-300);
   cursor: not-allowed;
 }
 
@@ -106,13 +106,13 @@ const emit = defineEmits<{
   width: 64px;
   height: 36px;
   text-align: center;
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-medium);
-  color: var(--color-neutral-800);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-medium);
+  color: var(--n-color-neutral-800);
   border: none;
-  border-left: var(--borderWidth-1) solid var(--color-neutral-200);
-  border-right: var(--borderWidth-1) solid var(--color-neutral-200);
+  border-left: var(--n-border-width-1) solid var(--n-color-neutral-200);
+  border-right: var(--n-border-width-1) solid var(--n-color-neutral-200);
   background-color: transparent;
   outline: none;
   -moz-appearance: textfield;

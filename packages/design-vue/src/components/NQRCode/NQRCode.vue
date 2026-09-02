@@ -113,10 +113,10 @@ watch(() => props.size, render)
 .n-qrcode {
   display: inline-flex;
   position: relative;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
-  padding: var(--spacing-2, 0.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
 }
 
 .n-qrcode canvas {

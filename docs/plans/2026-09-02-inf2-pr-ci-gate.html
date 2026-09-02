@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>INF-2 — PR/main CI 게이트</title><style>
+      :root {
+        --bg: #f7f8fa;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --text: #111827;
+        --muted: #4b5563;
+        --subtle: #6b7280;
+        --accent: #6239ff;
+        --accent-soft: #f3efff;
+        --warn: #b45309;
+        --warn-soft: #fffbeb;
+        --ok: #047857;
+        --ok-soft: #ecfdf5;
+        --danger: #b91c1c;
+        --danger-soft: #fef2f2;
+        --code: #f3f4f6;
+        --code-text: #4c1d95;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; padding: 0;
+        background: var(--bg); color: var(--text);
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6; font-size: 15px;
+      }
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 64px; }
+      header.doc-header {
+        background: linear-gradient(135deg, #6239ff 0%, #4c1d95 100%);
+        color: #fff; border-radius: 16px; padding: 28px 32px; margin-bottom: 28px;
+        box-shadow: 0 8px 24px -12px rgba(98, 57, 255, 0.4);
+      }
+      header.doc-header .tag {
+        display: inline-block; background: rgba(255, 255, 255, 0.18);
+        padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+        letter-spacing: 0.05em; margin-bottom: 12px; margin-right: 6px;
+      }
+      header.doc-header h1 { margin: 0 0 8px; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+      header.doc-header p.lede { margin: 0; color: rgba(255, 255, 255, 0.92); font-size: 14px; }
+      header.doc-header code { background: rgba(255,255,255,.15); color: #fff; }
+      nav.toc {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 18px 22px; margin-bottom: 24px; font-size: 14px;
+      }
+      nav.toc strong { display: block; margin-bottom: 8px; font-size: 13px; color: var(--subtle); letter-spacing: 0.04em; }
+      nav.toc ol { margin: 0; padding-left: 20px; columns: 2; }
+      nav.toc a { color: var(--accent); text-decoration: none; }
+      nav.toc a:hover { text-decoration: underline; }
+      section.card {
+        background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+        padding: 24px 28px; margin-bottom: 20px;
+      }
+      h2 { margin: 0 0 14px; font-size: 19px; letter-spacing: -0.01em; }
+      h3 { margin: 22px 0 10px; font-size: 15.5px; }
+      h4 { margin: 18px 0 8px; font-size: 14px; color: var(--muted); }
+      p { margin: 0 0 12px; color: var(--muted); }
+      ul, ol { margin: 0 0 12px; padding-left: 22px; color: var(--muted); }
+      li { margin-bottom: 5px; }
+      table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+      th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; }
+      th { background: #f9fafb; font-weight: 600; font-size: 12.5px; }
+      code {
+        background: var(--code); color: var(--code-text);
+        padding: 1px 6px; border-radius: 5px; font-size: 12.5px;
+        font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+      }
+      pre {
+        background: #111827; color: #e5e7eb; border-radius: 10px;
+        padding: 14px 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55;
+      }
+      pre code { background: transparent; color: inherit; padding: 0; }
+      .callout { border-radius: 10px; padding: 12px 16px; margin: 12px 0; font-size: 13.5px; border: 1px solid; }
+      .callout b { display: block; margin-bottom: 2px; }
+      .callout.warn { background: var(--warn-soft); border-color: #fde68a; color: var(--warn); }
+      .callout.ok { background: var(--ok-soft); border-color: #a7f3d0; color: var(--ok); }
+      .callout.danger { background: var(--danger-soft); border-color: #fecaca; color: var(--danger); }
+      .callout.info { background: var(--accent-soft); border-color: #ddd3ff; color: #4c1d95; }
+      .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; }
+      .pill.ok { background: var(--ok-soft); color: var(--ok); }
+      .pill.warn { background: var(--warn-soft); color: var(--warn); }
+      .pill.danger { background: var(--danger-soft); color: var(--danger); }
+      .pill.info { background: var(--accent-soft); color: #4c1d95; }
+      .pill.gray { background: #f3f4f6; color: var(--subtle); }
+      .phase { border-left: 4px solid var(--accent); padding-left: 14px; margin: 18px 0; }
+      .phase.p0 { border-left-color: #b91c1c; }
+      .phase.p3 { border-left-color: #9ca3af; }
+      footer.doc-footer { color: var(--subtle); font-size: 12.5px; text-align: center; margin-top: 32px; }
+    
+h1 { font-size: 24px; margin: 0 0 14px; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+a { color: var(--accent); }
+</style></head><body><div class="wrap">
+<header class="doc-header"><span class="tag">PLAN · 크로스앱</span><span class="tag">T1</span><span class="tag">✅ 완료</span><span class="tag">2026-09-02</span><h1>INF-2 — PR/main CI 게이트</h1>
+<p class="lede">정본은 같은 basename 의 <code>.md</code></p></header>
+<section class="card">
+<h1>INF-2 — PR/main CI 게이트</h1>
+<div class="callout info"><b>Tier</b> <code>T1</code> (사용자 비노출 CI·빌드 인프라 — spec 면제) · <b>작성</b> 2026-09-02<br><b>PR base</b> <code>main</code> · <b>영향</b> <code>.github/</code>, 전 workspace lint 설정<br><b>선행</b> INF-1 (검증 러너 부트스트랩, <code>e2e362e</code>)<br><b><code>.html</code></b> 같은 basename 동반</div>
+<hr>
+<h2>1. 문제</h2>
+<p>INF-1 로 <b>로컬</b> 게이트는 생겼지만 <b>CI 는 여전히 0건</b>이다.</p>
+<ul><li><code>.github/workflows/</code> 에는 배포 workflow 3개(prod 트리거 2 + DS publish 1)뿐 — <b>PR 과 main push 를 검사하는 것이 하나도 없다</b></li><li>즉 로컬에서 <code>turbo run lint typecheck test</code> 를 돌리지 않고 push 하면 <b>아무도 안 잡는다</b>. 사람 규율이 유일한 게이트</li><li>배포 경로(Dockerfile)에도 게이트가 없으므로(INF-3 미착수), 깨진 코드가 prod 이미지까지 그대로 간다</li></ul>
+<h2>2. 기대 동작</h2>
+<ul><li><b>PR 열림/갱신</b> 또는 <b>main push</b> 시 CI 가 자동으로: lint → typecheck(게이트) → test 를 돌린다</li><li>실패하면 PR 에 빨간 체크가 뜬다</li><li>같은 ref 에 새 push 가 오면 앞의 실행을 취소한다 (CI 는 배포와 달리 취소해도 안전)</li></ul>
+<h2>3. 실측 — 켜기 전에 막힐 것들 (2026-09-02)</h2>
+<p>CI 를 그냥 켜면 <b>바로 빨간불</b>이 된다. 원인 3종:</p>
+<table><tr><th>워크스페이스</th><th>상태</th></tr><tr><td><code>@imjohnkoo/design-mobile</code></td><td><code>lint</code> 가 <b><code>echo 'lint placeholder'</code></b> — 가짜다. 실제로 돌리면 에러 4건</td></tr><tr><td><code>apps/mobile</code></td><td><code>lint</code> script <b>없음</b>. 실제로 돌리면 에러 4건</td></tr><tr><td>공통</td><td><code>react-hooks/exhaustive-deps</code> <b>룰 정의 없음</b> 4건 — 코드에 disable 주석이 있는데 플러그인이 미설치</td></tr></table>
+<p>에러 상세:</p>
+<ul><li><code>no-unused-vars</code> 3건 — design-mobile 의 미사용 타입 import (<code>ViewStyle</code>·<code>TextStyle</code>)</li><li><code>react-hooks/exhaustive-deps</code> 4건 — 플러그인 부재로 "Definition for rule not found"</li><li><code>no-undef 'module'</code> 1건 — <code>apps/mobile/babel.config.js</code> 가 CommonJS 인데 node 전역을 모름</li></ul>
+<div class="callout info"><b>"lint placeholder" 를 그대로 두고 CI 를 켜면 CI 가 «lint 통과» 라고 거짓 보고한다.</b> INF-1 에서 <code>turbo run test</code> no-op 을 고친 것과 같은 종류의 문제이므로 이번에 함께 해소한다.</div>
+<h2>4. 설계</h2>
+<h3>4.1 lint 는 baseline 을 만들지 않는다</h3>
+<p>INF-1 의 typecheck 는 client 7건이 이미 있어 baseline 이 불가피했다. <b>lint 는 지금 에러 0 을 달성할 수 있으므로 기준선을 만들지 않는다</b> — 기준선을 만드는 순간 부채가 쌓일 자리가 생긴다. (m8 이 신규 워크스페이스 <code>admin-mcp</code> 에 대해 같은 판단을 했다.)</p>
+<h3>4.2 job 2개로 쪼갠다</h3>
+<table><tr><th>job</th><th>내용</th><th>이유</th></tr><tr><td><code>lint</code></td><td>전 workspace eslint</td><td>수 초 — 빨리 깨지는 것부터 별도 job 으로 병렬</td></tr><tr><td><code>gate</code></td><td>DS 빌드 → DS typecheck/test → 앱 prepare → test → typecheck gate</td><td>순서 의존이 있어 한 job 안에서 순차</td></tr></table>
+<h3>4.3 순서 규칙 (뒤집지 말 것)</h3>
+<ol><li><b>corepack 을 setup-node 앞에</b> — <code>cache: yarn</code> 이 setup-node 시점에 <code>yarn</code> 을 호출하므로</li><li><b><code>yarn install --immutable --mode=skip-build</code></b> — 앱 postinstall(<code>nuxt prepare</code>)이 <code>@imjohnkoo/design-vue</code> 빌드 산출물을 요구하므로, install 시점에는 돌리지 않는다</li><li><b>DS 빌드 → 앱 prepare</b> — 이 순서라야 <code>.nuxt</code> 타입이 만들어진다</li><li><b>test 를 typecheck 앞에</b> — test 는 수 초, typecheck 는 수십 초. 빨리 깨질 수 있는 것부터</li></ol>
+<h2>5. 파일 계획</h2>
+<table><tr><th>파일</th><th>변경</th></tr><tr><td><code>.github/workflows/ci.yml</code></td><td>신규 — PR + main push 게이트</td></tr><tr><td><code>package.json</code> (root)</td><td><code>eslint-plugin-react-hooks</code> devDep 추가</td></tr><tr><td><code>eslint.config.js</code></td><td>react-hooks 플러그인 등록 + <code>*.config.js</code> node 전역 허용</td></tr><tr><td><code>packages/design-mobile/package.json</code></td><td><code>lint</code> placeholder → 실제 eslint · <code>typecheck</code> 추가</td></tr><tr><td><code>apps/mobile/package.json</code></td><td><code>lint</code> script 추가</td></tr><tr><td><code>packages/design-mobile/src/components/**</code></td><td>미사용 import 3건 제거</td></tr></table>
+<h2>6. 테스트 계획</h2>
+<table><tr><th>검증 대상</th><th>방법</th></tr><tr><td>전 workspace lint 에러 0</td><td><code>yarn turbo run lint</code> 출력 원문</td></tr><tr><td>CI 문법 정합</td><td><code>gh workflow view</code> 또는 실제 PR 로 1회 실행 — <b>실행 로그가 유일한 증거</b></td></tr><tr><td>기존 자산 무회귀</td><td><code>turbo run lint typecheck test build</code> 22/22 유지 · 게이트 회귀 7/7 · 훅 37/37</td></tr><tr><td>react-hooks 룰이 실제로 동작</td><td>disable 주석이 있는 파일에서 "rule not found" 가 사라짐</td></tr></table>
+<p><b>회귀 범위</b>: eslint 설정은 전 workspace 에 영향 — design-vue(813 warn)·client(288 warn) 의 경고 수가 급변하면 설정 사고 신호</p>
+<h2>7. 태스크 분해</h2>
+<ul><li><b>[T1]</b> lint 실체화 — react-hooks 플러그인 + config + placeholder 제거 + 에러 8건 수정 — ~80 LOC</li><li><b>[T2]</b> <code>ci.yml</code> 작성 — ~120 LOC</li><li><b>[T3]</b> 문서 — CLAUDE.md/dev-process.md 의 "CI 0건" 서술 갱신 · weekly INF-2 완료 — ~40 LOC</li></ul>
+<h2>8. 게이트 (머지 전)</h2>
+<ul><li>[ ] <code>yarn turbo run lint</code> — <b>전 workspace 에러 0</b> (placeholder 없음)</li><li>[ ] <code>yarn turbo run lint typecheck test build</code> 전항 green</li><li>[ ] <code>ci.yml</code> 이 실제 실행돼 green (증거 = run URL)</li><li>[ ] 문서에서 "CI 게이트 0건" 서술 제거</li></ul>
+<h2>9. 비범위</h2>
+<ul><li><b>Dockerfile 게이트 (INF-3)</b> — 별도</li><li>client 타입 에러 7건 · warning 정리 (design-vue 813 / client 288)</li><li>E2E / Playwright</li><li>CI 에서 <code>docker build</code> 검증 — 시간 비용이 크고 배포 workflow 가 이미 함</li></ul>
+<h2>10. as-built (2026-09-02 완료)</h2>
+<h3>계획 대비 이탈</h3>
+<ol><li><b>워크플로 전체를 turbo 명령으로 통일했다.</b> 처음엔 m8 판을 따라 <code>yarn workspace &lt;name&gt; run typecheck</code> 를 썼는데, 그러면 해당 워크스페이스의 <code>node_modules/.bin</code> 만 보므로 hoist 된 <code>tsc</code>·<code>eslint</code> 를 못 찾아 <code>command not found</code> 로 죽는다 (design-vue·design-mobile·mobile 전부). turbo 는 루트 <code>.bin</code> 을 PATH 에 넣는다.</li><li><b>명시적 <code>Build design system</code> / <code>Prepare apps</code> 스텝을 없앴다.</b> turbo 의 <code>dependsOn</code>(<code>^build</code>)과 <code>typecheck-gate.sh</code> 내부의 <code>nuxt prepare</code> 가 이미 그 일을 한다 — 중복이었다.</li><li><b>CI 첫 실행이 실패했고, 그 실패가 실제 결함을 드러냈다</b> (run 33598854175, gate fail / lint pass):</li></ol>
+<ul><li><code>turbo run test</code> 는 <code>dependsOn: ["build"]</code> 라 필터 없이 돌리면 <b>테스트가 없는 데모 워크스페이스의 build 까지</b> 끌고 온다</li><li>그중 <code>design-storybook-mobile</code> 이 <code>--mode=skip-build</code> 설치 환경에서 <code>@storybook/react-vite/preset</code> 을 못 찾아 죽었다</li><li>⚠️ <b>로컬에서는 같은 에러를 내면서도 exit 0</b> 이라 조용히 지나갔다. clean install 환경에서만 드러나는 종류의 결함이다</li><li>→ test·typecheck 를 <code>--filter</code> 로 좁히고, storybook 부채는 weekly <b>INF-5</b> 로 기록</li></ul>
+<ol><li><b>guard 훅 회귀 테스트도 CI 에 넣었다.</b> 계획엔 없었지만 판정 로직이 깨지면 prod 차단이 조용히 사라진다 — 게이트 스크립트 테스트와 같은 이유.</li><li><b>시크릿 사고가 끼어들었다</b> (계획 밖): PR push 가 GitHub push protection 에 막혔다. <code>docs/</code> 를 git 추적으로 전환하면서 5월 문서 2건의 DockerHub PAT 평문이 커밋에 들어갔다. 두 파일을 추적 제외 + 히스토리에서 제거(<code>filter-branch</code>)해 해소. <b>origin 에는 올라간 적이 없어 이 리포발 외부 유출은 없다.</b></li></ol>
+<h3>검증 (증거)</h3>
+<p><b>CI run <a href="https://github.com/imjohnkoo/nomacom-frontend/actions/runs/33599247862">33599247862</a> — conclusion: success</b></p>
+<table><tr><th>job</th><th>결과</th><th>내용</th></tr><tr><td><code>lint</code></td><td>✅ success (9/9)</td><td>전 워크스페이스 eslint 에러 0</td></tr><tr><td><code>gate</code></td><td>✅ success (12/12)</td><td>test 157건 → typecheck(baseline 게이트) → 게이트 회귀 → 훅 회귀</td></tr></table>
+<p>PR: <a href="https://github.com/imjohnkoo/nomacom-frontend/pull/2">#2</a></p>
+<p>lint 실체화 결과:</p>
+<table><tr><th>워크스페이스</th><th>before</th><th>after</th></tr><tr><td><code>@imjohnkoo/design-mobile</code></td><td><code>echo 'lint placeholder'</code></td><td>실제 eslint — 에러 0</td></tr><tr><td><code>apps/mobile</code></td><td>script 없음</td><td>실제 eslint — 에러 0</td></tr><tr><td>전체</td><td>react-hooks 룰 미정의 4건</td><td>플러그인 도입 후 0</td></tr></table>
+<h3>남은 것</h3>
+<ul><li><b>INF-3</b> Dockerfile 배포 게이트 — 배포 경로에는 여전히 기계 검증이 없다</li><li><b>INF-5</b> (신규) <code>design-storybook-mobile</code> 빌드가 clean install 에서 깨짐</li><li>PR #2 머지 — 머지 시 <code>design-system-publish.yml</code> 이 트리거되어 DS 0.5.0/0.7.0 이 발행된다</li><li>⚠️ <b>DockerHub PAT 회전</b> — 같은 문서에 「<code>nomacom-esim-manager-v2</code> 의 <code>after_deploy.sh</code> 에 같은 PAT 평문 커밋」 기록이 있어 그쪽은 실제 노출일 수 있다</li></ul>
+</section>
+<footer class="doc-footer">nomacom-frontend · docs/plans/2026-09-02-inf2-pr-ci-gate.html</footer>
+</div></body></html>

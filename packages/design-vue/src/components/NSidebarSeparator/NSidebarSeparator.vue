@@ -24,7 +24,7 @@ const separatorClasses = computed(() => [
 
 <style>
 .n-sidebar-separator {
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
 }
 
 .n-sidebar-separator__line {
@@ -37,12 +37,12 @@ const separatorClasses = computed(() => [
 .n-sidebar-separator--with-label {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .n-sidebar-separator__label {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-semibold, 600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.5;
