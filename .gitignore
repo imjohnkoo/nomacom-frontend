@@ -44,6 +44,13 @@ logs
 /docs/*
 !/docs/specs/
 !/docs/plans/
+# ⛔ 시크릿이 평문으로 들어 있는 5월 문서 2건은 공유하지 않는다 (2026-09-02).
+# GitHub push protection 이 DockerHub PAT 를 차단해 발견 — origin 에는 올라간 적 없다.
+# 로컬에는 남아 있으니 필요하면 열어 볼 수 있다. 시크릿을 지운 뒤에도 되살리지 말 것 —
+# 문서 목적(당시 부트스트랩 기록)상 공유 가치가 낮다.
+/docs/plans/admin/2026-05-18-deploy-bootstrap.md
+/docs/plans/weekly/2026-05-18-week.html
+
 # 앱/패키지 로컬 docs 는 여전히 금지 (실수로 생성돼도 무시)
 apps/*/docs/
 packages/*/docs/
