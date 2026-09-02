@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, type ViewStyle } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { theme } from '../../theme'
 
 export interface NAlertProps {

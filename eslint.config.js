@@ -1,11 +1,36 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import pluginVue from 'eslint-plugin-vue'
+import pluginReactHooks from 'eslint-plugin-react-hooks'
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
+  {
+    // React Native 워크스페이스(`apps/mobile`, `packages/design-mobile`)용.
+    // 이 플러그인이 없으면 코드의 `// eslint-disable-next-line react-hooks/exhaustive-deps`
+    // 주석이 «Definition for rule not found» 에러가 된다 (2026-09-02 실측 4건).
+    files: ['apps/mobile/**/*.{ts,tsx}', 'packages/design-mobile/**/*.{ts,tsx}'],
+    plugins: { 'react-hooks': pluginReactHooks },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+  },
+  {
+    // babel.config.js / metro.config.js 등은 CommonJS 라 `module`·`require` 를 쓴다.
+    files: ['**/*.config.js', '**/*.config.cjs', '**/babel.config.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        module: 'readonly',
+        require: 'readonly',
+        __dirname: 'readonly',
+        process: 'readonly',
+      },
+    },
+  },
   {
     files: ['**/*.vue'],
     languageOptions: {

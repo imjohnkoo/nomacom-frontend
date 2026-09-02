@@ -6,7 +6,6 @@ import {
   StyleSheet,
   View,
   type ViewStyle,
-  type TextStyle,
 } from 'react-native'
 import { theme } from '../../theme'
 

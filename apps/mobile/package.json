@@ -13,7 +13,9 @@
     "typecheck": "tsc --noEmit",
     "eas:build:dev": "eas build --profile development --platform ios",
     "eas:build:preview": "eas build --profile preview --platform all",
-    "eas:build:prod": "eas build --profile production --platform all"
+    "eas:build:prod": "eas build --profile production --platform all",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@imjohnkoo/design-mobile": "workspace:*",

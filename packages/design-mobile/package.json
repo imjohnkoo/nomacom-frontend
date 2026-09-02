@@ -23,7 +23,9 @@
   "scripts": {
     "build": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "lint": "echo 'lint placeholder'"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@imjohnkoo/design-tokens": "workspace:*"
