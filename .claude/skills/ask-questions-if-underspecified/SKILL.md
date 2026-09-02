@@ -83,3 +83,11 @@ Reply with: defaults (or 1a 2a)
 
 - Don't ask questions you can answer with a quick, low-risk discovery read (e.g., configs, existing patterns, docs).
 - Don't ask open-ended questions if a tight multiple-choice or yes/no would eliminate ambiguity faster.
+
+## Marker convention (when writing a spec/plan document)
+
+If a must-have question stays unanswered (user defers, or can't decide yet) while a spec/plan document is being written, do NOT fill the gap with an assumption. Record it in the document itself as `[NEEDS CLARIFICATION: <concrete question>]` (and as an `open` row in spec §8) — the LOCK / implementation gates will catch outstanding markers. This keeps unanswered questions durable across sessions instead of buried in chat logs.
+
+## Question budget (5-question rhythm)
+
+Ask **one at a time**, and after every 5 questions summarize the decisions so far and confirm whether to keep going. Unbounded interviews are how planning sessions die. Every answer's home is the **document** (spec §8 decisions table), not the chat log — a decision that lives only in conversation is not inherited by the next session.

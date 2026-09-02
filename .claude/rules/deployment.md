@@ -1,14 +1,14 @@
 # 배포 흐름 (CodeDeploy + GitHub Actions)
 
-> **상태 (2026-05 기준)**: 이 문서는 m8-frontend 패턴을 nomacom-frontend 로 포팅한 **target state** 청사진. 실제 배포 자산 (`.github/workflows/`, `appspec.yml`, `deploy/scripts/`, `apps/*/Dockerfile`) 은 **아직 미구축** — weekly A 트랙에서 부트스트랩 중.
-> ECR/CodeDeploy app name / DockerHub repo / SSM 경로 등 환경 의존 값은 A-1 audit 결과로 채울 placeholder. 본 문서가 "확정 fact" 가 되려면 A-3 admin dev 배포 1회 성공 후 학습 반영 필요.
+> **상태 (2026-09-02 갱신)**: 배포 자산은 **구축 완료**다 — `.github/workflows/{admin,client}-production.yml` · `appspec.yml` · `deploy/scripts/{before,after}_deploy.sh` · `apps/{admin,client}/Dockerfile` · `deploy/cloudfront/` 모두 실재한다. SSM 경로는 `.claude/rules/ssm-paths.md` 에서 확정됐다.
+> ⚠️ **남은 갭**: ① Dockerfile 안에 typecheck/test **게이트가 없다** — 이미지가 무조건 만들어지므로 배포 경로에 기계 검증이 0 이다. ② PR/main CI 도 없다. 그래서 `guard-prod-push.sh` 의 prod 차단과 `nomacomfe-prod-push-check` 가 유일한 사전 방어선이다 (Phase 3 인프라 트랙 후보).
 
 ```
 GitHub push (prod branch)
   ↓
 GitHub Actions (path filter로 admin/client 판별)
   ↓
-Docker build (시크릿 미포함) → DockerHub or ECR (audit 후 확정)
+Docker build (시크릿 미포함) → DockerHub `imjohnkoo/nomacom-{admin,client}:prod`
   ↓
 CodeDeploy trigger (per-app application, 같은 repo)
   ↓
@@ -22,7 +22,7 @@ AfterInstall: deploy/scripts/after_deploy.sh
   → SSM에서 /nomacom/shared/ + /nomacom/{app}/ 파라미터 fetch
   → .env.production 파일 생성
   → 컨테이너 레지스트리 로그인 (SSM 크레덴셜)
-  → docker pull <registry>/{app-name}:prod
+  → docker pull imjohnkoo/{app-name}:prod
   → docker run --env-file .env.production + 헬스체크
 ```
 
@@ -50,33 +50,33 @@ paths:
 
 > **mobile (`apps/mobile/**`) 은 별도 트리거**: Expo EAS 빌드 / OTA update 경로 — 본 CodeDeploy 파이프라인과 분리. 별도 workflow 필요 (현재 미구축).
 
-## CodeDeploy Applications (target — A 트랙 audit 시 확정)
+## CodeDeploy Applications (확정 — 2026-09-02 실측)
 
 | CodeDeploy Application | Deployment Group | Docker Image | EC2 |
 |---|---|---|---|
-| `nomacom-admin` | `prod` | `<registry>/nomacom-admin:prod` | admin EC2 (app-name.conf: `nomacom-admin`) |
-| `nomacom-client` | `prod` | `<registry>/nomacom-client:prod` | client EC2 (app-name.conf: `nomacom-client`) |
+| `nomacom-admin` | `prod` | `imjohnkoo/nomacom-admin:prod` (DockerHub) | admin EC2 (app-name.conf: `nomacom-admin`) |
+| `nomacom-client` | `prod` | `imjohnkoo/nomacom-client:prod` (DockerHub) | client EC2 (app-name.conf: `nomacom-client`) |
 
-각 application은 **같은 GitHub repo** (`<org>/nomacom-frontend`) 를 가리키지만, 서로 다른 EC2로 배포됩니다.
+각 application은 **같은 GitHub repo** (`imjohnkoo/nomacom-frontend`) 를 가리키지만, 서로 다른 EC2로 배포됩니다.
 
-**audit 시 확정 필요**:
-- `<registry>` = DockerHub vs ECR (m8 는 `overnodes/m8-*` DockerHub)
-- `<org>` = nomacom 또는 imjohnkoo 등 — 실 repo URL
-- 기존 nomacom-admin / nomacom-client-nuxt3 별도 repo 가 살아있다면 cutover 일정 (weekly A-5)
+**확정값** (`.github/workflows/*-production.yml` · `deploy/scripts/after_deploy.sh` 실측):
+- registry = **DockerHub** (`imjohnkoo/nomacom-{admin,client}:prod`). 크레덴셜은 GHA secret `PROD_DOCKER_ID/PW` + 런타임은 SSM `/nomacom/shared/docker/`
+- repo = `imjohnkoo/nomacom-frontend` · CodeDeploy `--deployment-group-name prod` · config `CodeDeployDefault.OneAtATime`
+- 구 레포(`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) 는 2026-05-21 Archived
 
-## 브랜치 전략 (현 시점 미정 → 결정 필요)
+## 브랜치 전략 — **(b) 확정 (2026-09-02)**
 
-**현 상태**: `main` 단독 브랜치. m8-frontend 는 `dev` / `prod` 분리 + `main` (DS publish 트리거).
+| 브랜치 | 역할 |
+|---|---|
+| `main` | **개발 기본 base** + DS publish 트리거 (`design-system-publish.yml`) |
+| `prod` | **배포 트리거** — `admin-production.yml` / `client-production.yml` |
 
-**선택지** (A 트랙 안정화 후 결정):
-- (a) m8 패턴 그대로: `dev` (검증) / `prod` (배포 트리거) / `main` (DS publish)
-- (b) 단순화: `main` (DS publish + dev 검증) / `prod` (배포)
-- (c) 단일 `main` + tag 기반 배포 (CodeDeploy 가 tag 트리거 지원하면)
-
-본 문서는 (a) 가정으로 작성. (b)/(c) 채택 시 본 문서 + skill 갱신 필요.
+- 1인 운영에 3분기(dev/prod/main)는 과잉이라 **(b) 단순화**를 채택했다. `dev` 브랜치는 만들지 않는다.
+- 따라서 **prod↔dev 동기화 단계는 존재하지 않는다** — m8-frontend 규약을 복사하지 말 것.
+- 모든 작업 브랜치/PR 의 base 는 **항상 `main`**.
 
 ## prod push 정책
 
-- prod push는 `nomacomfe-prod-push-check` skill 로 pre-flight 검증 후 수행
-- prod push 후 `nomacomfe-finish-branch` skill 이 prod↔dev 동기화 포함
-- `.claude/hooks/guard-prod-push.sh` 가 수동 `git push *prod*` 를 차단 (사용자 명시 승인 필요)
+- prod push 는 `nomacomfe-prod-push-check` skill 로 pre-flight 검증 후, **사용자 명시 승인**을 받아 수행
+- `.claude/hooks/guard-prod-push.sh` 가 `git push ... prod` 와 `gh api ... refs/heads/prod` 쓰기를 **실제로 차단**한다 (2026-09-02 부터 — 그 전에는 문서에만 있었다)
+- `nomacomfe-finish-branch` Step 0 이 Tier·QA 증거를 검사한 뒤에야 머지 옵션이 열린다

@@ -1,81 +1,87 @@
 ---
 name: nomacomfe-finish-branch
-description: Complete nomacom-frontend worktree work — verify Turbo build/tests, present merge/PR options, sync prod↔dev when pushing to prod, clean up worktree. Use when implementation is done and you need to integrate the work. Respects the project rule that prod push requires dev sync.
+description: Complete nomacom-frontend worktree work — enforce the Tier/QA gate (Step 0), verify Turbo build/typecheck, present merge/PR options, and clean up the worktree after explicit approval. Use when implementation is done and you need to integrate the work.
 ---
 
 # nomacom-frontend Finish Branch
 
-Guide completion of worktree development. Verify → options → execute → cleanup.
+Guide completion of worktree development. **Gate → Verify → options → execute → cleanup.**
 
-**Announce at start:** "I'm using the nomacomfe-finish-branch skill to complete this work."
-
-> **현 상태 주의 (2026-05)**: nomacom-frontend 는 prod 배포 파이프라인 자체가 아직 부트스트랩 중 (A 트랙). `main` 단독 운영 시점에는 Step 2 의 base branch 가 항상 `main`, Step 4.5 (prod↔dev sync) NO-OP. A 트랙 완료 + 브랜치 전략 확정 후 본 skill 본격 의미.
+**Announce at start:** "nomacomfe-finish-branch 로 작업을 마무리합니다."
 
 ## Core Principles
 
+- **Step 0 를 건너뛰지 않는다** — 프로세스 v2 의 검증 규칙은 모든 트랙이 지나는 이 관문에서 집행된다
 - **Verify before offering options** — no broken code gets merged
-- **Respect the prod↔dev rule** — prod push MUST sync dev (브랜치 분리 후 적용)
-- **Paths-filter awareness** — changes to `packages/design-tokens/**` or `packages/design-vue/**` trigger BOTH admin + client deploys; `packages/design-mobile/**` 는 mobile 전용
-- **Worktree cleanup** — keep `~/dev/worktrees/nomacom-frontend/` tidy
+- **Paths-filter awareness** — `packages/design-tokens/**` 또는 `packages/design-vue/**` 변경은 **admin + client 둘 다** 배포 트리거. `packages/design-mobile/**` 은 mobile 전용
+- ⛔ **삭제는 전부 사용자 명시 승인 후** — 브랜치·worktree·Orca 세션 중 **하나도** 승인 없이 지우지 않는다. 머지가 끝나 «정리하면 친절하겠지» 로 보이는 상황이 가장 위험하다 (Step 5)
+- **Worktree 위치는 두 가지** — Orca 관리 `~/orca/workspaces/nomacom-frontend/<name>` (표준) 또는 수동 sibling `~/dev/worktrees/nomacom-frontend/<name>`. **정리 명령이 서로 다르다**
+
+> ⛔ **이 스킬을 안 지나가면 작업은 고립된다.** 2026-08-18~26 사이 워크트리 5개에 **139커밋**이 쌓였고 main 최근 커밋은 5월이었다 (2026-09-02 일괄 통합으로 해소). 워크트리는 작업 장소이지 보관소가 아니다.
 
 ## Process
 
+### Step 0: Tier / QA 게이트 확인 — 머지 옵션을 열기 전 검사 ⭐
+
+1. **Tier 확인** — spec/plan 헤더 pill 또는 핸드오프 브리프에서. 기록이 없으면 지금 판정해 plan 헤더에 기록.
+   - T2 트리거: 신규 화면/플로우 · 외부연동(Maya·스마트스토어·Cafe24·PG) · Drizzle 스키마 · 과금/PII · 다중 파일 신규 기능 · mobile 신규 화면
+   - 버그픽스는 **파일 수 무관 T1**
+2. **T2/T3** — QA 증거 확인: 카드 코멘트(또는 plan as-built)의 `nomacomfe-qa-session` 결과
+   - ⑥ 적대적 리뷰 **blocker/major 0**
+   - 사용자 노출 화면 · 쓰기/과금/PII · 외부연동이면 **⑦ acceptance walk 결과**
+   - **없으면 Step 3 옵션 제시 전 중단** — "QA 미수행. `nomacomfe-qa-session` 을 먼저 진행할까요?"
+3. **T1** — 종결 diff 에 **회귀 증거** 동봉 여부 확인:
+   - `packages/design-vue` 변경이면 vitest 회귀 테스트
+   - `apps/*` 변경이면 검증 커맨드 출력 or Orca 스크린샷 (테스트 러너 부재 — `nomacomfe-write-plan` 의 테스트 환경 제약 참조)
+   - 둘 다 없으면 plan 에 불가 사유 1줄이 있는지 확인. 그것도 없으면 중단하고 확인 요청
+4. **D 트랙** (`design/` 캔버스) — 오너 승인 여부 + **슬라이더 런타임 값이 아니라 소스 기본값에 반영됐는지** 확인
+5. **T0** — 검사 없음, Step 1 로
+
 ### Step 1: Verify Build + Affected Apps
 
-Detect changed apps and only build/test what's affected (Turbo handles incremental).
+변경 파일을 보고 영향 앱만 빌드 (Turbo 가 incremental 처리):
 
 ```bash
-# a. 어떤 파일이 바뀌었는지
 git diff --name-only $(git merge-base HEAD main)...HEAD
-
-# b. 영향 앱 판정 (GitHub Actions paths-filter와 동일 룰)
-#    - packages/design-tokens/** → admin + client (DS 리빌드 후 두 앱 재빌드)
-#    - packages/design-vue/**    → admin + client
-#    - packages/design-mobile/** → mobile only
-#    - apps/admin/**             → admin only
-#    - apps/client/**            → client only
-#    - apps/mobile/**            → mobile only (Expo EAS / OTA, 별도 파이프라인)
-#    - root (package.json, yarn.lock, turbo.json, tsconfig.base.json) → admin + client
-#    - deploy/**, appspec.yml, .github/workflows/** → 인프라 변경, admin + client
 ```
 
-Then:
+영향 앱 판정 룰 (GitHub Actions paths-filter 와 동일):
+
+| 변경 경로                                                              | 영향 앱            |
+| ---------------------------------------------------------------------- | ------------------ |
+| `packages/design-tokens/**`, `packages/design-vue/**`                  | **admin + client** |
+| `packages/design-mobile/**`                                            | mobile             |
+| `apps/admin/**` / `apps/client/**` / `apps/mobile/**`                  | 해당 앱만          |
+| root (`package.json`, `yarn.lock`, `turbo.json`, `tsconfig.base.json`) | admin + client     |
+| `deploy/**`, `appspec.yml`, `.github/workflows/**`                     | admin + client     |
 
 ```bash
-# 빌드 (Turbo가 dependsOn:^build로 DS → 앱 순서 자동 보장)
 yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
-# 또는 영향 앱만:
-# yarn turbo run build --filter=nomacom-admin
-
-# 타입체크 + 테스트 (있는 경우)
-yarn turbo run typecheck --filter=nomacom-admin --filter=nomacom-client || exit 1
-yarn turbo run test --filter=nomacom-admin --filter=nomacom-client
+yarn workspace @imjohnkoo/design-vue run test --run    # DS 변경 시
+yarn workspace nomacom-mobile run typecheck            # mobile 변경 시
 ```
 
-**If build/tests fail**: Stop. Show failures. Don't proceed.
+**하나라도 fail 이면 stop** — 실패 출력 보여주고 진행 금지.
 
-> **mobile 변경 시**: `nomacom-mobile` 은 `tsc --noEmit` + Expo prebuild 로 검증. `yarn workspace nomacom-mobile run typecheck` (있으면) 또는 `yarn workspace nomacom-mobile run start` 로 dev server 부팅 확인. prod 배포는 EAS Build / Submit 별도.
+> ⚠️ `yarn turbo run typecheck` / `test` 는 admin/client 에 script 가 없어 **no-op 이다**. "타입체크 통과" 라고 보고하지 말 것 — 실제로 돈 것만 보고한다.
 
 ### Step 2: Determine Base Branch
 
+**base 는 `main` 이 기본이다.** nomacom 은 `dev` 브랜치가 없고 `prod` 는 배포 트리거다.
+
 ```bash
-# 가장 최근 공통 조상으로 판정
-git merge-base HEAD main 2>/dev/null && BASE=main
-git merge-base HEAD dev 2>/dev/null && BASE=${BASE:-dev}
-git merge-base HEAD prod 2>/dev/null && BASE=${BASE:-prod}
+git merge-base HEAD main   # 후보 확인
 ```
 
-사용자에게 확인: "Base branch로 `<base>`를 사용할까요?"
-
-> **현재 main 단독**: dev/prod 분리 전에는 항상 main. 사용자가 임시 브랜치 만들고 main 으로 PR 만드는 흐름.
+사용자에게 확인: "Base branch로 `main` 을 사용할까요?" — `prod` 를 base 로 잡는 것은 **배포 의도가 명시된 경우만**이고, 그 경로는 `nomacomfe-prod-push-check` 를 먼저 지나야 한다.
 
 ### Step 3: Present Options
 
 ```
 Implementation complete. What would you like to do?
 
-1. Merge locally to <base>  (then optionally sync to prod)
-2. Push and create PR to <base>
+1. Merge locally to main
+2. Push and create PR to main
 3. Push branch as-is (keep open, I'll handle manually)
 4. Discard this work
 
@@ -84,72 +90,64 @@ Which option?
 
 ### Step 4: Execute Choice
 
-#### Option 1: Merge Locally to `<base>`
+#### Option 1: Merge Locally to `main`
 
 ```bash
-# worktree에서 직접 base 전환 안 됨 (다른 worktree에서 쓰면)
-# → 메인 클론으로 이동
-cd ~/dev/current-projects/nomacom-frontend
+cd ~/dev/current-projects/nomacom-frontend    # 메인 클론으로 이동 (worktree 에서 base 체크아웃 불가)
 git fetch origin
-git checkout <base>
-git pull --ff-only
+git checkout main && git pull --ff-only
 git merge --no-ff <feature-branch>
-
-# 빌드 재확인 (Turbo 캐시 활용)
-yarn install && yarn turbo run build
-
-# push
-git push origin <base>
+yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client
+git push origin main
 ```
 
-**⚠️ If `<base>` is `prod`**: Step 4.5(prod↔dev sync) 반드시 실행.
-
-Then: Step 5 (cleanup worktree).
+> `main` push 는 `packages/design-*` 변경이 포함되면 `design-system-publish.yml` 을 트리거한다 — **DS version bump 선행 여부**를 확인할 것.
 
 #### Option 2: Push + PR
 
 ```bash
 cd <worktree>
 git push -u origin <feature-branch>
-
-gh pr create --base <base> --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
+gh pr create --base main --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
 ## Summary
 <2-3 bullets>
+
+## Spec / Plan
+- spec: docs/specs/<app>/<file>.md
+- plan: docs/plans/<app>/<file>-plan.md
+- Tier: T?
+
+## QA 증거
+- ⑥ 적대적 리뷰: blocker 0 / major 0 / minor <n>
+- ⑦ acceptance walk: <n>/<n> pass (해당 시)
+- 알고 넘어가는 목록: <minor 요약 or 없음>
 
 ## Affected apps
 - [ ] admin (apps/admin)
 - [ ] client (apps/client)
 - [ ] mobile (apps/mobile)
-- [ ] design-tokens (packages/design-tokens)
-- [ ] design-vue (packages/design-vue)
-- [ ] design-mobile (packages/design-mobile)
+- [ ] design-tokens / design-vue / design-mobile
 
 ## Test Plan
-- [ ] yarn turbo run build
-- [ ] yarn turbo run typecheck
-- [ ] yarn turbo run test
-- [ ] UI 수동 검증 (admin/client dev 서버 띄워서 golden path)
-- [ ] mobile 변경 시: Expo dev server 부팅 + Universal Link 시뮬레이션 (해당 시)
+- [ ] yarn turbo run build (admin/client)
+- [ ] design-vue vitest (DS 변경 시)
+- [ ] mobile typecheck (mobile 변경 시)
+- [ ] UI 수동 검증 — Orca 내장 브라우저로 golden path
 
 ## Deploy impact (paths filter)
-- Changed: apps/<...>/**, packages/design-*/**, ...
-- Triggered workflows:
+- Changed: <경로>
+- Triggered on prod merge:
   - [ ] admin-production.yml
   - [ ] client-production.yml
   - [ ] (mobile EAS — 별도 채널)
 
-## DS version bump (publish 정책 채택 시 적용)
-- [ ] packages/design-tokens/package.json `version` 올림
-- [ ] packages/design-vue/package.json `version` 올림
-- [ ] packages/design-mobile/package.json `version` 올림
-- [ ] 외부 consumer 영향 명시
+## DS version bump
+- [ ] packages/design-*/package.json `version` 올림 (외부 consumer 영향 있으면)
 EOF
 )"
 ```
 
-PR 타이틀은 `feat(admin): ...`, `fix(client): ...`, `feat(design-vue): ...`, `feat(mobile): ...` 등 scope 를 앱/패키지로 표기.
-
-**Keep worktree** (PR review 중 수정 가능하도록). Step 5는 스킵.
+**Keep worktree** (PR 리뷰 중 수정 가능하도록). Step 5 스킵.
 
 #### Option 3: Push As-Is
 
@@ -157,107 +155,99 @@ PR 타이틀은 `feat(admin): ...`, `fix(client): ...`, `feat(design-vue): ...`,
 git push -u origin <feature-branch>
 ```
 
-브랜치만 push. Worktree 유지.
+브랜치만 push, worktree 유지.
 
 #### Option 4: Discard
 
-**확인 프롬프트**:
+**확인 프롬프트** — 무엇이 사라지는지 나열한다:
+
 ```
 This will permanently delete:
 - Branch:   <feature-branch>
-- Commits:  <count> commits
-- Worktree: ~/dev/worktrees/nomacom-frontend/<name>
+- Commits:  <count> commits (미머지)
+- Worktree: <경로>
 
 Type 'discard' to confirm.
 ```
 
-확인 후:
-```bash
-cd ~/dev/current-projects/nomacom-frontend
-git branch -D <feature-branch>
-# worktree 정리는 Step 5
-```
+### Step 4.5: prod 승격 (별도 경로)
 
-### Step 4.5: prod↔dev 동기화 (Option 1에서 `<base>` == `prod`인 경우)
+`prod` 로의 이동은 이 스킬이 자동으로 하지 않는다. **`nomacomfe-prod-push-check` 로 pre-flight 를 마치고 사용자 명시 승인** 후 진행한다.
 
-> **본 step 은 브랜치 분리 후에만 적용**. 현재 main 단독이면 NO-OP.
+- `.claude/hooks/guard-prod-push.sh` 가 `git push ... prod` 와 `gh api ... refs/heads/prod` 쓰기를 **차단**한다 (2026-09-02 부터 실제 동작 — 그 전에는 문서에만 있었다)
+- nomacom 은 `dev` 브랜치가 없으므로 **prod↔dev sync 단계는 존재하지 않는다** (m8 규약을 복사하지 말 것)
 
-**룰**: prod 에 push 할 때 dev/origin dev 도 반드시 동일 커밋으로 맞춤 (m8 패턴 차용).
+### Step 4.7: 칸반 상태 전환 (Orca 워크트리인 경우)
+
+Option 1 머지 완료 시:
 
 ```bash
-cd ~/dev/current-projects/nomacom-frontend
-
-# dev를 prod와 같게
-git checkout dev
-git fetch origin
-git pull --ff-only
-git merge --ff-only prod   # fast-forward만 허용
-git push origin dev
-
-echo "✓ dev synced to prod"
+orca worktree set --worktree <sel> --workspace-status completed --json
 ```
 
-**fast-forward가 안 되면**: dev가 prod보다 앞서 있는 상황 — 사용자에게 보고하고 수동 해결 요청.
+Option 2/3 은 `in-review` 유지 (PR 머지 후 completed). **상태 전환은 이 스킬 관문에서만** — 중간 수동 갱신은 요구하지 않는다.
 
-### Step 5: Cleanup Worktree
+### Step 5: Cleanup — ⛔ 승인 게이트 (브랜치 · worktree · 세션)
 
-Option 1, 4에 한해 자동 정리:
+Option 1, 4 에서만 정리한다. Option 2, 3 은 유지.
+**머지가 끝났다고 자동으로 정리하지 않는다 — 정리는 별도 승인 사항이다.**
 
-```bash
-cd ~/dev/current-projects/nomacom-frontend
-git worktree remove ~/dev/worktrees/nomacom-frontend/<name>
-# 실패 시 force
-# git worktree remove --force ~/dev/worktrees/nomacom-frontend/<name>
-```
+순서 (건너뛰지 말 것):
 
-Option 2, 3에는 worktree 유지.
+1. **미커밋 확인** — worktree 에서 `git status`. 뭐라도 있으면 **먼저 커밋한다**. 정리가 미커밋 파일을 통째로 날리면 reflog·trash 어디에도 남지 않는다
+2. **지울 목록을 그대로 제시하고 승인 요청** — 브랜치명 / 미머지 커밋 수 / worktree 경로 / Orca 세션 유무. "정리할까요?" 로 뭉뚱그리지 말 것
+3. **승인 후에만 실행** — 세션 종료 → worktree 제거 → 브랜치 삭제 순
+
+| 대상         | Orca 워크스페이스                                     | 수동 sibling worktree        |
+| ------------ | ----------------------------------------------------- | ---------------------------- |
+| 세션(터미널) | `orca terminal stop --worktree <sel>`                 | 해당 없음                    |
+| worktree     | `orca worktree rm --worktree <sel>` (git + Orca 동시) | `git worktree remove <path>` |
+| 브랜치       | `git branch -d <branch>`                              | 동일                         |
+
+⛔ **`git branch -D` (대문자) 는 deny 규칙에 막혀 있다.** 머지된 브랜치는 `-d` 로 지워지고, `-d` 가 거부하면 그건 «아직 머지 안 됐다» 는 신호다. 강제 삭제하지 말고 사용자에게 보고한다.
 
 ## Decision Table
 
-| Option | Build/Test | Base push | prod↔dev sync | Keep worktree |
-|---|---|---|---|---|
-| 1. Merge locally | ✓ | ✓ | ✓ (if base=prod) | ✗ |
-| 2. Push + PR | ✓ | — (PR) | — (merge 시 별도) | ✓ |
-| 3. Push as-is | ✓ | ✗ | ✗ | ✓ |
-| 4. Discard | ✗ | ✗ | ✗ | ✗ |
+| Option           | Step 0 게이트 | Build | Base push | Keep worktree       |
+| ---------------- | ------------- | ----- | --------- | ------------------- |
+| 1. Merge locally | ✓             | ✓     | ✓ (main)  | ✗ — **승인 후에만** |
+| 2. Push + PR     | ✓             | ✓     | — (PR)    | ✓                   |
+| 3. Push as-is    | ✓             | ✓     | ✗         | ✓                   |
+| 4. Discard       | —             | ✗     | ✗         | ✗ — **승인 후에만** |
 
 ## Red Flags
 
 **절대 하지 말 것**:
-- 빌드/타입체크 실패 상태로 Option 1~3 진행
-- prod 에 push 하면서 dev sync 스킵 (브랜치 분리 후)
-- `--force` push to prod/main/dev
-- `--no-verify` commit/push
-- fast-forward 아닌 force merge
-- DS 패키지 버전 올리지 않고 외부 consumer 에 영향 있는 변경 publish (publish 정책 채택 후)
+
+- ⛔ **T2+ 트랙을 QA 증거(⑥ blocker/major 0) 없이 머지** — Step 0 에서 중단하고 `nomacomfe-qa-session` 안내
+- ⛔ **구현 세션 자신의 "리뷰 통과" 자기 선언을 QA 증거로 인정**
+- ⛔ **승인 없이 브랜치·worktree·Orca 세션 삭제**
+- ⛔ **미커밋 변경을 남긴 채 정리** — `git status` 확인 없이 `worktree remove` 하면 복구 경로가 없다
+- ⛔ `git branch -D` — deny 규칙. `-d` 가 거부하면 미머지 신호이니 보고
+- 빌드 실패 상태로 Option 1~3 진행
+- `--force` push / `--no-verify` commit
+- **prod 로 직접 머지·push** — `nomacomfe-prod-push-check` 경유 + 사용자 승인이 필수
+- 돌지도 않은 typecheck/test 를 "통과" 라고 보고 (admin/client 는 script 부재로 no-op)
 
 **반드시**:
-- Base branch 명시적 확인
-- 영향 앱 파악 (paths-filter): DS tokens/vue 변경은 admin+client 둘 다, design-mobile 변경은 mobile
-- Worktree cleanup 은 Option 1, 4 에서만
-- DS 변경 시 외부 consumer 영향 검토 (C 트랙 publish 정책 채택 시)
-- mobile 변경은 별도 EAS 채널이라는 점 명시
 
-## Integration
-
-**Pairs with:**
-- `nomacomfe-prod-push-check` — prod push 전 pre-flight 체크
-- `verification-before-completion` — Step 1 전에 증거 수집
-
-**Related:**
-- `.claude/rules/deployment.md` — CodeDeploy 배포 흐름, path filter, 브랜치 전략 결정 가이드
-- `.claude/rules/ssm-paths.md` — SSM 경로 / secret naming (audit 진행 중)
+- Step 0 → Step 1 순서 유지 (게이트가 빌드보다 먼저)
+- Base branch 명시적 확인 (기본 `main`)
+- 영향 앱 파악: DS tokens/vue 변경은 admin+client 둘 다, design-mobile 은 mobile
+- Orca 워크스페이스면 **세션(터미널)도 함께 정리** — `git worktree remove` 만 하면 Orca 카드가 유령으로 남는다
+- DS 변경 시 외부 consumer 영향 + version bump 검토
 
 ## Gotchas
 
-Claude 가 실제로 실수했거나 빠질 수 있는 덫:
+- **Worktree 에서 `git checkout main` 금지**: main 이 메인 클론에서 이미 체크아웃돼 있으면 실패. Option 1 은 반드시 메인 클론으로 이동 후 진행
+- **`git worktree remove` 가 조용히 실패**: uncommitted 파일 또는 worktree 내 실행 중 프로세스(nuxt dev / expo)가 있으면 실패. `--force` 전에 원인 확인
+- **Orca 워크스페이스는 `git worktree remove` 로 반만 지워진다**: `~/orca/workspaces/...` 경로면 Orca 가 메타데이터·터미널·카드를 따로 들고 있다. `orca worktree rm --worktree id:<repoId>::<path>` 가 git + Orca 를 함께 정리
+- **`git worktree remove` 는 ask 규칙**: `.claude/settings.json` 의 `ask` 목록에 있어 승인 프롬프트가 뜬다. 정상이며 우회 대상이 아니다
+- **stale 생성물이 검증을 오염시킨다**: 메인 클론의 `apps/mobile/.expo/types/router.d.ts` 가 4월자로 남아 mobile typecheck 8건이 실패한 적이 있다(2026-09-02). 원 워크트리에서는 통과했다 — 검증 실패 시 산출물 stale 여부부터 의심
+- **mobile 의 EAS 배포는 본 skill 범위 밖**: `apps/mobile/**` 는 `eas build`/`eas update` 별도 채널. CodeDeploy 흐름과 분리
 
-- **Worktree 에서 `git checkout <base>` 금지**: 해당 base 브랜치가 메인 클론에서 이미 체크아웃되어 있으면 worktree 에서 체크아웃 실패. Option 1 은 반드시 `cd ~/dev/current-projects/nomacom-frontend` (메인 클론) 로 이동 후 진행
-- **Base branch 우선순위 — prod 아님**: Step 2 의 `|| ${BASE:-...}` 조합 때문에 세 브랜치 모두에 merge-base 가 있으면 `main` 이 우선 잡힘. 실제 의도가 `dev` 나 `prod` 이면 **사용자 확인 필수** (자동 채택 금지)
-- **`git worktree remove` 가 조용히 실패**: uncommitted 파일 또는 worktree 내 실행 중인 프로세스(dev server)가 있으면 실패. `--force` 쓰기 전에 원인 확인 — 잃을 작업이 있을 수 있음
-- **DS 변경 = 두 앱 재빌드**: `packages/design-tokens/**` 또는 `packages/design-vue/**` 만 바꿔도 admin + client **둘 다** 재배포 트리거. `packages/design-mobile/**` 은 mobile 전용. PR description Affected apps 체크박스 누락하지 말 것
-- **Option 2 의 base=`main`** (publish 정책 채택 후): main 으로 PR merge 되면 `design-system-publish.yml` 이 트리거 — DS 패키지 변경 포함되어 있으면 version bump 선행 필수. 아니면 `--tolerate-republish` 로 no-op 되지만 외부 consumer 가 업데이트 안 받음
-- **prod push hook 차단**: `.claude/hooks/guard-prod-push.sh` 가 `git push *prod*` 차단. Option 1 + base=prod 경로에서 사용자 명시 승인 없으면 push 실패
-- **fast-forward 강제**: Step 4.5 의 `git merge --ff-only prod` 는 의도적. fast-forward 안 되면 (dev 가 앞섬) 자동 해결 시도 금지 — 사용자에게 보고
-- **mobile 의 EAS 배포는 본 skill 범위 밖**: `apps/mobile/**` 변경은 `eas build` + `eas submit` 또는 OTA `eas update` 별도. CodeDeploy 흐름과 분리. 추후 별도 skill 도입 가능
-- **A 트랙 미완 상태에서 prod merge**: 현재 nomacom-frontend prod 파이프라인 미구축 — prod 브랜치 만들고 merge 해도 배포 안 일어남. Option 1 + base=prod 선택 시 "파이프라인 미구축" 경고 + A 트랙 완료 확인 요청
+## Integration
+
+**Pairs with:** `nomacomfe-qa-session` (Step 0 이 확인하는 QA 증거의 생산자) · `nomacomfe-prod-push-check` (prod 승격 전 pre-flight) · `verification-before-completion` (Step 1 전 증거 수집)
+
+**Related:** `.claude/rules/deployment.md` (CodeDeploy 흐름·path filter) · `.claude/rules/design-system-publish.md` (DS bump 정책) · `.claude/rules/dev-process.md` (Tier·QA 규칙 정본)

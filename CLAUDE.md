@@ -90,10 +90,11 @@ yarn workspace @imjohnkoo/design-vue dev   # watch 빌드
 
 monorepo 공유 도메인/운영 룰은 `.claude/rules/` 아래에 분리:
 
+- `.claude/rules/dev-process.md` — **개발 프로세스 v2 정본** (Tier · 게이트 · QA · 환경 제약)
 - `.claude/rules/turbo.md` — Turbo 의존 그래프 + 커맨드 상세
 - `.claude/rules/claude-code-assets.md` — Skills/Hooks 카탈로그 + Vendoring 정책
-- `.claude/rules/deployment.md` — CodeDeploy 배포 흐름, path filter, 브랜치 전략 결정 가이드 **(m8-frontend 패턴 포팅 — target state 청사진, 실 자산은 weekly A 트랙에서 부트스트랩 중)**
-- `.claude/rules/ssm-paths.md` — SSM Parameter Store 경로 + Secret naming 원칙 **(STUB — A-1 audit 결과로 채움)**
+- `.claude/rules/deployment.md` — CodeDeploy 배포 흐름, path filter, 브랜치 전략 **((b) 확정 2026-09-02: `main` 개발·DS publish / `prod` 배포. dev 브랜치 없음)**
+- `.claude/rules/ssm-paths.md` — SSM Parameter Store 경로 + Secret naming 원칙 **(확정)**
 
 - `.claude/rules/design-system-publish.md` — `@imjohnkoo/design-*` GitHub Packages publish 흐름 + 버전 bump 정책 **(C-2 완료 — 0.4.0 첫 publish 성공 2026-08-18)**
 
@@ -109,7 +110,7 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 
 ## Documentation 위치 규칙
 
-> **`docs/` 는 `.gitignore`** (m8-frontend 와 동일). 로컬 전용 internal 문서. 커밋/push 되지 않으며 팀원 간에는 별도로 공유.
+> **`docs/` 는 부분 공유** (2026-09-02 전환). `docs/specs/`(기능정의서)·`docs/plans/`(코딩계획서)는 **git 추적**, 나머지(`proposals/`·`research/` 등)는 `.gitignore` 로컬 전용.
 
 | 문서 종류                      | 위치                                                   | 예시                                            |
 | ------------------------------ | ------------------------------------------------------ | ----------------------------------------------- |
@@ -134,30 +135,54 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 
 ## Hooks & 권한
 
-- `.claude/settings.json` — committed 권한 화이트리스트 + hook 등록 (단, `.claude/*` 자체가 `.gitignore`)
+- `.claude/settings.json` — committed 권한 화이트리스트 + hook 등록. **`.claude/` 는 git 추적** (2026-09-02 전환 — `settings.local.json` 만 제외)
   - **PostToolUse (Edit|Write|MultiEdit)**: prettier 자동 포맷 (.vue/.ts/.tsx/.css 등)
-  - **PreToolUse (Bash)**: prod push / force push / `git reset --hard` / `aws ssm put|delete` 차단
+  - **PreToolUse (Bash)**: **prod push** / `gh api` prod ref 쓰기 / ref force 되감기 / force push / `docker push` / hard reset / `aws ssm put|delete` 차단
+  - ⚠️ 훅 수정 시 **회귀 테스트 필수**: `.claude/hooks/guard-prod-push.test.sh` (37케이스)
+  - ⚠️ 알려진 오탐: 인터프리터 heredoc(`python3 - <<PY`) 본문은 «실행» 으로 간주되므로, 그 안에 차단 대상 명령 **문자열**을 쓰면 막힌다. 문서 편집은 Edit/Write 도구로.
 - 차단된 명령은 `.claude/hooks/guard-prod-push.sh` 참조. 우회 필요 시 사용자 명시 승인 받기.
 
-## 부트스트랩 skill (m8-frontend 패턴 포팅)
+## 개발 프로세스 v2 (2026-09-02 이식)
 
-- `nomacomfe-prod-push-check` — prod push 전 8-phase pre-flight (build/typecheck/tests/paths-filter/migration/DS bump/dev sync/CI 확인)
-- `nomacomfe-finish-branch` — worktree 작업 완료 → 검증 + merge/PR 옵션 + worktree 정리
+spec-driven + maker-checker QA + 관문 접합. **정본은 `.claude/rules/dev-process.md`** — 아래는 요약.
 
-> 두 skill 모두 **A 트랙 (배포 인프라 부트스트랩) 완료 후 본격 의미**. 그 전까지는 Phase 7 (dev sync), Phase 8 (CI 확인) 등이 NO-OP 또는 N/A.
+```
+[Intake] T2 트리거 대조 → [기획] spec LOCK ★1 → [코딩] 증거+커밋 → [QA] ⑥리뷰/⑦walk
+   → [통합] finish-branch Step 0 → [배포] prod-push-check → [사후] 값 대조·교훈 되먹임
+```
+
+- **사람 게이트는 2곳뿐**: spec LOCK ack · 칸반 스윕(하루 1~2회 `in-review` 일괄)
+- **Tier 는 어휘**다. 실제 규칙은 T2 트리거 목록 하나 — 신규 화면/플로우 · 외부연동(Maya·스마트스토어·Cafe24·PG) · Drizzle 스키마 · 과금/PII · 다중 파일 신규 기능 · mobile 신규 화면. **버그픽스는 파일 수 무관 T1**. `design/` 캔버스는 별도 축 `D`
+- **fresh checker 비타협**: 구현 측은 자기 산출물을 인증하지 않는다. 재검은 반드시 새 subagent
+
+| 단계 | 스킬                                                                            |
+| ---- | ------------------------------------------------------------------------------- |
+| 기획 | `nomacomfe-spec-session` (→ `grill-me` / `ask-questions-if-underspecified`)     |
+| 계획 | `nomacomfe-write-plan`                                                          |
+| 착수 | `nomacomfe-worktree-setup` (Orca `--setup run` 전제)                            |
+| QA   | `nomacomfe-qa-session` — ⑥ 적대적 리뷰 / ⑦ acceptance walk (Orca 내장 브라우저) |
+| 통합 | `nomacomfe-finish-branch` — **Step 0 이 Tier·QA 증거를 검사하는 집행 지점**     |
+| 배포 | `nomacomfe-prod-push-check`                                                     |
+
+> ⚠️ **환경 제약이 프로세스를 제한한다**: admin/client 에 테스트 러너가 없고(`turbo run test` 는 no-op) CI 게이트도 0건이다. 그래서 T1 회귀 "테스트" 는 **검증 증거**(커맨드 출력·Orca 스크린샷)로 대체하고 사유를 plan 에 남긴다. 해소는 Phase 3 인프라 트랙(테스트 부트스트랩 → CI → Dockerfile 게이트).
 
 ## 비포함 범위 (후속 작업)
 
-| 항목                                                                                | 상태                                        | 관련 트랙               |
-| ----------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------- |
-| GitHub Actions 워크플로우 (`admin-production.yml`, `client-production.yml`)         | ✅ 구축 완료 (2026-05-19)                   | weekly A-2b             |
-| Dockerfile (`apps/admin/Dockerfile`, `apps/client/Dockerfile`)                      | ✅ 구축 완료 (2026-05-19)                   | weekly A-2a             |
-| AWS CodeDeploy `appspec.yml` + `deploy/scripts/`                                    | ✅ 구축 완료 (2026-05-19)                   | weekly A-2c             |
-| AWS SSM Parameter Store 연동 + 실제 경로 audit                                      | ✅ 확정 (`.claude/rules/ssm-paths.md`)      | weekly A-1 / A-2c       |
-| 원본 GitHub 레포 (`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) | ✅ Archived (2026-05-21)                    | weekly A-5 / C-3        |
-| `@imjohnkoo/design-*` 배포 파이프라인 (GitHub Packages)                             | ✅ 정책 채택 — (b) GH Packages (2026-05-21) | weekly C-1              |
-| `design-system-publish.yml` workflow 포팅                                           | ✅ 완료 — 0.4.0 첫 publish 성공 (2026-08-18) | weekly C-2              |
-| `apps/admin/CLAUDE.md` + `apps/client/CLAUDE.md`                                    | 작성 완료 (2026-05-19)                      | —                       |
-| `apps/mobile/CLAUDE.md`                                                             | ✅ 작성 완료 (2026-08-19)                   | weekly B 트랙           |
-| `apps/*/.claude/rules/` 도메인 분리                                                 | 보류 (도메인 굳을 때)                       | —                       |
-| mobile EAS 배포 흐름 정의                                                           | eas.json 구축 — 실행 (eas init/build) 승인 대기 | weekly B 트랙       |
+| 항목                                                                                | 상태                                            | 관련 트랙         |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------- | ----------------- |
+| GitHub Actions 워크플로우 (`admin-production.yml`, `client-production.yml`)         | ✅ 구축 완료 (2026-05-19)                       | weekly A-2b       |
+| Dockerfile (`apps/admin/Dockerfile`, `apps/client/Dockerfile`)                      | ✅ 구축 완료 (2026-05-19)                       | weekly A-2a       |
+| AWS CodeDeploy `appspec.yml` + `deploy/scripts/`                                    | ✅ 구축 완료 (2026-05-19)                       | weekly A-2c       |
+| AWS SSM Parameter Store 연동 + 실제 경로 audit                                      | ✅ 확정 (`.claude/rules/ssm-paths.md`)          | weekly A-1 / A-2c |
+| 원본 GitHub 레포 (`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) | ✅ Archived (2026-05-21)                        | weekly A-5 / C-3  |
+| `@imjohnkoo/design-*` 배포 파이프라인 (GitHub Packages)                             | ✅ 정책 채택 — (b) GH Packages (2026-05-21)     | weekly C-1        |
+| `design-system-publish.yml` workflow 포팅                                           | ✅ 완료 — 0.4.0 첫 publish 성공 (2026-08-18)    | weekly C-2        |
+| `apps/admin/CLAUDE.md` + `apps/client/CLAUDE.md`                                    | 작성 완료 (2026-05-19)                          | —                 |
+| `apps/mobile/CLAUDE.md`                                                             | ✅ 작성 완료 (2026-08-19)                       | weekly B 트랙     |
+| `apps/*/.claude/rules/` 도메인 분리                                                 | 보류 (도메인 굳을 때)                           | —                 |
+| mobile EAS 배포 흐름 정의                                                           | eas.json 구축 — 실행 (eas init/build) 승인 대기 | weekly B 트랙     |
+| 개발 프로세스 v2 이식 (spec 제도 · QA 게이트 · 스킬 6종)                            | ✅ 완료 (2026-09-02)                            | —                 |
+| **admin/client 테스트 러너** (`test`/`typecheck`/`lint` script 부재 → turbo no-op)  | ❌ 미착수 — **Phase 3 인프라 트랙**             | 프로세스 v2 후속  |
+| **PR/main CI 게이트** (`ci.yml` + lint/typecheck gate + baseline)                   | ❌ 미착수 — 현재 기계 검증 0건                  | 프로세스 v2 후속  |
+| **Dockerfile 배포 게이트** (이미지 빌드 시 typecheck/test)                          | ❌ 미착수 — 배포 경로에 검증 없음               | 프로세스 v2 후속  |
+| admin staging 환경 (prod 가 첫 통합 환경)                                           | 구조적 갭 — 프로세스가 완화만 함                | 프로세스 v2 후속  |
