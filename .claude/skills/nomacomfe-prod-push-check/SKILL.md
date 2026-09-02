@@ -10,8 +10,9 @@ Prevent broken/unsafe prod deployments by running a structured pre-flight check.
 **Announce at start:** "I'm using the nomacomfe-prod-push-check skill to verify prod-push readiness."
 
 > **상태 (2026-09-02)**: 배포 파이프라인은 **가동 중**이다 — prod push 가 `admin-production.yml`/`client-production.yml` 을 트리거해 DockerHub 빌드 → CodeDeploy 로 이어진다.
-> ✅ PR·main 은 `.github/workflows/ci.yml` 이 검사한다 (INF-2, 2026-09-02).
-> ⚠️ 그러나 **`prod` 브랜치에는 CI 가 붙어 있지 않고 Dockerfile 게이트도 없다**(INF-3 미착수). 즉 prod 이동 경로 자체는 여전히 무검증이므로, **이 skill 과 훅이 유일한 사전 방어선**이다. Phase 1~2 를 생략하지 말 것.
+> ✅ 검증 3층 가동 중 (2026-09-02): 로컬(INF-1) · PR·main CI(INF-2, `ci.yml`) · **Dockerfile 게이트(INF-3)**.
+> `prod` 브랜치에 CI 는 없지만, `apps/{admin,client}/Dockerfile` 이 `nuxt build` 직전에 typecheck 게이트를 돌리므로 **타입 에러면 이미지 자체가 안 만들어진다**.
+> ⚠️ 단 게이트는 «타입» 만 본다. **동작이 맞는지는 아무도 안 본다** — Phase 4 의 UI 수동 검증이 여전히 유일한 기능 검증이다. 생략 금지.
 
 ## When to Use
 

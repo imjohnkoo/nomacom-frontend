@@ -224,13 +224,24 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
 </div>
 
 <div class="task-block">
+<h4><span class="pill pill-done">DONE</span>수 09/02 · [P-4] INF-3 — Dockerfile 배포 게이트</h4>
+<ul>
+  <li><span class="marker marker-done">[x]</span> <code>apps/{admin,client}/Dockerfile</code> 에 게이트 삽입 — <code>nuxt build</code> 직전, CI·로컬과 같은 스크립트·같은 기준선</li>
+  <li><span class="marker marker-done">[x]</span> <strong>양방향 검증</strong>: 정상 빌드 성공 / 타입 에러 주입 시 <code>build exit=1</code> + 이미지 미생성</li>
+  <li><span class="marker marker-done">[x]</span> 게이트 비용 ~5.6초 (전체 빌드 3분 34초 대비 무시할 수준)</li>
+  <li><span class="marker marker-done">[x]</span> <strong>검증 3층 완성</strong> — 로컬(INF-1) · PR/main CI(INF-2) · 배포(INF-3)</li>
+</ul>
+<p>⚠️ 게이트는 «타입» 만 본다 — 동작 검증은 여전히 <code>nomacomfe-prod-push-check</code> 의 UI 수동 확인 몫</p>
+</div>
+
+<div class="task-block">
 <h4><span class="pill pill-done">DONE</span>수 09/02 · [P-3] INF-2 — PR/main CI 게이트</h4>
 <ul>
   <li><span class="marker marker-done">[x]</span> <code>.github/workflows/ci.yml</code> — lint job + gate job. <strong>이 리포 최초의 PR 게이트</strong></li>
   <li><span class="marker marker-done">[x]</span> <code>design-mobile</code> 의 <code>echo 'lint placeholder'</code> 제거 — 그대로 CI 를 켜면 «lint 통과» 거짓 보고</li>
   <li><span class="marker marker-done">[x]</span> <code>eslint-plugin-react-hooks</code> 도입 (disable 주석이 "rule not found" 에러가 되고 있었음) + mobile lint script</li>
   <li><span class="marker marker-done">[x]</span> CI 첫 실행 실패 → storybook 이 clean install 에서 깨지는 것 발견 → 데모 워크스페이스 게이트 제외 (INF-5 로 기록)</li>
-  <li><span class="marker marker-blocked">[!]</span> ⚠️ push protection 이 5월 문서의 DockerHub PAT 차단 → 추적 제외 + 히스토리 제거. <strong>PAT 회전 필요 (john)</strong></li>
+  <li><span class="marker marker-blocked">[!]</span> ⚠️ push protection 이 5월 문서의 DockerHub PAT 차단 → 추적 제외 + 히스토리 제거. <strong>PAT 회전 필요 (john)</strong> — 절차서: <code>docs/runbooks/2026-09-02-dockerhub-pat-rotation.html</code>. 소비처 3곳(frontend GHA · backend GHA · SSM 공유) + 구 레포 <code>nomacom-esim-manager-v2</code> 평문 잔존(archived 아님)</li>
 </ul>
 <p><strong>검증</strong>: CI run 33599247862 — lint 9/9 · gate 12/12 success</p>
 </div>
@@ -265,7 +276,7 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
 <p class="meta">본주 나머지 트랙은 john 이 편성한다. 후보:</p>
 <ul>
   <li>✅ <strong>INF-2 완료</strong> — <code>ci.yml</code> 이 PR + main push 에서 lint·test·typecheck 강제 (run 33599247862, PR #2)</li>
-  <li><strong>INF-3</strong> — Dockerfile 배포 게이트 (이미지 빌드 시 typecheck/test)</li>
+  <li>✅ <strong>INF-3 완료</strong> — Dockerfile 게이트 가동. 에러 주입 시 이미지 미생성 확인 (2026-09-02)</li>
   <li><strong>client 타입 에러 7건</strong> — 전부 <code>possibly undefined</code>. 런타임 분기 검토 필요</li>
   <li><strong>C 트랙</strong> — client UI / 상세페이지·썸네일 (D 트랙)</li>
   <li><strong>B 트랙</strong> — mobile EAS 실행 (eas init/build 승인 대기)</li>

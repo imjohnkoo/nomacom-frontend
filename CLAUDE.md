@@ -167,7 +167,8 @@ spec-driven + maker-checker QA + 관문 접합. **정본은 `.claude/rules/dev-p
 
 > ✅ **INF-1(2026-09-02)**: `yarn turbo run lint typecheck test` 가 실제로 돈다 — typecheck 는 `.github/scripts/typecheck-gate.sh` 의 **baseline 초과분만 차단**(admin 0 / client 7), test 는 **157건**(design-vue 129 + client 28), lint 는 에러만 차단.
 > ✅ **INF-2(2026-09-02)**: `.github/workflows/ci.yml` 이 **PR + main push** 에서 lint·test·typecheck(+ 게이트/훅 회귀 테스트)를 강제한다.
-> ⚠️ 남은 갭: **Dockerfile 배포 게이트 없음(INF-3)** · admin staging 부재(INF-4) · `design-storybook-mobile` 빌드 파손(INF-5). **prod 배포 경로에는 여전히 기계 검증이 0** 이므로 `nomacomfe-prod-push-check` 가 필수다.
+> ✅ **INF-3(2026-09-02)**: `apps/{admin,client}/Dockerfile` 이 `nuxt build` 직전에 typecheck 게이트를 돌린다 — **어떤 경로로 배포하든** 타입 에러면 이미지가 만들어지지 않는다(검증: 에러 주입 시 build exit 1).
+> ⚠️ 남은 갭: admin staging 부재(INF-4) · `design-storybook-mobile` 빌드 파손(INF-5). 게이트가 «타입» 만 보므로 동작 검증은 여전히 `nomacomfe-prod-push-check` 의 UI 수동 확인 몫이다.
 
 ## 비포함 범위 (후속 작업)
 
@@ -187,6 +188,6 @@ spec-driven + maker-checker QA + 관문 접합. **정본은 `.claude/rules/dev-p
 | 개발 프로세스 v2 이식 (spec 제도 · QA 게이트 · 스킬 6종)                            | ✅ 완료 (2026-09-02)                            | —                 |
 | **admin/client 검증 러너** (typecheck 게이트 + vitest + lint)                        | ✅ 완료 — INF-1 (2026-09-02)                    | 프로세스 v2 후속  |
 | **PR/main CI 게이트** (`ci.yml` — lint / test / typecheck gate)                      | ✅ 완료 — INF-2 (2026-09-02, run 33599247862)   | 프로세스 v2 후속  |
-| **Dockerfile 배포 게이트** (이미지 빌드 시 typecheck/test)                          | ❌ 미착수 — **배포 경로에 검증 없음** (INF-3)   | 프로세스 v2 후속  |
+| **Dockerfile 배포 게이트** (이미지 빌드 시 typecheck)                               | ✅ 완료 — INF-3 (2026-09-02)                    | 프로세스 v2 후속  |
 | `design-storybook-mobile` 빌드 파손 (clean install 에서 preset 미해결)              | ❌ INF-5 (2026-09-02 발견)                      | 프로세스 v2 후속  |
 | admin staging 환경 (prod 가 첫 통합 환경)                                           | 구조적 갭 — 프로세스가 완화만 함                | 프로세스 v2 후속  |
