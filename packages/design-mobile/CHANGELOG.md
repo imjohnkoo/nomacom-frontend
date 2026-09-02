@@ -27,6 +27,8 @@ mobile 4-step 발급 흐름 (weekly B 트랙) 을 위한 **design-vue 0.4.0 "토
 
 - **`NButton`** — `size: 'xl'` 추가 (minHeight 56 + radius 2xl + font 16/600 CTA — design-vue xl 대응)
 - **`NBottomSheet`** — `footer` prop 추가 (하단 고정 CTA 영역, 상단 divider)
+- **`NAlert`** — 좌측 4px 액센트 바 제거, 배경 + radius 만 남긴 심플 박스로 변경 (john 디자인 피드백 2026-08-23). `colorMap` 의 미사용 `border` 키도 정리
+- **`NInput`** — 웹(react-native-web) 한정 `outlineStyle: 'none'` 주입. RNW 가 `TextInput` 을 `<input>` 으로 렌더해 브라우저 UA 가 포커스 시 `outline: auto` (Chrome/macOS `#E59700` 주황) 를 그리던 것을 차단. 포커스 표시는 컨테이너 보더 (`primary/500`) 가 단독 담당. `Platform.select` 로 web 에만 적용하므로 네이티브 렌더는 불변
 
 ## 0.3.0 — 이전
 
