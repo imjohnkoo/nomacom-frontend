@@ -70,7 +70,7 @@ spec/plan 헤더 **pill** + 주간 SoT(`docs/plans/weekly/current-week.html`) �
 | 제약                                                                                                  | 프로세스 대응                                                                                               |
 | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | **admin/client 테스트는 얇다** (INF-1 로 러너는 붙었다 — client 28건, admin 0건) | 회귀 테스트를 **우선 시도**하고, 대상이 순수 로직이 아니면 검증 증거(커맨드 출력·Orca 스크린샷)로 대체 + plan 에 사유 명시 |
-| **CI 게이트 0건** (PR/main 검사 없음, Dockerfile 게이트도 없음) — INF-2/INF-3 미착수                  | 로컬 검증이 유일한 게이트. `yarn turbo run lint typecheck test` 를 실제로 돌리고 출력으로 보고               |
+| **배포 경로에 게이트 없음** (Dockerfile — INF-3 미착수). PR/main CI 는 INF-2 로 가동 중                | PR·main 은 `.github/workflows/ci.yml` 이 lint·test·typecheck 를 강제한다. 다만 **prod 배포 경로는 무검증**이라 `nomacomfe-prod-push-check` 가 여전히 필수 |
 | **admin 스테이징 없음** — prod 가 첫 통합 환경                                                        | 데이터를 만드는 T3 는 **배포 후 값 대조**가 필수 게이트                                                     |
 | **prod push = 즉시 배포** (무검증)                                                                    | `guard-prod-push.sh` 가 prod push 를 **차단**. m8 은 해제했지만 nomacom 은 유지                             |
 | **dev 브랜치 없음** — main(개발·DS publish) / prod(배포)                                              | PR base 는 항상 `main`. prod↔dev sync 단계는 존재하지 않는다                                                |

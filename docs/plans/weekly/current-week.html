@@ -224,6 +224,18 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
 </div>
 
 <div class="task-block">
+<h4><span class="pill pill-done">DONE</span>수 09/02 · [P-3] INF-2 — PR/main CI 게이트</h4>
+<ul>
+  <li><span class="marker marker-done">[x]</span> <code>.github/workflows/ci.yml</code> — lint job + gate job. <strong>이 리포 최초의 PR 게이트</strong></li>
+  <li><span class="marker marker-done">[x]</span> <code>design-mobile</code> 의 <code>echo 'lint placeholder'</code> 제거 — 그대로 CI 를 켜면 «lint 통과» 거짓 보고</li>
+  <li><span class="marker marker-done">[x]</span> <code>eslint-plugin-react-hooks</code> 도입 (disable 주석이 "rule not found" 에러가 되고 있었음) + mobile lint script</li>
+  <li><span class="marker marker-done">[x]</span> CI 첫 실행 실패 → storybook 이 clean install 에서 깨지는 것 발견 → 데모 워크스페이스 게이트 제외 (INF-5 로 기록)</li>
+  <li><span class="marker marker-blocked">[!]</span> ⚠️ push protection 이 5월 문서의 DockerHub PAT 차단 → 추적 제외 + 히스토리 제거. <strong>PAT 회전 필요 (john)</strong></li>
+</ul>
+<p><strong>검증</strong>: CI run 33599247862 — lint 9/9 · gate 12/12 success</p>
+</div>
+
+<div class="task-block">
 <h4><span class="pill pill-done">DONE</span>수 09/02 · [P-2] INF-1 — admin/client 검증 러너 부트스트랩</h4>
 <ul>
   <li><span class="marker marker-done">[x]</span> admin/client 에 <code>typecheck</code>·<code>test</code>·<code>lint</code> script + vitest 설정</li>
@@ -252,7 +264,7 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
 <h3>다음 트랙 (편성 대기)</h3>
 <p class="meta">본주 나머지 트랙은 john 이 편성한다. 후보:</p>
 <ul>
-  <li><strong>INF-2</strong> — PR/main CI 게이트 (<code>ci.yml</code>). INF-1 로 로컬 게이트는 생겼으나 <strong>CI 는 여전히 0건</strong></li>
+  <li>✅ <strong>INF-2 완료</strong> — <code>ci.yml</code> 이 PR + main push 에서 lint·test·typecheck 강제 (run 33599247862, PR #2)</li>
   <li><strong>INF-3</strong> — Dockerfile 배포 게이트 (이미지 빌드 시 typecheck/test)</li>
   <li><strong>client 타입 에러 7건</strong> — 전부 <code>possibly undefined</code>. 런타임 분기 검토 필요</li>
   <li><strong>C 트랙</strong> — client UI / 상세페이지·썸네일 (D 트랙)</li>
@@ -268,7 +280,7 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
 <p><strong>영향 앱</strong>: admin / client &nbsp;|&nbsp; <strong>배포 영향</strong>: 배포 경로에 기계 검증이 0 — 훅과 스킬이 유일한 방어선</p>
 <ul>
   <li><span class="marker marker-done">[x]</span> <strong>INF-1</strong> — ✅ 완료 (2026-09-02). <code>turbo run lint typecheck test</code> 가 실제로 돈다: typecheck 는 baseline 게이트(admin 0 / client 7), test 157건(design-vue 129 + client 28), lint 에러 0. plan: <code>docs/plans/2026-09-02-inf1-test-runner-bootstrap.md</code></li>
-  <li><span class="marker marker-todo">[ ]</span> <strong>INF-2</strong> — PR/main CI 게이트 0건. m8 의 <code>ci.yml</code> + baseline 방식 gate 이식 후보</li>
+  <li><span class="marker marker-done">[x]</span> <strong>INF-2</strong> — ✅ 완료 (2026-09-02). <code>.github/workflows/ci.yml</code> — lint job + gate job(test 157건 → typecheck 게이트 → 게이트 회귀 → 훅 회귀). plan: <code>docs/plans/2026-09-02-inf2-pr-ci-gate.md</code></li>
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-3</strong> — Dockerfile 안에 typecheck/test 게이트 없음. 이미지가 무조건 빌드됨</li>
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-4</strong> — admin staging 경로 부재. prod 가 첫 통합 환경 (구조적 갭)</li>
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-5</strong> — <code>design-storybook-mobile</code> 빌드가 <code>--mode=skip-build</code> 설치 환경에서 죽는다 (<code>@storybook/react-vite/preset</code> 미해결). 로컬에서는 같은 에러를 내면서도 exit 0 이라 조용히 지나간다. CI 게이트에서 제외해 뒀으니 급하지 않지만, 데모 워크스페이스가 실제로 빌드되는지는 아무도 확인하지 않는 상태 (2026-09-02 CI 첫 실행에서 발견)</li>

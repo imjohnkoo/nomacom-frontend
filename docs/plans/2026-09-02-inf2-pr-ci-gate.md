@@ -101,6 +101,42 @@ INF-1 의 typecheck 는 client 7건이 이미 있어 baseline 이 불가피했�
 - E2E / Playwright
 - CI 에서 `docker build` 검증 — 시간 비용이 크고 배포 workflow 가 이미 함
 
-## 10. as-built
+## 10. as-built (2026-09-02 완료)
 
-(구현 후 기입)
+### 계획 대비 이탈
+
+1. **워크플로 전체를 turbo 명령으로 통일했다.** 처음엔 m8 판을 따라 `yarn workspace <name> run typecheck` 를 썼는데, 그러면 해당 워크스페이스의 `node_modules/.bin` 만 보므로 hoist 된 `tsc`·`eslint` 를 못 찾아 `command not found` 로 죽는다 (design-vue·design-mobile·mobile 전부). turbo 는 루트 `.bin` 을 PATH 에 넣는다.
+2. **명시적 `Build design system` / `Prepare apps` 스텝을 없앴다.** turbo 의 `dependsOn`(`^build`)과 `typecheck-gate.sh` 내부의 `nuxt prepare` 가 이미 그 일을 한다 — 중복이었다.
+3. **CI 첫 실행이 실패했고, 그 실패가 실제 결함을 드러냈다** (run 33598854175, gate fail / lint pass):
+   - `turbo run test` 는 `dependsOn: ["build"]` 라 필터 없이 돌리면 **테스트가 없는 데모 워크스페이스의 build 까지** 끌고 온다
+   - 그중 `design-storybook-mobile` 이 `--mode=skip-build` 설치 환경에서 `@storybook/react-vite/preset` 을 못 찾아 죽었다
+   - ⚠️ **로컬에서는 같은 에러를 내면서도 exit 0** 이라 조용히 지나갔다. clean install 환경에서만 드러나는 종류의 결함이다
+   - → test·typecheck 를 `--filter` 로 좁히고, storybook 부채는 weekly **INF-5** 로 기록
+4. **guard 훅 회귀 테스트도 CI 에 넣었다.** 계획엔 없었지만 판정 로직이 깨지면 prod 차단이 조용히 사라진다 — 게이트 스크립트 테스트와 같은 이유.
+5. **시크릿 사고가 끼어들었다** (계획 밖): PR push 가 GitHub push protection 에 막혔다. `docs/` 를 git 추적으로 전환하면서 5월 문서 2건의 DockerHub PAT 평문이 커밋에 들어갔다. 두 파일을 추적 제외 + 히스토리에서 제거(`filter-branch`)해 해소. **origin 에는 올라간 적이 없어 이 리포발 외부 유출은 없다.**
+
+### 검증 (증거)
+
+**CI run [33599247862](https://github.com/imjohnkoo/nomacom-frontend/actions/runs/33599247862) — conclusion: success**
+
+| job    | 결과                | 내용                                                              |
+| ------ | ------------------- | ----------------------------------------------------------------- |
+| `lint` | ✅ success (9/9)    | 전 워크스페이스 eslint 에러 0                                     |
+| `gate` | ✅ success (12/12)  | test 157건 → typecheck(baseline 게이트) → 게이트 회귀 → 훅 회귀   |
+
+PR: [#2](https://github.com/imjohnkoo/nomacom-frontend/pull/2)
+
+lint 실체화 결과:
+
+| 워크스페이스               | before                        | after                    |
+| -------------------------- | ----------------------------- | ------------------------ |
+| `@imjohnkoo/design-mobile` | `echo 'lint placeholder'`     | 실제 eslint — 에러 0     |
+| `apps/mobile`              | script 없음                   | 실제 eslint — 에러 0     |
+| 전체                       | react-hooks 룰 미정의 4건     | 플러그인 도입 후 0       |
+
+### 남은 것
+
+- **INF-3** Dockerfile 배포 게이트 — 배포 경로에는 여전히 기계 검증이 없다
+- **INF-5** (신규) `design-storybook-mobile` 빌드가 clean install 에서 깨짐
+- PR #2 머지 — 머지 시 `design-system-publish.yml` 이 트리거되어 DS 0.5.0/0.7.0 이 발행된다
+- ⚠️ **DockerHub PAT 회전** — 같은 문서에 「`nomacom-esim-manager-v2` 의 `after_deploy.sh` 에 같은 PAT 평문 커밋」 기록이 있어 그쪽은 실제 노출일 수 있다

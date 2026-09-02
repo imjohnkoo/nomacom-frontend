@@ -1,10 +1,6 @@
 <!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>INF-1 — admin/client 검증 러너 부트스트랩</title>
-    <style>
+<html lang="ko"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>INF-1 — admin/client 검증 러너 부트스트랩</title><style>
       :root {
         --bg: #f7f8fa;
         --card: #ffffff;
@@ -92,21 +88,13 @@
       .phase.p3 { border-left-color: #9ca3af; }
       footer.doc-footer { color: var(--subtle); font-size: 12.5px; text-align: center; margin-top: 32px; }
     
-      h1 { font-size: 24px; margin: 0 0 14px; }
-      hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
-    </style>
-  </head>
-  <body>
-    <div class="wrap">
-      <header class="doc-header">
-        <span class="tag">PLAN · 크로스앱</span>
-        <span class="tag">T1</span>
-        <span class="tag">✅ 완료</span>
-        <span class="tag">2026-09-02</span>
-        <h1>INF-1 — admin/client 검증 러너 부트스트랩</h1>
-        <p class="lede">프로세스 v2 Phase 3 인프라 · 정본은 같은 basename 의 <code>.md</code></p>
-      </header>
-      <section class="card">
+h1 { font-size: 24px; margin: 0 0 14px; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+a { color: var(--accent); }
+</style></head><body><div class="wrap">
+<header class="doc-header"><span class="tag">PLAN · 크로스앱</span><span class="tag">T1</span><span class="tag">✅ 완료</span><span class="tag">2026-09-02</span><h1>INF-1 — admin/client 검증 러너 부트스트랩</h1>
+<p class="lede">정본은 같은 basename 의 <code>.md</code></p></header>
+<section class="card">
 <h1>INF-1 — admin/client 검증 러너 부트스트랩</h1>
 <div class="callout info"><b>Tier</b> <code>T1</code> (다중 파일이지만 사용자 비노출 내부 빌드 변경 — spec 면제 조건 해당) · <b>작성</b> 2026-09-02<br><b>PR base</b> <code>main</code> · <b>영향 앱</b> admin · client (+ root turbo)<br><b>배경 트랙</b> 프로세스 v2 이식의 Phase 3 인프라 (weekly 기술 부채 INF-1)<br><b><code>.html</code></b> 같은 basename 동반 — 둘 중 하나만 고치지 않는다</div>
 <hr>
@@ -154,8 +142,6 @@ yarn turbo run lint         # 실제로 린트</code></pre>
 .github/scripts/typecheck-gate.test.sh → pass=7 fail=0</code></pre>
 <h3>남은 것 (비범위 유지)</h3>
 <ul><li>client 자체 타입 에러 7건 — 전부 <code>possibly undefined</code>. 런타임 분기 검토가 필요해 별도 트랙</li><li><b>INF-2</b> PR/main CI · <b>INF-3</b> Dockerfile 게이트 · <b>INF-4</b> admin staging</li><li>warning 정리 (client 288 / design-vue 813) — 대부분 vue 포맷팅. prettier 훅과 역할이 겹쳐 우선순위 낮음</li></ul>
-      </section>
-      <footer class="doc-footer">nomacom-frontend · docs/plans/2026-09-02-inf1-test-runner-bootstrap.html · 로컬 전용은 아님 (docs/plans 는 git 공유)</footer>
-    </div>
-  </body>
-</html>
+</section>
+<footer class="doc-footer">nomacom-frontend · docs/plans/2026-09-02-inf1-test-runner-bootstrap.html</footer>
+</div></body></html>

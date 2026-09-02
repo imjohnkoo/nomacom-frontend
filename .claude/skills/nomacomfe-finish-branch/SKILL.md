@@ -68,6 +68,8 @@ yarn turbo run lint typecheck test build --filter=... || exit 1
 > - `typecheck` — `.github/scripts/typecheck-gate.sh` 가 **baseline 초과분만 차단** (admin 0 / client 7건 기준선). 신규 타입 에러는 실패한다
 > - `test` — design-vue 129 + client 28 = **157건**. admin 은 아직 0건(`passWithNoTests: true`)
 > - `lint` — 에러만 차단(경고는 통과). prettier 포맷은 PostToolUse 훅이 담당
+>
+> ✅ **INF-2(2026-09-02) 부터 PR·main push 에서 CI 가 같은 검사를 강제한다** (`.github/workflows/ci.yml`). 로컬에서 돌리는 것은 여전히 빠른 피드백을 위해서다 — CI 실패를 기다리지 말 것.
 
 ### Step 2: Determine Base Branch
 
