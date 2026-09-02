@@ -164,7 +164,8 @@ spec-driven + maker-checker QA + 관문 접합. **정본은 `.claude/rules/dev-p
 | 통합 | `nomacomfe-finish-branch` — **Step 0 이 Tier·QA 증거를 검사하는 집행 지점**     |
 | 배포 | `nomacomfe-prod-push-check`                                                     |
 
-> ⚠️ **환경 제약이 프로세스를 제한한다**: admin/client 에 테스트 러너가 없고(`turbo run test` 는 no-op) CI 게이트도 0건이다. 그래서 T1 회귀 "테스트" 는 **검증 증거**(커맨드 출력·Orca 스크린샷)로 대체하고 사유를 plan 에 남긴다. 해소는 Phase 3 인프라 트랙(테스트 부트스트랩 → CI → Dockerfile 게이트).
+> ✅ **INF-1(2026-09-02)**: `yarn turbo run lint typecheck test` 가 실제로 돈다 — typecheck 는 `.github/scripts/typecheck-gate.sh` 의 **baseline 초과분만 차단**(admin 0 / client 7), test 는 **157건**(design-vue 129 + client 28), lint 는 에러만 차단.
+> ⚠️ 남은 갭: **PR/main CI 없음(INF-2)** · **Dockerfile 게이트 없음(INF-3)** · admin staging 부재(INF-4). 배포 경로의 기계 검증은 여전히 0 이므로 로컬 실행이 유일 게이트다.
 
 ## 비포함 범위 (후속 작업)
 
@@ -182,7 +183,7 @@ spec-driven + maker-checker QA + 관문 접합. **정본은 `.claude/rules/dev-p
 | `apps/*/.claude/rules/` 도메인 분리                                                 | 보류 (도메인 굳을 때)                           | —                 |
 | mobile EAS 배포 흐름 정의                                                           | eas.json 구축 — 실행 (eas init/build) 승인 대기 | weekly B 트랙     |
 | 개발 프로세스 v2 이식 (spec 제도 · QA 게이트 · 스킬 6종)                            | ✅ 완료 (2026-09-02)                            | —                 |
-| **admin/client 테스트 러너** (`test`/`typecheck`/`lint` script 부재 → turbo no-op)  | ❌ 미착수 — **Phase 3 인프라 트랙**             | 프로세스 v2 후속  |
+| **admin/client 검증 러너** (typecheck 게이트 + vitest + lint)                        | ✅ 완료 — INF-1 (2026-09-02)                    | 프로세스 v2 후속  |
 | **PR/main CI 게이트** (`ci.yml` + lint/typecheck gate + baseline)                   | ❌ 미착수 — 현재 기계 검증 0건                  | 프로세스 v2 후속  |
 | **Dockerfile 배포 게이트** (이미지 빌드 시 typecheck/test)                          | ❌ 미착수 — 배포 경로에 검증 없음               | 프로세스 v2 후속  |
 | admin staging 환경 (prod 가 첫 통합 환경)                                           | 구조적 갭 — 프로세스가 완화만 함                | 프로세스 v2 후속  |

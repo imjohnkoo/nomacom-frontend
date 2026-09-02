@@ -31,16 +31,15 @@ export interface NPopoverProps {
   side?: 'top' | 'bottom' | 'left' | 'right'
   /** Preferred alignment */
   align?: 'start' | 'center' | 'end'
-  /** Controlled open state */
-  open?: boolean
 }
 
 withDefaults(defineProps<NPopoverProps>(), {
   side: 'bottom',
   align: 'center',
-  open: undefined,
 })
 
+// `open` 은 defineModel 이 prop + update:open emit 을 함께 선언한다.
+// NPopoverProps 에 중복 선언하면 vue/no-dupe-keys 충돌이 난다 (외부 사용법은 동일).
 const open = defineModel<boolean>('open', { default: false })
 </script>
 

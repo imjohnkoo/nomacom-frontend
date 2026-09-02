@@ -16,7 +16,11 @@
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "bash ../../.github/scripts/typecheck-gate.sh client",
+    "lint": "eslint .",
+    "typecheck:raw": "nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.json",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -41,6 +45,7 @@
     "@tailwindcss/vite": "^4",
     "drizzle-kit": "^0.31.8",
     "tailwindcss": "^4",
-    "vitest": "^4.1.6"
+    "vitest": "^4.1.6",
+    "vue-tsc": "^2.2.0"
   }
 }

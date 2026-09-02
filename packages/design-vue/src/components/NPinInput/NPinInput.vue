@@ -9,7 +9,7 @@ export interface NPinInputProps {
   placeholder?: string
 }
 
-const props = withDefaults(defineProps<NPinInputProps>(), {
+withDefaults(defineProps<NPinInputProps>(), {
   modelValue: () => [],
   length: 4,
   type: 'text',

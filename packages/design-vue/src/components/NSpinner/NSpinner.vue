@@ -12,7 +12,7 @@
 import type { NSize, NColor } from '../../types/common'
 
 export interface NSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: NSize
   color?: NColor
   label?: string
 }

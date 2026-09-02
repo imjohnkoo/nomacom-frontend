@@ -15,7 +15,7 @@
 import type { NOrientation } from '../../types/common'
 
 export interface NFieldGroupProps {
-  orientation?: 'horizontal' | 'vertical'
+  orientation?: NOrientation
   gap?: 'sm' | 'md' | 'lg'
 }
 

@@ -95,7 +95,7 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
-> ⚠️ **`yarn turbo run typecheck` 는 admin/client 에서 no-op 이다** — 두 앱에 해당 script 가 없다. "타입체크 통과" 라고 보고하지 말 것. 실제로 타입을 보는 곳은 `packages/design-vue`(vite-plugin-dts)와 `apps/mobile`(`tsc --noEmit`) 뿐이다. 이 갭의 해소는 Phase 3 인프라 트랙(`.claude/rules/dev-process.md`).
+> ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 7건). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
 
 ### Phase 4 — 영향 앱 테스트 + UI 검증
 
@@ -106,7 +106,7 @@ yarn workspace @imjohnkoo/design-vue run test --run   # DS 변경 시 (17 files 
 yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 ```
 
-> ⚠️ **admin/client 에는 테스트가 없다** (`turbo run test` no-op). 따라서 **UI 수동 검증이 사실상 유일한 기능 검증**이다 — 생략 금지.
+> ⚠️ client 는 순수 유닛 28건(spark-mapping·verification), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
 
 `verification-before-completion` 의 iron law 적용 — 결과를 직접 확인.
 

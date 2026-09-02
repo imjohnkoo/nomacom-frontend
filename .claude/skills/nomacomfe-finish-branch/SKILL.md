@@ -32,7 +32,8 @@ Guide completion of worktree development. **Gate → Verify → options → exec
    - **없으면 Step 3 옵션 제시 전 중단** — "QA 미수행. `nomacomfe-qa-session` 을 먼저 진행할까요?"
 3. **T1** — 종결 diff 에 **회귀 증거** 동봉 여부 확인:
    - `packages/design-vue` 변경이면 vitest 회귀 테스트
-   - `apps/*` 변경이면 검증 커맨드 출력 or Orca 스크린샷 (테스트 러너 부재 — `nomacomfe-write-plan` 의 테스트 환경 제약 참조)
+   - `apps/client` 변경이면 순수 로직은 vitest 회귀 테스트, 화면·환경 의존이면 검증 커맨드 출력 or Orca 스크린샷
+   - `apps/admin` 은 아직 테스트 0건 — 검증 증거로 대체하되 로직이 들어오는 트랙부터는 테스트 동봉
    - 둘 다 없으면 plan 에 불가 사유 1줄이 있는지 확인. 그것도 없으면 중단하고 확인 요청
 4. **D 트랙** (`design/` 캔버스) — 오너 승인 여부 + **슬라이더 런타임 값이 아니라 소스 기본값에 반영됐는지** 확인
 5. **T0** — 검사 없음, Step 1 로
@@ -56,14 +57,17 @@ git diff --name-only $(git merge-base HEAD main)...HEAD
 | `deploy/**`, `appspec.yml`, `.github/workflows/**`                     | admin + client     |
 
 ```bash
-yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
-yarn workspace @imjohnkoo/design-vue run test --run    # DS 변경 시
-yarn workspace nomacom-mobile run typecheck            # mobile 변경 시
+yarn turbo run lint typecheck test build --filter=... || exit 1
 ```
 
 **하나라도 fail 이면 stop** — 실패 출력 보여주고 진행 금지.
 
-> ⚠️ `yarn turbo run typecheck` / `test` 는 admin/client 에 script 가 없어 **no-op 이다**. "타입체크 통과" 라고 보고하지 말 것 — 실제로 돈 것만 보고한다.
+> ✅ **2026-09-02 (INF-1) 부터 `typecheck`·`test`·`lint` 가 실제로 돈다.** 이전에는 admin/client 에
+> script 가 없어 no-op 이었다. 현재 실체:
+>
+> - `typecheck` — `.github/scripts/typecheck-gate.sh` 가 **baseline 초과분만 차단** (admin 0 / client 7건 기준선). 신규 타입 에러는 실패한다
+> - `test` — design-vue 129 + client 28 = **157건**. admin 은 아직 0건(`passWithNoTests: true`)
+> - `lint` — 에러만 차단(경고는 통과). prettier 포맷은 PostToolUse 훅이 담당
 
 ### Step 2: Determine Base Branch
 
@@ -227,7 +231,7 @@ Option 1, 4 에서만 정리한다. Option 2, 3 은 유지.
 - 빌드 실패 상태로 Option 1~3 진행
 - `--force` push / `--no-verify` commit
 - **prod 로 직접 머지·push** — `nomacomfe-prod-push-check` 경유 + 사용자 승인이 필수
-- 돌지도 않은 typecheck/test 를 "통과" 라고 보고 (admin/client 는 script 부재로 no-op)
+- 실제로 돌리지 않은 검사를 "통과" 라고 보고 — 출력 원문을 근거로만 보고한다
 
 **반드시**:
 

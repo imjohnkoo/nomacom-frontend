@@ -9,8 +9,8 @@ export default defineConfig({
     environment: 'node',
     include: ['server/**/*.{test,spec}.ts', 'app/**/*.{test,spec}.ts'],
     exclude: ['**/node_modules/**', '**/.nuxt/**', '**/.output/**'],
-    // client 는 spark-mapping / verification 28건이 이미 있다.
-    // 0건이 되면 «테스트가 사라진 것» 이므로 실패시킨다.
-    passWithNoTests: false,
+    // admin 은 아직 server/api/health 뿐이라 테스트가 없다 (2026-09-02 «깡통화» 상태).
+    // 실패시키는 대신 통과시키되, 도메인 로직이 들어오는 순간 자동으로 잡히도록 include 는 열어 둔다.
+    passWithNoTests: true,
   },
 })
