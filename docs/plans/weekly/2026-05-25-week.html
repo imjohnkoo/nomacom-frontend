@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>주간 업무 계획 (2026-05-25 ~ 2026-05-31)</title>
+<style>
+  :root {
+    --fg: #1f2328;
+    --muted: #59636e;
+    --bg: #ffffff;
+    --panel: #f6f8fa;
+    --border: #d1d9e0;
+    --accent: #0969da;
+    --done: #1a7f37;
+    --inprogress: #9a6700;
+    --blocked: #cf222e;
+    --cancelled: #59636e;
+    --hotfix: #cf222e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+                 "Noto Sans KR", "Malgun Gothic", Roboto, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+  }
+  h1 { font-size: 28px; margin: 0 0 16px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+  h2 { font-size: 22px; margin: 36px 0 14px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 18px; margin: 28px 0 12px; }
+  h4 { font-size: 16px; margin: 22px 0 10px; }
+  blockquote {
+    margin: 12px 0;
+    padding: 10px 14px;
+    border-left: 4px solid var(--accent);
+    background: var(--panel);
+    color: var(--muted);
+    border-radius: 4px;
+  }
+  blockquote p { margin: 4px 0; }
+  code {
+    background: var(--panel);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--panel); font-weight: 600; }
+  td.center, th.center { text-align: center; }
+  ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+  .pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: 6px;
+    vertical-align: 1px;
+  }
+  .pill-done { background: #dafbe1; color: var(--done); }
+  .pill-progress { background: #fff8c5; color: var(--inprogress); }
+  .pill-blocked { background: #ffebe9; color: var(--blocked); }
+  .pill-cancelled { background: #eaeef2; color: var(--cancelled); }
+  .pill-todo { background: #ddf4ff; color: var(--accent); }
+  .pill-hotfix { background: #ffebe9; color: var(--hotfix); }
+  .marker {
+    display: inline-block;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    font-weight: 700;
+    white-space: nowrap;
+    margin-right: 4px;
+  }
+  .marker-done { color: var(--done); }
+  .marker-todo { color: var(--accent); }
+  .marker-progress { color: var(--inprogress); }
+  .marker-blocked { color: var(--blocked); }
+  .marker-cancelled { color: var(--cancelled); }
+  .section-hotfix h3 { color: var(--hotfix); }
+  .task-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .task-block h4 { margin-top: 0; }
+  .meta { color: var(--muted); font-size: 13px; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .footer-note { color: var(--muted); font-size: 13px; margin-top: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>주간 업무 계획 (2026-05-25 ~ 2026-05-31)</h1>
+
+<blockquote>
+  <p><strong>운영 규칙</strong>: <code>docs/plans/weekly/current-week.html</code> 단일 소스. 주말 review 후 <code>2026-05-25-week.html</code> 로 archive.</p>
+  <p><code>docs/</code> 는 <code>.gitignore</code> — 이 파일은 로컬 전용, 커밋/push 되지 않음.</p>
+  <p><strong>레포 맥락</strong>: nomacom-frontend = Yarn4 + Turborepo monorepo (admin / client / mobile / design-system). 위임 가능 시 Morty(프론트) / Noob Noob(모바일). 인프라/CI/CD/배포는 John 직접.</p>
+  <p><strong>시간관리 (default)</strong>: 평일 09-13 m8 / <strong>평일 14-15 nomacom-frontend 1h 슬롯</strong> / 토 09-13 nomacom 사업 사수 / 일 09:00-11:30 점검 + B 트랙 / 18:00 하드 캡.</p>
+</blockquote>
+
+<h2>상태 마커</h2>
+<table>
+  <thead>
+    <tr><th>마커</th><th>의미</th><th>Dashboard 집계</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="marker marker-todo">[ ]</span></td><td>TODO</td><td>분모</td></tr>
+    <tr><td><span class="marker marker-done">[x]</span></td><td>DONE</td><td>분자 + 분모</td></tr>
+    <tr><td><span class="marker marker-progress">[~]</span></td><td>IN PROGRESS</td><td>분모 (진행 중 표시)</td></tr>
+    <tr><td><span class="marker marker-blocked">[!]</span></td><td>BLOCKED</td><td>분모 (블로커 표시)</td></tr>
+    <tr><td><span class="marker marker-cancelled">[-]</span></td><td>CANCELLED / MOVED</td><td>집계 제외</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>📊 Progress Dashboard</h2>
+<blockquote>
+  <p>마지막 갱신: 2026-05-25 일 (<strong>주 시작 시점</strong>. PR1 prod 진입 후 4-hotfix 사이클 모두 흡수 완료 — client/admin 둘 다 prod 동작 검증. 본주 핵심: G 트랙 (PR1 prod hardening) + B 트랙 (mobile MVP 이월) + H 트랙 (Phase 2 일본 SKU 신호 대기))</p>
+</blockquote>
+
+<table>
+  <thead>
+    <tr>
+      <th>Section</th>
+      <th class="center">Total</th>
+      <th class="center">Done</th>
+      <th class="center">In Progress</th>
+      <th class="center">Blocked</th>
+      <th class="center">Cancelled</th>
+      <th class="center">Rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>🚨 HOTFIX</td><td class="center">4</td><td class="center">4</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">100%</td></tr>
+    <tr><td>🔒 G 트랙 (PR1 prod hardening)</td><td class="center">4</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0%</td></tr>
+    <tr><td>📱 B 트랙 (mobile MVP, 이월)</td><td class="center">3</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0%</td></tr>
+    <tr><td>📥 D 트랙 (사업 INBOX)</td><td class="center">~</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td></tr>
+    <tr><td>🇯🇵 H 트랙 (Phase 2 일본 SKU prep, 사업 신호 대기)</td><td class="center">~</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">—</td></tr>
+    <tr><td>🔧 기술 부채</td><td class="center">2</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">0%</td></tr>
+    <tr><td>📥 INBOX</td><td class="center">5</td><td class="center">0</td><td class="center">—</td><td class="center">—</td><td class="center">—</td><td class="center">0%</td></tr>
+    <tr style="font-weight:700; background:var(--panel);">
+      <td>트랙+HOTFIX</td><td class="center">11</td><td class="center">4</td><td class="center">0</td><td class="center">0</td><td class="center">0</td><td class="center">36%</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2>📌 Today's Pins (매일 아침 갱신)</h2>
+<ul>
+  <li><strong>2026-05-25 일 — PR1 merge + prod 종단 4-hotfix 사이클 ✅ + 권한 완화</strong>:
+    <ul>
+      <li>🚀 <strong>PR1 머지 → prod ff push 완료</strong> — gh PR #1 merge (<code>f171fcc</code>) + main → prod fast-forward → client/admin workflow 자동 트리거 둘 다 success. CloudFront <code>d3un5i1lmp1eem.cloudfront.net</code> 의 <code>/verify/&lt;orderId&gt;</code> SSR 200 + <code>/api/v1/verify</code> POST 가 실 DB 다녀와 <code>{"verified":false}</code> 반환까지 종단 동작</li>
+      <li>🔧 <strong>HOTFIX × 4 (모두 prod 적용)</strong> — (1) <code>d20a385</code> Nuxt runtimeConfig 빌드시점 capture 게쳐 (server-only secret 은 <code>process.env</code> 직접 읽기로 전환) (2) SSM <code>/nomacom/client/DATABASE_URL</code> placeholder → 실 RDS endpoint + URL-encoded password (3) <code>babf55c</code> RDS SSL 강제 (<code>NODE_ENV === 'production'</code> 일 때만 <code>ssl: 'require'</code>) (4) <code>350713b</code> Drizzle schema 를 prod DB (TypeORM 기본 camelCase) 에 맞춤. <strong>HOTFIX 섹션 참조</strong></li>
+      <li>🔓 <strong>권한 완화</strong> — <code>.claude/settings.json</code> + <code>guard-prod-push.sh</code> 에서 main/prod push + ssm put 차단 제거. 유지: force push / docker push / git reset --hard / aws ssm delete</li>
+      <li>📦 <strong>southern-eu marketing WIP commit</strong> (<code>1ecbd66</code>) — design/ 디렉토리 (deploy paths 밖이라 무영향)</li>
+      <li>📥 <strong>INBOX 신규 1건</strong>: activate.post.ts 동시쓰기 transaction 정책 (Maya 단가 기준 결정 게이트)</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<section class="section-hotfix">
+<h2>🚨 HOTFIX</h2>
+<p>시급 이슈: prod 장애 / 데이터 오류 / 일정 블로커. 트랙보다 우선 처리. 해결 후에도 남기고 <code>[x]</code> + 해결 커밋 링크 추가.</p>
+<ul>
+  <li><span class="marker marker-done">[x]</span> <strong>(2026-05-25 일) HOTFIX-1: Nuxt runtimeConfig 빌드시점 capture 게쳐</strong> — PR1 머지 후 prod 첫 POST 호출 시 <code>useDB()</code> 가 <code>DATABASE_URL is not configured</code> throw → 500. 원인: Nuxt 4 의 <code>runtimeConfig.databaseUrl = process.env.X</code> 는 Docker 빌드 시점에 evaluated → undefined baked-in. 런타임 override 는 <code>NUXT_</code> prefix env 만 인식 → SSM 의 plain <code>DATABASE_URL</code> 은 무시됨. <strong>수정</strong>: server-only secret 은 <code>process.env.X</code> 직접 읽기로 전환 (<code>server/db/index.ts</code>, <code>server/utils/maya-api.ts</code>, <code>server/middleware/cors.ts</code>) + <code>nuxt.config.ts</code> 의 server-only 키 제거. commit <code>d20a385</code></li>
+  <li><span class="marker marker-done">[x]</span> <strong>(2026-05-25 일) HOTFIX-2: SSM <code>/nomacom/client/DATABASE_URL</code> placeholder</strong> — A-2c 시점 stub 값 (<code>postgres://postgres:postgres@localhost:5432/esimmany</code>) 그대로. <strong>수정</strong>: 실 RDS endpoint + URL-encoded password 로 <code>aws ssm put-parameter --overwrite</code> (v4). backend NestJS 의 분리 키 (<code>DB_HOST</code>/<code>DB_PORT</code>/<code>DB_USERNAME</code>/<code>DB_PASSWORD</code>/<code>DB_DATABASE</code>) 에서 조립</li>
+  <li><span class="marker marker-done">[x]</span> <strong>(2026-05-25 일) HOTFIX-3: RDS SSL 강제 미적용</strong> — postgres-js 기본 plain text → RDS <code>FATAL: no pg_hba.conf entry ... no encryption</code> 거부. <strong>수정</strong>: <code>NODE_ENV === 'production'</code> 일 때만 <code>postgres(url, { ssl: 'require' })</code>. 로컬 dev postgres 는 plain 유지. commit <code>babf55c</code></li>
+  <li><span class="marker marker-done">[x]</span> <strong>(2026-05-25 일) HOTFIX-4: Drizzle schema vs prod DB column naming 불일치</strong> — PR1 schema 는 snake_case 가정, 실 prod DB 는 NestJS backend (TypeORM, <code>@Column</code> name 미지정) → 모든 컬럼 camelCase + FK 는 <code>{relation}{ReferencedPK}</code> (<code>orderProductOrderId</code> 등). <strong>수정</strong>: <code>server/db/schema.ts</code> 124줄/137줄 교체 — JS property 명 유지 (verify/activate 코드 변경 없음). backend 와 같은 DB 공유라 컬럼 rename 마이그레이션 대신 frontend schema 만 정합. commit <code>350713b</code></li>
+</ul>
+<p><strong>예방 액션</strong>: → G 트랙으로 흡수 (PR1 plan template 에 prod POST 종단 검증 항목 / Dockerfile GIT_COMMIT 주입)</p>
+</section>
+
+<hr>
+
+<h2>🎯 업무 트랙 (2026-05-25 월 ~ 05-31 일)</h2>
+<p><strong>시간 배분</strong>: 평일 14-15 = nomacom-frontend 1h × 5 + 일 09:00-11:30 (점검 + 잔여 트랙).<br>
+<strong>m8 슬롯</strong>: 평일 09-13 (G 트랙 = LGCNS). 14-15 끝나면 m8 복귀 또는 자유.<br>
+<strong>오프 슬롯</strong>: 토 5/30 09-13 = nomacom 사업 사수 (frontend 손대지 않음). 18:00 하드 캡.<br>
+<strong>위임 정책</strong>: 본주 전 트랙 John 직접. activate transaction 도입 시 Morty 검토 가능 (스펙 명확하면).</p>
+
+<hr>
+
+<h3>🔒 G 트랙 — PR1 prod hardening (client production 안정화)</h3>
+<p><strong>배경/전제</strong>: PR1 머지 후 4-hotfix 로 종단 동작 검증은 됐지만, prod 운영 신뢰도를 위한 follow-up 4건. activate flow 의 동시쓰기 / observability / partial-write 방지가 핵심.<br>
+<strong>Owner</strong>: John 직접 &nbsp;|&nbsp; <strong>영향 앱</strong>: client (admin/mobile 무관) &nbsp;|&nbsp; <strong>예상 총 소요</strong>: ~4-6h</p>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[G-1] activate.post.ts 동시쓰기 transaction 정책 결정 + 적용</h4>
+<p class="meta"><strong>Slot</strong>: 화 5/26 14-15 (결정) / 수 5/27 14-15 (구현, 도입 시) &nbsp;|&nbsp; <strong>예상</strong>: 30min (결정) + 2h (Tier 2+3 도입 시)</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> Maya createEsim 1건 단가 확인 (사업측 또는 Maya 인보이스). 작으면 (수백 원) Tier 1 만 / 크면 (수만 원) Tier 2+3 도입</li>
+  <li><span class="marker marker-todo">[ ]</span> Maya B2B tag 중복 호출 동작 확인 (support 문의 또는 staging 테스트) — same tag 로 createEsim 2회 호출 시 같은 ICCID 반환하는지</li>
+  <li><span class="marker marker-todo">[ ]</span> (Tier 2+3 도입 시) Maya 호출 + DB INSERT 분리 → <code>db.transaction()</code> 으로 묶기 + 첫 줄에 <code>pg_advisory_xact_lock('activate:' || productOrderId)</code></li>
+  <li><span class="marker marker-todo">[ ]</span> backend 합의 문서화 — esim INSERT 는 frontend 단독 owner, backend 는 networkStatus/serviceStatus UPDATE 만</li>
+</ul>
+<p><strong>완료 조건</strong>: 결정 메모 (skip OR Tier 도입) + (도입 시) commit + prod 적용 + same-orderId 동시 호출 staging 테스트 통과</p>
+<p><strong>리스크</strong>: Maya 가 idempotent 안 할 경우 Tier 1 만으로 부족 — Tier 2+3 필수화. 단가가 무료/저렴이면 현 상태 유지도 합리적</p>
+</div>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[G-2] Dockerfile <code>GIT_COMMIT</code> ARG 주입 + /api/health 에 표시</h4>
+<p class="meta"><strong>Slot</strong>: 월 5/25 14-15 (당겨도 됨) &nbsp;|&nbsp; <strong>예상</strong>: 30min</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <code>apps/client/Dockerfile</code> + <code>apps/admin/Dockerfile</code> 에 <code>ARG GIT_COMMIT</code> + <code>ENV GIT_COMMIT=$GIT_COMMIT</code></li>
+  <li><span class="marker marker-todo">[ ]</span> <code>.github/workflows/{client,admin}-production.yml</code> 의 docker build step 에 <code>build-args: GIT_COMMIT=${{ github.sha }}</code> 추가</li>
+  <li><span class="marker marker-todo">[ ]</span> prod 배포 후 <code>curl .../api/health</code> 에서 <code>commit: "&lt;sha&gt;"</code> 확인 (현재 "unknown")</li>
+</ul>
+<p><strong>완료 조건</strong>: 두 앱 health 가 실 commit SHA 반환. 후속 HOTFIX 진단 시 "어떤 commit 이 떠 있는지" 즉시 확인 가능</p>
+<p><strong>리스크</strong>: 없음. Dockerfile 변경 → 다음 배포 사이클부터 적용</p>
+</div>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[G-3] PR1 plan template 에 "prod 첫 POST 종단 검증" 항목 추가</h4>
+<p class="meta"><strong>Slot</strong>: 일 5/31 09-09:30 (Weekly Review 직전) &nbsp;|&nbsp; <strong>예상</strong>: 15min</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <code>docs/plans/&lt;plan-template&gt;.md</code> 의 "검증" 섹션에 "prod 첫 POST 호출 (READ/WRITE 각 1건) 200 응답 확인" 강제 항목 추가</li>
+  <li><span class="marker marker-todo">[ ]</span> <code>nomacomfe-prod-push-check</code> skill 의 Phase 4 (영향 앱 테스트 + UI 검증) 에 같은 항목 명시</li>
+</ul>
+<p><strong>완료 조건</strong>: 다음 PR plan 작성 시 자동으로 종단 검증 항목 포함됨</p>
+<p><strong>리스크</strong>: 없음. 메타-개선</p>
+</div>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[G-4] activate.post.ts orphan sweeper 검토 (별 PR 후보)</h4>
+<p class="meta"><strong>Slot</strong>: G-1 결정 후 별도 — 본주 미수행 가능 &nbsp;|&nbsp; <strong>예상</strong>: 결정 30min + (도입 시) 2-3h</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> Maya 의 list-esims API 가 있는지 확인. tag 로 검색 가능한지</li>
+  <li><span class="marker marker-todo">[ ]</span> 결정: cron job (Nitro scheduled task or 별 워커) vs admin 수동 도구 vs 없이 운영 (희소 orphan 만 발생 시 수동 정리)</li>
+  <li><span class="marker marker-todo">[ ]</span> (도입 시) 별 PR 로 분리 — 본 G 트랙 범위 밖</li>
+</ul>
+<p><strong>완료 조건</strong>: 결정 메모. 도입 PR 은 다음 주 이후 옵션</p>
+<p><strong>리스크</strong>: Maya 가 list/delete API 미지원 시 sweeper 불가능 → 운영 정책 (Slack alert + 수동 처리) 으로 우회</p>
+</div>
+
+<hr>
+
+<h3>📱 B 트랙 — 모바일 앱 부트스트랩 (이월, John 직접)</h3>
+<p><strong>배경/전제</strong>: 지난주 (5/18~5/24) 이월. mobile MVP 스펙 정의 + 차주 코드 시작 시드. PR1 에서 mobile 쪽 verify demo (idle/loading/success/error 상태머신) 는 셋업 완료 — 본 트랙은 그 위에 실 흐름 + EAS 빌드 정착.<br>
+<strong>Owner</strong>: John 직접 (위임 보류 — 도메인 정착 전) &nbsp;|&nbsp; <strong>영향 앱</strong>: mobile only (apps/client 의 server 엔드포인트 호출, backend 추가 작업 없음) &nbsp;|&nbsp; <strong>예상 총 소요</strong>: ~3h</p>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[B-1] mobile MVP 스펙 문서 작성</h4>
+<p class="meta"><strong>Slot</strong>: 일 5/31 09:30-10:30 &nbsp;|&nbsp; <strong>예상</strong>: 1h</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <code>docs/plans/mobile/2026-05-31-mvp-spec.md</code> + <code>.html</code> 작성 — 4-step 흐름 mobile 적용 + Universal Link (<code>esimsetup.apple.com</code>) 설치 흐름 + push notification 정책 (있다면)</li>
+  <li><span class="marker marker-todo">[ ]</span> 화면 단위 정의 (verify / details / select-date / view + 홈 / 주문 list 등 mobile-only 화면)</li>
+  <li><span class="marker marker-todo">[ ]</span> apps/client 의 Nitro 엔드포인트와의 매핑 (이미 PR1 에서 verify 는 demo 됨)</li>
+</ul>
+<p><strong>완료 조건</strong>: 차주 코드 시작 가능한 시드 문서</p>
+<p><strong>리스크</strong>: iOS Universal Link 의 ESIM 설치 흐름 검증은 실기기 필요 — 본주 범위 밖</p>
+</div>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[B-2] EAS 빌드 흐름 정착 (dev/preview/prod 채널 결정)</h4>
+<p class="meta"><strong>Slot</strong>: 일 5/31 10:30-11:00 &nbsp;|&nbsp; <strong>예상</strong>: 30min (결정 only, 빌드는 차주)</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> EAS Secrets 등록 정책 결정 (<code>EXPO_PUBLIC_API_BASE_URL</code> 등 환경별)</li>
+  <li><span class="marker marker-todo">[ ]</span> dev / preview / prod 채널의 OTA update 정책 결정</li>
+  <li><span class="marker marker-todo">[ ]</span> Apple Developer / Google Play 계정 상태 확인 (있다면)</li>
+</ul>
+<p><strong>완료 조건</strong>: 결정 메모. 실 빌드 dispatch 는 차주</p>
+<p><strong>리스크</strong>: Apple 계정 미보유 시 iOS TestFlight 자체 불가 — 별 의사결정 필요</p>
+</div>
+
+<div class="task-block">
+<h4><span class="pill pill-todo">TODO</span>[B-3] <code>apps/mobile/CLAUDE.md</code> 작성</h4>
+<p class="meta"><strong>Slot</strong>: 일 5/31 11:00-11:30 &nbsp;|&nbsp; <strong>예상</strong>: 30min</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> 루트 <code>CLAUDE.md</code> 의 "모바일 앱 노트" 섹션을 apps/mobile/CLAUDE.md 로 이관 + 확장 (Universal Link, Maya client 호출 패턴, EAS 채널 등)</li>
+  <li><span class="marker marker-todo">[ ]</span> 루트 CLAUDE.md 에서 해당 섹션은 "apps/mobile/CLAUDE.md 참조" 한 줄로 축약</li>
+</ul>
+<p><strong>완료 조건</strong>: mobile 컨텍스트가 apps/mobile/ 안에서 self-contained</p>
+<p><strong>리스크</strong>: 없음</p>
+</div>
+
+<hr>
+
+<h3>📥 D 트랙 — Phase 2 일본 SKU admin 지원 (사업 신호 대기)</h3>
+<p><strong>배경</strong>: 사업측 Phase 2 진입 신호 (일본 7-day SKU 시판) 가 본주 도착하면 admin UI 작업 트리거. 신호 없으면 본주 미수행. 신호 발생 시 즉시 D-1~D-3 정의.</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> 사업측 신호 모니터링 (Notion / Slack)</li>
+  <li><span class="marker marker-todo">[ ]</span> 신호 발생 시 admin 인증 도입 (INBOX 의 admin 인증 부재 항목 트리거) → 별 PR</li>
+</ul>
+
+<hr>
+
+<h3>🇯🇵 H 트랙 — Phase 2 prep (옵션, 신호 발생 시)</h3>
+<p>D 트랙과 동일한 트리거. 본주는 placeholder.</p>
+
+<hr>
+
+<h2>🔧 기술 부채</h2>
+<p>이번 주 확정 업무는 아니지만 잊지 않고 주기적으로 재평가할 항목.</p>
+
+<h3>Peer Dependency 경고 (CLAUDE.md 명시)</h3>
+<p><strong>영향 앱</strong>: 전체 &nbsp;|&nbsp; <strong>예상 diff</strong>: ~5-10 라인 &nbsp;|&nbsp; <strong>배포 영향</strong>: 무관 (빌드 영향 없음)</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <strong>peer-deps-001</strong> — <code>@imjohnkoo/design-vue</code> 가 <code>typescript</code> peer 요구 / <code>design-storybook-mobile</code> 가 <code>react-native</code> peer 요구 / <code>nomacom-client</code> 가 <code>tailwindcss</code> peer 요구. 각 앱에 명시적 추가 가능 (현재 transitive 로 해결)</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>tech-debt-001</strong> — admin <code>nuxt.config.ts</code> 가 매우 minimal (DS / Tailwind / Pinia 모듈 미등록). admin UI 작업 진입 전 client 와 동일 패턴으로 보강. (INBOX 의 admin DS 통합 미완과 중복)</li>
+</ul>
+<p class="meta"><strong>출처</strong>: 루트 <code>CLAUDE.md</code> "Peer Dependency 경고" + 지난주 INBOX</p>
+
+<hr>
+
+<h2>📥 INBOX</h2>
+<p>작업 중 발견한 신규 아이템 초안. 주말 review 에서 HOTFIX / 트랙 / 기술 부채 / 삭제로 분류. 기록 시 <code>(YYYY-MM-DD 기록)</code> 타임스탬프 필수.</p>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <strong>(2026-05-19 기록, 이월)</strong> <strong>admin dual DB schema 중복</strong> — admin 의 <code>server/database/esim-schema.ts</code> 와 client 의 <code>server/db/schema.ts</code> 가 같은 물리 DB 의 schema 를 각자 정의. 통합 (shared package) 또는 명시적 분리 정책 결정 필요. <strong>본주 (5/25) HOTFIX-4 추가 컨텍스트</strong>: client schema 가 prod camelCase 로 정합됨 → admin schema 도 같이 정합 필요 시 같은 PR 으로</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>(2026-05-19 기록, 이월)</strong> <strong>admin design-system 통합 미완</strong> — <code>apps/admin/nuxt.config.ts</code> 가 매우 minimal. admin UI 작업 진입 전 client 와 동일 패턴 보강 필요. 예상 diff ~20 라인. → 기술 부채 섹션에 흡수 (tech-debt-001)</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>(2026-05-19 기록, 이월)</strong> <strong>admin 인증 부재</strong> — 모든 API public. Phase 2 admin UI 진입 전 도입 필수. m8-admin cookie session + argon2 패턴 참고. 예상 ~6-10h</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>(2026-05-19 기록, 이월)</strong> <strong>client Nuxt 4 마이그 잔류 부채</strong> — README 의 일부 디렉토리 가이드가 Nuxt 3 기준, <code>server/api/v1/*.ts</code> 의 상대 경로 import 일관성, <code>app/types/</code> 와 <code>server/api/</code> 인터페이스 중복. 우선순위 낮음, A 트랙 안정화 후 cleanup PR 1건</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>(2026-05-25 기록, 이월)</strong> <strong>activate.post.ts 동시쓰기 transaction 정책</strong> — Maya createEsim 중복 호출 위험 (요금 중복 + DB orphan). frontend isSubmitting 은 Case 1 (같은 탭 더블탭) 만 차단. Case 2-5 (F5/2탭/네트워크 retry/뒤로가기) 는 server-side 가드 필요. 방안 Tier 1-4 + Maya 단가 기준 결정 게이트. <strong>본주 G-1 로 트랙 승격</strong> ✅</li>
+</ul>
+
+<hr>
+
+<h2>📝 Weekly Review (사후 작성: 2026-06-08 — 2주 공백 후 롤오버 시점)</h2>
+
+<blockquote>
+  <p><strong>주의</strong>: 이 리뷰는 주말 (5/31) 에 작성되지 못하고 <strong>2026-06-08 롤오버 시점에 git 이력 기반으로 사후 재구성</strong>됨. 이 plan 은 사실상 5/25 ~ 6/07 (2주) 동안 single source 로 방치됨 — 그 사이 <code>06-01-week.html</code> 은 생성되지 않음 (nomacom-frontend 는 평일 14-15 1h 슬롯이라 저활동 주차였음, repo 커밋은 5/26 이후 없음).</p>
+</blockquote>
+
+<h3>완료율 최종 (git 이력 기반)</h3>
+<ul>
+  <li>트랙+HOTFIX: 4/11 (36%) — HOTFIX 만 완료, 계획 트랙 G/B 는 미착수</li>
+  <li>🚨 HOTFIX: 4/4 ✅ (월 5/25 흡수)</li>
+  <li>🔒 G 트랙: 0/4 — <strong>전부 미착수 → 2026-06-08 주차로 이월</strong></li>
+  <li>📱 B 트랙: 0/3 — <strong>전부 미착수 → 2026-06-08 주차로 이월</strong></li>
+  <li>📥 D 트랙: ~ (사업 신호 미발생)</li>
+  <li>🇯🇵 H 트랙: ~ (placeholder 유지)</li>
+</ul>
+
+<h3>계획 외 실제 수행 (off-plan, git 이력)</h3>
+<ul>
+  <li><span class="marker marker-done">[x]</span> <strong>client 4-step 토스풍 디자인 + multi-QR accordion</strong> (<code>4a35a0e</code>, 5/26) — 본 plan 의 트랙에 없던 작업. <code>feat/client-toss-design</code> 브랜치 → main 머지 (<code>f53f8b6</code>)</li>
+  <li><span class="marker marker-done">[x]</span> <strong>client prod-ready 정리</strong> (<code>9d04e9d</code>, 5/26) — preview seed 제거 + view-variant 삭제</li>
+  <li><span class="marker marker-done">[x]</span> <strong>client select-date startTime=-24 버퍼</strong> (<code>fa27295</code>, 5/26) — eSIM 사전 활성화 1 day 버퍼</li>
+</ul>
+
+<h3>이월 결정 (→ 2026-06-08 주차)</h3>
+<ul>
+  <li>G 트랙 G-1~G-4 전부 이월 (미착수)</li>
+  <li>B 트랙 B-1~B-3 전부 이월 (미착수)</li>
+  <li>off-plan client 토스풍 작업이 실 우선순위였음 → 신주차에 <strong>C 트랙 (client UI 계속)</strong> 으로 정식 편성</li>
+  <li>INBOX / 기술 부채 항목 전부 이월</li>
+</ul>
+
+<h3>회고</h3>
+<ul>
+  <li>잘된 것: PR1 prod 종단 동작 + 4-hotfix 흡수 (5/25). 5/26 client 토스풍 디자인으로 실 UX 진전</li>
+  <li>막힌 것: 계획 트랙(G/B)과 실제 작업(client UI)이 괴리. weekly review 가 주말에 작성 안 되고 2주 방치됨</li>
+  <li>다음 주 조정: 실 우선순위였던 client UI 를 C 트랙으로 명문화. weekly review/archive 를 매주 실제 수행 (롤오버 루프 복구)</li>
+</ul>
+
+<h3>핵심 KPI 체크</h3>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <strong>G-1 결정 + (도입 시) prod 적용</strong> — 본주 단일 최중요 게이트 (PR1 운영 안정화)</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>G-2 GIT_COMMIT 주입</strong> — 다음 HOTFIX 진단 속도 결정</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>B 트랙 스펙 완성</strong> — 차주 mobile 코드 시작 가능 상태</li>
+</ul>
+
+<h3>Archive 액션</h3>
+<ul>
+  <li><span class="marker marker-todo">[ ]</span> <code>mv current-week.html 2026-05-25-week.html</code></li>
+  <li><span class="marker marker-todo">[ ]</span> <code>_template.html</code> → <code>current-week.html</code> 복사</li>
+  <li><span class="marker marker-todo">[ ]</span> 이월 아이템 + 새 트랙 채우기</li>
+</ul>
+
+<hr>
+
+<h2>🔗 연계 문서</h2>
+<ul>
+  <li><code>~/dev/current-projects/m8-frontend/docs/plans/weekly/current-week.md</code> — m8 G 트랙 (LGCNS 브랜드메시지) — 평일 09-13 우선 슬롯</li>
+  <li><code>~/dev/project-manager/nomacom/current-week.md</code> — 사업 주간 (토 사수 슬롯, 위임 발신 위주)</li>
+  <li><code>~/dev/project-manager/nomacom/2026-05-monthly.md</code> — Phase 1 마무리 + Phase 2 일본 SKU 출시</li>
+  <li><code>~/dev/current-projects/nomacom-frontend/CLAUDE.md</code> — monorepo 구성 + 비포함 범위</li>
+  <li><code>docs/plans/weekly/2026-05-18-week.html</code> — 지난주 (A/C/E/F 트랙 완료, PR1 머지 + 4-hotfix 흡수)</li>
+  <li>memory: <code>future_mobile_app_esim_install.md</code> — B 트랙 결정사항 원본</li>
+  <li>memory: <code>plan_docs_md_html_dual.md</code> — plan/proposal 문서 .md + .html 동시 작성 룰</li>
+</ul>
+
+<hr>
+
+<h2>🧭 작업 규칙 리마인더</h2>
+<ul>
+  <li>monorepo 빌드 의존: <code>design-tokens → design-vue → admin/client</code>. DS 변경은 두 Nuxt 앱 모두 재배포 트리거</li>
+  <li>DS API 변경 시 <code>packages/design-*/package.json</code> version bump (외부 consumer 영향 시)</li>
+  <li>모바일 앱은 Expo managed 유지. <code>metro.config.js</code> 만들지 말 것 (SDK 52+ 자동 monorepo 지원)</li>
+  <li>iOS eSIM 설치는 Universal Link (<code>esimsetup.apple.com</code>) 만 사용. CoreTelephony entitled API 경로는 MVNO 영구 불가</li>
+  <li>Maya API 연동은 <code>apps/client/server/api/v1/*</code> Nitro 엔드포인트 단일 소스. mobile 도 동일 엔드포인트 호출</li>
+  <li><strong>backend (NestJS) 합의</strong>: esim INSERT 는 frontend 단독 owner, backend 는 networkStatus/serviceStatus UPDATE 만 (HOTFIX-4 / G-1 컨텍스트)</li>
+  <li>위임 가능 작업은 Morty (frontend) / Noob Noob (mobile). 인프라/CI/CD/배포는 John 직접</li>
+  <li>prod push 전 <code>nomacomfe-prod-push-check</code> skill 사용. 본주 권한 완화로 hook 차단은 force push/docker push/git reset/ssm delete 만</li>
+  <li><code>docs/</code> 는 <code>.gitignore</code> — 공유는 별도 채널</li>
+  <li>모든 plan/proposal 은 <code>.md</code> + <code>.html</code> 두 버전 동시 작성 (memory <code>plan_docs_md_html_dual</code>)</li>
+</ul>
+
+<hr>
+
+<h2>이번 주 추천 순서</h2>
+<ol>
+  <li><strong>월 5/25 14-15</strong>: G-2 (Dockerfile GIT_COMMIT 주입) — 30분 단발성 (남는 시간 G-1 단가 확인 시작)</li>
+  <li><strong>화 5/26 14-15</strong>: G-1 결정 (Maya 단가 확인 + tag idempotency 확인)</li>
+  <li><strong>수 5/27 14-15</strong>: G-1 구현 (Tier 도입 결정 시) / 아니면 G-4 sweeper 결정</li>
+  <li><strong>목 5/28 14-15</strong>: G-1 prod 적용 + staging 동시 호출 테스트 (도입 시) / 또는 B 트랙 사전 조사</li>
+  <li><strong>금 5/29 14-15</strong>: 본주 잔여 흡수 + 사업 신호 (D/H 트랙) 모니터링</li>
+  <li><strong>토 5/30 09-13</strong>: nomacom 사업 사수 (frontend 손대지 않음)</li>
+  <li><strong>일 5/31 09:00-11:30</strong>: B 트랙 (스펙 + EAS 결정 + CLAUDE.md) → 11:30 Weekly Review</li>
+</ol>
+
+<p class="footer-note">nomacom-frontend / docs/plans/weekly/current-week.html / 2026-05-25 ~ 2026-05-31</p>
+
+</div>
+</body>
+</html>
