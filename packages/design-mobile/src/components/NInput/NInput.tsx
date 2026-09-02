@@ -1,6 +1,25 @@
 import React, { useState } from 'react'
-import { View, TextInput, Text, StyleSheet, type TextInputProps } from 'react-native'
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  Platform,
+  type TextInputProps,
+  type TextStyle,
+} from 'react-native'
 import { theme } from '../../theme'
+
+/**
+ * react-native-web 은 TextInput 을 <input> 으로 렌더하고, 브라우저 UA 가 포커스 시
+ * `outline: auto` (Chrome/macOS 기준 주황 #E59700) 를 그린다. 포커스 표시는 컨테이너
+ * 보더 (primary/500) 가 담당하므로 UA 링은 끈다. `outlineStyle` 은 네이티브에 없는
+ * 속성이라 web 에서만 주입 — RN 타입에도 없어 캐스팅이 필요하다.
+ */
+const webOutlineReset = Platform.select({
+  web: { outlineStyle: 'none' } as unknown as TextStyle,
+  default: undefined,
+})
 
 export interface NInputProps extends Omit<TextInputProps, 'style'> {
   label?: string
@@ -34,7 +53,7 @@ export function NInput({
       <View style={[styles.container, { borderColor }, disabled && styles.disabled]}>
         {iconLeft && <View style={styles.iconLeft}>{iconLeft}</View>}
         <TextInput
-          style={[styles.input, disabled && styles.inputDisabled]}
+          style={[styles.input, webOutlineReset, disabled && styles.inputDisabled]}
           placeholderTextColor={theme.colors.neutral[400]}
           editable={!disabled}
           onFocus={(e) => {
