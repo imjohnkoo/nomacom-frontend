@@ -271,6 +271,7 @@ nomacom-frontend 특화 시급 사례: admin/client prod UI 블로커 · DS 회�
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-2</strong> — PR/main CI 게이트 0건. m8 의 <code>ci.yml</code> + baseline 방식 gate 이식 후보</li>
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-3</strong> — Dockerfile 안에 typecheck/test 게이트 없음. 이미지가 무조건 빌드됨</li>
   <li><span class="marker marker-todo">[ ]</span> <strong>INF-4</strong> — admin staging 경로 부재. prod 가 첫 통합 환경 (구조적 갭)</li>
+  <li><span class="marker marker-todo">[ ]</span> <strong>INF-5</strong> — <code>design-storybook-mobile</code> 빌드가 <code>--mode=skip-build</code> 설치 환경에서 죽는다 (<code>@storybook/react-vite/preset</code> 미해결). 로컬에서는 같은 에러를 내면서도 exit 0 이라 조용히 지나간다. CI 게이트에서 제외해 뒀으니 급하지 않지만, 데모 워크스페이스가 실제로 빌드되는지는 아무도 확인하지 않는 상태 (2026-09-02 CI 첫 실행에서 발견)</li>
 </ul>
 <p class="meta"><strong>출처</strong>: <code>.claude/rules/dev-process.md</code> "nomacom 환경 제약" · <code>docs/proposals/2026-09-02-dev-process-v2-port-proposal.md</code> Phase 3</p>
 
