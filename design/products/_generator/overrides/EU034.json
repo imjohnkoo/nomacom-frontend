@@ -1,0 +1,107 @@
+{
+  "zoneShort": "북유럽 3국",
+  "zoneName": "북유럽 덴마크·노르웨이·스웨덴",
+  "zoneFlags": "🇩🇰 🇳🇴 🇸🇪",
+  "galleryVersion": "v1-P2",
+  "galleryNote": "생성기 P2",
+  "heroTitleSmall": "북유럽 3개국 한 번에 🇩🇰 🇳🇴 🇸🇪",
+  "heroTitle": "데이터 넉넉히, 길게.",
+  "heroHint": "북유럽 3개국 · 무제한 (U-only)",
+  "whyHint": "4 benefit (한국 CS · 당일 · 테더링 · 3개국)",
+  "comparisonHint": "6 행 · 다국가 동일 SIM (EU 특화)",
+  "faqHint": "기간·국경 자동 치환 (종량제 Q 제거)",
+  "finalHint": "신뢰배지 + 세 나라 한 SIM + CS 번호",
+  "finalHeadline": "세 나라, 한 SIM.",
+  "reviewsTitle": "북유럽 3국으로 떠난 분들",
+  "borderQ": "덴마크 ↔ 노르웨이 ↔ 스웨덴 국경 넘어도 같은 eSIM 으로 됩니까?",
+  "borderExample": "코펜하겐 → 오슬로 → 스톡홀름 이동 시 폰에서 자동으로 현지 1티어 통신사로 전환돼요.",
+  "reviews": {
+    "avg": "4.71",
+    "total": 24,
+    "asOf": "2026년 8월",
+    "rows": [
+      {
+        "label": "무제한 (24건)",
+        "pct": 94,
+        "val": "4.71★"
+      }
+    ],
+    "quotes": [
+      {
+        "stars": "★★★★★",
+        "text": "노르웨이와 스웨덴 양국 여행하며 단 한번 데이터 끊김없이 안심하고 다녀왔어요 감사합니다~ 저렴한 가격으로 계속 공급해주세요!!",
+        "initial": "S",
+        "author": "sanc****",
+        "meta": "매일 2GB · 5일 · 2024년 11월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "코펜하겐, 스웨덴에서 문제없이 잘 터졌어요~",
+        "initial": "D",
+        "author": "dl****",
+        "meta": "매일 1GB · 10일 · 2025년 12월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "덴마크에서도 잘터집니더.",
+        "initial": "N",
+        "author": "nice******",
+        "meta": "매일 2GB · 10일 · 2025년 9월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "너무 잘 터지고 좋았습니다.",
+        "initial": "O",
+        "author": "orig****",
+        "meta": "매일 1GB · 7일 · 2024년 9월"
+      },
+      {
+        "stars": "★★★★★",
+        "text": "여행기간동안 잘 써서 다음에 여행갈때도 이용하려고요",
+        "initial": "S",
+        "author": "ssan*****",
+        "meta": "매일 2GB · 7일 · 2024년 8월"
+      }
+    ],
+    "photos": [
+      {
+        "src": "../assets/reviews/9314290223_4859830267_1.jpg",
+        "alt": "구매자 사진 — 코펜하겐 교회 첨탑",
+        "stars": "★★★★★"
+      },
+      {
+        "src": "../assets/reviews/9314290223_4808772372_1.jpg",
+        "alt": "구매자 사진 — 코펜하겐 빈티지 숍",
+        "stars": "★★★★★"
+      }
+    ]
+  },
+  "coverage": {
+    "coverageHeadline": "스칸디나비아 3국 전역 커버",
+    "coverageHint": "3개국 국가 카드 · 1티어 자동 연결 (지도 P3)",
+    "mapImg": "",
+    "mapAlt": "",
+    "mapCap": "",
+    "pins": [],
+    "cards": [
+      {
+        "flag": "🇩🇰",
+        "name": "덴마크",
+        "cities": "<b>코펜하겐</b> · 오덴세 · 오르후스"
+      },
+      {
+        "flag": "🇳🇴",
+        "name": "노르웨이",
+        "cities": "<b>오슬로</b> · 베르겐 · 트롬쇠 · 플롬"
+      },
+      {
+        "flag": "🇸🇪",
+        "name": "스웨덴",
+        "cities": "<b>스톡홀름</b> · 예테보리 · 말뫼"
+      }
+    ]
+  },
+  "bestCap": "1GB",
+  "bestDays": 10,
+  "bestSource": "nomacom-manager 2026-08-20 handoff — last365 18건 · 1GB/10일 4건 22.2%"
+}

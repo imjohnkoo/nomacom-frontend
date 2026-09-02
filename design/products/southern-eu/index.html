@@ -315,7 +315,7 @@
         </div>
       </div>
       <div class="topbar__meta">
-        14 섹션 · 카피 v2 + 디자인 5/19 · 실데이터 EU022U·EU022L · 1~30일 자유 + 60·90일 신규
+        13 섹션 · 카피 v2 + 디자인 5/19 · 실데이터 EU022U·EU022L · 1~30일 자유 선택
       </div>
     </header>
 
@@ -352,17 +352,17 @@
       const SECTIONS = [
         { num: '01', slug: 'hero', name: 'Hero', hint: '남유럽 2개국 · 무제한 · 여성 모델', height: 920, kind: 'rewrite', tag: 'EU' },
         { num: '02', slug: 'trust-strip', name: 'Trust strip', hint: '발급 1분 · 당일 · 24h · 2개국', height: 200, kind: 'rewrite', tag: 'EU' },
-        { num: '03', slug: 'plan-picker', name: 'Plan picker', hint: '무제한/종량제 토글 + 60·90일 신규', height: 3200, kind: 'restructure', tag: '구조大' },
+        { num: '03', slug: 'plan-picker', name: 'Plan picker', hint: '무제한/종량제 토글 + 1~30일 가격표', height: 3200, kind: 'restructure', tag: '구조大' },
         { num: '05', slug: 'why', name: 'Why ESIMmany', hint: '4 benefit (한국 CS · 당일 · 테더링 · 2개국)', height: 780, kind: 'restructure', tag: '4 benefit' },
-        { num: '06', slug: 'stats', name: 'Plan at a glance', hint: '1~90일 / 1~2GB / 500Kbps / 테더링', height: 580, kind: 'rewrite', tag: 'EU' },
-        { num: '07', slug: 'reviews', name: 'Reviews', hint: '5 EU 시그널 후기 + 사진', height: 1200, kind: 'rewrite', tag: 'EU' },
-        { num: '08', slug: 'coverage', name: 'Coverage', hint: '스페인 6 + 포르투갈 6 도시 · Movistar/NOS/Vodafone', height: 820, kind: 'eu-special', tag: '전면' },
+        { num: '06', slug: 'stats', name: 'Plan at a glance', hint: '1~30일 / 1~2GB / 500Kbps / 테더링', height: 580, kind: 'rewrite', tag: 'EU' },
+        { num: '07', slug: 'reviews', name: 'Reviews', hint: '실리뷰 5 (원문 발췌) + 구매자 사진 4', height: 1200, kind: 'rewrite', tag: 'EU' },
+        { num: '08', slug: 'coverage', name: 'Coverage', hint: '스페인 6 + 포르투갈 6 도시 · 1티어 자동 연결', height: 820, kind: 'eu-special', tag: '전면' },
         { num: '09', slug: 'how-it-works', name: 'How it works', hint: '4 step · 회선 OFF/ON (D1)', height: 560, kind: 'rewrite', tag: 'D1' },
         { num: '10', slug: 'comparison', name: 'Comparison', hint: '6 행 · 다국가 동일 SIM (EU 특화)', height: 680, kind: 'rewrite', tag: 'EU' },
         { num: '11', slug: 'compatibility', name: 'Compatibility', hint: '🔴 빨간 경고박스 + 칩 전면 교체', height: 1280, kind: 'restructure', tag: '오류 정정' },
         { num: '12', slug: 'refund', name: 'Refund policy', hint: '3 카드 (자체 정책 부분 환불)', height: 720, kind: 'rewrite', tag: 'D6' },
         { num: '13', slug: 'faq', name: 'FAQ', hint: '13 항목 · EU Q12·Q13 추가', height: 1620, kind: 'rewrite', tag: '+EU' },
-        { num: '14', slug: 'final-cta', name: 'Final CTA', hint: '신뢰배지 + 노매드 90일 angle + CS 번호', height: 620, kind: 'rewrite', tag: 'EU' },
+        { num: '14', slug: 'final-cta', name: 'Final CTA', hint: '신뢰배지 + 두 나라 한 SIM + CS 번호', height: 620, kind: 'rewrite', tag: 'EU' },
       ];
 
       const SECTION_BASE = 'sections';
@@ -511,7 +511,8 @@
       async function loadSectionContent(s, body) {
         const url = `${SECTION_BASE}/${s.num}-${s.slug}.html`;
         try {
-          const res = await fetch(url);
+          // no-cache: 항상 서버에 재검증 — 섹션 수정 후 하드 리프레시 없이 일반 새로고침으로 반영
+          const res = await fetch(url, { cache: 'no-cache' });
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const html = await res.text();
           const parser = new DOMParser();

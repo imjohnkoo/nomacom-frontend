@@ -50,3 +50,7 @@ packages/*/docs/
 
 # Storage
 storage/
+design/products/_generator/.golden-out/
+
+# 썸네일 렌더 결과 (PNG 대량 · 재생성 가능)
+design/thumbnails/out/

@@ -46,7 +46,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 700;
         letter-spacing: 0.02em;
       }
@@ -69,19 +69,19 @@
         gap: 1px;
       }
       .hero__brand-name {
-        font-size: 15px;
+        font-size: 17px;
         font-weight: 800;
         letter-spacing: -0.005em;
         line-height: 1.15;
       }
       .hero__brand-tagline {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 500;
         opacity: 0.7;
         letter-spacing: 0.04em;
       }
       .hero__nav-meta {
-        font-size: 12px;
+        font-size: 14px;
         opacity: 0.7;
         letter-spacing: 0.04em;
       }
@@ -107,7 +107,7 @@
         background: rgba(255, 255, 255, 0.16);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: var(--radius-full);
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 600;
       }
       .hero__badge-dot {
@@ -125,10 +125,10 @@
       .hero__badge--star::before {
         content: '★';
         color: #f59e0b;
-        font-size: 13px;
+        font-size: 15px;
       }
       .hero__title {
-        font-size: 44px;
+        font-size: 46px;
         font-weight: 800;
         letter-spacing: -0.035em;
         line-height: 1.2;
@@ -136,17 +136,35 @@
       }
       .hero__title small {
         display: block;
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         opacity: 0.78;
         letter-spacing: -0.015em;
         margin-bottom: 8px;
       }
       .hero__sub {
-        font-size: 15.5px;
+        font-size: 17.5px;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.82);
         margin: 0 0 22px;
+        padding: 0;
+        list-style: none;
+      }
+      /* 줄마다 체크 마커. flex 행이라 줄바꿈돼도 본문이 마커 아래로 흘러들지 않음 */
+      .hero__sub li {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+      }
+      .hero__sub li + li {
+        margin-top: 3px;
+      }
+      .hero__sub li::before {
+        content: '✓';
+        flex: none;
+        color: #fff;
+        font-weight: 800;
+        font-size: 16px;
       }
       .hero__price {
         display: inline-flex;
@@ -155,35 +173,23 @@
         padding: 12px 18px;
         background: rgba(0, 0, 0, 0.22);
         border-radius: var(--radius-xl);
-        margin-bottom: 0;
+        margin-bottom: 22px;
       }
       .hero__price-strike {
         text-decoration: line-through;
         opacity: 0.55;
-        font-size: 13px;
+        font-size: 15px;
       }
       .hero__price-now {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 800;
         letter-spacing: -0.02em;
       }
       .hero__price-now small {
-        font-size: 13px;
+        font-size: 15px;
         font-weight: 600;
         opacity: 0.7;
         margin-left: 2px;
-      }
-      .hero__price-deal {
-        margin-top: 6px;
-        margin-bottom: 22px;
-        font-size: 13px;
-        line-height: 1.45;
-        letter-spacing: -0.005em;
-        color: rgba(255, 255, 255, 0.85);
-      }
-      .hero__price-deal b {
-        font-weight: 800;
-        color: #fff;
       }
       .hero__chips {
         display: flex;
@@ -195,7 +201,7 @@
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: var(--radius-full);
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 500;
       }
 
@@ -253,32 +259,29 @@
         <div class="hero__row">
           <div>
             <div class="hero__badges">
-              <span class="hero__badge hero__badge--star">4.8</span>
+              <span class="hero__badge hero__badge--star">4.6</span>
               <span class="hero__badge">🔁 테더링 OK</span>
               <span class="hero__badge">🚀 당일 자동 발송</span>
             </div>
             <h1 class="hero__title">
-              <small>🇪🇸 스페인 · 🇵🇹 포르투갈 한 번에</small>
+              <small>스페인 · 포르투갈 한 번에 🇪🇸 🇵🇹</small>
               데이터 넉넉히, 길게.
             </h1>
-            <p class="hero__sub">
-              매일 1GB · 2GB + 소진 후 <b style="color:#fff">500Kbps 무제한</b><br />
-              1~30일 자유 선택 + 60·90일 신규<br />
-              카카오톡 1분 발급 · 당일 자동 발송 · 테더링 OK
-            </p>
+            <ul class="hero__sub">
+              <li>매일 1GB · 2GB + 소진 후 <b style="color:#fff">500Kbps 무제한</b></li>
+              <li>1~30일 자유 선택</li>
+              <li>카카오톡 1분 발급 · 당일 자동 발송 · 테더링 OK</li>
+            </ul>
             <div class="hero__price">
               <span class="hero__price-now"
-                >3,600원<small> 부터 (1일 1GB)</small></span
+                >2,700원<small> 부터 (1일 1GB)</small></span
               >
-            </div>
-            <div class="hero__price-deal">
-              💸 <b>30일 매일 1GB ₩993/일~</b> · 장기 할인
             </div>
             <div class="hero__chips">
               <span class="hero__chip">매일 1GB · 2GB 선택</span>
               <span class="hero__chip">소진 후 500Kbps 무제한</span>
               <span class="hero__chip">테더링 가능</span>
-              <span class="hero__chip">1~90일 자유 선택</span>
+              <span class="hero__chip">1~30일 자유 선택</span>
             </div>
           </div>
 
