@@ -17,13 +17,13 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
 
@@ -36,14 +36,19 @@ jobs:
       - name: Build @imjohnkoo/design-vue
         run: yarn workspace @imjohnkoo/design-vue run build
 
+      # --tolerate-republish 는 기존 버전 확인용 GET 을 먼저 보내는데, 한 번도
+      # publish 된 적 없는 패키지에 GitHub Packages 는 404 대신 403 을 반환해
+      # yarn 이 fatal 처리함 (첫 publish 한정 함정). 실패 시 사전 GET 없이 바로
+      # PUT 하는 plain publish 로 fallback — 기존 버전 재발행 시도는 서버가
+      # 거부하므로 이중 발행 위험 없음.
       - name: Publish @imjohnkoo/design-tokens
         working-directory: packages/design-tokens
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn npm publish --tolerate-republish
+        run: yarn npm publish --tolerate-republish || yarn npm publish
 
       - name: Publish @imjohnkoo/design-vue
         working-directory: packages/design-vue
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn npm publish --tolerate-republish
+        run: yarn npm publish --tolerate-republish || yarn npm publish

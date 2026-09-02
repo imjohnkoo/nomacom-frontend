@@ -9,6 +9,7 @@ import {
   NDurationCalendar,
   NBottomSheet,
   NButton,
+  NCheckbox,
   NAlertDialog,
   NLoaderDialog,
 } from '@imjohnkoo/design-vue'
@@ -44,6 +45,7 @@ const errors = ref<{ country?: string; date?: string }>({})
 const isCountrySheetOpen = ref(false)
 const isDateSheetOpen = ref(false)
 const isSubmitting = ref(false)
+const isPolicyAgreed = ref(false)
 const isIssueQrCodesVisible = ref(false)
 const isNoOrderAlertVisible = ref(false)
 const isCancelledOrderVisible = ref(false)
@@ -122,6 +124,7 @@ const onSubmit = () => {
       startCountry: selectedCountry.value,
     }
     orderStore.setSingleOrder(updatedOrder)
+    isPolicyAgreed.value = false
     isConfirmOrderVisible.value = true
   } else {
     isNoOrderAlertVisible.value = true
@@ -133,10 +136,13 @@ const onSubmit = () => {
 }
 
 const onConfirm = async () => {
+  if (isSubmitting.value || !isPolicyAgreed.value) return
+  isSubmitting.value = true
   isConfirmOrderVisible.value = false
   isIssueQrCodesVisible.value = true
 
   if (!order.value) {
+    isSubmitting.value = false
     isIssueQrCodesVisible.value = false
     isNoOrderAlertVisible.value = true
     setTimeout(() => {
@@ -160,7 +166,6 @@ const onConfirm = async () => {
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
       if (activateVerified && details) {
-        isSubmitting.value = false
         isIssueQrCodesVisible.value = false
         orderStore.setSingleOrder(details[0])
 
@@ -172,8 +177,17 @@ const onConfirm = async () => {
         if (updatedOrders.details) orderStore.setOrders(updatedOrders.details)
 
         router.push(`/view/${orderId.value}`)
+      } else {
+        isSubmitting.value = false
+        isIssueQrCodesVisible.value = false
+        isNoOrderAlertVisible.value = true
+        setTimeout(() => {
+          isNoOrderAlertVisible.value = false
+          router.push(`/verify/${orderId.value}`)
+        }, 2000)
       }
     } else if (verified && cancelled) {
+      isSubmitting.value = false
       isIssueQrCodesVisible.value = false
       isCancelledOrderVisible.value = true
       setTimeout(() => {
@@ -181,6 +195,7 @@ const onConfirm = async () => {
         router.push(`/verify/${orderId.value}`)
       }, 2000)
     } else {
+      isSubmitting.value = false
       isIssueQrCodesVisible.value = false
       isNoOrderAlertVisible.value = true
       setTimeout(() => {
@@ -207,7 +222,8 @@ onMounted(() => {
       isNoOrderAlertVisible.value = false
       router.push(`/verify/${orderId.value}`)
     }, 3000)
-  } else if (order.value.esims && order.value.esims.length > 0) {
+  } else if ((order.value.esims?.length ?? 0) >= (order.value.quantity || 1)) {
+    // 전량 발급 완료된 주문만 차단 — 부분 발급 (resume) 은 재진입 허용
     router.push(`/details/${orderId.value}`)
   }
 })
@@ -308,7 +324,7 @@ onMounted(() => {
           </svg>
         </template>
         eSIM 사용 예상 기간은
-        <b style="color: var(--color-primary-700)">{{ startDateLabel }} ~ {{ endDateLabel }}</b>
+        <b style="color: var(--n-color-primary-700)">{{ startDateLabel }} ~ {{ endDateLabel }}</b>
         이에요.
       </NHighlightCard>
     </div>
@@ -374,6 +390,10 @@ onMounted(() => {
 
     <!-- Country bottom sheet -->
     <NBottomSheet v-model="isCountrySheetOpen" title="시작 국가 선택">
+      <p class="select-date-page__sheet-desc">
+        사용을 시작할 국가를 선택해 주세요.<br />
+        시작한 뒤에는 아래 어느 국가로 이동해도 재설치나 재선택 없이 자동으로 연결돼요.
+      </p>
       <div class="select-date-page__sheet-list">
         <button
           v-for="c in combinedCountries"
@@ -405,6 +425,7 @@ onMounted(() => {
       title="이 내용으로 발급할까요?"
       color="primary"
       :closable="false"
+      :width="340"
     >
       <div v-if="order" class="select-date-page__confirm">
         <div class="select-date-page__confirm-row">
@@ -423,10 +444,50 @@ onMounted(() => {
           <span>수량</span><b>{{ order.quantity }}개</b>
         </div>
       </div>
+      <div class="select-date-page__confirm-policy">
+        <svg
+          class="select-date-page__confirm-policy-icon"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <p>
+          <b>발급 후에는 취소와 환불이 불가해요.</b>
+          사용하실 기기가 eSIM 지원 기기인지 발급 전에 꼭 확인해 주세요.
+          <a
+            class="select-date-page__confirm-policy-link"
+            href="/supported-devices"
+            target="_blank"
+            rel="noopener"
+          >
+            지원 기기 목록 보기
+          </a>
+        </p>
+      </div>
+      <div class="select-date-page__confirm-agree">
+        <NCheckbox v-model="isPolicyAgreed" label="위 내용을 확인했고 동의해요" />
+      </div>
       <template #actions>
         <div class="select-date-page__confirm-actions">
           <NButton variant="secondary" @click="isConfirmOrderVisible = false">뒤로</NButton>
-          <NButton variant="primary" @click="onConfirm">발급하기</NButton>
+          <NButton
+            variant="primary"
+            :disabled="isSubmitting || !isPolicyAgreed"
+            @click="onConfirm"
+          >
+            발급하기
+          </NButton>
         </div>
       </template>
     </NAlertDialog>
@@ -496,7 +557,7 @@ onMounted(() => {
 .select-date-page__err {
   margin: 6px 0 0 4px;
   font-size: 12px;
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .select-date-page__preview {
@@ -510,6 +571,16 @@ onMounted(() => {
 .select-date-page__cta {
   margin-top: auto;
   padding-top: 32px;
+}
+
+.select-date-page__sheet-desc {
+  margin: 0 0 12px;
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #64748b;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .select-date-page__sheet-list {
@@ -537,7 +608,7 @@ onMounted(() => {
 }
 
 .select-date-page__sheet-row--active {
-  background: var(--color-primary-50, #f3efff);
+  background: var(--n-color-primary-50, #f3efff);
 }
 
 .select-date-page__sheet-row-main {
@@ -578,6 +649,50 @@ onMounted(() => {
 .select-date-page__confirm-row b {
   font-weight: 600;
   color: #111827;
+}
+
+.select-date-page__confirm-policy {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: #fef2f2;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #6b7280;
+  text-align: left;
+}
+
+.select-date-page__confirm-policy-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #dc2626;
+}
+
+.select-date-page__confirm-policy-link {
+  font-weight: 600;
+  color: #6239ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.select-date-page__confirm-policy b {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.select-date-page__confirm-agree {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 13px;
 }
 
 .select-date-page__confirm-actions {

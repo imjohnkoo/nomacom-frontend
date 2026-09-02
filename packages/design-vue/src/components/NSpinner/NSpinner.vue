@@ -29,7 +29,7 @@ withDefaults(defineProps<NSpinnerProps>(), {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .n-spinner__svg {
@@ -42,7 +42,7 @@ withDefaults(defineProps<NSpinnerProps>(), {
 .n-spinner--xl .n-spinner__svg { width: 64px; height: 64px; }
 
 .n-spinner__track {
-  stroke: var(--color-neutral-200, #e5e5e5);
+  stroke: var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-spinner__circle {
@@ -51,17 +51,17 @@ withDefaults(defineProps<NSpinnerProps>(), {
   animation: n-spinner-dash 1.5s ease-in-out infinite;
 }
 
-.n-spinner--primary .n-spinner__circle { stroke: var(--color-primary-500, #6239FF); }
-.n-spinner--neutral .n-spinner__circle { stroke: var(--color-neutral-500, #737373); }
-.n-spinner--success .n-spinner__circle { stroke: var(--color-success-500, #22c55e); }
-.n-spinner--warning .n-spinner__circle { stroke: var(--color-warning-500, #f59e0b); }
-.n-spinner--error .n-spinner__circle { stroke: var(--color-error-500, #ef4444); }
-.n-spinner--info .n-spinner__circle { stroke: var(--color-info-500, #0ea5e9); }
+.n-spinner--primary .n-spinner__circle { stroke: var(--n-color-primary-500, #6239FF); }
+.n-spinner--neutral .n-spinner__circle { stroke: var(--n-color-neutral-500, #737373); }
+.n-spinner--success .n-spinner__circle { stroke: var(--n-color-success-500, #22c55e); }
+.n-spinner--warning .n-spinner__circle { stroke: var(--n-color-warning-500, #f59e0b); }
+.n-spinner--error .n-spinner__circle { stroke: var(--n-color-error-500, #ef4444); }
+.n-spinner--info .n-spinner__circle { stroke: var(--n-color-info-500, #0ea5e9); }
 
 .n-spinner__label {
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-500, #737373);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 @keyframes n-spinner-rotate {

@@ -114,21 +114,21 @@ const selectedValue = computed({
 .n-input-menu {
   position: relative;
   width: 100%;
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-input-menu__control {
   display: flex;
   align-items: center;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-300, #d4d4d4);
-  border-radius: var(--radius-md, 0.375rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  transition: border-color var(--transition-fast, 150ms ease);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-300, #d4d4d4);
+  border-radius: var(--n-radius-md, 0.375rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  transition: border-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-menu__control:focus-within {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #6239FF);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #e3dbff);
 }
 
 .n-input-menu__input {
@@ -136,14 +136,14 @@ const selectedValue = computed({
   border: none;
   outline: none;
   background: transparent;
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-base, 1rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  color: var(--color-neutral-800, #262626);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-base, 1rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  color: var(--n-color-neutral-800, #262626);
 }
 
 .n-input-menu__input::placeholder {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-input-menu__input:disabled {
@@ -155,16 +155,16 @@ const selectedValue = computed({
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem);
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--color-neutral-500, #737373);
-  transition: color var(--transition-fast, 150ms ease);
+  color: var(--n-color-neutral-500, #737373);
+  transition: color var(--n-transition-fast, 150ms ease);
 }
 
 .n-input-menu__trigger:hover {
-  color: var(--color-neutral-700, #404040);
+  color: var(--n-color-neutral-700, #404040);
 }
 
 .n-input-menu__trigger:disabled {
@@ -180,41 +180,41 @@ const selectedValue = computed({
   width: var(--reka-combobox-trigger-width);
   max-height: 240px;
   overflow-y: auto;
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-md, 0.375rem);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
-  padding: var(--spacing-1, 0.25rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-md, 0.375rem);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  padding: var(--n-spacing-1, 0.25rem);
   z-index: 50;
 }
 
 .n-input-menu__empty {
-  padding: var(--spacing-3, 0.75rem);
+  padding: var(--n-spacing-3, 0.75rem);
   text-align: center;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-500, #737373);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-input-menu__item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  border-radius: var(--radius-sm, 0.25rem);
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-800, #262626);
+  gap: var(--n-spacing-2, 0.5rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  border-radius: var(--n-radius-sm, 0.25rem);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-800, #262626);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 150ms ease);
+  transition: background-color var(--n-transition-fast, 150ms ease);
   outline: none;
 }
 
 .n-input-menu__item[data-highlighted] {
-  background-color: var(--color-primary-50, #eff6ff);
-  color: var(--color-primary-700, #1d4ed8);
+  background-color: var(--n-color-primary-50, #f1edff);
+  color: var(--n-color-primary-700, #3f1cc0);
 }
 
 .n-input-menu__item[data-state='checked'] {
-  font-weight: var(--font-fontWeight-medium, 500);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 
 .n-input-menu__item[data-disabled] {
@@ -227,7 +227,7 @@ const selectedValue = computed({
   align-items: center;
   justify-content: center;
   width: 16px;
-  color: var(--color-primary-600, #2563eb);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-input-menu__item-label {

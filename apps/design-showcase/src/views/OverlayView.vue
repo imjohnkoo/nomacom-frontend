@@ -21,7 +21,7 @@
           description="표준 대화상자입니다."
         >
           <template #body>
-            <p style="font-size: 14px; color: var(--color-neutral-600); line-height: 1.6;">
+            <p style="font-size: 14px; color: var(--n-color-neutral-600); line-height: 1.6;">
               모달 본문 콘텐츠입니다. 폼, 상세 정보, 알림 등 다양한 용도로 사용합니다.
             </p>
           </template>
@@ -94,7 +94,7 @@
         <div class="showcase-stack">
           <NButton size="sm" @click="confirmDefaultOpen = true">일반 확인</NButton>
           <NButton size="sm" variant="danger" @click="confirmDangerOpen = true">위험 확인</NButton>
-          <div v-if="confirmResult !== null" style="font-size: 14px; color: var(--color-neutral-600);">
+          <div v-if="confirmResult !== null" style="font-size: 14px; color: var(--n-color-neutral-600);">
             결과: {{ confirmResult }}
           </div>
         </div>

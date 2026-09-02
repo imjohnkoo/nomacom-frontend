@@ -46,18 +46,18 @@ const open = defineModel<boolean>('open', { default: false })
 
 <style>
 .n-popover__content {
-  z-index: var(--zIndex-popover, 1050);
+  z-index: var(--n-z-index-popover, 1060);
   min-width: 200px;
   max-width: 360px;
-  padding: var(--spacing-4, 1rem);
-  border-radius: var(--radius-lg, 0.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e7eb);
-  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgb(0 0 0 / 0.1));
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-800, #1f2937);
-  animation: n-popover-enter var(--transition-fast, 150ms) ease;
+  padding: var(--n-spacing-4, 1rem);
+  border-radius: var(--n-radius-lg, 0.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  box-shadow: var(--n-shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-800, #262626);
+  animation: n-popover-enter var(--n-transition-fast, 150ms ease) ease;
   will-change: transform, opacity;
 }
 
@@ -66,7 +66,7 @@ const open = defineModel<boolean>('open', { default: false })
 }
 
 .n-popover__arrow {
-  fill: var(--color-neutral-0, #ffffff);
+  fill: var(--n-color-neutral-0, #ffffff);
 }
 
 @keyframes n-popover-enter {

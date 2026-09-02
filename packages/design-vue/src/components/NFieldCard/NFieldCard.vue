@@ -71,9 +71,9 @@ function handleClick(e: MouseEvent) {
   gap: 6px;
   padding: 14px 16px;
   border: 1px solid #f1f1f4;
-  border-radius: var(--radius-2xl, 1rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-2xl, 1rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   cursor: pointer;
   text-align: left;
   transition:
@@ -83,13 +83,13 @@ function handleClick(e: MouseEvent) {
 
 .n-field-card:hover:not(:disabled),
 .n-field-card--active {
-  border-color: var(--color-primary-300, #a78bff);
-  box-shadow: 0 0 0 3px var(--color-primary-50, #f1edff);
+  border-color: var(--n-color-primary-300, #a78bff);
+  box-shadow: 0 0 0 3px var(--n-color-primary-50, #f1edff);
 }
 
 .n-field-card--error {
-  border-color: var(--color-error-500, #ef4444);
-  box-shadow: 0 0 0 3px var(--color-error-50, #fef2f2);
+  border-color: var(--n-color-error-500, #ef4444);
+  box-shadow: 0 0 0 3px var(--n-color-error-50, #fef2f2);
 }
 
 .n-field-card:disabled {
@@ -100,16 +100,16 @@ function handleClick(e: MouseEvent) {
 .n-field-card__label {
   font-size: 11px;
   font-weight: 600;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
   letter-spacing: 0.02em;
 }
 
 .n-field-card--active .n-field-card__label {
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .n-field-card--error .n-field-card__label {
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .n-field-card__value {
@@ -128,18 +128,18 @@ function handleClick(e: MouseEvent) {
   min-width: 0;
   font-size: 15px;
   font-weight: 500;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-field-card__placeholder {
   font-weight: 400;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-field-card__chev {
   display: inline-flex;
   align-items: center;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   flex-shrink: 0;
 }
 </style>

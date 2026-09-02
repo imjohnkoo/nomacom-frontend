@@ -27,9 +27,9 @@ provideTheme({ mode: themeMode, toggle })
 
 <style scoped>
 .n-app {
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  color: var(--color-neutral-900, #171717);
-  background-color: var(--color-neutral-0, #ffffff);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  color: var(--n-color-neutral-900, #171717);
+  background-color: var(--n-color-neutral-0, #ffffff);
   min-height: 100%;
   display: flex;
   flex-direction: column;

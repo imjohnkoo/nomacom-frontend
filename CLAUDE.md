@@ -95,7 +95,7 @@ monorepo 공유 도메인/운영 룰은 `.claude/rules/` 아래에 분리:
 - `.claude/rules/deployment.md` — CodeDeploy 배포 흐름, path filter, 브랜치 전략 결정 가이드 **(m8-frontend 패턴 포팅 — target state 청사진, 실 자산은 weekly A 트랙에서 부트스트랩 중)**
 - `.claude/rules/ssm-paths.md` — SSM Parameter Store 경로 + Secret naming 원칙 **(STUB — A-1 audit 결과로 채움)**
 
-- `.claude/rules/design-system-publish.md` — `@imjohnkoo/design-*` GitHub Packages publish 흐름 + 버전 bump 정책 **(C-1 결정 = (b) GH Packages 채택 2026-05-21, C-2 포팅 진행 중)**
+- `.claude/rules/design-system-publish.md` — `@imjohnkoo/design-*` GitHub Packages publish 흐름 + 버전 bump 정책 **(C-2 완료 — 0.4.0 첫 publish 성공 2026-08-18)**
 
 m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로우는 Notion 비사용으로 결정).
 
@@ -156,7 +156,7 @@ m8-frontend 에서 미포팅: `notion-workflow.md` (nomacom 개발 워크플로�
 | AWS SSM Parameter Store 연동 + 실제 경로 audit                                      | ✅ 확정 (`.claude/rules/ssm-paths.md`)      | weekly A-1 / A-2c       |
 | 원본 GitHub 레포 (`nomacom-admin`, `nomacom-client-nuxt3`, `nomacom-design-system`) | ✅ Archived (2026-05-21)                    | weekly A-5 / C-3        |
 | `@imjohnkoo/design-*` 배포 파이프라인 (GitHub Packages)                             | ✅ 정책 채택 — (b) GH Packages (2026-05-21) | weekly C-1              |
-| `design-system-publish.yml` workflow 포팅                                           | ✅ 구축 완료 (2026-05-25)                   | weekly C-2              |
+| `design-system-publish.yml` workflow 포팅                                           | ✅ 완료 — 0.4.0 첫 publish 성공 (2026-08-18) | weekly C-2              |
 | `apps/admin/CLAUDE.md` + `apps/client/CLAUDE.md`                                    | 작성 완료 (2026-05-19)                      | —                       |
 | `apps/mobile/CLAUDE.md`                                                             | 미작성                                      | weekly B 트랙과 함께    |
 | `apps/*/.claude/rules/` 도메인 분리                                                 | 보류 (도메인 굳을 때)                       | —                       |

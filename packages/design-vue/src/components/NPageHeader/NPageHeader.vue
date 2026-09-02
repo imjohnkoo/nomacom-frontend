@@ -60,13 +60,13 @@ const backgroundStyles = computed(() => {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: var(--spacing-4, 1rem) var(--spacing-4, 1rem) var(--spacing-5, 1.25rem);
-  border-radius: 0 0 var(--radius-2xl, 1rem) var(--radius-2xl, 1rem);
-  background-color: var(--color-primary-600, #5530e6);
+  padding: var(--n-spacing-4, 1rem) var(--n-spacing-4, 1rem) var(--n-spacing-5, 1.25rem);
+  border-radius: 0 0 var(--n-radius-2xl, 1rem) var(--n-radius-2xl, 1rem);
+  background-color: var(--n-color-primary-600, #5025e8);
   background-size: cover;
   background-position: center;
-  color: var(--color-neutral-0, #ffffff);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  color: var(--n-color-neutral-0, #ffffff);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   overflow: hidden;
 }
 
@@ -88,22 +88,22 @@ const backgroundStyles = computed(() => {
 
 .n-page-header__step {
   display: inline-block;
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
   opacity: 0.85;
-  margin-bottom: var(--spacing-2, 0.5rem);
+  margin-bottom: var(--n-spacing-2, 0.5rem);
 }
 
 .n-page-header__title {
   margin: 0;
-  font-size: var(--font-fontSize-2xl, 1.5rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
+  font-size: var(--n-font-size-2xl, 1.5rem);
+  font-weight: var(--n-font-weight-semibold, 600);
   line-height: 1.3;
-  margin-bottom: var(--spacing-2, 0.5rem);
+  margin-bottom: var(--n-spacing-2, 0.5rem);
 }
 
 .n-page-header__subtitle {
   margin: 0;
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
   opacity: 0.85;
   line-height: 1.5;
 }
@@ -111,17 +111,17 @@ const backgroundStyles = computed(() => {
 .n-page-header__meta {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-1, 0.25rem);
-  margin-top: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-1, 0.25rem);
+  margin-top: var(--n-spacing-2, 0.5rem);
 }
 
 .n-page-header__meta-label {
-  font-size: var(--font-fontSize-xs, 0.75rem);
+  font-size: var(--n-font-size-xs, 0.75rem);
   opacity: 0.7;
 }
 
 .n-page-header__meta-value {
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-medium, 500);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 </style>

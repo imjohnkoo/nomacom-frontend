@@ -81,26 +81,26 @@ function selectColor(color: string) {
 
 <style scoped>
 .n-color-picker {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3, 0.75rem);
+  gap: var(--n-spacing-3, 0.75rem);
 }
 
 .n-color-picker__input-wrapper {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2, 0.5rem);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-300, #d4d4d4);
-  border-radius: var(--radius-md, 0.375rem);
-  padding: var(--spacing-1, 0.25rem) var(--spacing-2, 0.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  transition: border-color var(--transition-fast, 150ms ease);
+  gap: var(--n-spacing-2, 0.5rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-300, #d4d4d4);
+  border-radius: var(--n-radius-md, 0.375rem);
+  padding: var(--n-spacing-1, 0.25rem) var(--n-spacing-2, 0.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  transition: border-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-color-picker__input-wrapper:focus-within {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #6239FF);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #e3dbff);
 }
 
 .n-color-picker__preview-wrapper {
@@ -114,8 +114,8 @@ function selectColor(color: string) {
 .n-color-picker__preview {
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-sm, 0.25rem);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-sm, 0.25rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-color-picker__native {
@@ -135,26 +135,26 @@ function selectColor(color: string) {
   border: none;
   outline: none;
   background: transparent;
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  color: var(--color-neutral-800, #262626);
-  padding: var(--spacing-1, 0.25rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  color: var(--n-color-neutral-800, #262626);
+  padding: var(--n-spacing-1, 0.25rem);
   text-transform: uppercase;
 }
 
 .n-color-picker__swatches {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .n-color-picker__swatch {
   width: 28px;
   height: 28px;
-  border: var(--borderWidth-2, 2px) solid transparent;
-  border-radius: var(--radius-md, 0.375rem);
+  border: var(--n-border-width-2, 2px) solid transparent;
+  border-radius: var(--n-radius-md, 0.375rem);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all var(--n-transition-fast, 150ms ease);
   padding: 0;
   outline: none;
 }
@@ -164,11 +164,11 @@ function selectColor(color: string) {
 }
 
 .n-color-picker__swatch:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px var(--n-color-primary-500, #6239FF);
 }
 
 .n-color-picker__swatch--active {
-  border-color: var(--color-neutral-800, #262626);
-  box-shadow: 0 0 0 2px var(--color-neutral-0, #ffffff), 0 0 0 4px var(--color-neutral-800, #262626);
+  border-color: var(--n-color-neutral-800, #262626);
+  box-shadow: 0 0 0 2px var(--n-color-neutral-0, #ffffff), 0 0 0 4px var(--n-color-neutral-800, #262626);
 }
 </style>

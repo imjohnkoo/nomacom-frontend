@@ -1,5 +1,7 @@
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { useDB, schema } from '../../db'
+import { matchesOrderContact } from '../../utils/verification'
+import { isOrderCancelled } from '../../utils/order-status'
 
 interface VerifyOrderRequest {
   fullName: string
@@ -37,6 +39,14 @@ interface OrderDetails {
   timeZones: string[]
   planTypeId: string
   esims: EsimResponse[]
+  /** 상품주문 단위 취소/클레임 상태 — details 카드 "취소된 주문" disabled 표시용 */
+  cancelled: boolean
+  /**
+   * 취소철회 가능 여부 — 취소요청 접수 (CANCEL_REQUEST) 단계만 true.
+   * 취소완료 (CANCEL_DONE) 는 환불까지 종결된 상태라 철회 불가 (Naver 복구 API 없음).
+   * raw claimStatus 대신 boolean 노출 (내부 어휘 노출 최소화)
+   */
+  cancelWithdrawable: boolean
 }
 
 interface VerifyOrderResponse {
@@ -73,26 +83,39 @@ export default defineEventHandler(async (event): Promise<VerifyOrderResponse> =>
     }
   }
 
-  // Check if order is cancelled
-  const firstOrder = ordersWithEsims[0]
-  if (
-    firstOrder.lastChangedType === 'CLAIM_REQUESTED' ||
-    firstOrder.lastChangedType === 'CLAIM_COMPLETED'
-  ) {
+  // 주문 연락처 대조 (군간 AND + 군내 OR — 선물 주문 커버) — orderId 만으로
+  // 타인의 PII / activationCode 조회 차단. 불일치 시 취소 여부 등 어떤 정보도
+  // 노출하지 않고 verified:false 만 반환
+  const contactMatched = ordersWithEsims.some((order) =>
+    matchesOrderContact({ fullName: body.fullName, phoneNumber: body.phoneNumber }, order),
+  )
+
+  if (!contactMatched) {
     return {
-      verified: true,
-      cancelled: true,
+      verified: false,
     }
   }
 
-  // Build response with plan type information
+  // 취소/클레임 주문도 details 로 진입시킨다 — 상품주문별 cancelled 플래그로
+  // 표시하고 (details 카드 "취소된 주문" disabled), 발급은 activate 의 서버측
+  // 가드 (409) 가 이중 차단. 톱레벨 cancelled 조기 반환은 제거 (john 결정 2026-08-20)
+
+  // Build response with plan type information (planTypes 는 일괄 조회 — N+1 방지)
+  const planTypeIds = [
+    ...new Set(ordersWithEsims.map((order) => order.optionManageCode).filter(Boolean)),
+  ] as string[]
+
+  const planTypeRows = planTypeIds.length
+    ? await db.query.planTypes.findMany({
+        where: inArray(schema.planTypes.planTypeId, planTypeIds),
+      })
+    : []
+  const planTypesById = new Map(planTypeRows.map((pt) => [pt.planTypeId, pt]))
+
   const details: OrderDetails[] = []
 
   for (const order of ordersWithEsims) {
-    // Get plan type by optionManageCode
-    const planType = await db.query.planTypes.findFirst({
-      where: eq(schema.planTypes.planTypeId, order.optionManageCode || ''),
-    })
+    const planType = planTypesById.get(order.optionManageCode || '')
 
     // Map esims to response format
     const esimResponses: EsimResponse[] = order.esims.map((esim) => ({
@@ -124,6 +147,9 @@ export default defineEventHandler(async (event): Promise<VerifyOrderResponse> =>
       timeZones: planType?.timeZones || [],
       planTypeId: planType?.planTypeId || '',
       esims: esimResponses,
+      cancelled: isOrderCancelled(order.lastChangedType),
+      cancelWithdrawable:
+        order.claimType === 'CANCEL' && order.claimStatus === 'CANCEL_REQUEST',
     }
 
     details.push(orderDetail)

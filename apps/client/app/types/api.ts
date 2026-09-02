@@ -39,5 +39,17 @@ export interface ActivateOrderRequest {
 
 export interface ActivateOrderResponse extends VerifyOrderResponse {}
 
+// Withdraw Cancel (취소철회) — CANCEL_REQUEST 대기 건만 가능
+export interface WithdrawCancelRequest {
+  fullName: string;
+  phoneNumber: string;
+  orderId: number;
+  productOrderId: number;
+}
+
+export interface WithdrawCancelResponse {
+  withdrawn: boolean;
+}
+
 // Re-export for convenience
 export type { Order, Esim };

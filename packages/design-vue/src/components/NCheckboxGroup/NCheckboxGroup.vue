@@ -51,7 +51,7 @@ function toggleItem(value: string) {
 .n-checkbox-group {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
+  gap: var(--n-spacing-3);
 }
 
 .n-checkbox-group__item {

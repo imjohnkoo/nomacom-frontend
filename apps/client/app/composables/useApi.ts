@@ -3,6 +3,7 @@ import type {
   VerifyOrderResponse,
   ActivateOrderRequest,
   ActivateOrderResponse,
+  WithdrawCancelResponse,
 } from '~/types/api';
 import type { Order } from '~/types/order';
 
@@ -51,8 +52,24 @@ export const useApi = () => {
     });
   };
 
+  /**
+   * Withdraw a pending cancel request (취소철회) and reopen issuance
+   */
+  const withdrawCancel = async (order: Order): Promise<WithdrawCancelResponse> => {
+    return await $fetch<WithdrawCancelResponse>(`${config.public.apiBase}/withdraw-cancel`, {
+      method: 'POST',
+      body: {
+        fullName: order.receiverName,
+        phoneNumber: order.receiverPhoneNumber,
+        orderId: order.orderId,
+        productOrderId: order.productOrderId,
+      },
+    });
+  };
+
   return {
     verifyOrder,
     activateOrder,
+    withdrawCancel,
   };
 };

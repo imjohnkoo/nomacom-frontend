@@ -35,9 +35,9 @@ export interface NTrustNoteProps {
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: var(--radius-2xl, 1rem);
-  background-color: var(--color-neutral-50, #fafafa);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border-radius: var(--n-radius-2xl, 1rem);
+  background-color: var(--n-color-neutral-50, #fafafa);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
 }
 
 .n-trust-note__icon {
@@ -48,14 +48,14 @@ export interface NTrustNoteProps {
   width: 28px;
   height: 28px;
   margin-top: 2px;
-  border-radius: var(--radius-full, 9999px);
-  background-color: var(--color-primary-100, #e3dbff);
-  color: var(--color-primary-600, #5025e8);
+  border-radius: var(--n-radius-full, 9999px);
+  background-color: var(--n-color-primary-100, #e3dbff);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-trust-note__body {
   font-size: 12px;
   line-height: 1.55;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
 }
 </style>

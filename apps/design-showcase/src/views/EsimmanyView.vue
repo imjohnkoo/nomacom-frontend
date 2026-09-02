@@ -165,7 +165,7 @@ function fireLoader() {
             </svg>
           </template>
           eSIM 사용 기간은
-          <b style="color: var(--color-primary-700)">2026.05.24 (일) ~ 2026.05.31 (일)</b>
+          <b style="color: var(--n-color-primary-700)">2026.05.24 (일) ~ 2026.05.31 (일)</b>
           이에요.<br />
           <span style="font-size: 11px; color: #6b7280"
             >시작 시간은 선택하신 국가의 현지 시각 기준이에요.</span

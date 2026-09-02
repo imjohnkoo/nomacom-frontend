@@ -14,9 +14,21 @@ function pxToNumber(px: string): number {
   return match ? parseFloat(match[1]) : parseFloat(px)
 }
 
+interface ShadowLayer {
+  x: string
+  y: string
+  blur: string
+  spread: string
+  color: string
+}
+
 const typedSpacing = spacing as Record<string, string>
-const typedShadows = shadows as Record<string, { x: string; y: string; blur: string; spread: string; color: string }>
+// Shadows are layer arrays (CSS composes them; RN supports a single shadow, so
+// we take the first layer). `none` is an empty array.
+const typedShadows = shadows as Record<string, ShadowLayer[]>
 const typedRadius = base.radius as Record<string, string>
+
+const ELEVATION: Record<string, number> = { xs: 1, sm: 2, md: 4, lg: 8, xl: 12 }
 
 export const theme = {
   colors: {
@@ -32,16 +44,16 @@ export const theme = {
   },
 
   fontSize: Object.fromEntries(
-    Object.entries(typography.fontSize).map(([key, val]) => [key, remToNumber(val)]),
+    Object.entries(typography.size).map(([key, val]) => [key, remToNumber(val)]),
   ) as Record<string, number>,
 
   lineHeight: Object.fromEntries(
-    Object.entries(typography.lineHeight).map(([key, val]) => [key, parseFloat(val)]),
+    Object.entries(typography['line-height']).map(([key, val]) => [key, parseFloat(val)]),
   ) as Record<string, number>,
 
-  fontWeight: typography.fontWeight as Record<string, string>,
+  fontWeight: typography.weight as Record<string, string>,
 
-  fontFamily: typography.fontFamily,
+  fontFamily: typography.family,
 
   spacing: Object.fromEntries(
     Object.entries(typedSpacing).map(([key, val]) => [key, remToNumber(val)]),
@@ -55,16 +67,22 @@ export const theme = {
   ) as Record<string, number>,
 
   shadow: Object.fromEntries(
-    Object.entries(typedShadows).map(([key, val]) => [
-      key,
-      {
-        shadowOffset: { width: pxToNumber(val.x), height: pxToNumber(val.y) },
-        shadowRadius: pxToNumber(val.blur),
-        shadowColor: val.color,
-        shadowOpacity: 1,
-        elevation: key === 'sm' ? 2 : key === 'md' ? 4 : key === 'lg' ? 8 : 12,
-      },
-    ]),
+    Object.entries(typedShadows).map(([key, layers]) => {
+      const layer = layers[0]
+      if (!layer) {
+        return [key, { shadowOpacity: 0, elevation: 0 }]
+      }
+      return [
+        key,
+        {
+          shadowOffset: { width: pxToNumber(layer.x), height: pxToNumber(layer.y) },
+          shadowRadius: pxToNumber(layer.blur),
+          shadowColor: layer.color,
+          shadowOpacity: 1,
+          elevation: ELEVATION[key] ?? 12,
+        },
+      ]
+    }),
   ),
 } as const
 

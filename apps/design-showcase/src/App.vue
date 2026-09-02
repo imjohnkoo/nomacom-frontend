@@ -1,6 +1,12 @@
 <template>
-  <!-- Admin route uses its own full-page layout -->
-  <template v-if="$route.path.startsWith('/admin')">
+  <!--
+    Admin Dashboard 데모만 자체 풀페이지 레이아웃을 쓴다 (showcase 사이드바 없이).
+
+    ⚠️ `startsWith('/admin')` 로 쓰면 안 된다 — `/admin-patterns` 처럼 접두가 같은
+    형제 라우트까지 삼켜서 그 페이지의 내비게이션이 통째로 사라진다.
+    하위 라우트가 생기면 `startsWith('/admin/')` (슬래시 포함) 를 OR 로 더할 것.
+  -->
+  <template v-if="isFullPageRoute">
     <router-view />
   </template>
 
@@ -32,6 +38,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+/** showcase 셸(사이드바) 없이 통으로 렌더하는 라우트. 정확 일치로만 판정한다. */
+const FULL_PAGE_ROUTES = ['/admin']
+const isFullPageRoute = computed(() => FULL_PAGE_ROUTES.includes(route.path))
+
 const navItems = [
   { path: '/', label: 'Overview' },
   { path: '/esimmany', label: 'Esimmany Patterns' },
@@ -41,6 +56,8 @@ const navItems = [
   { path: '/overlay', label: 'Overlay' },
   { path: '/layout', label: 'Layout' },
   { path: '/utility', label: 'Utility' },
+  { path: '/admin-patterns', label: 'Admin Patterns' },
+  { path: '/charts', label: 'Charts' },
   { path: '/admin', label: 'Admin Dashboard' },
 ]
 </script>

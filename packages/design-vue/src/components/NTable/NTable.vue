@@ -80,35 +80,35 @@ withDefaults(defineProps<NTableProps>(), {
 .n-table-wrapper {
   width: 100%;
   overflow-x: auto;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
 }
 
 .n-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-800, #262626);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-800, #262626);
 }
 
 .n-table__head {
-  background-color: var(--color-neutral-50, #fafafa);
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  background-color: var(--n-color-neutral-50, #fafafa);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-table__th {
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-600, #525252);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-600, #525252);
   text-transform: none;
   white-space: nowrap;
 }
 
 .n-table__td {
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-100, #f5f5f5);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-table__row:last-child .n-table__td {
@@ -117,26 +117,26 @@ withDefaults(defineProps<NTableProps>(), {
 
 /* --- Compact --- */
 .n-table--compact .n-table__th {
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-xs, 0.75rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-xs, 0.75rem);
 }
 
 .n-table--compact .n-table__td {
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
 }
 
 /* --- Striped --- */
 .n-table--striped .n-table__body .n-table__row:nth-child(even) {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 /* --- Hoverable --- */
 .n-table--hoverable .n-table__body .n-table__row {
-  transition: background-color var(--transition-fast, 150ms ease);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-table--hoverable .n-table__body .n-table__row:hover {
-  background-color: var(--color-primary-50, #eff6ff);
+  background-color: var(--n-color-primary-50, #f1edff);
 }
 </style>

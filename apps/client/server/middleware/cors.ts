@@ -21,6 +21,8 @@ const STATIC_ORIGINS = [
   'http://localhost:19006',
   // prod (CloudFront — A-4 결과)
   'https://d3un5i1lmp1eem.cloudfront.net',
+  // prod 커스텀 도메인 (app.esimmany.com 전환 대비 — same-origin fetch 도 Origin 헤더가 붙음)
+  'https://app.esimmany.com',
 ]
 
 /** Expo 네이티브 dev 의 origin 패턴 — exp:// 또는 http://192.168.x.x:8081 등 LAN IP */
@@ -45,8 +47,9 @@ export default defineEventHandler((event) => {
   // origin 없는 호출 (curl, server-to-server, mobile 일부) 은 CORS 검사 자체 불필요 → preflight 만 처리
   if (!requestOrigin) {
     if (event.method === 'OPTIONS') {
-      // preflight 그대로 204
-      return handleCors(event, {
+      // preflight 그대로 204. handleCors 의 boolean 반환값을 그대로 return 하면
+      // h3 가 그 값을 응답 바디로 삼아 요청을 조기 종료하므로 버려야 함
+      handleCors(event, {
         origin: '*',
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowHeaders: ['Authorization', 'Content-Type', 'X-Client-Platform', 'X-Requested-With'],
@@ -70,7 +73,9 @@ export default defineEventHandler((event) => {
     })
   }
 
-  return handleCors(event, {
+  // 반환값 (boolean) 을 return 하면 일반 요청까지 바디 `false` 로 조기 종료됨 —
+  // preflight 는 handleCors 가 내부에서 응답을 완료하므로 반환값은 버리고 통과시킨다
+  handleCors(event, {
     origin: [requestOrigin],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Authorization', 'Content-Type', 'X-Client-Platform', 'X-Requested-With'],

@@ -61,15 +61,15 @@ const isVisible = computed(() => props.modelValue || props.loading)
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-4, 1rem);
+  gap: var(--n-spacing-4, 1rem);
 }
 
 .n-global-loader__message {
   margin: 0;
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-0, #ffffff);
-  font-weight: var(--font-fontWeight-medium, 500);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-0, #ffffff);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 
 .n-global-loader-enter-active,

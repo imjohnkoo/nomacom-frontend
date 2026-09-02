@@ -124,11 +124,11 @@ const dateValue = computed({
 
 <style scoped>
 .n-calendar {
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  padding: var(--spacing-3, 0.75rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  padding: var(--n-spacing-3, 0.75rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
   width: fit-content;
 }
 
@@ -136,13 +136,13 @@ const dateValue = computed({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: var(--spacing-3, 0.75rem);
+  padding-bottom: var(--n-spacing-3, 0.75rem);
 }
 
 .n-calendar__heading {
-  font-size: var(--font-fontSize-base, 1rem);
-  font-weight: var(--font-fontWeight-semibold, 600);
-  color: var(--color-neutral-800, #262626);
+  font-size: var(--n-font-size-base, 1rem);
+  font-weight: var(--n-font-weight-semibold, 600);
+  color: var(--n-color-neutral-800, #262626);
 }
 
 .n-calendar__nav-btn {
@@ -153,18 +153,18 @@ const dateValue = computed({
   height: 32px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-md, 0.375rem);
+  border-radius: var(--n-radius-md, 0.375rem);
   cursor: pointer;
-  color: var(--color-neutral-600, #525252);
-  transition: background-color var(--transition-fast, 150ms ease);
+  color: var(--n-color-neutral-600, #525252);
+  transition: background-color var(--n-transition-fast, 150ms ease);
 }
 
 .n-calendar__nav-btn:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-calendar__nav-btn:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: -2px;
 }
 
@@ -174,7 +174,7 @@ const dateValue = computed({
 }
 
 .n-calendar__grid-head {
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-calendar__grid-row {
@@ -187,9 +187,9 @@ const dateValue = computed({
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--font-fontSize-xs, 0.75rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  color: var(--color-neutral-500, #737373);
+  font-size: var(--n-font-size-xs, 0.75rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 .n-calendar__cell {
@@ -209,35 +209,35 @@ const dateValue = computed({
   height: 32px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-full, 9999px);
-  font-size: var(--font-fontSize-sm, 0.875rem);
-  color: var(--color-neutral-800, #262626);
+  border-radius: var(--n-radius-full, 9999px);
+  font-size: var(--n-font-size-sm, 0.875rem);
+  color: var(--n-color-neutral-800, #262626);
   cursor: pointer;
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all var(--n-transition-fast, 150ms ease);
 }
 
 .n-calendar__cell-trigger:hover {
-  background-color: var(--color-neutral-100, #f5f5f5);
+  background-color: var(--n-color-neutral-100, #f5f5f5);
 }
 
 .n-calendar__cell-trigger:focus-visible {
-  outline: 2px solid var(--color-primary-500, #3b82f6);
+  outline: 2px solid var(--n-color-primary-500, #6239FF);
   outline-offset: -2px;
 }
 
 .n-calendar__cell-trigger[data-selected] {
-  background-color: var(--color-primary-600, #2563eb);
-  color: var(--color-neutral-0, #ffffff);
-  font-weight: var(--font-fontWeight-medium, 500);
+  background-color: var(--n-color-primary-600, #5025e8);
+  color: var(--n-color-neutral-0, #ffffff);
+  font-weight: var(--n-font-weight-medium, 500);
 }
 
 .n-calendar__cell-trigger[data-today] {
-  font-weight: var(--font-fontWeight-bold, 700);
-  color: var(--color-primary-600, #2563eb);
+  font-weight: var(--n-font-weight-bold, 700);
+  color: var(--n-color-primary-600, #5025e8);
 }
 
 .n-calendar__cell-trigger[data-today][data-selected] {
-  color: var(--color-neutral-0, #ffffff);
+  color: var(--n-color-neutral-0, #ffffff);
 }
 
 .n-calendar__cell-trigger[data-disabled] {
@@ -246,7 +246,7 @@ const dateValue = computed({
 }
 
 .n-calendar__cell-trigger[data-outside-month] {
-  color: var(--color-neutral-300, #d4d4d4);
+  color: var(--n-color-neutral-300, #d4d4d4);
 }
 
 .n-calendar__cell-trigger[data-unavailable] {

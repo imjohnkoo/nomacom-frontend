@@ -27,6 +27,7 @@
       :required="fieldContext?.required?.value || false"
       :aria-invalid="hasError || undefined"
       :aria-describedby="ariaDescribedBy"
+      v-bind="$attrs"
       @input="handleInput"
     />
     <label v-if="variant === 'underline' && label" class="n-input__floating-label">
@@ -39,6 +40,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFormField } from '../../composables'
+
+/**
+ * 루트가 래퍼 `<div>` 라서 기본 동작이면 `maxlength`·`autocomplete`·`name`·`inputmode`
+ * 같은 네이티브 속성이 **래퍼 div 로 떨어져 조용히 무시된다**. 에러도, 경고도 없이
+ * 동작만 사라지는 무증상 실패라 발견이 늦다. 명시적으로 끄고 `<input>` 에 직접 전달한다.
+ */
+defineOptions({ inheritAttrs: false })
 
 export type NInputVariant = 'box' | 'underline'
 
@@ -105,43 +113,43 @@ function handleInput(event: Event) {
   display: inline-flex;
   align-items: center;
   width: 100%;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-300, #d4d4d4);
-  border-radius: var(--radius-md, 0.375rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-300, #d4d4d4);
+  border-radius: var(--n-radius-md, 0.375rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   transition:
-    border-color var(--transition-fast, 150ms ease),
-    box-shadow var(--transition-fast, 150ms ease);
+    border-color var(--n-transition-fast, 150ms ease),
+    box-shadow var(--n-transition-fast, 150ms ease);
 }
 
 .n-input:focus-within {
-  border-color: var(--color-primary-500, #6239ff);
-  box-shadow: 0 0 0 2px var(--color-primary-200, #c7b6ff);
+  border-color: var(--n-color-primary-500, #6239ff);
+  box-shadow: 0 0 0 2px var(--n-color-primary-200, #c7b6ff);
 }
 
 /* --- Sizes (box variant) --- */
 .n-input--sm {
-  font-size: var(--font-fontSize-sm, 0.875rem);
+  font-size: var(--n-font-size-sm, 0.875rem);
 }
 
 .n-input--sm .n-input__field {
-  padding: var(--spacing-1, 0.25rem) var(--spacing-2, 0.5rem);
+  padding: var(--n-spacing-1, 0.25rem) var(--n-spacing-2, 0.5rem);
 }
 
 .n-input--md {
-  font-size: var(--font-fontSize-base, 1rem);
+  font-size: var(--n-font-size-base, 1rem);
 }
 
 .n-input--md .n-input__field {
-  padding: var(--spacing-2, 0.5rem) var(--spacing-3, 0.75rem);
+  padding: var(--n-spacing-2, 0.5rem) var(--n-spacing-3, 0.75rem);
 }
 
 .n-input--lg {
-  font-size: var(--font-fontSize-lg, 1.125rem);
+  font-size: var(--n-font-size-lg, 1.125rem);
 }
 
 .n-input--lg .n-input__field {
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
 }
 
 /* --- Field --- */
@@ -152,12 +160,12 @@ function handleInput(event: Event) {
   outline: none;
   background: transparent;
   font: inherit;
-  color: var(--color-neutral-900, #171717);
-  line-height: var(--font-lineHeight-normal, 1.5);
+  color: var(--n-color-neutral-900, #171717);
+  line-height: var(--n-font-line-height-normal, 1.5);
 }
 
 .n-input__field::placeholder {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 /* --- Icon --- */
@@ -165,36 +173,36 @@ function handleInput(event: Event) {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 .n-input--sm .n-input__icon {
-  padding-left: var(--spacing-2, 0.5rem);
+  padding-left: var(--n-spacing-2, 0.5rem);
 }
 
 .n-input--md .n-input__icon {
-  padding-left: var(--spacing-3, 0.75rem);
+  padding-left: var(--n-spacing-3, 0.75rem);
 }
 
 .n-input--lg .n-input__icon {
-  padding-left: var(--spacing-4, 1rem);
+  padding-left: var(--n-spacing-4, 1rem);
 }
 
 /* --- Error --- */
 .n-input--error {
-  border-color: var(--color-error-500, #ef4444);
+  border-color: var(--n-color-error-500, #ef4444);
 }
 
 .n-input--error:focus-within {
-  border-color: var(--color-error-500, #ef4444);
-  box-shadow: 0 0 0 2px var(--color-error-50, #fef2f2);
+  border-color: var(--n-color-error-500, #ef4444);
+  box-shadow: 0 0 0 2px var(--n-color-error-50, #fef2f2);
 }
 
 /* --- Disabled --- */
 .n-input--disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .n-input--disabled .n-input__field {
@@ -203,7 +211,7 @@ function handleInput(event: Event) {
 
 /* --- Readonly --- */
 .n-input--readonly {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 /* ====== Underline variant ====== */
@@ -211,7 +219,7 @@ function handleInput(event: Event) {
   position: relative;
   display: block;
   border: none;
-  border-bottom: 1px solid var(--color-neutral-200, #e5e5e5);
+  border-bottom: 1px solid var(--n-color-neutral-200, #e5e5e5);
   border-radius: 0;
   background: transparent;
 }
@@ -222,7 +230,7 @@ function handleInput(event: Event) {
 }
 
 .n-input--variant-underline.n-input--error {
-  border-bottom-color: var(--color-error-500, #ef4444);
+  border-bottom-color: var(--n-color-error-500, #ef4444);
 }
 
 .n-input--variant-underline.n-input--error:focus-within {
@@ -234,7 +242,7 @@ function handleInput(event: Event) {
   width: 100%;
   padding: 4px 0;
   font-size: 17px;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
   background: transparent;
 }
 
@@ -243,7 +251,7 @@ function handleInput(event: Event) {
 }
 
 .n-input--variant-underline .n-input__field::placeholder {
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
 }
 
 /* Hide placeholder when used purely as a floating-label sentinel */
@@ -256,7 +264,7 @@ function handleInput(event: Event) {
   left: 0;
   top: 14px;
   font-size: 15px;
-  color: var(--color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-400, #a3a3a3);
   pointer-events: none;
   transform-origin: left top;
   transition:
@@ -267,14 +275,14 @@ function handleInput(event: Event) {
 .n-input--variant-underline .n-input__field:focus ~ .n-input__floating-label,
 .n-input--variant-underline .n-input__field:not(:placeholder-shown) ~ .n-input__floating-label {
   transform: translateY(-18px) scale(0.84);
-  color: var(--color-primary-500, #6239ff);
+  color: var(--n-color-primary-500, #6239ff);
 }
 
 .n-input--variant-underline.n-input--error .n-input__field:focus ~ .n-input__floating-label,
 .n-input--variant-underline.n-input--error
   .n-input__field:not(:placeholder-shown)
   ~ .n-input__floating-label {
-  color: var(--color-error-500, #ef4444);
+  color: var(--n-color-error-500, #ef4444);
 }
 
 .n-input__underline {
@@ -283,7 +291,7 @@ function handleInput(event: Event) {
   bottom: -1px;
   height: 2px;
   width: 0;
-  background: var(--color-primary-500, #6239ff);
+  background: var(--n-color-primary-500, #6239ff);
   transition:
     width 220ms ease,
     background 220ms ease;
@@ -298,6 +306,6 @@ function handleInput(event: Event) {
 .n-input--variant-underline.n-input--error
   .n-input__field:not(:placeholder-shown)
   ~ .n-input__underline {
-  background: var(--color-error-500, #ef4444);
+  background: var(--n-color-error-500, #ef4444);
 }
 </style>

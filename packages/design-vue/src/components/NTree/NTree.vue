@@ -50,7 +50,7 @@ function onToggle(node: TreeItem) {
 
 <style scoped>
 .n-tree {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   width: 100%;
 }
 </style>

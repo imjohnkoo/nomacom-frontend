@@ -90,15 +90,15 @@ const value = computed({
 
 <style scoped>
 .n-accordion {
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   width: 100%;
-  border: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
-  border-radius: var(--radius-lg, 0.5rem);
+  border: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
+  border-radius: var(--n-radius-lg, 0.5rem);
   overflow: hidden;
 }
 
 .n-accordion__item {
-  border-bottom: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  border-bottom: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 
 .n-accordion__item:last-child {
@@ -114,25 +114,25 @@ const value = computed({
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--spacing-4, 1rem) var(--spacing-4, 1rem);
+  padding: var(--n-spacing-4, 1rem) var(--n-spacing-4, 1rem);
   border: none;
   background: transparent;
-  font-size: var(--font-fontSize-base, 1rem);
-  font-weight: var(--font-fontWeight-medium, 500);
-  font-family: var(--font-fontFamily-sans, sans-serif);
-  color: var(--color-neutral-800, #262626);
+  font-size: var(--n-font-size-base, 1rem);
+  font-weight: var(--n-font-weight-medium, 500);
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
+  color: var(--n-color-neutral-800, #262626);
   cursor: pointer;
   text-align: left;
-  transition: background-color var(--transition-fast, 150ms ease);
+  transition: background-color var(--n-transition-fast, 150ms ease);
   outline: none;
 }
 
 .n-accordion__trigger:hover {
-  background-color: var(--color-neutral-50, #fafafa);
+  background-color: var(--n-color-neutral-50, #fafafa);
 }
 
 .n-accordion__trigger:focus-visible {
-  box-shadow: inset 0 0 0 2px var(--color-primary-500, #3b82f6);
+  box-shadow: inset 0 0 0 2px var(--n-color-primary-500, #6239FF);
 }
 
 .n-accordion__trigger-text {
@@ -141,8 +141,8 @@ const value = computed({
 
 .n-accordion__chevron {
   flex-shrink: 0;
-  color: var(--color-neutral-500, #737373);
-  transition: transform var(--transition-normal, 250ms ease);
+  color: var(--n-color-neutral-500, #737373);
+  transition: transform var(--n-transition-normal, 250ms ease);
 }
 
 .n-accordion__trigger[data-state='open'] .n-accordion__chevron {
@@ -151,21 +151,21 @@ const value = computed({
 
 .n-accordion__content {
   overflow: hidden;
-  background-color: var(--color-neutral-0, #ffffff);
+  background-color: var(--n-color-neutral-0, #ffffff);
 }
 
 .n-accordion__content[data-state='open'] {
-  animation: n-accordion-slide-down var(--transition-normal, 250ms ease);
+  animation: n-accordion-slide-down var(--n-transition-normal, 250ms ease);
 }
 
 .n-accordion__content[data-state='closed'] {
-  animation: n-accordion-slide-up var(--transition-normal, 250ms ease);
+  animation: n-accordion-slide-up var(--n-transition-normal, 250ms ease);
 }
 
 .n-accordion__content-inner {
-  padding: var(--spacing-0, 0) var(--spacing-4, 1rem) var(--spacing-4, 1rem);
-  font-size: var(--font-fontSize-base, 1rem);
-  color: var(--color-neutral-600, #525252);
+  padding: var(--n-spacing-0, 0) var(--n-spacing-4, 1rem) var(--n-spacing-4, 1rem);
+  font-size: var(--n-font-size-base, 1rem);
+  color: var(--n-color-neutral-600, #525252);
   line-height: 1.6;
 }
 

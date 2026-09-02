@@ -17,19 +17,19 @@
           <div class="showcase-row" style="align-items: flex-end;">
             <div style="text-align: center;">
               <NSpinner size="sm" />
-              <div style="font-size: 12px; color: var(--color-neutral-400); margin-top: 4px;">sm</div>
+              <div style="font-size: 12px; color: var(--n-color-neutral-400); margin-top: 4px;">sm</div>
             </div>
             <div style="text-align: center;">
               <NSpinner size="md" />
-              <div style="font-size: 12px; color: var(--color-neutral-400); margin-top: 4px;">md</div>
+              <div style="font-size: 12px; color: var(--n-color-neutral-400); margin-top: 4px;">md</div>
             </div>
             <div style="text-align: center;">
               <NSpinner size="lg" />
-              <div style="font-size: 12px; color: var(--color-neutral-400); margin-top: 4px;">lg</div>
+              <div style="font-size: 12px; color: var(--n-color-neutral-400); margin-top: 4px;">lg</div>
             </div>
             <div style="text-align: center;">
               <NSpinner size="xl" />
-              <div style="font-size: 12px; color: var(--color-neutral-400); margin-top: 4px;">xl</div>
+              <div style="font-size: 12px; color: var(--n-color-neutral-400); margin-top: 4px;">xl</div>
             </div>
           </div>
         </div>
@@ -38,15 +38,15 @@
           <div class="showcase-card__title">인라인 로딩</div>
           <div class="showcase-row">
             <NSpinner size="sm" color="primary" />
-            <span style="font-size: 14px; color: var(--color-neutral-600);">데이터를 불러오고 있습니다...</span>
+            <span style="font-size: 14px; color: var(--n-color-neutral-600);">데이터를 불러오고 있습니다...</span>
           </div>
         </div>
 
         <div class="showcase-card">
           <div class="showcase-card__title">풀 로딩 패턴</div>
-          <div style="display: flex; flex-direction: column; align-items: center; padding: 32px 0; gap: 16px; border: 1px dashed var(--color-neutral-200); border-radius: 8px;">
+          <div style="display: flex; flex-direction: column; align-items: center; padding: 32px 0; gap: 16px; border: 1px dashed var(--n-color-neutral-200); border-radius: 8px;">
             <NSpinner size="lg" color="primary" />
-            <span style="font-size: 14px; color: var(--color-neutral-500);">주문 정보를 불러오고 있습니다...</span>
+            <span style="font-size: 14px; color: var(--n-color-neutral-500);">주문 정보를 불러오고 있습니다...</span>
           </div>
         </div>
       </div>

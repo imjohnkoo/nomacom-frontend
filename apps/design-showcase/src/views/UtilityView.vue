@@ -26,7 +26,7 @@
                 {{ clipboard.copied.value ? '복사됨!' : '복사' }}
               </NButton>
             </div>
-            <div style="font-size: 13px; color: var(--color-neutral-500);">
+            <div style="font-size: 13px; color: var(--n-color-neutral-500);">
               상태: <span :class="clipboard.copied.value ? 'util-copied' : ''">{{ clipboard.copied.value ? 'copied = true' : 'copied = false' }}</span>
             </div>
           </div>
@@ -37,8 +37,8 @@
           <div class="showcase-stack">
             <div v-for="(item, index) in codeItems" :key="index" class="util-code-row">
               <div class="util-code-row__label">
-                <span style="font-size: 12px; font-weight: 600; color: var(--color-neutral-500);">{{ item.label }}</span>
-                <span style="font-size: 12px; color: var(--color-neutral-400); word-break: break-all;">{{ item.value }}</span>
+                <span style="font-size: 12px; font-weight: 600; color: var(--n-color-neutral-500);">{{ item.label }}</span>
+                <span style="font-size: 12px; color: var(--n-color-neutral-400); word-break: break-all;">{{ item.value }}</span>
               </div>
               <NCopyButton :value="item.value" size="sm" />
             </div>
@@ -63,10 +63,10 @@
               @input="phone.handleInput"
             />
             <div style="display: flex; gap: 16px; font-size: 13px;">
-              <span style="color: var(--color-neutral-500);">
+              <span style="color: var(--n-color-neutral-500);">
                 원본: <span class="showcase-code">{{ phone.raw.value || '—' }}</span>
               </span>
-              <span :style="{ color: phone.isValid.value ? 'var(--color-success-500)' : 'var(--color-error-500)' }">
+              <span :style="{ color: phone.isValid.value ? 'var(--n-color-success-500)' : 'var(--n-color-error-500)' }">
                 {{ phone.isValid.value ? 'Valid' : 'Invalid' }}
               </span>
             </div>
@@ -81,7 +81,7 @@
               <NButton size="sm" variant="outline" @click="phone.set('01098765432')">01098765432 설정</NButton>
               <NButton size="sm" variant="ghost" @click="phone.clear()">초기화</NButton>
             </div>
-            <div style="font-size: 13px; color: var(--color-neutral-500);">
+            <div style="font-size: 13px; color: var(--n-color-neutral-500);">
               현재: <span class="showcase-code">{{ phone.formatted.value || '(비어있음)' }}</span>
             </div>
           </div>
@@ -116,19 +116,19 @@ const codeItems = [
   width: 100%;
   padding: 8px 12px;
   font-size: 14px;
-  border: 1px solid var(--color-neutral-300, #d4d4d4);
+  border: 1px solid var(--n-color-neutral-300, #d4d4d4);
   border-radius: 6px;
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  font-family: var(--n-font-family-sans, sans-serif);
   outline: none;
   transition: border-color 0.15s ease;
 }
 .util-input:focus {
-  border-color: var(--color-primary-500, #3b82f6);
-  box-shadow: 0 0 0 2px var(--color-primary-100, #dbeafe);
+  border-color: var(--n-color-primary-500, #3b82f6);
+  box-shadow: 0 0 0 2px var(--n-color-primary-100, #dbeafe);
 }
 
 .util-copied {
-  color: var(--color-success-500, #22c55e);
+  color: var(--n-color-success-500, #22c55e);
   font-weight: 600;
 }
 
@@ -138,7 +138,7 @@ const codeItems = [
   justify-content: space-between;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--color-neutral-100, #f5f5f5);
+  border-bottom: 1px solid var(--n-color-neutral-100, #f5f5f5);
 }
 .util-code-row:last-child {
   border-bottom: none;

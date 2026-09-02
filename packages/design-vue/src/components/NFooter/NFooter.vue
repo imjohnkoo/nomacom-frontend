@@ -25,12 +25,12 @@ withDefaults(defineProps<NFooterProps>(), {
 .n-footer {
   display: flex;
   align-items: center;
-  padding: var(--spacing-3, 0.75rem) var(--spacing-4, 1rem);
-  background-color: var(--color-neutral-0, #ffffff);
+  padding: var(--n-spacing-3, 0.75rem) var(--n-spacing-4, 1rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
   flex-shrink: 0;
 }
 
 .n-footer--bordered {
-  border-top: var(--borderWidth-1, 1px) solid var(--color-neutral-200, #e5e5e5);
+  border-top: var(--n-border-width-1, 1px) solid var(--n-color-neutral-200, #e5e5e5);
 }
 </style>

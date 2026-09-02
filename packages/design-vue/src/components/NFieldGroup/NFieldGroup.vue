@@ -43,15 +43,15 @@ withDefaults(defineProps<NFieldGroupProps>(), {
 
 /* --- Gap --- */
 .n-field-group--gap-sm {
-  gap: var(--spacing-2, 0.5rem);
+  gap: var(--n-spacing-2, 0.5rem);
 }
 
 .n-field-group--gap-md {
-  gap: var(--spacing-4, 1rem);
+  gap: var(--n-spacing-4, 1rem);
 }
 
 .n-field-group--gap-lg {
-  gap: var(--spacing-6, 1.5rem);
+  gap: var(--n-spacing-6, 1.5rem);
 }
 
 /* Allow children to grow equally in horizontal layout */

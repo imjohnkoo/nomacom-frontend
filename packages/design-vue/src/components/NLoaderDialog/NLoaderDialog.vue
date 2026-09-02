@@ -47,7 +47,7 @@ const open = defineModel<boolean>({ default: false })
 .n-loader-dialog__overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--zIndex-modal-backdrop, 1040);
+  z-index: var(--n-z-index-modal-backdrop, 1040);
   background-color: rgba(17, 17, 17, 0.32);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -58,13 +58,14 @@ const open = defineModel<boolean>({ default: false })
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: var(--zIndex-modal, 1050);
+  z-index: var(--n-z-index-modal, 1050);
   width: 280px;
-  padding: 44px 24px 24px;
-  border-radius: var(--radius-3xl, 1.5rem);
-  background-color: var(--color-neutral-0, #ffffff);
-  box-shadow: var(--shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
-  font-family: var(--font-fontFamily-sans, sans-serif);
+  /* NAlertDialog 와 동일한 상하 대칭 리듬 (36px) */
+  padding: 36px 24px 36px;
+  border-radius: var(--n-radius-3xl, 1.5rem);
+  background-color: var(--n-color-neutral-0, #ffffff);
+  box-shadow: var(--n-shadow-modal, 0 30px 60px -20px rgba(17, 17, 17, 0.25));
+  font-family: var(--n-font-family-sans, 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Segoe UI', 'Noto Sans KR', sans-serif);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -79,9 +80,9 @@ const open = defineModel<boolean>({ default: false })
 .n-loader-dialog__spinner {
   width: 48px;
   height: 48px;
-  border-radius: var(--radius-full, 9999px);
-  border: 4px solid var(--color-primary-100, #e3dbff);
-  border-top-color: var(--color-primary-500, #6239ff);
+  border-radius: var(--n-radius-full, 9999px);
+  border: 4px solid var(--n-color-primary-100, #e3dbff);
+  border-top-color: var(--n-color-primary-500, #6239ff);
   animation: n-loader-spin 0.9s linear infinite;
 }
 
@@ -101,13 +102,13 @@ const open = defineModel<boolean>({ default: false })
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: var(--color-neutral-900, #171717);
+  color: var(--n-color-neutral-900, #171717);
 }
 
 .n-loader-dialog__desc {
   margin: 0;
   font-size: 12px;
-  color: var(--color-neutral-500, #737373);
+  color: var(--n-color-neutral-500, #737373);
 }
 
 /* Transitions */

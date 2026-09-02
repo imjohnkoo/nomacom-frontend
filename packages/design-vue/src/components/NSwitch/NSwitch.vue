@@ -51,7 +51,7 @@ const emit = defineEmits<{
 .n-switch {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-2);
+  gap: var(--n-spacing-2);
   cursor: pointer;
   user-select: none;
 }
@@ -65,9 +65,9 @@ const emit = defineEmits<{
   position: relative;
   display: inline-flex;
   align-items: center;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-200);
-  transition: background-color var(--transition-fast);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-200);
+  transition: background-color var(--n-transition-fast);
   cursor: inherit;
   flex-shrink: 0;
   border: none;
@@ -90,20 +90,20 @@ const emit = defineEmits<{
 }
 
 .n-switch__track:focus-visible {
-  outline: 2px solid var(--color-primary-500);
+  outline: 2px solid var(--n-color-primary-500);
   outline-offset: 2px;
 }
 
 .n-switch__track[data-state='checked'] {
-  background-color: var(--color-primary-500);
+  background-color: var(--n-color-primary-500);
 }
 
 .n-switch__thumb {
   display: block;
-  border-radius: var(--radius-full);
-  background-color: var(--color-neutral-0);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast);
+  border-radius: var(--n-radius-full);
+  background-color: var(--n-color-neutral-0);
+  box-shadow: var(--n-shadow-sm);
+  transition: transform var(--n-transition-fast);
   will-change: transform;
 }
 
@@ -138,10 +138,10 @@ const emit = defineEmits<{
 }
 
 .n-switch__label {
-  font-family: var(--font-fontFamily-sans);
-  font-size: var(--font-fontSize-sm);
-  font-weight: var(--font-fontWeight-regular);
-  color: var(--color-neutral-800);
+  font-family: var(--n-font-family-sans);
+  font-size: var(--n-font-size-sm);
+  font-weight: var(--n-font-weight-normal);
+  color: var(--n-color-neutral-800);
   line-height: 1.4;
 }
 </style>
