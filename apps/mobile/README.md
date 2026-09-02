@@ -14,16 +14,23 @@ Expo SDK 55 기반 iOS/Android 앱. `packages/design-mobile`, `packages/design-t
 ```
 apps/mobile/
 ├── src/
-│   └── app/                     # Expo Router 라우트
-│       ├── _layout.tsx          # 루트 레이아웃 (Stack navigator)
-│       └── index.tsx            # 홈 스크린 (eSIM 설치 데모)
-├── assets/                      # 이미지, 아이콘, 폰트
+│   ├── app/                     # Expo Router 라우트
+│   │   ├── _layout.tsx          # OrderProvider + Stack
+│   │   ├── index.tsx            # 홈 — 주문번호 입력
+│   │   ├── verify/[orderId].tsx      # step 1 — 본인 확인
+│   │   ├── details/[orderId].tsx     # step 2 — 상품주문 선택
+│   │   ├── select-date/[orderId].tsx # step 3 — 국가/날짜 → 발급
+│   │   └── view/[orderId].tsx        # step 4 — 설치 (UL/수동 코드)
+│   ├── components/              # flow-screen 등 앱 로컬 컴포넌트
+│   └── lib/                     # api / types(re-export) / store / 유틸
 ├── app.json                     # Expo 앱 설정
+├── eas.json                     # EAS 빌드 프로필 (실행은 승인 대기)
 ├── babel.config.js              # babel-preset-expo
 ├── tsconfig.json                # expo/tsconfig.base 확장
-├── expo-env.d.ts                # Expo + Router 타입 참조
 └── package.json
 ```
+
+상세 컨텍스트는 `apps/mobile/CLAUDE.md` 참조.
 
 ## 실행
 
@@ -54,7 +61,7 @@ yarn workspace nomacom-mobile dev
 
 ## eSIM 설치 동작 원리
 
-`src/app/index.tsx` 의 `buildAppleUniversalLink(activationCode)` 가 다음 형식의 URL 을 만듭니다:
+`src/lib/esim.ts` 의 `buildAppleUniversalLink(activationCode)` 가 다음 형식의 URL 을 만듭니다:
 
 ```
 https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=<URL-encoded LPA string>
@@ -67,21 +74,21 @@ https://esimsetup.apple.com/esim_qrcode_provisioning?carddata=<URL-encoded LPA s
 - **WebView 로 열지 말 것** — 반드시 `Linking.openURL` 로 시스템 브라우저/핸들러가 처리해야 eSIM 시트가 뜸
 - **CoreTelephony 엔타이틀먼트 불필요** — nomacom 은 MVNO 라 `CTCellularPlanProvisioning` 경로는 닫혀 있음 (Universal Link 가 유일한 경로)
 
-## 현재 상태
+## 현재 상태 (2026-08-19)
 
 **구현 완료:**
-- Expo SDK 55 + Expo Router v7 스캐폴딩
-- `workspace:*` 로 design-mobile / design-tokens 링크
-- 홈 스크린에 eSIM 설치 데모 버튼 (하드코딩된 샘플 LPA)
-- 웹 dev 서버 동작 확인
+- Expo SDK 55 + Expo Router v7 스캐폴딩, `workspace:*` 로 design-mobile / design-tokens 링크
+- 4-step 게스트 발급 흐름 (verify → details → select-date → view) — `apps/client/server/api/v1/*` Nitro 를 그대로 호출
+- iOS 17.4+ Universal Link 설치 CTA + 수동 코드 fallback / Android 수동 코드 안내 (`expo-clipboard` 복사)
+- `@imjohnkoo/design-mobile` 0.3.1 컴포넌트 (4-step 세트) 도입
+- eas.json (development / preview / production 채널)
 
 **TODO (후속 작업):**
-- `packages/design-mobile` 의 실제 컴포넌트 임포트해서 홈 스크린 리디자인
-- nomacom-client 의 4단계 플로우 재구현 (verify → details → select-date → view → install)
-- Maya API 호출은 `apps/client/server/api/v1/*` 를 그대로 재사용 (Nitro 엔드포인트 호출)
-- Android 는 `EuiccManager` 경로 (native module 필요 — `expo-esim-provisioning` 검토)
-- iOS 17.4 미만 QR fallback
-- EAS Build 설정 (production 빌드 / TestFlight / Play Console)
+- EAS 실행 (`eas init` / 첫 빌드) — john 승인·개입 대기
+- QR 이미지 렌더 (타 기기 설치 케이스 — `react-native-qrcode-svg` 의존 필요)
+- Android `EuiccManager` 자동 설치 경로 (native module 필요 — 제조사 파편화로 보류)
+- iOS 17.4 미만 fallback 고도화
+- https Universal Links 딥링크 (AASA — app.esimmany.com 전환 후)
 
 ## 참고
 

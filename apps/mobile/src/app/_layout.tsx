@@ -1,14 +1,18 @@
 import { Stack } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
+
+import { OrderProvider } from '@/lib/order-store'
 
 export default function RootLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: '#ffffff' },
-        headerTitleStyle: { fontWeight: '600' },
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: 'nomacom' }} />
-    </Stack>
+    <OrderProvider>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: '#ffffff' },
+        }}
+      />
+    </OrderProvider>
   )
 }

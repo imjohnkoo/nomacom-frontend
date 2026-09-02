@@ -11960,6 +11960,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-clipboard@npm:~55.0.16":
+  version: 55.0.16
+  resolution: "expo-clipboard@npm:55.0.16"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/3ad075f964c5fb7e2e186a209dab8253d52f3a21ff7c6080fe91dbd69b622cd90cce766175d14df87e693e3d1cb9f4f30593039dd86b73f53b11f4c330c141fa
+  languageName: node
+  linkType: hard
+
 "expo-constants@npm:~55.0.13":
   version: 55.0.13
   resolution: "expo-constants@npm:55.0.13"
@@ -15577,6 +15588,7 @@ __metadata:
     "@types/react-dom": "npm:~19.1.7"
     "@types/react-native-web": "npm:^0"
     expo: "npm:~55.0.0"
+    expo-clipboard: "npm:~55.0.16"
     expo-constants: "npm:~55.0.13"
     expo-linking: "npm:~55.0.12"
     expo-router: "npm:~55.0.12"
