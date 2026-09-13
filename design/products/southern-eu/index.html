@@ -351,18 +351,20 @@
     <script>
       const SECTIONS = [
         { num: '01', slug: 'hero', name: 'Hero', hint: '남유럽 2개국 · 무제한 · 여성 모델', height: 920, kind: 'rewrite', tag: 'EU' },
-        { num: '02', slug: 'trust-strip', name: 'Trust strip', hint: '발급 1분 · 당일 · 24h · 2개국', height: 200, kind: 'rewrite', tag: 'EU' },
+        { num: '02', slug: 'trust-strip', name: 'Trust strip', hint: '발급 1~2분 · 당일 · 24h · 2개국', height: 200, kind: 'rewrite', tag: 'EU' },
         { num: '03', slug: 'plan-picker', name: 'Plan picker', hint: '무제한/종량제 토글 + 1~30일 가격표', height: 3200, kind: 'restructure', tag: '구조大' },
+        { num: '04', slug: 'usage-days', name: 'Usage days', hint: '사용일수 계산 타임라인 (첫 연결 기준 24h)', height: 620, kind: 'new', tag: '신규' },
         { num: '05', slug: 'why', name: 'Why ESIMmany', hint: '4 benefit (한국 CS · 당일 · 테더링 · 2개국)', height: 780, kind: 'restructure', tag: '4 benefit' },
-        { num: '06', slug: 'stats', name: 'Plan at a glance', hint: '1~30일 / 1~2GB / 500Kbps / 테더링', height: 580, kind: 'rewrite', tag: 'EU' },
-        { num: '07', slug: 'reviews', name: 'Reviews', hint: '실리뷰 5 (원문 발췌) + 구매자 사진 4', height: 1200, kind: 'rewrite', tag: 'EU' },
-        { num: '08', slug: 'coverage', name: 'Coverage', hint: '스페인 6 + 포르투갈 6 도시 · 1티어 자동 연결', height: 820, kind: 'eu-special', tag: '전면' },
-        { num: '09', slug: 'how-it-works', name: 'How it works', hint: '4 step · 회선 OFF/ON (D1)', height: 560, kind: 'rewrite', tag: 'D1' },
-        { num: '10', slug: 'comparison', name: 'Comparison', hint: '6 행 · 다국가 동일 SIM (EU 특화)', height: 680, kind: 'rewrite', tag: 'EU' },
+        { num: '06', slug: 'comparison', name: 'Comparison', hint: '6 행 · 다국가 동일 SIM + 요금 출처 (Why 직후로 이동)', height: 900, kind: 'rewrite', tag: 'EU' },
+        { num: '07', slug: 'stats', name: 'Plan at a glance', hint: '1~30일 / 1~2GB / 500Kbps / 테더링', height: 580, kind: 'rewrite', tag: 'EU' },
+        { num: '08', slug: 'reviews', name: 'Reviews', hint: '실리뷰 5 (원문 발췌)', height: 1000, kind: 'rewrite', tag: 'EU' },
+        { num: '09', slug: 'coverage', name: 'Coverage', hint: '스페인 6 + 포르투갈 6 도시 · 대표 통신망 자동 연결', height: 820, kind: 'eu-special', tag: '전면' },
+        { num: '10', slug: 'how-it-works', name: 'How it works', hint: '4 step + 구매 전 확인 6', height: 980, kind: 'rewrite', tag: 'D1' },
         { num: '11', slug: 'compatibility', name: 'Compatibility', hint: '🔴 빨간 경고박스 + 칩 전면 교체', height: 1280, kind: 'restructure', tag: '오류 정정' },
-        { num: '12', slug: 'refund', name: 'Refund policy', hint: '3 카드 (자체 정책 부분 환불)', height: 720, kind: 'rewrite', tag: 'D6' },
-        { num: '13', slug: 'faq', name: 'FAQ', hint: '13 항목 · EU Q12·Q13 추가', height: 1620, kind: 'rewrite', tag: '+EU' },
-        { num: '14', slug: 'final-cta', name: 'Final CTA', hint: '신뢰배지 + 두 나라 한 SIM + CS 번호', height: 620, kind: 'rewrite', tag: 'EU' },
+        { num: '12', slug: 'device-check', name: 'Device check', hint: 'eSIM 지원 확인 2가지 방법 · 기기 스크린샷 4', height: 1400, kind: 'new', tag: '신규' },
+        { num: '13', slug: 'refund', name: 'Refund policy', hint: '3 카드 (자체 정책 부분 환불)', height: 720, kind: 'rewrite', tag: 'D6' },
+        { num: '14', slug: 'faq', name: 'FAQ', hint: '11 항목 · EU 국경이동 Q 포함', height: 1420, kind: 'rewrite', tag: '+EU' },
+        { num: '15', slug: 'final-cta', name: 'Final CTA', hint: '신뢰배지 + 두 나라 한 SIM + CS 번호', height: 620, kind: 'rewrite', tag: 'EU' },
       ];
 
       const SECTION_BASE = 'sections';

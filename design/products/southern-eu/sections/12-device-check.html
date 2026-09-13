@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>12 · Device check · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .dc-block + .dc-block {
+        margin-top: var(--sp-5);
+      }
+      .dc-block {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: var(--sp-6) var(--sp-6) 0;
+        overflow: hidden;
+      }
+      .dc-block__h {
+        display: block;
+        width: fit-content;
+        margin: 0 auto var(--sp-5);
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: var(--fs-body-sm);
+        font-weight: 800;
+        letter-spacing: var(--ls-body);
+        padding: var(--sp-2) var(--sp-5);
+        border-radius: var(--radius-full);
+      }
+
+      /* 방법 1 — 다이얼 단계 */
+      .dc-steps {
+        display: grid;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-6);
+      }
+      .dc-step {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: var(--sp-2);
+        align-items: baseline;
+        font-size: var(--fs-body-sm);
+        line-height: var(--lh-body);
+        letter-spacing: var(--ls-body);
+        color: var(--color-neutral-700);
+      }
+      .dc-code {
+        display: inline-block;
+        background: var(--color-primary-50);
+        color: var(--color-primary-700);
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        padding: 1px var(--sp-3);
+        border-radius: var(--radius-md);
+        margin: 0 2px;
+      }
+
+      /* 방법 2 — 경로 행 */
+      .dc-paths {
+        display: grid;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-6);
+      }
+      .dc-path {
+        display: grid;
+        grid-template-columns: 108px 1fr;
+        gap: var(--sp-3);
+        align-items: center;
+      }
+      .dc-path__os {
+        text-align: center;
+        background: var(--color-primary-50);
+        color: var(--color-primary-700);
+        font-size: var(--fs-caption);
+        font-weight: 800;
+        letter-spacing: var(--ls-caption);
+        padding: var(--sp-1) var(--sp-2);
+        border-radius: var(--radius-full);
+      }
+      .dc-path__route {
+        font-size: var(--fs-body-sm);
+        letter-spacing: var(--ls-body);
+        color: var(--color-neutral-700);
+      }
+
+      /* 기기 이미지 */
+      .dc-shots {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-3);
+      }
+      .dc-shot {
+        display: grid;
+        justify-items: center;
+        gap: var(--sp-3);
+      }
+      .dc-shot__label {
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: var(--fs-caption-sm);
+        font-weight: 800;
+        letter-spacing: var(--ls-caption);
+        padding: var(--sp-1) var(--sp-4);
+        border-radius: var(--radius-full);
+      }
+      .dc-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .dc-note {
+        margin-top: var(--sp-5);
+        padding: var(--sp-4) var(--sp-5);
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        font-size: var(--fs-caption);
+        line-height: var(--lh-body);
+        letter-spacing: var(--ls-caption);
+        color: var(--color-neutral-600);
+        text-align: center;
+      }
+      .dc-note b {
+        color: var(--color-error-700);
+        font-weight: 800;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">12</span>
+        <span class="dev-toolbar__title">Device check</span>
+        <span class="dev-toolbar__hint"> eSIM 지원 여부 확인 2가지 방법 · 기기 스크린샷 4 </span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-12-device-check">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Device check</span>
+        <h2 class="section__title">내 폰이 eSIM 을 쓸 수 있는지<br />확인하는 방법</h2>
+        <p class="section__lede">
+          아래 두 가지 방법으로 내 폰이 eSIM 을 지원하는지 직접 확인할 수 있어요.
+        </p>
+
+        <!-- 방법 1 — 다이얼 -->
+        <div class="dc-block">
+          <span class="dc-block__h">1. 다이얼로 확인하는 방법</span>
+          <div class="dc-steps">
+            <div class="dc-step">
+              <span class="ds-num">1</span>
+              <span>다이얼 화면에서 <span class="dc-code">*#06#</span> 을 눌러요.</span>
+            </div>
+            <div class="dc-step">
+              <span class="ds-num">2</span>
+              <span>기기 정보에 <b>EID</b> 가 보이면 eSIM 을 쓸 수 있는 기기예요.</span>
+            </div>
+          </div>
+          <div class="dc-shots">
+            <div class="dc-shot">
+              <span class="dc-shot__label">01</span>
+              <img src="../assets/devices/dial-01.png" alt="다이얼 화면에서 *#06# 입력" />
+            </div>
+            <div class="dc-shot">
+              <span class="dc-shot__label">02</span>
+              <img src="../assets/devices/dial-02.png" alt="기기 정보 화면의 EID 표시" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 방법 2 — 설정 -->
+        <div class="dc-block">
+          <span class="dc-block__h">2. 설정에서 확인하는 방법</span>
+          <div class="dc-paths">
+            <div class="dc-path">
+              <span class="dc-path__os">아이폰 (iOS)</span>
+              <span class="dc-path__route">설정 › 셀룰러 › eSIM 추가 확인</span>
+            </div>
+            <div class="dc-path">
+              <span class="dc-path__os">안드로이드</span>
+              <span class="dc-path__route">설정 › 연결 › SIM 관리자 › eSIM 추가 확인</span>
+            </div>
+          </div>
+          <div class="dc-shots">
+            <div class="dc-shot">
+              <span class="dc-shot__label">아이폰</span>
+              <img
+                src="../assets/devices/settings-ios.png"
+                alt="아이폰 설정 셀룰러 화면의 eSIM 추가"
+              />
+            </div>
+            <div class="dc-shot">
+              <span class="dc-shot__label">안드로이드</span>
+              <img
+                src="../assets/devices/settings-android.png"
+                alt="안드로이드 SIM 관리자 화면의 eSIM 추가"
+              />
+            </div>
+          </div>
+        </div>
+
+        <p class="dc-note">
+          <b>갤럭시는 S23부터 eSIM 을 지원합니다.</b> S22 와 그 이전 국내판 모델은 eSIM 모듈이 없어
+          쓸 수 없어요. 그 외 기기는 위 방법으로 확인해 주세요.
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

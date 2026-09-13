@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design System · ESIMmany 상세페이지</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <style>
+      /* ==================================================================
+         제안 스케일 — 확정되면 shared/tokens.css 로 승격
+         ================================================================== */
+      :root {
+        /* type scale */
+        --fs-display: 30px;
+        --fs-title: 34px;
+        --fs-h3: 24px;
+        --fs-h4: 20px;
+        --fs-lede: 17px;
+        --fs-body: 16px;
+        --fs-body-sm: 15px;
+        --fs-caption: 14px;
+        --fs-caption-sm: 12.5px;
+        --fs-micro: 11.5px;
+
+        /* letter-spacing — 크기 구간별 */
+        --ls-display: -0.022em;
+        --ls-heading: -0.015em;
+        --ls-body: -0.01em;
+        --ls-caption: -0.005em;
+        --ls-eyebrow: 0.14em;
+
+        /* line-height */
+        --lh-tight: 1.25;
+        --lh-card: 1.45;
+        --lh-body: 1.6;
+        --lh-lede: 1.7;
+
+        /* spacing — 4px base */
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 20px;
+        --sp-6: 24px;
+        --sp-8: 32px;
+        --sp-9: 36px;
+        --sp-10: 40px;
+        --sp-14: 56px;
+        --sp-18: 72px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        background: #ededf2;
+        color: var(--color-neutral-900);
+        word-break: keep-all;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+      }
+
+      .doc-head {
+        padding: 32px 36px;
+        background: var(--color-neutral-900);
+        color: #fff;
+        border-radius: 16px;
+        margin-bottom: 28px;
+      }
+      .doc-head h1 {
+        margin: 6px 0 8px;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: var(--ls-display);
+      }
+      .doc-head p {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.7;
+        color: var(--color-neutral-300);
+        letter-spacing: var(--ls-body);
+      }
+      .doc-head .kicker {
+        font-size: 12.5px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-300);
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 16px;
+        padding: 26px 30px 30px;
+        margin-bottom: 20px;
+      }
+      .card > h2 {
+        margin: 0 0 4px;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: var(--ls-heading);
+      }
+      .card > .sub {
+        margin: 0 0 20px;
+        font-size: 14px;
+        color: var(--color-neutral-500);
+        letter-spacing: var(--ls-body);
+      }
+      h3.grp {
+        margin: 26px 0 10px;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-primary-600);
+      }
+      h3.grp:first-of-type {
+        margin-top: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+      th {
+        text-align: left;
+        font-weight: 800;
+        color: var(--color-neutral-500);
+        font-size: 11.5px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0 10px 8px 0;
+        border-bottom: 1px solid var(--color-neutral-200);
+      }
+      td {
+        padding: 9px 10px 9px 0;
+        border-bottom: 1px solid var(--color-neutral-100);
+        vertical-align: middle;
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        background: var(--color-neutral-100);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--color-primary-700);
+        white-space: nowrap;
+      }
+      .num {
+        font-variant-numeric: tabular-nums;
+        color: var(--color-neutral-600);
+      }
+
+      /* 타입 스케일 실물 */
+      .spec {
+        color: var(--color-neutral-900);
+        display: block;
+        max-width: 520px;
+      }
+
+      /* 색상 스와치 */
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 6px;
+      }
+      .sw {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--color-neutral-200);
+      }
+      .sw i {
+        display: block;
+        height: 46px;
+      }
+      .sw span {
+        display: block;
+        padding: 5px 6px;
+        font-size: 10.5px;
+        font-family: var(--font-mono);
+        color: var(--color-neutral-500);
+        text-align: center;
+      }
+
+      /* 스페이싱 시각화 */
+      .sp-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 5px 0;
+      }
+      .sp-bar {
+        height: 14px;
+        background: var(--color-primary-300);
+        border-radius: 3px;
+      }
+
+      /* 섹션 해부도 */
+      .anatomy {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 24px;
+        align-items: start;
+      }
+      .anat-demo {
+        background: #fff;
+        border: 1px dashed var(--color-primary-300);
+        border-radius: 10px;
+        padding: 36px 30px;
+      }
+      .gap-tag {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--color-primary-600);
+        background: var(--color-primary-50);
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin: 0 0 2px;
+        width: fit-content;
+      }
+
+      /* 컴포넌트 프리뷰 */
+      .comp-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .demo {
+        border: 1px solid var(--color-neutral-200);
+        border-radius: 10px;
+        padding: 18px;
+        background: var(--color-neutral-50);
+      }
+      .demo__label {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--color-neutral-400);
+        margin-bottom: 12px;
+      }
+
+      /* 실제 컴포넌트 정의 (제안본) */
+      .ds-card {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .ds-note {
+        padding: var(--sp-3) var(--sp-5);
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        font-size: var(--fs-caption);
+        line-height: var(--lh-body);
+        letter-spacing: var(--ls-body);
+        color: var(--color-neutral-600);
+      }
+      .ds-pill {
+        display: inline-block;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: var(--fs-caption-sm);
+        font-weight: 700;
+        letter-spacing: var(--ls-caption);
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius-full);
+      }
+      .ds-pill--soft {
+        background: var(--color-primary-50);
+        color: var(--color-primary-600);
+      }
+      .ds-tile {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--radius-md);
+        background: var(--color-primary-50);
+        font-size: 18px;
+      }
+
+      /* 드리프트 경고 */
+      .warn {
+        background: var(--color-error-50);
+        border: 1px solid #fecaca;
+        border-radius: 10px;
+        padding: 14px 18px;
+        font-size: 13.5px;
+        line-height: 1.65;
+        color: var(--color-error-700);
+        letter-spacing: var(--ls-body);
+        margin-top: 16px;
+      }
+      .warn b {
+        font-weight: 800;
+      }
+      .ok {
+        background: var(--color-success-50);
+        border-color: #bbf7d0;
+        color: var(--color-success-700);
+      }
+      .drift {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        color: var(--color-neutral-500);
+      }
+      .del {
+        text-decoration: line-through;
+        color: var(--color-neutral-400);
+      }
+      .arrow {
+        color: var(--color-primary-500);
+        font-weight: 800;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="doc-head">
+        <div class="kicker">Design System · Draft</div>
+        <h1>ESIMmany 상세페이지 디자인 코드</h1>
+        <p>
+          southern-eu(EU022 골든) 14개 섹션의 실제 CSS를 전수 조사해 정리한
+          것입니다. <b>현재값</b>과 <b>제안값</b>을 나란히 두었습니다. 확정 후
+          <code>shared/tokens.css</code> 로 승격하고 각 섹션을 마이그레이션합니다.
+        </p>
+      </div>
+
+      <!-- ============================================ 1. 감사 요약 -->
+      <div class="card">
+        <h2>1. 현재 상태 감사</h2>
+        <p class="sub">14개 섹션 파일 + base.css 전수 스캔 결과</p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 130px">항목</th>
+              <th style="width: 70px">현재</th>
+              <th>실제 사용된 값</th>
+              <th style="width: 90px">제안</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>font-size</b></td>
+              <td class="num">18종</td>
+              <td class="drift">
+                34·32·30·28·26·24·22·20·18·17·16·15.5·15·14.5·14·13.5·13·12.5·11.5
+              </td>
+              <td class="num">10단계</td>
+            </tr>
+            <tr>
+              <td><b>letter-spacing</b></td>
+              <td class="num">8종</td>
+              <td class="drift">
+                0.14 · 0.04 · 0.02 · −0.005 · −0.01 · −0.015 · −0.02 · −0.03 em
+              </td>
+              <td class="num">5구간</td>
+            </tr>
+            <tr>
+              <td><b>border-radius</b></td>
+              <td class="num">10종</td>
+              <td class="drift">
+                9999 · 18 · 16 · 14 · 12 · 11 · 10 · 8 · 6 · 4 px — 토큰 미사용
+              </td>
+              <td class="num">토큰 6</td>
+            </tr>
+            <tr>
+              <td><b>note / callout</b></td>
+              <td class="num">6종</td>
+              <td class="drift">
+                pp-note · ud-note · cv-note · hw-note · final__cs-note · quote
+              </td>
+              <td class="num">1종</td>
+            </tr>
+            <tr>
+              <td><b>pill / badge</b></td>
+              <td class="num">7종</td>
+              <td class="drift">
+                padding 5·14 / 4·10 / 3·12 / 3·9 / 2·8 / 1·7 / 1·6
+              </td>
+              <td class="num">2종</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="warn">
+          <b>letter-spacing −0.03em 이 4곳에 남아 있습니다</b> —
+          <code>02-trust-strip:42</code> <code>06-stats:41</code>
+          <code>07-reviews:40</code> <code>12-refund:56</code>. subtitle 은 −1%
+          로 통일했지만 이 4곳은 다른 요소(수치·라벨)라 아직 그대로입니다.
+        </div>
+      </div>
+
+      <!-- ============================================ 2. 타입 스케일 -->
+      <div class="card">
+        <h2>2. 타입 스케일</h2>
+        <p class="sub">
+          18종 → 10단계. 각 행의 왼쪽이 실제 렌더입니다.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 46%">스펙 (실물)</th>
+              <th style="width: 130px">토큰</th>
+              <th style="width: 60px">size</th>
+              <th style="width: 90px">letter-sp</th>
+              <th style="width: 60px">line-h</th>
+              <th>흡수한 현재값</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-title);
+                    font-weight: 800;
+                    letter-spacing: var(--ls-display);
+                    line-height: var(--lh-tight);
+                  "
+                  >섹션 타이틀</span
+                >
+              </td>
+              <td><code>--fs-title</code></td>
+              <td class="num">34</td>
+              <td class="num">−2.2%</td>
+              <td class="num">1.25</td>
+              <td class="drift">34</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-display);
+                    font-weight: 800;
+                    letter-spacing: var(--ls-display);
+                    line-height: var(--lh-tight);
+                  "
+                  >2,700원</span
+                >
+              </td>
+              <td><code>--fs-display</code></td>
+              <td class="num">30</td>
+              <td class="num">−2.2%</td>
+              <td class="num">1.25</td>
+              <td class="drift">32 · 30 · 28</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-h3);
+                    font-weight: 800;
+                    letter-spacing: var(--ls-heading);
+                    line-height: 1.35;
+                  "
+                  >카드 헤딩</span
+                >
+              </td>
+              <td><code>--fs-h3</code></td>
+              <td class="num">24</td>
+              <td class="num">−1.5%</td>
+              <td class="num">1.35</td>
+              <td class="drift">26 · 24</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-h4);
+                    font-weight: 800;
+                    letter-spacing: var(--ls-heading);
+                    line-height: 1.4;
+                  "
+                  >서브 헤딩</span
+                >
+              </td>
+              <td><code>--fs-h4</code></td>
+              <td class="num">20</td>
+              <td class="num">−1.5%</td>
+              <td class="num">1.4</td>
+              <td class="drift">22 · 20</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-lede);
+                    letter-spacing: var(--ls-body);
+                    line-height: var(--lh-lede);
+                    color: var(--color-neutral-600);
+                  "
+                  >섹션 서브타이틀 — 제목 아래 설명 문장</span
+                >
+              </td>
+              <td><code>--fs-lede</code></td>
+              <td class="num">17</td>
+              <td class="num">−1%</td>
+              <td class="num">1.7</td>
+              <td class="drift">18 · 17</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-body);
+                    letter-spacing: var(--ls-body);
+                    line-height: var(--lh-lede);
+                  "
+                  >본문 — 카드 안 설명문</span
+                >
+              </td>
+              <td><code>--fs-body</code></td>
+              <td class="num">16</td>
+              <td class="num">−1%</td>
+              <td class="num">1.7</td>
+              <td class="drift">16 · 15.5</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-body-sm);
+                    letter-spacing: var(--ls-body);
+                    line-height: var(--lh-body);
+                  "
+                  >작은 본문 — 표 셀 · 리스트</span
+                >
+              </td>
+              <td><code>--fs-body-sm</code></td>
+              <td class="num">15</td>
+              <td class="num">−1%</td>
+              <td class="num">1.6</td>
+              <td class="drift">15 · 14.5</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-caption);
+                    letter-spacing: var(--ls-caption);
+                    line-height: var(--lh-body);
+                    color: var(--color-neutral-600);
+                  "
+                  >캡션 — 주의사항 · 각주</span
+                >
+              </td>
+              <td><code>--fs-caption</code></td>
+              <td class="num">14</td>
+              <td class="num">−0.5%</td>
+              <td class="num">1.6</td>
+              <td class="drift">14 · 13.5</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-caption-sm);
+                    letter-spacing: var(--ls-caption);
+                    line-height: var(--lh-card);
+                    color: var(--color-neutral-500);
+                  "
+                  >작은 캡션 — pill 라벨</span
+                >
+              </td>
+              <td><code>--fs-caption-sm</code></td>
+              <td class="num">12.5</td>
+              <td class="num">−0.5%</td>
+              <td class="num">1.45</td>
+              <td class="drift">13 · 12.5</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: var(--fs-micro);
+                    letter-spacing: var(--ls-caption);
+                    color: var(--color-neutral-400);
+                  "
+                  >마이크로 — 단위 · 보조</span
+                >
+              </td>
+              <td><code>--fs-micro</code></td>
+              <td class="num">11.5</td>
+              <td class="num">−0.5%</td>
+              <td class="num">1.45</td>
+              <td class="drift">11.5</td>
+            </tr>
+            <tr>
+              <td>
+                <span
+                  class="spec"
+                  style="
+                    font-size: 14px;
+                    font-weight: 700;
+                    letter-spacing: var(--ls-eyebrow);
+                    text-transform: uppercase;
+                    color: var(--color-primary-500);
+                  "
+                  >Eyebrow</span
+                >
+              </td>
+              <td><code>--ls-eyebrow</code></td>
+              <td class="num">14</td>
+              <td class="num">+14%</td>
+              <td class="num">1</td>
+              <td class="drift">14 (유지)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ============================================ 3. letter-spacing 규칙 -->
+      <div class="card">
+        <h2>3. letter-spacing 규칙</h2>
+        <p class="sub">
+          값을 개별로 정하지 않고 <b>크기 구간</b>으로 결정합니다. 큰 글자일수록
+          더 좁힙니다 (한글 특성).
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 150px">구간</th>
+              <th style="width: 110px">토큰</th>
+              <th style="width: 80px">값</th>
+              <th>적용 대상</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>24px 이상</td>
+              <td><code>--ls-display</code></td>
+              <td class="num">−2.2%</td>
+              <td>섹션 타이틀 · 큰 수치</td>
+            </tr>
+            <tr>
+              <td>18–23px</td>
+              <td><code>--ls-heading</code></td>
+              <td class="num">−1.5%</td>
+              <td>카드 헤딩 · 서브 헤딩</td>
+            </tr>
+            <tr>
+              <td>15–17px</td>
+              <td><code>--ls-body</code></td>
+              <td class="num">−1%</td>
+              <td><b>서브타이틀</b> · 본문 <span class="arrow">← 확정됨</span></td>
+            </tr>
+            <tr>
+              <td>14px 이하</td>
+              <td><code>--ls-caption</code></td>
+              <td class="num">−0.5%</td>
+              <td>캡션 · pill · 각주</td>
+            </tr>
+            <tr>
+              <td>대문자 라벨</td>
+              <td><code>--ls-eyebrow</code></td>
+              <td class="num">+14%</td>
+              <td>eyebrow (uppercase 시 자간 확대)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="warn ok">
+          <b>정리 대상</b> — <span class="del">−0.03em</span>
+          <span class="arrow">→</span> −0.015em (heading 구간) ·
+          <span class="del">−0.02em</span> <span class="arrow">→</span> −0.022em
+          (display) · <span class="del">0.04em / 0.02em</span>
+          <span class="arrow">→</span> eyebrow 외 양수 자간 폐지
+        </div>
+      </div>
+
+      <!-- ============================================ 4. 스페이싱 -->
+      <div class="card">
+        <h2>4. 스페이싱 스케일</h2>
+        <p class="sub">4px 배수. 임의 px 사용 금지.</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px">
+          <div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-1</code>
+              <span class="num" style="width: 42px">4px</span>
+              <i class="sp-bar" style="width: 4px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-2</code>
+              <span class="num" style="width: 42px">8px</span>
+              <i class="sp-bar" style="width: 8px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-3</code>
+              <span class="num" style="width: 42px">12px</span>
+              <i class="sp-bar" style="width: 12px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-4</code>
+              <span class="num" style="width: 42px">16px</span>
+              <i class="sp-bar" style="width: 16px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-5</code>
+              <span class="num" style="width: 42px">20px</span>
+              <i class="sp-bar" style="width: 20px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-6</code>
+              <span class="num" style="width: 42px">24px</span>
+              <i class="sp-bar" style="width: 24px"></i>
+            </div>
+          </div>
+          <div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-8</code>
+              <span class="num" style="width: 42px">32px</span>
+              <i class="sp-bar" style="width: 32px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-9</code>
+              <span class="num" style="width: 42px">36px</span>
+              <i class="sp-bar" style="width: 36px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-10</code>
+              <span class="num" style="width: 42px">40px</span>
+              <i class="sp-bar" style="width: 40px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-14</code>
+              <span class="num" style="width: 42px">56px</span>
+              <i class="sp-bar" style="width: 56px"></i>
+            </div>
+            <div class="sp-row">
+              <code style="width: 78px">--sp-18</code>
+              <span class="num" style="width: 42px">72px</span>
+              <i class="sp-bar" style="width: 72px"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ 5. 섹션 해부도 -->
+      <div class="card">
+        <h2>5. 섹션 해부도 — 수직 리듬</h2>
+        <p class="sub">
+          모든 섹션이 따르는 골격. 점선 안이 <code>.section</code> 입니다.
+        </p>
+        <div class="anatomy">
+          <div class="anat-demo">
+            <span class="gap-tag">padding: 72px 60px (--sp-18 / 60)</span>
+            <div
+              style="
+                font-size: 14px;
+                font-weight: 700;
+                letter-spacing: 0.14em;
+                text-transform: uppercase;
+                color: var(--color-primary-500);
+              "
+            >
+              Eyebrow
+            </div>
+            <span class="gap-tag" style="margin-top: 16px">↓ 16px (--sp-4)</span>
+            <div
+              style="
+                font-size: 34px;
+                font-weight: 800;
+                letter-spacing: -0.022em;
+                line-height: 1.25;
+              "
+            >
+              섹션 타이틀
+            </div>
+            <span class="gap-tag" style="margin-top: 14px">↓ 14px</span>
+            <div
+              style="
+                font-size: 17px;
+                line-height: 1.7;
+                letter-spacing: -0.01em;
+                color: var(--color-neutral-600);
+                max-width: 620px;
+              "
+            >
+              서브타이틀 — 제목을 보충하는 한두 문장. 최대 폭 620px 로 제한해
+              읽기 편한 행 길이를 유지합니다.
+            </div>
+            <span class="gap-tag" style="margin-top: 36px">↓ 36px (--sp-9)</span>
+            <div
+              style="
+                background: var(--color-neutral-50);
+                border: 1px solid var(--color-neutral-200);
+                border-radius: 16px;
+                padding: 20px;
+                text-align: center;
+                font-size: 14px;
+                color: var(--color-neutral-500);
+              "
+            >
+              콘텐츠 블록
+            </div>
+          </div>
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>캔버스 폭</td>
+                  <td class="num"><code>--page-width</code> 860</td>
+                </tr>
+                <tr>
+                  <td>섹션 padding</td>
+                  <td class="num">72 / 60</td>
+                </tr>
+                <tr>
+                  <td>tight 변형</td>
+                  <td class="num">56 / 60</td>
+                </tr>
+                <tr>
+                  <td>콘텐츠 폭</td>
+                  <td class="num">740</td>
+                </tr>
+                <tr>
+                  <td>eyebrow ↓</td>
+                  <td class="num">16</td>
+                </tr>
+                <tr>
+                  <td>title ↓</td>
+                  <td class="num">14</td>
+                </tr>
+                <tr>
+                  <td>lede ↓</td>
+                  <td class="num">36</td>
+                </tr>
+                <tr>
+                  <td>lede max-width</td>
+                  <td class="num">620</td>
+                </tr>
+                <tr>
+                  <td>블록 간격</td>
+                  <td class="num">20–24</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="warn ok" style="margin-top: 14px; font-size: 12.5px">
+              배경 교대 — 홀수 섹션 <code>white</code> / 짝수 섹션
+              <code>.section--alt</code> (neutral-50)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ 6. 컴포넌트 -->
+      <div class="card">
+        <h2>6. 컴포넌트</h2>
+        <p class="sub">현재 흩어진 변형들을 통합한 제안본입니다.</p>
+
+        <h3 class="grp">Card — 흰 배경 콘텐츠 블록</h3>
+        <div class="comp-grid">
+          <div class="demo">
+            <div class="demo__label">.ds-card</div>
+            <div class="ds-card">
+              <div
+                style="
+                  font-size: 16.5px;
+                  font-weight: 800;
+                  letter-spacing: -0.015em;
+                  margin-bottom: 6px;
+                "
+              >
+                카드 제목
+              </div>
+              <div
+                style="
+                  font-size: 14px;
+                  line-height: 1.6;
+                  letter-spacing: -0.005em;
+                  color: var(--color-neutral-600);
+                "
+              >
+                본문. 테두리 1px neutral-200, radius 16px, padding 20/24.
+              </div>
+            </div>
+          </div>
+          <div class="demo">
+            <div class="demo__label">현재 (통합 대상)</div>
+            <table style="font-size: 12.5px">
+              <tbody>
+                <tr>
+                  <td>radius</td>
+                  <td class="drift">
+                    <span class="del">18·16·14·12·11·10</span>
+                    <span class="arrow">→</span> 16
+                  </td>
+                </tr>
+                <tr>
+                  <td>padding</td>
+                  <td class="drift">
+                    <span class="del">24/16 · 20/22 · 18/22</span>
+                    <span class="arrow">→</span> 20/24
+                  </td>
+                </tr>
+                <tr>
+                  <td>border</td>
+                  <td class="drift">1px neutral-200 (일치)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h3 class="grp">Note — 하단 보조 안내</h3>
+        <div class="demo">
+          <div class="demo__label">
+            .ds-note — pp-note · ud-note · cv-note · hw-note · final__cs-note 6종
+            통합
+          </div>
+          <div class="ds-note">
+            💡 <b>강조 문구</b> — 섹션 마지막에 붙는 보조 안내. 14px / 1.6 /
+            −0.5% / neutral-50 배경 / radius 8.
+          </div>
+        </div>
+
+        <h3 class="grp">Pill — 라벨 · 배지</h3>
+        <div class="demo">
+          <div class="demo__label">.ds-pill / .ds-pill--soft — 7종 → 2종</div>
+          <span class="ds-pill">STEP 1</span>
+          <span class="ds-pill" style="margin-left: 8px">1일차</span>
+          <span class="ds-pill ds-pill--soft" style="margin-left: 8px"
+            >BEST</span
+          >
+          <span class="ds-pill ds-pill--soft" style="margin-left: 8px"
+            >RECOMMENDED</span
+          >
+          <div class="drift" style="margin-top: 12px">
+            padding <span class="del">5·14 / 4·10 / 3·12 / 3·9 / 2·8 / 1·7</span>
+            <span class="arrow">→</span> 4/12 · radius full · 12.5px / 700
+          </div>
+        </div>
+
+        <h3 class="grp">Icon tile — 이모지 타일</h3>
+        <div class="demo">
+          <div class="demo__label">.ds-tile — 36×36 / radius 6 / primary-50</div>
+          <div style="display: flex; gap: 10px">
+            <span class="ds-tile">⚡</span>
+            <span class="ds-tile">🔁</span>
+            <span class="ds-tile">🌐</span>
+            <span class="ds-tile">✈️</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ 7. 색상 -->
+      <div class="card">
+        <h2>7. 색상 (기존 토큰 — 변경 없음)</h2>
+        <p class="sub">
+          <code>shared/tokens.css</code> 의 값. 이번 정리 대상이 아닙니다.
+        </p>
+        <h3 class="grp">Primary</h3>
+        <div class="swatches">
+          <div class="sw">
+            <i style="background: var(--color-primary-50)"></i><span>50</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-100)"></i><span>100</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-200)"></i><span>200</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-300)"></i><span>300</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-400)"></i><span>400</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-500)"></i
+            ><span>500 ★</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-600)"></i><span>600</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-700)"></i><span>700</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-800)"></i><span>800</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-primary-900)"></i><span>900</span>
+          </div>
+        </div>
+        <h3 class="grp">Neutral</h3>
+        <div class="swatches">
+          <div class="sw">
+            <i style="background: var(--color-neutral-0)"></i><span>0</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-50)"></i><span>50</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-100)"></i><span>100</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-200)"></i><span>200</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-300)"></i><span>300</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-400)"></i><span>400</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-500)"></i><span>500</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-600)"></i><span>600</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-800)"></i><span>800</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-neutral-900)"></i><span>900</span>
+          </div>
+        </div>
+        <h3 class="grp">Semantic</h3>
+        <div class="swatches" style="grid-template-columns: repeat(6, 1fr)">
+          <div class="sw">
+            <i style="background: var(--color-success-500)"></i
+            ><span>success</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-warning-500)"></i
+            ><span>warning</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-error-500)"></i><span>error</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-info-500)"></i><span>info</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-error-700)"></i
+            ><span>error-700</span>
+          </div>
+          <div class="sw">
+            <i style="background: var(--color-success-700)"></i
+            ><span>succ-700</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================ 8. 반경 -->
+      <div class="card">
+        <h2>8. 반경 (radius)</h2>
+        <p class="sub">
+          토큰은 이미 있는데 섹션들이 px 직접값을 쓰고 있습니다. 토큰으로 회수.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 120px">미리보기</th>
+              <th style="width: 150px">토큰</th>
+              <th style="width: 70px">값</th>
+              <th>용도 · 흡수한 현재값</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-sm);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-sm</code></td>
+              <td class="num">4</td>
+              <td class="drift">태그 · 코드 — 4</td>
+            </tr>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-md);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-md</code></td>
+              <td class="num">6</td>
+              <td class="drift">아이콘 타일 · 바 — 6</td>
+            </tr>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-lg);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-lg</code></td>
+              <td class="num">8</td>
+              <td class="drift">note · 작은 블록 — <span class="del">10·11</span></td>
+            </tr>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-xl);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-xl</code></td>
+              <td class="num">12</td>
+              <td class="drift">중간 블록 — 12</td>
+            </tr>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-2xl);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-2xl</code></td>
+              <td class="num">16</td>
+              <td class="drift">카드 — <span class="del">18·16·14</span></td>
+            </tr>
+            <tr>
+              <td>
+                <i
+                  style="
+                    display: block;
+                    width: 60px;
+                    height: 30px;
+                    background: var(--color-primary-100);
+                    border-radius: var(--radius-full);
+                  "
+                ></i>
+              </td>
+              <td><code>--radius-full</code></td>
+              <td class="num">9999</td>
+              <td class="drift">pill · 배지 — 9999</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ============================================ 9. 다음 단계 -->
+      <div class="card">
+        <h2>9. 확정 후 진행</h2>
+        <p class="sub">이 페이지 confirm 이후의 순서입니다.</p>
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px">#</th>
+              <th style="width: 220px">작업</th>
+              <th>내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td>토큰 승격</td>
+              <td>
+                <code>--fs-*</code> <code>--ls-*</code> <code>--sp-*</code>
+                <code>--lh-*</code> 를 <code>shared/tokens.css</code> 에 추가
+              </td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td>base.css 재정의</td>
+              <td>
+                <code>.eyebrow</code> <code>.section__title</code>
+                <code>.section__lede</code> + 신규
+                <code>.ds-card / .ds-note / .ds-pill / .ds-tile</code>
+              </td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td>14개 섹션 마이그레이션</td>
+              <td>px 직접값 → 토큰 치환. 렌더 diff 로 회귀 확인</td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td>Figma 반영</td>
+              <td>
+                재캡처 <b>불가</b> — 사용자 수정 9건이 지워짐. 텍스트 스타일을
+                Figma 에 만들고 노드에 <b>속성만</b> 적용
+              </td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td>10개 zone 전파</td>
+              <td>
+                <code>_generator/templates/</code> 갱신 후 재생성
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="warn">
+          <b>4번이 이 트랙의 제약입니다.</b> Figma 쪽엔 직접 수정하신 텍스트 9건이
+          있어 재캡처로 밀어넣을 수 없습니다. 타이포 스케일은 Figma
+          <b>Text style</b> 로 만들어 노드에 적용하는 방식이어야 합니다.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design System Mockup · ESIMmany 상세페이지</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="shared/tokens.css" />
+    <style>
+      /* ==================================================================
+         제안 토큰 — design-system.html 과 동일. 확정 시 tokens.css 로 승격
+         ================================================================== */
+      :root {
+        --fs-display: 30px;
+        --fs-title: 34px;
+        --fs-h3: 24px;
+        --fs-h4: 20px;
+        --fs-h5: 16.5px;
+        --fs-lede: 17px;
+        --fs-body: 16px;
+        --fs-body-sm: 15px;
+        --fs-caption: 14px;
+        --fs-caption-sm: 12.5px;
+        --fs-micro: 11.5px;
+
+        --ls-display: -0.022em;
+        --ls-heading: -0.015em;
+        --ls-body: -0.01em;
+        --ls-caption: -0.005em;
+        --ls-eyebrow: 0.14em;
+
+        --lh-tight: 1.25;
+        --lh-card: 1.45;
+        --lh-body: 1.6;
+        --lh-lede: 1.7;
+
+        --sp-1: 4px;
+        --sp-2: 8px;
+        --sp-3: 12px;
+        --sp-4: 16px;
+        --sp-5: 20px;
+        --sp-6: 24px;
+        --sp-8: 32px;
+        --sp-9: 36px;
+        --sp-10: 40px;
+        --sp-14: 56px;
+        --sp-18: 72px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font-sans);
+        background: #ededf2;
+        color: var(--color-neutral-900);
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        background: rgba(23, 23, 23, 0.94);
+        color: #fff;
+        font-size: 12.5px;
+      }
+      .bar b {
+        font-weight: 700;
+      }
+      .bar span {
+        opacity: 0.55;
+        font-size: 11.5px;
+      }
+      .bar em {
+        margin-left: auto;
+        font-style: normal;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        opacity: 0.6;
+      }
+
+      .canvas {
+        width: var(--page-width);
+        margin: 32px auto;
+        background: #fff;
+        box-shadow: var(--shadow-xl);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      /* ---------- 섹션 골격 ---------- */
+      .section {
+        padding: var(--sp-18) 60px;
+      }
+      .section--alt {
+        background: var(--color-neutral-50);
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: var(--fs-caption);
+        font-weight: 700;
+        letter-spacing: var(--ls-eyebrow);
+        text-transform: uppercase;
+        color: var(--color-primary-500);
+        margin-bottom: var(--sp-4);
+      }
+      .section__title {
+        font-size: var(--fs-title);
+        font-weight: 800;
+        letter-spacing: var(--ls-display);
+        line-height: var(--lh-tight);
+        margin: 0 0 14px;
+      }
+      .section__lede {
+        font-size: var(--fs-lede);
+        line-height: var(--lh-lede);
+        letter-spacing: var(--ls-body);
+        color: var(--color-neutral-600);
+        margin: 0 0 var(--sp-9);
+        max-width: 620px;
+      }
+
+      /* ---------- 컴포넌트 ---------- */
+      .ds-card {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .ds-card__h {
+        font-size: var(--fs-h5);
+        font-weight: 800;
+        letter-spacing: var(--ls-heading);
+        margin-bottom: var(--sp-1);
+      }
+      .ds-card__body {
+        font-size: var(--fs-caption);
+        line-height: var(--lh-body);
+        letter-spacing: var(--ls-caption);
+        color: var(--color-neutral-600);
+      }
+      .ds-note {
+        padding: var(--sp-3) var(--sp-5);
+        background: var(--color-neutral-50);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        font-size: var(--fs-caption);
+        line-height: var(--lh-body);
+        letter-spacing: var(--ls-caption);
+        color: var(--color-neutral-600);
+        text-align: center;
+      }
+      .ds-note b {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+      .ds-pill {
+        display: inline-block;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: var(--fs-caption-sm);
+        font-weight: 700;
+        letter-spacing: var(--ls-caption);
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius-full);
+        white-space: nowrap;
+      }
+      .ds-pill--soft {
+        background: var(--color-primary-50);
+        color: var(--color-primary-600);
+      }
+      .ds-tile {
+        width: 36px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: var(--radius-md);
+        background: var(--color-primary-50);
+        font-size: 18px;
+      }
+      .ds-stat {
+        font-size: var(--fs-display);
+        font-weight: 800;
+        letter-spacing: var(--ls-display);
+        line-height: var(--lh-tight);
+        color: var(--color-primary-600);
+      }
+      .ds-stat__unit {
+        font-size: var(--fs-micro);
+        font-weight: 700;
+        letter-spacing: var(--ls-caption);
+        color: var(--color-neutral-400);
+      }
+
+      table.ds-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--fs-body-sm);
+        letter-spacing: var(--ls-body);
+      }
+      .ds-table th {
+        text-align: left;
+        font-size: var(--fs-caption-sm);
+        font-weight: 800;
+        letter-spacing: var(--ls-caption);
+        color: var(--color-neutral-500);
+        padding: 0 var(--sp-3) var(--sp-2) 0;
+        border-bottom: 1px solid var(--color-neutral-200);
+      }
+      .ds-table td {
+        padding: var(--sp-3) var(--sp-3) var(--sp-3) 0;
+        border-bottom: 1px solid var(--color-neutral-100);
+      }
+      .ds-table td:last-child,
+      .ds-table th:last-child {
+        text-align: right;
+        padding-right: 0;
+      }
+
+      /* ---------- 레이아웃 유틸 ---------- */
+      .row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-3);
+      }
+      .row-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--sp-3);
+      }
+      .stack {
+        display: grid;
+        gap: var(--sp-5);
+      }
+      .mt-5 {
+        margin-top: var(--sp-5);
+      }
+      .mt-6 {
+        margin-top: var(--sp-6);
+      }
+
+      /* 주석 라벨 */
+      .anno {
+        position: relative;
+      }
+      .anno::after {
+        content: attr(data-anno);
+        position: absolute;
+        top: -9px;
+        right: 8px;
+        font-family: var(--font-mono);
+        font-size: 9.5px;
+        color: var(--color-primary-600);
+        background: var(--color-primary-50);
+        border: 1px solid var(--color-primary-100);
+        border-radius: 3px;
+        padding: 0 5px;
+        line-height: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bar">
+      <b>Design System Mockup</b>
+      <span>모든 요소를 한 화면에 — 제안 토큰 적용본</span>
+      <em>860px canvas</em>
+    </div>
+
+    <div class="canvas">
+      <!-- ============ 섹션 A : 기본 골격 + 카드 + 타일 ============ -->
+      <section class="section">
+        <span class="eyebrow">Components</span>
+        <h2 class="section__title">모든 요소를 한 섹션에</h2>
+        <p class="section__lede">
+          아래는 상세페이지 14개 섹션에서 쓰이는 요소를 제안 토큰으로 다시 그린
+          것입니다. 실제 렌더이므로 값이 바로 눈에 보입니다.
+        </p>
+
+        <div class="row-3 anno" data-anno=".ds-card × 3">
+          <div class="ds-card">
+            <span class="ds-tile">⚡</span>
+            <div class="ds-card__h mt-5">카드 제목</div>
+            <div class="ds-card__body">
+              16.5px / 800 / −1.5% 제목에 14px / 1.6 / −0.5% 본문.
+            </div>
+          </div>
+          <div class="ds-card">
+            <span class="ds-tile">🔁</span>
+            <div class="ds-card__h mt-5">24시간 갱신</div>
+            <div class="ds-card__body">
+              radius 16, padding 20/24, border 1px neutral-200.
+            </div>
+          </div>
+          <div class="ds-card">
+            <span class="ds-tile">🌐</span>
+            <div class="ds-card__h mt-5">2개국 자동</div>
+            <div class="ds-card__body">
+              카드 사이 간격은 <code>--sp-3</code> 12px 입니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 anno" data-anno=".ds-note">
+          <div class="ds-note">
+            💡 <b>Note</b> — 섹션 하단 보조 안내. 기존 6종(pp·ud·cv·hw·final·quote)을
+            하나로 통합했습니다.
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 섹션 B : 스텝 + pill ============ -->
+      <section class="section section--alt">
+        <span class="eyebrow">Process</span>
+        <h2 class="section__title">스텝 · pill · 배지</h2>
+        <p class="section__lede">
+          pill 은 7종 padding 이 섞여 있었는데 solid / soft 두 가지로 줄였습니다.
+        </p>
+
+        <div class="row-4 anno" data-anno=".ds-pill (solid)">
+          <div class="ds-card" style="text-align: center">
+            <span class="ds-pill">STEP 1</span>
+            <div class="ds-card__h mt-5">결제</div>
+            <div class="ds-card__body">30초</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <span class="ds-pill">STEP 2</span>
+            <div class="ds-card__h mt-5">카톡 발송</div>
+            <div class="ds-card__body">1~2분</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <span class="ds-pill">STEP 3</span>
+            <div class="ds-card__h mt-5">QR 스캔</div>
+            <div class="ds-card__body">10초</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <span class="ds-pill">STEP 4</span>
+            <div class="ds-card__h mt-5">현지 ON</div>
+            <div class="ds-card__body">1분</div>
+          </div>
+        </div>
+
+        <div
+          class="mt-6 anno"
+          data-anno=".ds-pill--soft"
+          style="
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #fff;
+            border: 1px solid var(--color-neutral-200);
+            border-radius: var(--radius-2xl);
+            padding: var(--sp-5) var(--sp-6);
+          "
+        >
+          <span class="ds-pill--soft ds-pill">BEST</span>
+          <span class="ds-pill--soft ds-pill">RECOMMENDED</span>
+          <span class="ds-pill--soft ds-pill">신규</span>
+          <span class="ds-pill">1일차</span>
+          <span class="ds-pill">사용종료</span>
+        </div>
+      </section>
+
+      <!-- ============ 섹션 C : 수치 + 표 ============ -->
+      <section class="section">
+        <span class="eyebrow">Data</span>
+        <h2 class="section__title">수치 표시와 표</h2>
+        <p class="section__lede">
+          큰 수치는 <code>--fs-display</code> 30px, 단위는
+          <code>--fs-micro</code> 11.5px 로 분리합니다.
+        </p>
+
+        <div class="row-4 anno" data-anno=".ds-stat">
+          <div class="ds-card" style="text-align: center">
+            <div class="ds-stat">1~30</div>
+            <div class="ds-stat__unit">일</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <div class="ds-stat">1~2</div>
+            <div class="ds-stat__unit">GB</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <div class="ds-stat">500</div>
+            <div class="ds-stat__unit">Kbps</div>
+          </div>
+          <div class="ds-card" style="text-align: center">
+            <div class="ds-stat">4.6</div>
+            <div class="ds-stat__unit">★ 220건</div>
+          </div>
+        </div>
+
+        <div
+          class="mt-6 anno"
+          data-anno=".ds-table"
+          style="
+            background: #fff;
+            border: 1px solid var(--color-neutral-200);
+            border-radius: var(--radius-2xl);
+            padding: var(--sp-5) var(--sp-6);
+          "
+        >
+          <table class="ds-table">
+            <thead>
+              <tr>
+                <th>일수</th>
+                <th>매일 1GB</th>
+                <th>매일 2GB</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1일</td>
+                <td>2,700</td>
+                <td>3,600</td>
+              </tr>
+              <tr>
+                <td>7일</td>
+                <td>9,300</td>
+                <td>15,600</td>
+              </tr>
+              <tr>
+                <td>10일 <span class="ds-pill ds-pill--soft">BEST</span></td>
+                <td>13,200</td>
+                <td>21,400</td>
+              </tr>
+              <tr>
+                <td>30일</td>
+                <td>29,800</td>
+                <td>48,600</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 섹션 D : 타이포 전체 ============ -->
+      <section class="section section--alt">
+        <span class="eyebrow">Typography</span>
+        <h2 class="section__title">타입 스케일 10단계</h2>
+        <p class="section__lede">
+          18종으로 흩어져 있던 font-size 를 10단계로 정리했습니다. 자간은 값이
+          아니라 <b>크기 구간</b>으로 결정됩니다.
+        </p>
+
+        <div class="stack">
+          <div
+            class="ds-card anno"
+            data-anno="34 / −2.2% / 1.25"
+            style="
+              font-size: var(--fs-title);
+              font-weight: 800;
+              letter-spacing: var(--ls-display);
+              line-height: var(--lh-tight);
+            "
+          >
+            섹션 타이틀입니다
+          </div>
+          <div
+            class="ds-card anno"
+            data-anno="24 / −1.5% / 1.35"
+            style="
+              font-size: var(--fs-h3);
+              font-weight: 800;
+              letter-spacing: var(--ls-heading);
+              line-height: 1.35;
+            "
+          >
+            카드 헤딩입니다
+          </div>
+          <div
+            class="ds-card anno"
+            data-anno="17 / −1% / 1.7"
+            style="
+              font-size: var(--fs-lede);
+              letter-spacing: var(--ls-body);
+              line-height: var(--lh-lede);
+              color: var(--color-neutral-600);
+            "
+          >
+            서브타이틀입니다. 제목을 보충하는 한두 문장이 들어가고, 최대 폭은
+            620px 로 제한합니다.
+          </div>
+          <div
+            class="ds-card anno"
+            data-anno="15 / −1% / 1.6"
+            style="
+              font-size: var(--fs-body-sm);
+              letter-spacing: var(--ls-body);
+              line-height: var(--lh-body);
+            "
+          >
+            작은 본문입니다. 표 셀과 리스트 항목에 씁니다.
+          </div>
+          <div
+            class="ds-card anno"
+            data-anno="14 / −0.5% / 1.6"
+            style="
+              font-size: var(--fs-caption);
+              letter-spacing: var(--ls-caption);
+              line-height: var(--lh-body);
+              color: var(--color-neutral-600);
+            "
+          >
+            캡션입니다. 주의사항과 각주에 씁니다.
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 섹션 E : 수직 리듬 ============ -->
+      <section class="section">
+        <span class="eyebrow">Rhythm</span>
+        <h2 class="section__title">수직 리듬</h2>
+        <p class="section__lede">
+          섹션 padding 72/60, eyebrow ↓16, title ↓14, lede ↓36, 블록 간격 20~24.
+          이 페이지 전체가 그 규칙대로 그려져 있습니다.
+        </p>
+        <div class="ds-note">
+          이 목업의 모든 간격은 <b>4px 배수</b>입니다. 임의 px 은 한 곳도 쓰지
+          않았습니다.
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

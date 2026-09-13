@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AFTER · 변경 후 전체 섹션</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'Pretendard', -apple-system, 'Segoe UI', Roboto, sans-serif;
+        background: #ededf2;
+      }
+      .topbar {
+        position: sticky; top: 0; z-index: 50;
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 20px;
+        background: #6239ff; color: #fff;
+        font-size: 13px;
+      }
+      .topbar b { font-weight: 800; font-size: 14px; }
+      .topbar .tag {
+        font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+        background: rgba(255,255,255,.18); padding: 3px 8px; border-radius: 4px;
+      }
+      .topbar .right { margin-left: auto; display: flex; gap: 8px; align-items: center; font-size: 11.5px; opacity: .8; }
+      .list { padding: 20px 0 60px; }
+      .item { margin-bottom: 28px; }
+      .cap {
+        width: 860px; margin: 0 auto 8px;
+        display: flex; align-items: center; gap: 10px;
+        font-size: 12px; color: #52525b;
+        font-family: ui-monospace, Menlo, monospace;
+      }
+      .cap .n {
+        background: #6239ff; color: #fff; font-weight: 800;
+        border-radius: 5px; padding: 2px 7px; font-size: 11px;
+      }
+      .cap .h { margin-left: auto; }
+      .cap .new { background: #16a34a; color:#fff; border-radius:4px; padding:2px 6px; font-size:10.5px; }
+      .cap .chg { background: #b45309; color:#fff; border-radius:4px; padding:2px 6px; font-size:10.5px; }
+      iframe {
+        display: block; width: 860px; margin: 0 auto;
+        border: 0; background: #fff;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,.1);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>AFTER</b>
+      <span class="tag">현재 (토큰 적용)</span>
+      <span>타입 10단계 · 자간 5구간 · radius 토큰 · 신규 04 섹션</span>
+      <span class="right"><span id="total"></span></span>
+    </div>
+    <div class="list" id="list"></div>
+    <script>
+      (async () => {
+      const SECTIONS = [{"num": "01", "name": "Hero", "file": "01-hero.html"}, {"num": "02", "name": "Trust strip", "file": "02-trust-strip.html"}, {"num": "03", "name": "Plan picker", "file": "03-plan-picker.html", "badge": "헤더 표준화", "badgeCls": "chg"}, {"num": "04", "name": "Usage days", "file": "04-usage-days.html", "badge": "신규", "badgeCls": "new"}, {"num": "05", "name": "Why ESIMmany", "file": "05-why.html"}, {"num": "06", "name": "Plan at a glance", "file": "06-stats.html"}, {"num": "07", "name": "Reviews", "file": "07-reviews.html"}, {"num": "08", "name": "Coverage", "file": "08-coverage.html"}, {"num": "09", "name": "How it works", "file": "09-how-it-works.html", "badge": "내용 변경", "badgeCls": "chg"}, {"num": "10", "name": "Comparison", "file": "10-comparison.html"}, {"num": "11", "name": "Compatibility", "file": "11-compatibility.html"}, {"num": "12", "name": "Device check", "file": "12-device-check.html", "badge": "신규", "badgeCls": "new"}, {"num": "13", "name": "Refund policy", "file": "13-refund.html"}, {"num": "14", "name": "FAQ", "file": "14-faq.html"}, {"num": "15", "name": "Final CTA", "file": "15-final-cta.html"}];
+      const BASE = "sections/";
+      // CSS 메모리 캐시 강제 재검증 — stale tokens.css 로 var() 가 무너지는 것 방지
+      await Promise.all(['tokens.css','base.css'].map(n =>
+        fetch('shared/' + n, { cache: 'reload' }).catch(() => {})));
+      const list = document.getElementById('list');
+      let done = 0, sum = 0;
+      SECTIONS.forEach(s => {
+        const wrap = document.createElement('div');
+        wrap.className = 'item';
+        const cap = document.createElement('div');
+        cap.className = 'cap';
+        cap.innerHTML = '<span class="n">' + s.num + '</span><span>' + s.name + '</span>'
+          + (s.badge ? '<span class="' + s.badgeCls + '">' + s.badge + '</span>' : '')
+          + '<span class="h" data-h></span>';
+        const fr = document.createElement('iframe');
+        fr.src = BASE + s.file + '?embed=1&cb=' + Date.now();
+        fr.scrolling = 'no';
+        fr.addEventListener('load', () => {
+          try {
+            const d = fr.contentDocument;
+            const h = Math.ceil(d.documentElement.scrollHeight);
+            fr.style.height = h + 'px';
+            cap.querySelector('[data-h]').textContent = h + 'px';
+            sum += h;
+          } catch (e) { fr.style.height = '900px'; }
+          if (++done === SECTIONS.length)
+            document.getElementById('total').textContent = SECTIONS.length + ' sections · total ' + sum + 'px';
+        });
+        wrap.appendChild(cap); wrap.appendChild(fr); list.appendChild(wrap);
+      });
+      })();
+    </script>
+  </body>
+</html>

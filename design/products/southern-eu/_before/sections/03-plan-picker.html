@@ -13,6 +13,30 @@
     <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
     <style>
       /* ─── 헤더 ─── */
+      .pp__head {
+        margin-bottom: 24px;
+      }
+      .pp__eyebrow {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-primary-500);
+        margin-bottom: 10px;
+      }
+      .pp__title {
+        font-size: 28px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin: 0 0 8px;
+      }
+      .pp__lede {
+        font-size: 16px;
+        line-height: 1.65;
+        color: var(--color-neutral-500);
+        margin: 0;
+      }
 
       /* ─── 좌우 분할 ─── */
       .pp__split {
@@ -22,7 +46,7 @@
       }
       .pp__col {
         padding: 24px;
-        border-radius: var(--radius-2xl);
+        border-radius: 16px;
         border: 1px solid var(--color-neutral-200);
         background: #fff;
         overflow: hidden;
@@ -38,17 +62,17 @@
 
       .pp__col-head {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         gap: 8px;
         margin-bottom: 6px;
       }
       .pp__col-tag {
         display: inline-block;
         padding: 3px 9px;
-        font-size: var(--fs-caption-sm);
+        font-size: 12.5px;
         font-weight: 800;
         letter-spacing: 0.04em;
-        border-radius: var(--radius-full);
+        border-radius: 9999px;
       }
       .pp__col--unlimited .pp__col-tag {
         background: var(--color-primary-500);
@@ -59,13 +83,13 @@
         color: #fff;
       }
       .pp__col-name {
-        font-size: var(--fs-h4);
+        font-size: 20px;
         font-weight: 800;
-        letter-spacing: var(--ls-heading);
+        letter-spacing: -0.015em;
         color: var(--color-neutral-900);
       }
       .pp__col-sub {
-        font-size: var(--fs-caption);
+        font-size: 14px;
         color: var(--color-neutral-500);
         margin: 0 0 14px;
         line-height: 1.55;
@@ -78,9 +102,9 @@
         border-spacing: 0;
         background: #fff;
         border: 1px solid var(--color-neutral-100);
-        border-radius: var(--radius-lg);
+        border-radius: 10px;
         overflow: hidden;
-        font-size: var(--fs-body-sm);
+        font-size: 14.5px;
       }
       .pp-mx th,
       .pp-mx td {
@@ -91,7 +115,7 @@
       .pp-mx thead th {
         background: var(--color-neutral-50);
         font-weight: 700;
-        font-size: var(--fs-caption-sm);
+        font-size: 12.5px;
         letter-spacing: 0.04em;
         text-transform: uppercase;
         color: var(--color-neutral-500);
@@ -110,7 +134,7 @@
         text-align: left;
         font-weight: 700;
         color: var(--color-neutral-700);
-        font-size: var(--fs-body-sm);
+        font-size: 14.5px;
       }
       .pp-mx tbody td {
         color: var(--color-neutral-800);
@@ -139,10 +163,10 @@
       }
       .pp-mx .tag-inline {
         display: inline-block;
-        font-size: var(--fs-micro);
+        font-size: 11.5px;
         font-weight: 800;
         padding: 1px 5px;
-        border-radius: var(--radius-sm);
+        border-radius: 4px;
         margin-left: 4px;
         letter-spacing: 0.02em;
         vertical-align: middle;
@@ -172,7 +196,7 @@
 
       .pp-note {
         margin-top: 12px;
-        font-size: var(--fs-caption-sm);
+        font-size: 13px;
         color: var(--color-neutral-400);
         text-align: center;
         line-height: 1.6;
@@ -194,12 +218,14 @@
 
     <div class="canvas">
       <section class="section" id="export-target">
-        <span class="eyebrow">Flexible plan</span>
-        <h2 class="section__title">무제한 · 종량제 자유 선택</h2>
-        <p class="section__lede">
-          짧은 여행은 무제한, 장기·다국가는 종량제.<br />
-          한 번만 설치하면 스페인·포르투갈 모두.
-        </p>
+        <div class="pp__head">
+          <div class="pp__eyebrow">Flexible plan</div>
+          <h2 class="pp__title">무제한 · 종량제 자유 선택</h2>
+          <p class="pp__lede">
+            짧은 여행은 무제한, 장기·다국가는 종량제.
+            한번의 설치로 스페인·포르투갈 모두.
+          </p>
+        </div>
 
         <div class="pp__split">
           <!-- ─────────────────────────────────────
@@ -211,7 +237,7 @@
               <span class="pp__col-name">매일 한도 + 500Kbps</span>
             </div>
             <p class="pp__col-sub">
-              매일 1GB · 2GB 고속 + 소진 후 500Kbps 무제한 저속 (끊기지 않아요)
+              매일 1GB · 2GB 고속 + 소진 후 500Kbps 무제한 저속 (계속 연결됨)
             </p>
             <table class="pp-mx">
               <thead>
@@ -254,7 +280,7 @@
                 </tr>
                 <tr>
                   <th>30일</th>
-                  <td class="cell-long">29,800<span class="tag-inline tag-long">하루 993원</span></td>
+                  <td class="cell-long">29,800<span class="tag-inline tag-long">₩993/일</span></td>
                   <td class="cell-long">48,600</td>
                 </tr>
               </tbody>
@@ -269,7 +295,9 @@
               <span class="pp__col-tag">📊 종량제</span>
               <span class="pp__col-name">30일 총량 자유</span>
             </div>
-            <p class="pp__col-sub">30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료</p>
+            <p class="pp__col-sub">
+              30일 동안 총 데이터 (1~30GB) 자유 사용 · 소진 시 사용 종료
+            </p>
             <table class="pp-mx">
               <thead>
                 <tr>
@@ -311,13 +339,14 @@
                 </tr>
                 <tr>
                   <th>30GB</th>
-                  <td class="cell-long">53,900<span class="tag-inline tag-long">장기 체류</span></td>
+                  <td class="cell-long">53,900<span class="tag-inline tag-long">노매드</span></td>
                   <td class="cell-long">1,797</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
+
 
         <p class="pp-note">
           ※ 모든 가격은 즉시할인 적용가 · 매일 갱신 = 사용 시작 시점부터 24시간 단위

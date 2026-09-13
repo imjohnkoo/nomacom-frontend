@@ -24,26 +24,6 @@ body {
   overflow-wrap: break-word;
 }
 
-/* ----- 한글 줄바꿈 품질 (2026-09-12) -----
-   balance = 제목 줄 길이 균등 (짧은 텍스트 전용)
-   pretty  = 문단 마지막 줄 외톨이 단어 방지
-   Chrome/Edge 117+, Safari 17.4+. 미지원 브라우저는 기본 동작으로 퇴화 — 안전. */
-h1,
-h2,
-h3,
-h4,
-.section__title,
-.ds-card__h {
-  text-wrap: balance;
-}
-p,
-li,
-.section__lede,
-.ds-card__body,
-.ds-note {
-  text-wrap: pretty;
-}
-
 /* ====================================================================
    Dev toolbar — excluded from PNG export. Hidden when ?embed=1
    ==================================================================== */
@@ -155,10 +135,10 @@ li,
    Section primitives (common to multiple sections)
    ==================================================================== */
 .section {
-  padding: var(--section-pad-y) var(--section-pad-x);
+  padding: 72px 60px;
 }
 .section--tight {
-  padding: var(--sp-14) var(--section-pad-x);
+  padding: 56px 60px;
 }
 .section--alt {
   background: var(--color-neutral-50);
@@ -170,30 +150,29 @@ li,
 
 .eyebrow {
   display: inline-block;
-  font-size: var(--fs-caption);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: var(--ls-eyebrow);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-primary-500);
-  margin-bottom: var(--sp-4);
+  margin-bottom: 16px;
 }
 .section--ink .eyebrow {
   color: var(--color-primary-300);
 }
 .section__title {
-  font-size: var(--fs-title);
+  font-size: 34px;
   font-weight: 800;
-  letter-spacing: var(--ls-display);
-  line-height: var(--lh-tight);
+  letter-spacing: -0.022em;
+  line-height: 1.25;
   margin: 0 0 14px;
 }
 .section__lede {
-  font-size: var(--fs-lede);
-  line-height: var(--lh-lede);
-  letter-spacing: var(--ls-body);
+  font-size: 17px;
+  line-height: 1.7;
   color: var(--color-neutral-600);
-  margin: 0 0 var(--sp-9);
-  max-width: var(--lede-max-width);
+  margin: 0 0 36px;
+  max-width: 620px;
 }
 .section--ink .section__lede {
   color: var(--color-neutral-300);
@@ -215,91 +194,4 @@ li,
 .is-embed .placeholder,
 .is-exporting .placeholder {
   display: none;
-}
-
-/* ====================================================================
-   DS components — 2026-09-10 확정 (design-system.html 참조)
-   기존 산재 변형 통합: card(radius 18·16·14) / note(6종) / pill(7종)
-   ==================================================================== */
-.ds-card {
-  background: #fff;
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-2xl);
-  padding: var(--sp-5) var(--sp-6);
-}
-.ds-card__h {
-  font-size: var(--fs-h5);
-  font-weight: 800;
-  letter-spacing: var(--ls-heading);
-  margin-bottom: var(--sp-1);
-}
-.ds-card__body {
-  font-size: var(--fs-caption);
-  line-height: var(--lh-body);
-  letter-spacing: var(--ls-caption);
-  color: var(--color-neutral-600);
-}
-.ds-note {
-  padding: var(--sp-3) var(--sp-5);
-  background: var(--color-neutral-50);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: var(--radius-lg);
-  font-size: var(--fs-caption);
-  line-height: var(--lh-body);
-  letter-spacing: var(--ls-caption);
-  color: var(--color-neutral-600);
-}
-.ds-note b {
-  color: var(--color-neutral-900);
-  font-weight: 700;
-}
-.ds-pill {
-  display: inline-block;
-  background: var(--color-primary-500);
-  color: #fff;
-  font-size: var(--fs-caption-sm);
-  font-weight: 700;
-  letter-spacing: var(--ls-caption);
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-}
-.ds-pill--soft {
-  background: var(--color-primary-50);
-  color: var(--color-primary-600);
-}
-.ds-num {
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  background: var(--color-primary-500);
-  color: #fff;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-caption);
-  font-weight: 800;
-  letter-spacing: 0;
-  font-variant-numeric: tabular-nums;
-}
-.ds-tile {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-md);
-  background: var(--color-primary-50);
-  font-size: 18px;
-}
-.ds-stat {
-  font-size: var(--fs-display);
-  font-weight: 800;
-  letter-spacing: var(--ls-display);
-  line-height: var(--lh-tight);
-}
-.ds-stat__unit {
-  font-size: var(--fs-micro);
-  font-weight: 700;
-  letter-spacing: var(--ls-caption);
-  color: var(--color-neutral-400);
 }

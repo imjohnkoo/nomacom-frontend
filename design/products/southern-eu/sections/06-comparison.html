@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>06 · Comparison · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      /* 세 카드가 같은 행 높이를 공유하도록 subgrid 사용.
+         카드마다 문구 길이가 달라 flex 로는 항목 줄과 가격 블록이 어긋난다.
+         행 구성: 헤더 · 서브 · 항목 5 · 가격 = 8행 (세 카드 모두 동일) */
+      .cmp {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.1fr;
+        grid-template-rows: auto auto repeat(5, auto) auto;
+        column-gap: 12px;
+        row-gap: 0;
+      }
+      .cmp__col {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: 1 / -1;
+        padding: 24px 20px;
+        border-radius: var(--radius-2xl);
+        border: 1px solid var(--color-neutral-200);
+      }
+      .cmp__col--roam {
+        background: linear-gradient(180deg, #fafafa, #fff 50%);
+      }
+      .cmp__col--wifi {
+        background: linear-gradient(180deg, #fef2f2, #fff 50%);
+      }
+      .cmp__col--us {
+        background: linear-gradient(180deg, #f1edff, #fff 50%);
+        border-color: var(--color-primary-300);
+        position: relative;
+      }
+      .cmp__col--us::before {
+        content: 'RECOMMENDED';
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 3px 12px;
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        border-radius: var(--radius-full);
+      }
+      .cmp__h {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .cmp__icon {
+        font-size: 26px;
+        line-height: 1;
+      }
+      .cmp__name {
+        font-size: var(--fs-lede);
+        font-weight: 800;
+        letter-spacing: var(--ls-body);
+        color: var(--color-neutral-900);
+      }
+      .cmp__sub {
+        font-size: var(--fs-caption);
+        color: var(--color-neutral-500);
+        margin: 0 0 16px;
+        line-height: 1.5;
+      }
+      .cmp__item {
+        padding: 9px 0;
+        border-bottom: 1px solid var(--color-neutral-100);
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        gap: 8px;
+        align-items: center;
+        font-size: var(--fs-body-sm);
+        line-height: 1.5;
+        color: var(--color-neutral-700);
+      }
+      /* 가격 블록 바로 앞 항목의 밑줄 제거.
+         :last-of-type 은 형제 중 마지막 div 인 .cmp__price 를 가리켜 매칭되지 않았다 */
+      .cmp__item:has(+ .cmp__price) {
+        border-bottom: 0;
+      }
+      .cmp__mark {
+        font-size: var(--fs-body);
+        line-height: 1;
+        font-weight: 800;
+      }
+      .cmp__mark--bad {
+        color: var(--color-error-500);
+      }
+      .cmp__mark--ok {
+        color: var(--color-success-500);
+      }
+      .cmp__mark--so {
+        color: var(--color-warning-500);
+      }
+      .cmp__price {
+        margin-top: 14px;
+        padding: 10px 12px;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        font-size: var(--fs-body);
+        font-weight: 800;
+        color: var(--color-neutral-700);
+        /* 행을 꽉 채우되 내용은 세로 중앙 — 세 카드 높이가 정확히 같아진다 */
+        display: grid;
+        align-content: center;
+      }
+      .cmp__col--us .cmp__price {
+        background: var(--color-primary-500);
+        color: #fff;
+      }
+      .cmp__price small {
+        font-size: var(--fs-caption-sm);
+        opacity: 0.7;
+        font-weight: 600;
+        display: block;
+        margin-top: 2px;
+      }
+      /* 요금 근거 각주 — 비교광고 출처 명시 */
+      .cmp__src {
+        margin: 22px 0 0;
+        padding: 12px 16px;
+        background: var(--color-neutral-0);
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        font-size: var(--fs-caption-sm);
+        line-height: var(--lh-body);
+        color: var(--color-neutral-500);
+      }
+      .cmp__src b {
+        color: var(--color-neutral-700);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">06</span>
+        <span class="dev-toolbar__title">Comparison</span>
+        <span class="dev-toolbar__hint">3 column · 로밍 vs 포켓WiFi vs ESIMmany</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-06-comparison">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Roaming vs Pocket WiFi vs eSIM</span>
+        <h2 class="section__title">이제 로밍·포켓 WiFi 안 써도 돼요</h2>
+        <p class="section__lede">
+          7일 스페인·포르투갈 여행 기준 비교.<br />
+          로밍·포켓 WiFi 금액은 2026년 9월 공식 요금표 기준이에요. 출처는 아래에 밝혀 뒀어요.
+        </p>
+
+        <div class="cmp">
+          <!-- 통신사 로밍 -->
+          <div class="cmp__col cmp__col--roam">
+            <div class="cmp__h">
+              <span class="cmp__icon">📡</span>
+              <span class="cmp__name">통신사 로밍</span>
+            </div>
+            <p class="cmp__sub">한국 통신사 자동 로밍</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>내 폰 그대로 · 따로 신청할 것 없음</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>일일 정액제는 하루 11,000원부터</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>데이터팩은 30일 단위 — 짧은 여행엔 과잉</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>한도 소진 후 속도 제한</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>요금제마다 조건이 제각각</span>
+            </div>
+            <div class="cmp__price">29,000~91,000원<small>7일 · 요금제 유형별</small></div>
+          </div>
+
+          <!-- 포켓 WiFi -->
+          <div class="cmp__col cmp__col--wifi">
+            <div class="cmp__h">
+              <span class="cmp__icon">📶</span>
+              <span class="cmp__name">포켓 WiFi</span>
+            </div>
+            <p class="cmp__sub">기기 임대 + 충전</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>택배 수령 1~2일</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>기기 휴대 · 충전 · 분실</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--bad">✕</span>
+              <span>보증금 · 보험 별도</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--so">⚠</span>
+              <span>반납 필요</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>테더링 가능</span>
+            </div>
+            <div class="cmp__price">43,400원<small>7일 · 하루 6,200원</small></div>
+          </div>
+
+          <!-- ESIMmany -->
+          <div class="cmp__col cmp__col--us">
+            <div class="cmp__h">
+              <span class="cmp__icon">⭐</span>
+              <span class="cmp__name">ESIMmany</span>
+            </div>
+            <p class="cmp__sub">내 폰 그대로 + 카카오톡 발급</p>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>카카오톡 1~2분 발급 · 야간에도</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>내 폰 그대로 · 짐도 충전도 없이</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>2개국 한 SIM 자동 전환</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>무제한 · 종량제 자유 선택</span>
+            </div>
+            <div class="cmp__item">
+              <span class="cmp__mark cmp__mark--ok">✓</span>
+              <span>테더링 제한 없음</span>
+            </div>
+            <div class="cmp__price">15,600원~<small>7일 매일 2GB</small></div>
+          </div>
+        </div>
+
+        <p class="cmp__src">
+          <b>요금 출처 (2026년 9월 기준)</b> · 통신사 로밍 하한 29,000원 = SKT baro 3GB(30일)
+          공식가, 상한 91,000원 = KT 하루종일 로밍 플러스 13,000원/일 × 7일. 하루 11,000원은 KT
+          하루종일 로밍 베이직(1GB/일) 기준. 포켓 WiFi 43,400원 = 와이파이도시락 유럽 6,200원/일 ×
+          7일(보증금·보험 별도). 요금제와 판매처, 프로모션에 따라 실제 금액은 달라질 수 있습니다.
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

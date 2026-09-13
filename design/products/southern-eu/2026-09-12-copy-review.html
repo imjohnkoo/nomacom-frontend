@@ -1,0 +1,1702 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>남유럽 상세페이지 · 카피/조판 리뷰</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <style>
+      :root {
+        --p50: #f1edff;
+        --p100: #e3dbff;
+        --p500: #6239ff;
+        --p600: #5025e8;
+        --p800: #2f1499;
+        --n0: #fff;
+        --n50: #fafafa;
+        --n100: #f5f5f5;
+        --n200: #e5e5e5;
+        --n300: #d4d4d4;
+        --n500: #737373;
+        --n600: #525252;
+        --n700: #404040;
+        --n900: #171717;
+        --red: #ef4444;
+        --red-bg: #fef2f2;
+        --red-ink: #b91c1c;
+        --amb: #f59e0b;
+        --amb-bg: #fffbeb;
+        --amb-ink: #b45309;
+        --blu: #0ea5e9;
+        --blu-bg: #f0f9ff;
+        --blu-ink: #0369a1;
+        --grn: #22c55e;
+        --grn-bg: #f0fdf4;
+        --grn-ink: #15803d;
+        --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--n900);
+        background: #ededf2;
+        line-height: 1.6;
+        /* 한국어 어절 보존 — 이 리포트도 skill 조판 규칙을 따른다 */
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        text-wrap: balance;
+      }
+      p,
+      li,
+      td {
+        text-wrap: pretty;
+      }
+      .wrap {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding-block: 0 80px;
+        padding-inline: 20px;
+      }
+
+      /* ---------- header ---------- */
+      header.top {
+        background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        padding-block: 44px 38px;
+        padding-inline: 20px;
+        margin-bottom: 32px;
+      }
+      .top__in {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      .top__eyebrow {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.72;
+        margin-bottom: 10px;
+      }
+      .top h1 {
+        margin: 0 0 12px;
+        font-size: 34px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+      .top p {
+        margin: 0;
+        font-size: 16px;
+        opacity: 0.85;
+        max-width: 660px;
+      }
+      .scoreboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+      .score {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        padding: 12px 16px;
+        min-width: 108px;
+      }
+      .score__n {
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+      .score__l {
+        font-size: 12px;
+        opacity: 0.78;
+        margin-top: 3px;
+      }
+
+      /* ---------- verdict ---------- */
+      .verdict {
+        background: #fff;
+        border: 1px solid var(--n200);
+        border-left: 5px solid var(--p500);
+        border-radius: 12px;
+        padding: 22px 26px;
+        margin-bottom: 34px;
+      }
+      .verdict h2 {
+        margin: 0 0 10px;
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .verdict p {
+        margin: 0 0 10px;
+        font-size: 15px;
+        color: var(--n700);
+      }
+      .verdict p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ---------- group ---------- */
+      .group {
+        margin-bottom: 40px;
+      }
+      .group__head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .group__head h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .group__desc {
+        font-size: 14px;
+        color: var(--n600);
+        margin: 0 0 18px;
+      }
+      .sev {
+        display: inline-flex;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 800;
+        padding: 4px 11px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .sev--p0 {
+        background: var(--red-bg);
+        color: var(--red-ink);
+        border: 1px solid #fecaca;
+      }
+      .sev--p1 {
+        background: var(--amb-bg);
+        color: var(--amb-ink);
+        border: 1px solid #fde68a;
+      }
+      .sev--p2 {
+        background: var(--blu-bg);
+        color: var(--blu-ink);
+        border: 1px solid #bae6fd;
+      }
+      .sev--p3 {
+        background: var(--p50);
+        color: var(--p600);
+        border: 1px solid var(--p100);
+      }
+      .sev--ok {
+        background: var(--grn-bg);
+        color: var(--grn-ink);
+        border: 1px solid #bbf7d0;
+      }
+
+      /* ---------- finding card ---------- */
+      .f {
+        background: #fff;
+        border: 1px solid var(--n200);
+        border-radius: 12px;
+        padding: 20px 22px;
+        margin-bottom: 14px;
+      }
+      .f--p0 {
+        border-left: 4px solid var(--red);
+      }
+      .f--p1 {
+        border-left: 4px solid var(--amb);
+      }
+      .f--p2 {
+        border-left: 4px solid var(--blu);
+      }
+      .f--p3 {
+        border-left: 4px solid var(--p500);
+      }
+      .f__head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .f__id {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--n900);
+        border-radius: 5px;
+        padding: 2px 7px;
+        white-space: nowrap;
+      }
+      .f__t {
+        font-size: 16.5px;
+        font-weight: 800;
+        margin: 0;
+        flex: 1 1 320px;
+        min-width: 0;
+      }
+      .loc {
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--n600);
+        background: var(--n100);
+        border: 1px solid var(--n200);
+        border-radius: 5px;
+        padding: 2px 7px;
+        white-space: nowrap;
+      }
+      .f__why {
+        font-size: 14.5px;
+        color: var(--n700);
+        margin: 0 0 14px;
+      }
+
+      /* before / after */
+      .ba {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .ba > div {
+        border-radius: 9px;
+        padding: 12px 14px;
+        font-size: 14px;
+        line-height: 1.65;
+        min-width: 0;
+      }
+      .ba__b {
+        background: var(--red-bg);
+        border: 1px solid #fecaca;
+      }
+      .ba__a {
+        background: var(--grn-bg);
+        border: 1px solid #bbf7d0;
+      }
+      .ba__l {
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+      }
+      .ba__b .ba__l {
+        color: var(--red-ink);
+      }
+      .ba__a .ba__l {
+        color: var(--grn-ink);
+      }
+      .ba q {
+        quotes: none;
+      }
+      @media (max-width: 720px) {
+        .ba {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .note {
+        background: var(--amb-bg);
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        padding: 10px 13px;
+        font-size: 13.5px;
+        color: var(--amb-ink);
+        margin-top: 10px;
+      }
+      .note b {
+        color: #92400e;
+      }
+
+      /* table */
+      .tw {
+        overflow-x: auto;
+        border: 1px solid var(--n200);
+        border-radius: 10px;
+        background: #fff;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        min-width: 560px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--n200);
+        vertical-align: top;
+      }
+      thead th {
+        background: var(--n50);
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--n600);
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      td code,
+      th code,
+      p code,
+      li code {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        background: var(--n100);
+        border: 1px solid var(--n200);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+      .bad {
+        color: var(--red-ink);
+        font-weight: 600;
+      }
+      .good {
+        color: var(--grn-ink);
+        font-weight: 600;
+      }
+      .ct {
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      pre {
+        margin: 0;
+        background: var(--n900);
+        color: #e7e5ff;
+        border-radius: 9px;
+        padding: 15px 17px;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 1.65;
+      }
+      pre .c {
+        color: #8f8aa8;
+      }
+      pre .k {
+        color: #a78bff;
+      }
+
+      ul.tight {
+        margin: 0;
+        padding-left: 19px;
+        font-size: 14.5px;
+        color: var(--n700);
+      }
+      ul.tight li {
+        margin-bottom: 5px;
+      }
+      ul.tight li:last-child {
+        margin-bottom: 0;
+      }
+
+      .decide {
+        background: #fff;
+        border: 1px solid var(--p100);
+        border-radius: 12px;
+        padding: 22px 24px;
+      }
+      .decide h3 {
+        margin: 0 0 14px;
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .q {
+        border-top: 1px solid var(--n200);
+        padding-top: 14px;
+        margin-top: 14px;
+      }
+      .q:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+        margin-top: 0;
+      }
+      .q__t {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0 0 5px;
+      }
+      .q__b {
+        font-size: 14px;
+        color: var(--n600);
+        margin: 0;
+      }
+
+      footer {
+        margin-top: 44px;
+        padding-top: 20px;
+        border-top: 1px solid var(--n300);
+        font-size: 13px;
+        color: var(--n500);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="top__in">
+        <div class="top__eyebrow">korean-web-copy review</div>
+        <h1>남유럽(스페인·포르투갈) 상세페이지<br />카피 · 조판 전면 리뷰</h1>
+        <p>
+          <code style="background: rgba(255, 255, 255, 0.16); border-color: transparent; color: #fff"
+            >design/products/southern-eu/sections/</code
+          >
+          15개 섹션 전량을 구조 → 문장 → 조판 순서로 점검했습니다. 2026-09-12 기준.
+        </p>
+        <div class="scoreboard">
+          <div class="score">
+            <div class="score__n">15</div>
+            <div class="score__l">점검 섹션</div>
+          </div>
+          <div class="score">
+            <div class="score__n">5/5</div>
+            <div class="score__l">P0 · 반영 완료</div>
+          </div>
+          <div class="score">
+            <div class="score__n">9</div>
+            <div class="score__l">P1 · 문장 품질</div>
+          </div>
+          <div class="score">
+            <div class="score__n">6</div>
+            <div class="score__l">P2 · 표기 통일</div>
+          </div>
+          <div class="score">
+            <div class="score__n">3</div>
+            <div class="score__l">P3 · 조판</div>
+          </div>
+          <div class="score">
+            <div class="score__n">5/5</div>
+            <div class="score__l">결정 반영 완료</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <!-- ================= VERDICT ================= -->
+      <div class="verdict">
+        <h2>총평</h2>
+        <p>
+          <b>구조는 건드릴 게 없습니다.</b> PAS 흐름(문제 → 자극 → 해결)이 제대로 서 있고, Hero →
+          신뢰 → 상품 → 증거 → 반박 처리 → CTA 순서도 교과서적입니다. 04-usage-days 를 신설해
+          「첫 연결 시점부터 24시간」을 타임라인으로 풀어낸 건 특히 좋습니다 — eSIM 상세페이지에서
+          가장 분쟁이 잦은 지점을 선제적으로 막았습니다.
+        </p>
+        <p>
+          <b>문제는 전부 문장 층위에 있습니다.</b> 가장 큰 건 어미 체계입니다. 해요체 28회 / 합쇼체
+          32회가 뒤섞여 있고, <em>같은 FAQ 답변 한 문단 안에서도</em> 오갑니다. 읽는 사람은 이유를
+          짚지 못한 채 "어딘가 매끄럽지 않다"고 느낍니다. 여기에 <code>불요</code>·<code>물리유심</code>·<code>자택</code>
+          같은 한자투·번역투와, 체언 종결로 끝나는 기계적 병렬이 겹쳐 있습니다.
+        </p>
+        <p>
+          <b>그리고 P0 5건은 카피 문제가 아니라 사실관계 문제입니다.</b> 발급 시간이 섹션마다 다르고,
+          갤럭시 S22/S23 경계 표현이 두 섹션에서 엇갈리며, 환불 수수료가 빠져 있습니다. 리뷰 발췌
+          하나는 큐레이션 규칙을 위배합니다. 이 5건은 문장을 다듬기 전에 값부터 확정해야 합니다.
+        </p>
+      </div>
+
+      <!-- ================= P0 ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--ok">해결</span>
+          <h2>P0 — 5건 전부 반영 완료</h2>
+        </div>
+        <p class="group__desc">
+          값이 틀렸거나 규칙을 위배했거나 분쟁 소지가 있던 5건. <b>2026-09-12 전부 반영했습니다.</b>
+        </p>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t">리뷰 발췌 — 부정 언급 문장 제외 완료</h3>
+            <span class="loc">07-reviews</span>
+          </div>
+          <p class="f__why">
+            첫 번째 리뷰는 5★ 이지만 마지막 문장이 <b>제품의 약점을 직접 지적</b>합니다. 확정된
+            큐레이션 규칙은 「5★ 여도 부정 언급이 포함되면 제외」입니다. 상세페이지 최상단 리뷰라
+            노출 비중도 가장 큽니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재 (발췌 끝부분)</span>
+              <q
+                >…오히려 와이파이보다 빨라 좋았습니다. <b class="bad">다만 국가 특성상 포르투갈에서는
+                스페인보다 느리다는 점 참고하시길..!</b></q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안</span>
+              <q>…오히려 와이파이보다 빨라 좋았습니다.</q>
+              <br /><br />
+              이미 <code>일부 발췌</code>라고 명시하고 있으니 <b>발췌 범위만 앞당기면</b> 원문 훼손
+              없이 해결됩니다. 문장을 자르는 게 꺼려지면 다른 리뷰로 교체.
+            </div>
+          </div>
+        </div>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t">발급 소요시간 — 전부 <code>1~2분</code>으로 통일 완료</h3>
+            <span class="loc">01 · 02 · 05 · 09 · 10 · 14 · 15</span>
+          </div>
+          <p class="f__why">
+            Hero · 신뢰 스트립 · 최종 CTA 3곳의 <code>1분</code>을
+            <b><code>1~2분</code>으로 바꿔</b> 설명 섹션 4곳과 맞췄습니다(2026-09-12 john 결정).
+            index.html 의 섹션 설명도 함께 고쳤고, 텍스트가 길어진 뒤 잘림·줄바꿈 깨짐이 없는지
+            세 섹션 모두 확인했습니다. 09-how-it-works STEP 4 의 <code>1분</code>은 발급이 아니라
+            <b>현지에서 회선을 켜는 시간</b>이라 그대로 뒀습니다.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>섹션</th>
+                  <th>현재 문구</th>
+                  <th class="ct">주장</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>01-hero</td>
+                  <td>카카오톡 <b class="good">1~2분</b> 발급 · 당일 자동 발송</td>
+                  <td class="ct good">1~2분 ✓</td>
+                </tr>
+                <tr>
+                  <td>02-trust-strip</td>
+                  <td>카카오톡 <b class="good">1~2분</b> / 즉시 발급</td>
+                  <td class="ct good">1~2분 ✓</td>
+                </tr>
+                <tr>
+                  <td>15-final-cta</td>
+                  <td>… · 카카오톡 <b class="good">1~2분</b> 발급</td>
+                  <td class="ct good">1~2분 ✓</td>
+                </tr>
+                <tr>
+                  <td>05-why</td>
+                  <td>결제 후 카카오톡으로 <b class="good">1~2분</b> 안에 QR 자동 발급</td>
+                  <td class="ct good">1~2분</td>
+                </tr>
+                <tr>
+                  <td>09-how-it-works</td>
+                  <td>STEP 2 카톡 발송 — <b class="good">1~2분</b></td>
+                  <td class="ct good">1~2분</td>
+                </tr>
+                <tr>
+                  <td>10-comparison</td>
+                  <td>카카오톡 <b class="good">1~2분</b> 발급 · 야간 OK</td>
+                  <td class="ct good">1~2분</td>
+                </tr>
+                <tr>
+                  <td>14-faq Q1</td>
+                  <td>평균 <b class="good">1~2분</b> 안에 QR 발급 링크가 자동 전송</td>
+                  <td class="ct good">1~2분</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <b>반영됨:</b> 전부 <code>1~2분</code>으로 통일했습니다. 보수적인 수치라 클레임이 줄고,
+            실제로 더 빨리 오면 그건 초과 만족으로 남습니다.
+          </div>
+        </div>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t">갤럭시 S22/S23 경계 — 양쪽 다 「S23 부터 지원」으로 통일</h3>
+            <span class="loc">11-compatibility · 12-device-check</span>
+          </div>
+          <p class="f__why">
+            두 문장은 <em>논리적으로는 같은 뜻</em>이지만, 12번의 「S23 이전」은 한국어에서
+            <b>S23 포함으로도 읽힙니다.</b> 구매를 직접 차단하는 문구라 모호함이 곧 이탈입니다.
+            S23 사용자가 12번을 먼저 보면 그대로 나갑니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재 — 두 섹션</span>
+              <b>11번:</b> <q>갤럭시 S22 이하 국내판 … eSIM 하드웨어 미탑재</q><br /><br />
+              <b>12번:</b>
+              <q><b class="bad">갤럭시 S23 이전</b> 출시 모델은 eSIM 모듈이 없어 사용이 불가합니다.</q>
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안 — 양쪽 동일 문장으로</span>
+              <q
+                ><b>갤럭시는 S23부터 eSIM을 지원해요.</b> S22와 그 이전 국내판 모델은 eSIM 모듈이
+                없어 쓸 수 없습니다.</q
+              ><br /><br />
+              <b>되는 쪽을 먼저 말하는</b> 순서가 이탈을 줄입니다. 경계도 「S23부터」로 못 박혀
+              모호함이 사라집니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t">부분 환불 수수료 — 3,500원 정액으로 명시 완료</h3>
+            <span class="loc">13-refund · 14-faq Q8</span>
+          </div>
+          <p class="f__why">
+            「수수료 차감 후 부분 환불」만 있고 <b>얼마를 떼는지가 없습니다.</b> 구매 결정에 직접
+            영향을 주는 값이고, 없으면 환불 요청 시마다 분쟁이 됩니다. 두 곳 모두 동일하게 비어
+            있습니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              <q
+                >QR 발급은 받았지만 휴대폰 설치 전이라면 ESIMmany 자체 정책으로
+                <b class="bad">수수료 차감 후</b> 부분 환불 가능합니다.</q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">적용 완료</span>
+              <q
+                >QR은 받았지만 아직 폰에 설치하지 않았다면 <b>수수료 3,500원을 뺀 금액</b>을
+                돌려드립니다.</q
+              ><br /><br />
+              카드 큰 글씨도 <code>부분 환불</code> → <code>3,500원 차감</code>으로 바꿔 한눈에
+              들어옵니다. FAQ Q8 도 개조식(<code>/</code> 나열)을 문장으로 풀어 함께 고쳤습니다.
+            </div>
+          </div>
+          <div class="note" style="background: var(--grn-bg); border-color: #bbf7d0; color: var(--grn-ink)">
+            <b>2026-09-12 확정:</b> 환불 수수료는 <b>3,500원 정액</b>(비율 아님).
+          </div>
+        </div>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t">환불 불가 — 본문도 단정형으로 통일 완료</h3>
+            <span class="loc">13-refund</span>
+          </div>
+          <p class="f__why">
+            큰 라벨은 <code>환불 불가</code>인데 바로 아래 본문은 <code>환불이 어렵습니다</code>입니다.
+            「어렵다」는 <b>여지가 있다는 뜻으로 읽히고</b>, 실제로 그 틈으로 환불 요청이 들어옵니다.
+            규정 문구에서 다중 완곡은 분쟁을 부릅니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              <q
+                >QR 스캔으로 eSIM 을 폰에 등록 (설치) 하면 <b class="bad">환불이 어렵습니다.</b>
+                설치 전 호환 기기 · 여행 일정 확인 부탁드려요.</q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">적용 완료</span>
+              <q
+                >QR을 스캔해 eSIM을 폰에 설치하면 <b>환불되지 않습니다.</b> 설치하기 전에 호환
+                기기인지, 여행 일정이 맞는지 꼭 확인해 주세요.</q
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= P1 ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--p1">P1</span>
+          <h2>문장 품질 — 번역투 · AI 티 · 잡초</h2>
+        </div>
+        <p class="group__desc">
+          소리 내어 읽었을 때 걸리는 지점들. 위에서부터 영향 범위가 넓은 순서입니다.
+        </p>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-1</span>
+            <h3 class="f__t">⚑ 최대 이슈 — 해요체와 합쇼체가 한 문단 안에서 뒤섞임</h3>
+            <span class="loc">전 섹션</span>
+          </div>
+          <p class="f__why">
+            해요체 28회 / 합쇼체 32회로 <b>거의 반반</b>입니다. 섹션 간 불일치라면 그나마 낫지만,
+            <b>같은 FAQ 답변 한 문단 안에서 왔다 갔다 합니다.</b> 독자는 원인을 짚지 못한 채 글이
+            불안정하다고 느낍니다. 이 페이지에서 손댈 값이 가장 큰 한 가지입니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재 — FAQ Q3, 한 답변 안에서 3번 오감</span>
+              <q
+                >출국 전에 미리 QR 스캔으로 설치 <b class="bad">가능합니다.</b> 설치 후 해당 eSIM
+                회선을 OFF로 유지하면 데이터가 시작되지 <b class="bad">않아요.</b> 현지 도착 후
+                회선을 ON 하시면 그때부터 사용이 <b class="bad">시작됩니다.</b></q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안 — 해요체로 통일</span>
+              <q
+                >출국 전에 미리 QR을 스캔해 설치할 수 <b>있어요.</b> 설치한 뒤 그 eSIM 회선을 OFF로
+                두면 데이터가 시작되지 <b>않아요.</b> 현지에 도착해 회선을 ON 하면 그때부터 사용이
+                <b>시작돼요.</b></q
+              >
+            </div>
+          </div>
+          <div class="tw" style="margin-top: 12px">
+            <table>
+              <thead>
+                <tr>
+                  <th>섹션</th>
+                  <th class="ct">해요체</th>
+                  <th class="ct">합쇼체</th>
+                  <th class="ct">명사 종결</th>
+                  <th>상태</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>04-usage-days</td>
+                  <td class="ct">2</td>
+                  <td class="ct">1</td>
+                  <td class="ct">0</td>
+                  <td class="bad">혼재</td>
+                </tr>
+                <tr>
+                  <td>05-why</td>
+                  <td class="ct">0</td>
+                  <td class="ct">1</td>
+                  <td class="ct">5</td>
+                  <td class="bad">명사 종결 과다</td>
+                </tr>
+                <tr>
+                  <td>09-how-it-works</td>
+                  <td class="ct">7</td>
+                  <td class="ct">3</td>
+                  <td class="ct">1</td>
+                  <td class="bad">혼재</td>
+                </tr>
+                <tr>
+                  <td>12-device-check</td>
+                  <td class="ct">2</td>
+                  <td class="ct">3</td>
+                  <td class="ct">0</td>
+                  <td class="bad">혼재</td>
+                </tr>
+                <tr>
+                  <td>13-refund</td>
+                  <td class="ct">1</td>
+                  <td class="ct">4</td>
+                  <td class="ct">0</td>
+                  <td class="bad">혼재</td>
+                </tr>
+                <tr>
+                  <td>14-faq</td>
+                  <td class="ct">11</td>
+                  <td class="ct">14</td>
+                  <td class="ct">3</td>
+                  <td class="bad">혼재 (최다)</td>
+                </tr>
+                <tr style="background: var(--n50)">
+                  <td><b>합계</b></td>
+                  <td class="ct"><b>28</b></td>
+                  <td class="ct"><b>32</b></td>
+                  <td class="ct"><b>9</b></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <b>권장:</b> 상세페이지 전체를 <b>해요체로 통일</b>. 커머스 상세는 판매자가 옆에서
+            설명하는 톤이 맞고, 이미 잘 쓰인 문장 상당수가 해요체입니다. 다만
+            <b>13-refund 의 규정 문장만은 예외</b>로 두는 것도 방법입니다 — 환불 조항은 단정적인
+            합쇼체가 오히려 신뢰를 줍니다. 어느 쪽이든 <em>섹션 단위로는 반드시 하나</em>여야 합니다.
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-2</span>
+            <h3 class="f__t">05-why 카드 4개가 전부 체언 종결 — 기계적 병렬</h3>
+            <span class="loc">05-why</span>
+          </div>
+          <p class="f__why">
+            네 개 카드의 마지막이 모두 명사로 끝납니다. <code>제한 없음</code> ·
+            <code>사용 가능</code> · <code>속도 제한 없음</code> · <code>자동 전환</code>. 사양서
+            문체이고, 연속되면 사람이 쓰지 않았다는 신호가 됩니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              ⚡ …야간·주말에도 24시간 자동, <b class="bad">영업시간 제한 없음.</b><br />
+              🌐 …메신저·지도·인터넷 전화 그대로 <b class="bad">사용 가능.</b><br />
+              🔁 …영상 스트리밍 모두 지원. <b class="bad">속도 제한 없음.</b><br />
+              🌍 …현지 1티어 통신사로 <b class="bad">자동 전환.</b>
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안</span>
+              ⚡ …야간에도 주말에도 <b>영업시간과 상관없이 나갑니다.</b><br />
+              🌐 …메신저도 지도도 인터넷 전화도 <b>그대로 씁니다.</b><br />
+              🔁 …영상 스트리밍까지 됩니다. <b>속도를 따로 묶지 않아요.</b><br />
+              🌍 …현지 1티어 통신사로 <b>알아서 바뀝니다.</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-3</span>
+            <h3 class="f__t">일본어투 <code>불요</code> 3회 · <code>불필요</code> 1회</h3>
+            <span class="loc">10-comparison · 14-faq Q13 · 08-coverage</span>
+          </div>
+          <p class="f__why">
+            <code>불요(不要)</code>는 한국어 웹 카피에서 거의 쓰이지 않는 일본어투입니다. 소리 내어
+            읽으면 바로 걸립니다.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>현재</th>
+                  <th>제안</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>10-comparison</td>
+                  <td class="bad">내 폰 그대로 · 짐·충전 불요</td>
+                  <td class="good">내 폰 그대로 · 짐도 충전도 필요 없어요</td>
+                </tr>
+                <tr>
+                  <td>14-faq Q13</td>
+                  <td class="bad">추가 작업·재발급 불요.</td>
+                  <td class="good">따로 할 일도, 재발급도 없어요.</td>
+                </tr>
+                <tr>
+                  <td>08-coverage</td>
+                  <td class="bad">별도 설정 불필요</td>
+                  <td class="good">따로 설정할 게 없어요</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-4</span>
+            <h3 class="f__t">번역투 · 한자투 개별 문구</h3>
+            <span class="loc">05 · 09 · 14</span>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>현재</th>
+                  <th>제안</th>
+                  <th>사유</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>05-why 제목</td>
+                  <td class="bad">물리유심 없이<br />입국 즉시 데이터.</td>
+                  <td class="good">실물 유심 없이<br />입국 즉시 데이터.</td>
+                  <td><code>물리유심</code>은 physical SIM 직역. 소비자어는 「실물 유심」</td>
+                </tr>
+                <tr>
+                  <td>09-how-it-works</td>
+                  <td class="bad">자택에서 미리 해두시길 권장합니다</td>
+                  <td class="good">집에서 미리 해두세요</td>
+                  <td><code>자택</code> 한자투 + <code>~하시길 권장합니다</code> 이중 높임</td>
+                </tr>
+                <tr>
+                  <td>09-how-it-works</td>
+                  <td class="bad">안심번호로는 발급이 불가합니다</td>
+                  <td class="good">안심번호로는 발급되지 않아요</td>
+                  <td><code>~이 불가하다</code> → 동사로</td>
+                </tr>
+                <tr>
+                  <td>14-faq Q4</td>
+                  <td class="bad">본 상품은 데이터 전용입니다.</td>
+                  <td class="good">데이터 전용 상품이에요.</td>
+                  <td><code>본</code>은 잡초 — 넣든 빼든 뜻이 같다</td>
+                </tr>
+                <tr>
+                  <td>12-device-check</td>
+                  <td class="bad">기기정보에 EID 정보가 확인되면</td>
+                  <td class="good">기기 정보에 EID가 보이면</td>
+                  <td>피동 <code>확인되면</code> + <code>정보</code> 중복</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-5</span>
+            <h3 class="f__t">FAQ 13번만 어미가 튐 — 혼자 <code>됩니까?</code></h3>
+            <span class="loc">14-faq</span>
+          </div>
+          <p class="f__why">
+            질문 13개 중 12개가 <code>~나요?</code> / <code>~가요?</code>인데 마지막 하나만 합쇼체
+            의문형입니다. 목록 끝에서 톤이 바뀌어 눈에 띕니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              <q>스페인 ↔ 포르투갈 국경 넘어도 같은 eSIM 으로 <b class="bad">됩니까?</b></q>
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안</span>
+              <q>스페인에서 포르투갈로 넘어가도 같은 eSIM 으로 <b>되나요?</b></q><br /><br />
+              <code>↔</code> 기호도 말로 푸는 게 읽힙니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-6</span>
+            <h3 class="f__t">FAQ Q12 답변이 문장이 아니라 수식 — <code>=</code> <code>/</code> 개조식</h3>
+            <span class="loc">14-faq</span>
+          </div>
+          <p class="f__why">
+            구매 직전 가장 중요한 질문(「뭘 사야 하나요」)인데 답이 등호와 슬래시로 된 메모입니다.
+            소리 내어 읽을 수 없는 문장입니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              <q
+                ><b class="bad"
+                  >짧은 일정 (1주↓) = 무제한 매일 1·2GB / 장기·다국가 = 종량제 1~30GB (10GB 이상
+                  추천).</b
+                >
+                매일 사용량 변동이 크면 종량제가 효율적입니다.</q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안</span>
+              <q
+                ><b
+                  >일주일 안쪽 일정이면 무제한(매일 1GB·2GB)이 편해요. 2주가 넘거나 여러 나라를 도는
+                  일정이면 종량제 10GB 이상을 추천드려요.</b
+                >
+                날마다 쓰는 양이 들쭉날쭉하면 종량제가 덜 아까워요.</q
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-7</span>
+            <h3 class="f__t">Hero 안에서 같은 사실을 3번 반복</h3>
+            <span class="loc">01-hero</span>
+          </div>
+          <p class="f__why">
+            배지 → 서브 리스트 → 칩이 <b>같은 네 가지 사실을 돌아가며 반복</b>합니다. 「테더링」이 3번,
+            「1~30일 자유 선택」이 2번, 「500Kbps 무제한」이 2번, 「당일 자동 발송」이 2번 나옵니다.
+            한 화면에서 같은 말을 세 번 하면 강조가 아니라 자리 채우기로 읽힙니다.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>사실</th>
+                  <th>배지</th>
+                  <th>서브 리스트</th>
+                  <th>칩</th>
+                  <th class="ct">노출</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>테더링</td>
+                  <td>🔁 테더링 OK</td>
+                  <td>· 테더링 OK</td>
+                  <td>테더링 가능</td>
+                  <td class="ct bad">3회</td>
+                </tr>
+                <tr>
+                  <td>1~30일 선택</td>
+                  <td>—</td>
+                  <td>1~30일 자유 선택</td>
+                  <td>1~30일 자유 선택</td>
+                  <td class="ct bad">2회 (동일 문구)</td>
+                </tr>
+                <tr>
+                  <td>500Kbps 무제한</td>
+                  <td>—</td>
+                  <td>소진 후 500Kbps 무제한</td>
+                  <td>소진 후 500Kbps 무제한</td>
+                  <td class="ct bad">2회 (동일 문구)</td>
+                </tr>
+                <tr>
+                  <td>당일 자동 발송</td>
+                  <td>🚀 당일 자동 발송</td>
+                  <td>· 당일 자동 발송</td>
+                  <td>—</td>
+                  <td class="ct bad">2회</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <b>권장:</b> <b>칩 4개를 통째로 삭제</b>하는 게 가장 깔끔합니다. 칩이 말하는 내용은 서브
+            리스트가 이미 전부 담고 있고, 바로 아래 06-stats 가 같은 값을 큰 숫자로 다시 보여줍니다.
+            칩을 남기려면 서브 리스트를 <b>가격·기간 한 줄</b>로 줄이세요.
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-8</span>
+            <h3 class="f__t">최종 CTA 서브라인 정보 과밀 — <code>30일</code>이 두 번</h3>
+            <span class="loc">15-final-cta</span>
+          </div>
+          <p class="f__why">
+            가운뎃점으로 네 덩어리를 이어 붙였는데 <code>1~30일</code>과
+            <code>30일 매일 1GB</code>가 나란히 있어 <b>30일이 무엇을 가리키는지 헷갈립니다.</b>
+            페이지 마지막 문장이라 여기서 막히면 그대로 이탈입니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재</span>
+              <q class="bad"
+                >스페인·포르투갈 1~30일 · 30일 매일 1GB ₩993/일~ · 카카오톡 1분 발급</q
+              >
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안</span>
+              <q
+                ><b>스페인·포르투갈을 eSIM 하나로. 하루 993원부터, 카카오톡으로 1~2분이면
+                받아요.</b></q
+              ><br /><br />
+              제목 <q>두 나라, 한 SIM.</q> 은 그대로 두세요 — 이 페이지에서 가장 좋은 문장입니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="f f--p1">
+          <div class="f__head">
+            <span class="f__id">P1-9</span>
+            <h3 class="f__t">개통 시작일 강조가 04번과 09번에서 엇갈림</h3>
+            <span class="loc">04-usage-days · 09-how-it-works</span>
+          </div>
+          <p class="f__why">
+            04번은 「입력하는 개통 시작일은 <b>안내용 기준</b>」이라고 힘을 빼는데, 09번은
+            <b>🚨 경고 아이콘</b>으로 「개통 시작 일시는 현지 시간 기준으로 입력해 주세요」라고
+            경고합니다. 둘 다 사실이지만 <b>강조 수위가 정반대</b>라 읽는 사람은 이게 중요한 건지
+            아닌지 판단할 수 없습니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">현재 — 09번</span>
+              <b class="bad">🚨</b> 개통 시작 일시는 <b>현지 시간 기준</b>으로 입력해 주세요.
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">제안 — 아이콘 낮추고 04번과 연결</span>
+              <b>☝️</b> 개통 시작 일시는 현지 시간 기준으로 입력해 주세요. 실제 차감은 현지에서
+              회선이 처음 연결된 순간부터 시작돼요.
+            </div>
+          </div>
+          <div class="note">
+            09번의 <b>🚨 는 3개, ☝️ 는 2개, ✅ 는 1개</b>입니다. 아이콘을 심각도 신호로 쓰고 있으니
+            기준을 고정하세요 — 🚨 는 「모르면 발급이 실패하는 것」(안심번호·미지원 기기)에만.
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= P2 ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--p2">P2</span>
+          <h2>표기 통일 — 맞춤법 · 외래어 · 브랜드</h2>
+        </div>
+        <p class="group__desc">기계적으로 고칠 수 있는 항목. 판단이 필요 없습니다.</p>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-1</span>
+            <h3 class="f__t">브랜드 표기 3종 혼용</h3>
+            <span class="loc">전 섹션</span>
+          </div>
+          <p class="f__why">
+            <code>ESIMmany</code> 25회 · <code>esimmany</code> 1회(Hero 로고 옆) ·
+            <code>이심마니</code> 2회. 로고 워드마크가 소문자라면 그건 로고로 두고,
+            <b>본문 표기는 하나로 고정</b>해야 합니다.
+          </p>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-2</span>
+            <h3 class="f__t">띄어쓰기 · 외래어 표기 오류</h3>
+            <span class="loc">03 · 04 · 08 · 12 · 13</span>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>현재</th>
+                  <th>수정</th>
+                  <th>근거</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>12-device-check 제목</td>
+                  <td class="bad">eSIM 사용가능 단말기 확인방법</td>
+                  <td class="good">eSIM 쓸 수 있는 폰인지 확인하는 방법</td>
+                  <td><code>사용가능</code>·<code>확인방법</code> 붙여쓰기 오류 + <code>단말기</code>는 통신사 용어</td>
+                </tr>
+                <tr>
+                  <td>03-plan-picker</td>
+                  <td class="bad">한번의 설치로 스페인·포르투갈 모두.</td>
+                  <td class="good">한 번만 설치하면 스페인·포르투갈 모두.</td>
+                  <td>횟수 뜻이므로 <code>한 번</code> 띄어씀</td>
+                </tr>
+                <tr>
+                  <td>08-coverage ×2</td>
+                  <td class="bad">포르토</td>
+                  <td class="good">포르투</td>
+                  <td>외래어 표기법 — Porto = 포르투</td>
+                </tr>
+                <tr style="background: var(--grn-bg)">
+                  <td>03-plan-picker (30GB 핀)</td>
+                  <td class="bad">노매드</td>
+                  <td class="good">장기 체류 <b>← 적용 완료</b></td>
+                  <td>표기법(노마드)보다 뜻이 바로 읽히는 쪽으로 — 결정 4</td>
+                </tr>
+                <tr>
+                  <td>13-refund</td>
+                  <td class="bad">발급 받은 QR 코드</td>
+                  <td class="good">발급받은 QR 코드</td>
+                  <td><code>발급받다</code> 한 단어</td>
+                </tr>
+                <tr>
+                  <td>04-usage-days ×2</td>
+                  <td class="bad">사용종료</td>
+                  <td class="good">사용 종료</td>
+                  <td>띄어쓰기</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <b>주의:</b> 07-reviews 의 <code>사용가능</code>·<code>바로왔아요</code>·<code>안터지는곳없이</code>
+            등은 <b>구매자 원문이므로 고치지 마세요.</b> <q>원문 그대로 · 일부 발췌</q>라고 명시한
+            것이 오히려 신뢰 장치입니다.
+          </div>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-3</span>
+            <h3 class="f__t">통화 표기 혼용 — <code>₩993</code> vs <code>2,700원</code></h3>
+            <span class="loc">03 · 15 vs 01 · 10</span>
+          </div>
+          <p class="f__why">
+            원화 기호 2회, <code>원</code> 4회. 한국 소비자 대상 상세페이지는
+            <b><code>원</code>으로 통일</b>하는 편이 읽기 쉽습니다. <code>₩993/일~</code> →
+            <code>하루 993원부터</code>.
+          </p>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-4</span>
+            <h3 class="f__t">기호 남용 — <code>↓</code> <code>↔</code> <code>vs</code></h3>
+            <span class="loc">11 · 14</span>
+          </div>
+          <p class="f__why">
+            <code>갤럭시 S22 ↓ 국내판</code>, <code>1주↓</code>,
+            <code>스페인 ↔ 포르투갈</code>, <code>무제한 vs 종량제</code>. 표 안의 압축 표기라면
+            몰라도 <b>본문과 질문 제목에서는 말로 풀어야</b> 읽힙니다 — 「S22 이하」, 「일주일 안쪽」,
+            「스페인에서 포르투갈로」, 「무제한과 종량제, 뭘 골라야 하나요」.
+          </p>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-5</span>
+            <h3 class="f__t"><code>OK</code> 7회 · 한글/영문 기기명 혼용</h3>
+            <span class="loc">01 · 02 · 06 · 10 · 15 / 11</span>
+          </div>
+          <p class="f__why">
+            <code>테더링 OK</code> · <code>야간·주말 OK</code> · <code>노트북·태블릿 OK</code> ·
+            <code>야간 OK</code> · <code>모두 OK</code>. 톤은 일관되지만 7회는 과합니다. 절반은
+            <code>가능해요</code>/<code>돼요</code>로 바꾸면 리듬이 삽니다.<br /><br />
+            11-compatibility 는 경고 박스에서 <code>Z 플립3 / Z 폴드3</code>, 표에서
+            <code>Z Flip 3 / Z Fold 3</code>으로 <b>같은 기기를 다르게</b> 씁니다.
+          </p>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">P2-6</span>
+            <h3 class="f__t">기준 시점 문구가 한 달 지남 — <code>2026년 8월 기준</code></h3>
+            <span class="loc">07-reviews · 11-compatibility</span>
+          </div>
+          <p class="f__why">
+            오늘이 2026-09-12 입니다. 리뷰 수(220개)와 호환 기기표 모두 8월 기준으로 표기돼 있으니,
+            <b>발행 시점에 맞춰 갱신</b>하거나 「2026년 9월 기준」으로 올리세요.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= P3 ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--p3">P3</span>
+          <h2>조판</h2>
+        </div>
+        <p class="group__desc">
+          한글 웹 조판 3종(어절 보존 · 줄 균형 · 자간) 중 <b>하나는 이미 잘 돼 있고, 하나가 빠져
+          있으며, 하나는 결정이 필요</b>합니다.
+        </p>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">양호</span>
+            <h3 class="f__t">어절 보존이 전역으로 제대로 걸려 있음</h3>
+            <span class="loc">shared/base.css:23</span>
+          </div>
+          <p class="f__why">
+            <code>word-break: keep-all</code>을 <code>overflow-wrap: break-word</code>와
+            <b>함께</b> 선언했습니다. keep-all 만 단독으로 걸면 긴 URL·영문이 박스를 뚫는데 그 함정을
+            피했습니다. Pretendard 도 15개 섹션 전부에 로드돼 있고, 본문 line-height 는 1.6~1.7 로
+            충분합니다. <b>손댈 것 없습니다.</b>
+          </p>
+          <div class="note" style="background: var(--n50); border-color: var(--n200); color: var(--n600)">
+            사소한 정리거리: 09-how-it-works 가 <code>word-break: keep-all</code>을 로컬에서 2번 다시
+            선언합니다(63·107행). base.css 전역과 중복이라 지워도 동작이 같습니다.
+          </div>
+        </div>
+
+        <div class="f f--p3">
+          <div class="f__head">
+            <span class="f__id">P3-1</span>
+            <h3 class="f__t"><code>text-wrap</code> 미적용 — 전체 0회</h3>
+            <span class="loc">shared/base.css</span>
+          </div>
+          <p class="f__why">
+            제목 줄 길이를 고르게 맞추는 <code>balance</code>, 문단 마지막 줄에 단어 하나만 떨어지는
+            것을 막는 <code>pretty</code> 둘 다 없습니다. 860px 고정 폭 캔버스라
+            <b>제목이 「데이터 넉넉히,」 / 「길게.」 처럼 어색하게 쪼개질 때 직접 개입해야 하는데</b>,
+            이 두 줄이면 브라우저가 알아서 처리합니다.
+          </p>
+          <pre><span class="c">/* shared/base.css 에 추가 */</span>
+h1, h2, h3, h4,
+.section__title,
+.hero__title      { <span class="k">text-wrap</span>: balance; }   <span class="c">/* 짧은 텍스트 전용 */</span>
+
+p, li,
+.section__lede,
+.ds-card__body    { <span class="k">text-wrap</span>: pretty; }    <span class="c">/* 외톨이 단어 방지 */</span></pre>
+          <div class="note">
+            Chrome/Edge 117+, Safari 17.4+ 지원. Firefox 는 미지원이지만
+            <b>그냥 기본 동작으로 퇴화</b>할 뿐이라 지금 넣어도 안전합니다. PNG 내보내기는
+            html-to-image 가 Chromium 엔진을 쓰므로 그대로 반영됩니다.
+          </div>
+        </div>
+
+        <div class="f" style="border-left: 4px solid var(--grn)">
+          <div class="f__head">
+            <span class="sev sev--ok">해결</span>
+            <h3 class="f__t"><code>letter-spacing</code> — 본문·캡션만 0 복귀 (결정 5 반영)</h3>
+            <span class="loc">shared/tokens.css + _generator/templates</span>
+          </div>
+          <p class="f__why">
+            korean-web-copy 스킬은 <b>「Pretendard 는 자간이 폰트에 설계돼 있으니 건드리지 마라」</b>고
+            못 박습니다. 그런데 이 프로젝트는 <b>2026-09-10 에 자간 토큰 6종을 확정</b>했고
+            (<code>--ls-display-lg: -0.03em</code> … <code>--ls-caption: -0.005em</code>) 56곳에서
+            사용 중입니다.
+          </p>
+          <p class="f__why">
+            스킬의 경고는 「본문에 자간을 임의로 주지 마라」는 뜻이고, 여기 토큰은
+            <b>크기 구간별로 음수 자간을 주는 디스플레이 타이포 규칙</b>이라 범위가 다릅니다. 대형
+            제목(28px+)의 <code>-0.03em</code>은 업계 표준에 가깝지만, 작은 글씨에서 자간을 좁히면
+            한글 가독성이 떨어집니다.
+          </p>
+          <div class="ba">
+            <div class="ba__b">
+              <span class="ba__l">변경 전</span>
+              <code>--ls-body: -0.01em</code><br />
+              <code>--ls-caption: -0.005em</code>
+            </div>
+            <div class="ba__a">
+              <span class="ba__l">변경 후 — 적용 완료</span>
+              <code>--ls-body: 0</code><br />
+              <code>--ls-caption: 0</code>
+            </div>
+          </div>
+          <p class="f__why" style="margin-bottom: 0">
+            <code>--ls-display-lg</code> · <code>--ls-display</code> · <code>--ls-heading</code> ·
+            <code>--ls-eyebrow</code>는 그대로 유지했습니다. <code>southern-eu/shared/</code>와
+            <code>_generator/templates/shared/</code> <b>양쪽 모두</b>에 반영해 새로 만드는 상품
+            페이지도 같은 값을 씁니다.
+          </p>
+        </div>
+
+        <div class="f f--p3">
+          <div class="f__head">
+            <span class="f__id">P3-3</span>
+            <h3 class="f__t"><code>--lh-card: 1.45</code> — 본문성 텍스트가 1.5 미만</h3>
+            <span class="loc">shared/tokens.css</span>
+          </div>
+          <p class="f__why">
+            제목·수치의 <code>1.1~1.25</code>는 정상입니다. 다만 <code>--lh-card</code>는 카드 본문에
+            쓰이는데 1.45 라 한글 기준 권장선(글자 크기의 1.5배) 아래입니다.
+            <b><code>1.5</code>로 올리는 것</b>을 권합니다 — 카드 높이가 조금 늘어나므로 PNG 재내보내기
+            시 레이아웃만 확인하세요.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================= DECISIONS (RESOLVED) ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--ok">해결</span>
+          <h2>결정 5건 — 전부 반영 완료</h2>
+        </div>
+        <p class="group__desc">2026-09-12 john 결정. 아래 내용으로 파일에 적용했습니다.</p>
+
+        <div class="decide">
+          <div class="q">
+            <p class="q__t">
+              <span class="sev sev--ok" style="margin-right: 7px">반영</span>1. 로밍 비교 수치 —
+              웹 조사 후 교체, 출처 명시
+            </p>
+            <p class="q__b">
+              공식 요금표를 다시 뽑은 결과 <b>기존 수치가 양쪽 다 틀렸습니다.</b> 아래 표 참조.
+              10-comparison 하단에 근거 각주를 새로 넣었습니다.
+            </p>
+          </div>
+          <div class="q">
+            <p class="q__t">
+              <span class="sev sev--ok" style="margin-right: 7px">반영</span>2.
+              <code>평균 30분 응답</code> 삭제
+            </p>
+            <p class="q__b">
+              <code>한국어 채팅 · 평균 30분 응답</code> →
+              <code>한국어 채팅으로 문의</code>. 옆 칸 네이버 톡톡의
+              <code>스마트스토어 직접 문의</code>와 어순을 맞췄습니다.
+            </p>
+          </div>
+          <div class="q">
+            <p class="q__t">
+              <span class="sev sev--ok" style="margin-right: 7px">반영</span>3.
+              <code>1티어</code> → <code>현지 대표 통신망</code> (7곳)
+            </p>
+            <p class="q__b">
+              05-why 1곳 · 08-coverage 5곳 · 14-faq 1곳. 문맥에 따라
+              <code>현지 대표 통신망</code> / <code>현지 대표 통신사</code>로 나눴고, 좁은 배지 2곳은
+              <code>현지 대표 통신망 연결</code>로 줄였습니다(잘림 없음 확인). index.html 의 섹션
+              설명도 함께 고쳤습니다.
+            </p>
+          </div>
+          <div class="q">
+            <p class="q__t">
+              <span class="sev sev--ok" style="margin-right: 7px">반영</span>4.
+              <code>노매드</code> → <code>장기 체류</code>
+            </p>
+            <p class="q__b">
+              03-plan-picker 종량제 표 30GB 행의 핀. 외래어 표기 문제(노마드)와 소비자 이해도 문제가
+              한 번에 해결됩니다.
+            </p>
+          </div>
+          <div class="q">
+            <p class="q__t">
+              <span class="sev sev--ok" style="margin-right: 7px">반영</span>5. 본문·캡션 자간 0 복귀
+            </p>
+            <p class="q__b">
+              <code>--ls-body: -0.01em → 0</code>, <code>--ls-caption: -0.005em → 0</code>. 대형 제목
+              구간(<code>--ls-display-lg</code> · <code>--ls-display</code> ·
+              <code>--ls-heading</code>)과 <code>--ls-eyebrow</code>는 그대로 뒀습니다.
+              <b>southern-eu 와 <code>_generator/templates</code> 양쪽</b>에 적용해 새 상품
+              페이지에도 반영되게 했습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SOURCES ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--p2">출처</span>
+          <h2>로밍 · 포켓 WiFi 요금 조사 결과</h2>
+        </div>
+        <p class="group__desc">
+          2026년 9월 조사. 공식 요금표를 우선 사용했고, 확인되지 않은 값은 쓰지 않았습니다.
+        </p>
+
+        <div class="f f--p0">
+          <div class="f__head">
+            <span class="f__id">정정</span>
+            <h3 class="f__t">기존 수치는 <b>양쪽 다 실제보다 낮았습니다</b></h3>
+            <span class="loc">10-comparison</span>
+          </div>
+          <p class="f__why">
+            포켓 WiFi 는 <b>실제의 64% 수준</b>으로 적혀 있었고, 로밍은 데이터팩 최저가만 반영해
+            일일 정액제를 쓰는 다수 이용자의 실부담을 담지 못했습니다. 둘 다
+            <b>우리에게 불리한 방향의 오차</b>라, 정정하면 비교가 오히려 강해집니다.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>기존</th>
+                  <th>정정</th>
+                  <th>근거</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>통신사 로밍 (7일)</td>
+                  <td class="bad">~35,000원</td>
+                  <td class="good">29,000~91,000원</td>
+                  <td>
+                    하한 = SKT baro 3GB / 30일 <b>29,000원</b><br />
+                    상한 = KT 하루종일 로밍 플러스 13,000원/일 × 7
+                  </td>
+                </tr>
+                <tr>
+                  <td>로밍 일일 정액</td>
+                  <td class="bad">일 1만원+ <i>(출처 없음)</i></td>
+                  <td class="good">하루 11,000원부터</td>
+                  <td>KT 하루종일 로밍 베이직 1GB/일 <b>11,000원</b> (공식)</td>
+                </tr>
+                <tr>
+                  <td>포켓 WiFi (7일)</td>
+                  <td class="bad">~28,000원</td>
+                  <td class="good">43,400원</td>
+                  <td>와이파이도시락 유럽 <b>6,200원/일</b> × 7 (보증금·보험 별도)</td>
+                </tr>
+                <tr>
+                  <td>ESIMmany (7일)</td>
+                  <td class="ct">15,600원</td>
+                  <td class="ct good">15,600원 <i>(변동 없음)</i></td>
+                  <td>매일 2GB · 자사 판매가</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="f f--p0">
+          <div class="f__head">
+            <span class="f__id">삭제</span>
+            <h3 class="f__t">비교표에서 <b>사실이 아닌 주장 2개</b>를 함께 걷어냈습니다</h3>
+            <span class="loc">10-comparison</span>
+          </div>
+          <p class="f__why">
+            수치를 확인하다 발견한 건데, 로밍 열의 두 항목은
+            <b>지금 요금제 기준으로는 틀린 말</b>입니다. 그대로 두면 비교광고에서 가장 위험한
+            유형(경쟁 수단의 단점을 사실과 다르게 기술)이 됩니다.
+          </p>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>기존 문구</th>
+                  <th>왜 틀렸나</th>
+                  <th>교체</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="bad">⚠ 국가별 별도 요금제</td>
+                  <td>
+                    SKT baro 는 <b>195개국 단일 요금제</b>(스페인·포르투갈 모두 포함), KT 하루종일
+                    로밍은 191개국. 나라마다 따로 가입하지 않습니다
+                  </td>
+                  <td class="good">⚠ 데이터팩은 30일 단위 — 짧은 여행엔 과잉</td>
+                </tr>
+                <tr>
+                  <td class="bad">⚠ 테더링 제한적</td>
+                  <td>
+                    데이터팩 로밍의 테더링 차단은 <b>확인되지 않았습니다.</b> 근거 없이 단점으로
+                    적을 수 없습니다
+                  </td>
+                  <td class="good">⚠ 요금제마다 조건이 제각각</td>
+                </tr>
+                <tr>
+                  <td class="bad">✕ 국가별 별도 임대 <i>(포켓 WiFi)</i></td>
+                  <td>유럽 상품은 <b>유럽 전역 단일 대여</b>입니다</td>
+                  <td class="good">✕ 보증금 · 보험 별도</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="f f--p2">
+          <div class="f__head">
+            <span class="f__id">참조</span>
+            <h3 class="f__t">확인한 요금제 전체</h3>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>사업자 · 상품</th>
+                  <th>데이터</th>
+                  <th>기간</th>
+                  <th>가격</th>
+                  <th>7일 환산</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SKT baro 3GB</td>
+                  <td>3GB (소진 후 1Mbps)</td>
+                  <td>30일</td>
+                  <td>29,000원</td>
+                  <td class="ct">29,000원</td>
+                </tr>
+                <tr>
+                  <td>SKT baro 8GB</td>
+                  <td>6GB+2GB</td>
+                  <td>30일</td>
+                  <td>39,000원 <i>(프로모션)</i></td>
+                  <td class="ct">39,000원</td>
+                </tr>
+                <tr>
+                  <td>KT 함께 쓰는 로밍</td>
+                  <td>5~40GB</td>
+                  <td>30일</td>
+                  <td>33,000~77,000원</td>
+                  <td class="ct">33,000원~</td>
+                </tr>
+                <tr>
+                  <td>KT 하루종일 로밍 베이직</td>
+                  <td>1GB/일</td>
+                  <td>1일</td>
+                  <td>11,000원</td>
+                  <td class="ct">77,000원</td>
+                </tr>
+                <tr>
+                  <td>KT 하루종일 로밍 플러스</td>
+                  <td>2GB/일</td>
+                  <td>1일</td>
+                  <td>13,000원</td>
+                  <td class="ct">91,000원</td>
+                </tr>
+                <tr>
+                  <td>와이파이도시락 유럽</td>
+                  <td>무제한 (정책상 제한 가능)</td>
+                  <td>1일</td>
+                  <td>6,200원~</td>
+                  <td class="ct">43,400원</td>
+                </tr>
+                <tr style="background: var(--p50)">
+                  <td><b>ESIMmany 남유럽</b></td>
+                  <td><b>2GB/일 (소진 후 500Kbps)</b></td>
+                  <td><b>7일</b></td>
+                  <td><b>15,600원</b></td>
+                  <td class="ct"><b>15,600원</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <b>LG U+ 는 확인하지 못했습니다.</b> 공식 요금제 페이지가 스크립트로 값을 불러오는
+            구조라 자동 조회가 막혔습니다. 2차 자료(2026-03-11)에는 유럽 무제한 14,900원/일 ·
+            1GB 11,900원/일로 나오지만, <b>공식 확인 전이라 비교표에 넣지 않았습니다.</b> 넣으려면
+            LG U+ 로밍 페이지에서 직접 확인이 필요합니다.
+          </div>
+        </div>
+
+        <div class="f">
+          <div class="f__head">
+            <span class="f__id">링크</span>
+            <h3 class="f__t">출처 원문</h3>
+          </div>
+          <ul class="tight">
+            <li>
+              SKT baro 요금제 (공식 상품원장) —
+              <code>m.tworld.co.kr/product/callplan?prod_id=NA00007668</code>
+            </li>
+            <li>KT 데이터로밍 상품 (공식) — <code>m.globalroaming.kt.com/product/data/main</code></li>
+            <li>
+              와이파이도시락 유럽 포켓와이파이 — <code>waug.com/ko/activities/122842</code> ·
+              <code>experiences.myrealtrip.com/products/3730738</code> (두 판매처 모두 6,200원/일)
+            </li>
+            <li>
+              통신사 3사 비교 (2차 자료, 2026-03-11) —
+              <code>simology.io/ko/blog/skt-kt-lg-uplus-roaming-fees-2026-comparison</code>
+              <i>— LG U+ 값의 출처이나 비교표에는 미반영</i>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ================= ORDER ================= -->
+      <section class="group">
+        <div class="group__head">
+          <span class="sev sev--p3">▶</span>
+          <h2>권장 작업 순서</h2>
+        </div>
+        <div class="f">
+          <div class="note" style="background: var(--grn-bg); border-color: #bbf7d0; color: var(--grn-ink); margin-top: 0; margin-bottom: 14px">
+            <b>진행 상황 (2026-09-12):</b> 결정 5건과 그에 딸린 수정은 <b>모두 반영했습니다.</b>
+<b>P0 5건과 결정 5건이 모두 닫혔습니다.</b> 다음은 ③ 어미 해요체 통일(P1-1)입니다.
+          </div>
+          <ul class="tight">
+            <li>
+              <b>① 값 확정 — 완료</b> · 발급 시간 <code>1~2분</code> · 환불 수수료
+              <code>3,500원</code> 정액 · 로밍/포켓 WiFi 비교 근거 확보.
+            </li>
+            <li>
+              <b>② P0 5건 반영 — 완료</b> · 리뷰 발췌 범위, S22/S23 문구 통일, 환불 금액·표현.
+            </li>
+            <li>
+              <b>③ 어미 통일 (P1-1)</b> — 해요체로 전면 통일. 단일 항목으로 체감 개선이 가장 큽니다.
+              섹션 단위로 훑으면서 P1-2~P1-6 의 개별 문장을 함께 처리하면 한 번에 끝납니다.
+            </li>
+            <li>
+              <b>④ P2 표기 통일</b> — 판단이 필요 없어 일괄 치환 가능. 단
+              <b>07-reviews 원문은 제외</b>.
+            </li>
+            <li>
+              <b>⑤ P3 조판</b> — <code>text-wrap</code> 2줄 추가 + <code>--lh-card</code> 1.5.
+              그다음 PNG 전량 재내보내기.
+            </li>
+            <li>
+              <b>⑥ Hero·CTA 구조 정리 (P1-7, P1-8)</b> — 칩 삭제 여부는 실제 렌더를 보고 판단하는 게
+              낫습니다. 마지막에 두세요.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <footer>
+        korean-web-copy 스킬 기준(구조 → 문장 → 조판) · 2026-09-12 · 점검 대상
+        <code>design/products/southern-eu/sections/01~15</code> +
+        <code>shared/{tokens,base}.css</code><br />
+        어미·표기 집계는 전 섹션 텍스트 추출 후 기계 집계했습니다. 07-reviews 의 구매자 원문은 수정
+        대상에서 제외했습니다.
+      </footer>
+    </div>
+  </body>
+</html>

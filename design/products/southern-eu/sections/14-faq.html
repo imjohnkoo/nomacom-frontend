@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>14 · FAQ · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .faq {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .faq__item {
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+        padding: 18px 24px 20px;
+      }
+      .faq__q {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: var(--fs-lede);
+        font-weight: 700;
+        letter-spacing: var(--ls-body);
+        margin: 0 0 10px;
+        color: var(--color-neutral-900);
+      }
+      .faq__a {
+        padding-left: 34px;
+        font-size: var(--fs-body);
+        line-height: 1.75;
+        color: var(--color-neutral-600);
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">14</span>
+        <span class="dev-toolbar__title">FAQ</span>
+        <span class="dev-toolbar__hint">11 항목 · EU 특화 국경이동 Q 포함</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-14-faq">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section" id="export-target">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section__title">자주 묻는 질문</h2>
+        <p class="section__lede">결제 전, 가장 많이 받는 질문 11개를 정리했어요.</p>
+
+        <div class="faq">
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">1</span>eSIM 은 언제 받을 수 있나요?</p>
+            <p class="faq__a">
+              결제 후 카카오톡으로 평균 1~2분 안에 발급링크가 자동 발송돼요. 24시간 자동이라
+              야간에도 주말에도 발급돼요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">2</span>데이터 갱신 기준은 언제인가요?</p>
+            <p class="faq__a">
+              <b>사용 시작 시점부터 24시간 단위</b>로 매일 갱신돼요. 첫 사용이 현지 오후 3시였다면
+              매일 오후 3시에 일일 데이터가 새로 채워져요. 종량제는 30일 동안 총량을 나눠 써요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">3</span>설치는 언제 하면 되나요?</p>
+            <p class="faq__a">
+              발급 후 언제든 QR 을 스캔해 설치할 수 있어요. <b>사용 시작 시간과 설치 시점은
+              무관</b>하니 출국 전에 미리 설치하시길 권해요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">4</span>전화·문자 사용 가능한가요?</p>
+            <p class="faq__a">
+              데이터 전용 상품이에요. 카카오톡 · 보이스톡 · WhatsApp 같은 인터넷 전화는 쓸 수
+              있어요. 일반 음성 통화는 한국 번호 그대로 (로밍 요금) 쓰시거나 별도 앱을 이용해
+              주세요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">5</span>사용량은 어떻게 확인하나요?</p>
+            <p class="faq__a">
+              아이폰은 설정 → 셀룰러 → 해당 eSIM 회선에서, 갤럭시는 설정 → 연결 → 데이터 사용 →
+              해당 SIM 에서 확인할 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">6</span>테더링 (핫스팟) 도 되나요?</p>
+            <p class="faq__a">
+              <b>전 상품 테더링을 지원해요.</b> 노트북·태블릿을 연결할 수 있고, 현지 통신 환경에
+              따라 속도는 조금 달라질 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">7</span>데이터를 다 쓰면 어떻게 되나요?</p>
+            <p class="faq__a">
+              <b>무제한 상품</b>은 일일 고속 한도 (1GB · 2GB) 를 다 쓰면 <b>500Kbps 무제한
+              저속</b>으로 계속 연결돼요. 다음 24시간 갱신 시점에 고속으로 돌아와요.<br />
+              <b>종량제 상품</b>은 30일 총량 (1~30GB) 을 다 쓰면 사용이 끝나요. 추가로 구매하면
+              이어서 쓸 수 있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">8</span>환불은 언제까지 가능한가요?</p>
+            <p class="faq__a">
+              QR 을 받기 전이면 <b>100% 돌려드려요.</b> QR 은 받았지만 아직 설치하지 않았다면
+              <b>수수료 3,500원</b>을 뺀 금액을 돌려드려요. 폰에 설치한 뒤에는 환불되지 않아요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q"><span class="ds-num">9</span>테더링 속도에 제한이 있나요?</p>
+            <p class="faq__a">
+              일일 고속 한도를 다 쓰기 전까지는 원속도가 그대로 유지되고, 테더링도 똑같아요. 한도를
+              넘기면 500Kbps 저속으로 바뀌어요. 기기와 현지 통신망에 따라 차이가 조금 있을 수
+              있어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">
+              <span class="ds-num">10</span>QR 코드를 잃어버렸어요. 재발급되나요?
+            </p>
+            <p class="faq__a">
+              주문번호로 다시 로그인하면 같은 QR 코드를 다시 볼 수 있어요. 다만 eSIM 은 한 기기에만
+              등록되고, 등록한 뒤에는 다른 기기로 옮길 수 없어요.
+            </p>
+          </div>
+          <div class="faq__item">
+            <p class="faq__q">
+              <span class="ds-num">11</span>스페인에서 포르투갈로 넘어가도 같은 eSIM 으로 되나요?
+            </p>
+            <p class="faq__a">
+              네, <b>같은 eSIM 으로 2개국이 자동 연결</b>돼요. 따로 할 일도, 재발급도 없어요.
+              마드리드에서 리스본으로 이동하면 폰이 알아서 현지 대표 통신사로 바꿔줘요.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

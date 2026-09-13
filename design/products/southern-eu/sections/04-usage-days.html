@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>04 · Usage days · ESIMmany Detail</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <style>
+      .ud-board {
+        padding: 24px 26px 28px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-2xl);
+      }
+      .ud-board__case {
+        margin: 0 0 22px;
+        font-size: var(--fs-caption);
+        font-weight: 700;
+        color: var(--color-neutral-800);
+        text-align: center;
+      }
+      .ud-tl__row {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        align-items: center;
+      }
+      .ud-tl__date {
+        grid-column: span 2;
+        text-align: center;
+        font-size: var(--fs-caption);
+        font-weight: 600;
+        color: var(--color-neutral-500);
+        padding-bottom: 10px;
+      }
+      .ud-tl__seg {
+        height: 8px;
+        background: var(--color-neutral-200);
+      }
+      .ud-tl__seg--on {
+        background: var(--color-primary-500);
+      }
+      .ud-tl__bars {
+        margin-top: 14px;
+      }
+      .ud-tl__bar {
+        height: 34px;
+        display: grid;
+        place-items: center;
+        background: var(--color-primary-500);
+        border-radius: var(--radius-md);
+        color: #fff;
+        font-size: var(--fs-caption);
+        font-weight: 700;
+      }
+      .ud-tl__bar--1 {
+        grid-column: 2 / 4;
+      }
+      .ud-tl__bar--2 {
+        grid-column: 4 / 6;
+      }
+      .ud-tl__bar--3 {
+        grid-column: 6 / 8;
+      }
+      .ud-tl__stems {
+        height: 16px;
+      }
+      .ud-tl__stem {
+        grid-column: span 2;
+        justify-self: center;
+        width: 0;
+        height: 16px;
+        border-left: 2px dotted var(--color-primary-400);
+      }
+      .ud-tl__mark {
+        grid-column: span 2;
+        display: grid;
+        justify-items: center;
+        gap: 6px;
+      }
+      .ud-tl__pill {
+        background: var(--color-primary-500);
+        color: #fff;
+        font-size: var(--fs-caption);
+        font-weight: 700;
+        padding: 5px 14px;
+        border-radius: var(--radius-full);
+        white-space: nowrap;
+      }
+      .ud-tl__note {
+        font-size: var(--fs-caption-sm);
+        color: var(--color-neutral-600);
+        white-space: nowrap;
+      }
+
+      .ud-note {
+        margin-top: 22px;
+        padding: 14px 18px;
+        background: #fff;
+        border: 1px solid var(--color-neutral-200);
+        border-radius: var(--radius-lg);
+        font-size: var(--fs-body-sm);
+        color: var(--color-neutral-600);
+        line-height: 1.65;
+        text-align: center;
+      }
+      .ud-note b {
+        color: var(--color-neutral-900);
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dev-toolbar">
+      <div class="dev-toolbar__info">
+        <span class="dev-toolbar__num">04</span>
+        <span class="dev-toolbar__title">Usage days</span>
+        <span class="dev-toolbar__hint">이용일 계산 타임라인</span>
+      </div>
+      <button class="dev-toolbar__btn" data-export="eu-04-usage-days">
+        <span class="label-default">PNG 저장</span>
+        <span class="label-busy">내보내는 중…</span>
+      </button>
+    </div>
+
+    <div class="canvas">
+      <section class="section section--alt" id="export-target">
+        <span class="eyebrow">Usage days</span>
+        <h2 class="section__title">사용일수는 이렇게 계산하면 돼요</h2>
+        <p class="section__lede">
+          현지에서 데이터가 <b>처음 연결된 시점</b>부터 24시간마다 1일씩
+          차감돼요.
+        </p>
+
+        <div class="ud-board">
+          <p class="ud-board__case">예시) 3일 이용권을 3월 1일 오후 3시부터 사용 시작한 경우</p>
+
+          <div class="ud-tl">
+            <div class="ud-tl__row">
+              <span class="ud-tl__date">3월 1일</span>
+              <span class="ud-tl__date">3월 2일</span>
+              <span class="ud-tl__date">3월 3일</span>
+              <span class="ud-tl__date">3월 4일</span>
+            </div>
+            <div class="ud-tl__row">
+              <span class="ud-tl__seg"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg ud-tl__seg--on"></span>
+              <span class="ud-tl__seg"></span>
+            </div>
+            <div class="ud-tl__row ud-tl__bars">
+              <div class="ud-tl__bar ud-tl__bar--1">24시간 (1일)</div>
+              <div class="ud-tl__bar ud-tl__bar--2">24시간 (2일)</div>
+              <div class="ud-tl__bar ud-tl__bar--3">24시간 (3일)</div>
+            </div>
+            <div class="ud-tl__row ud-tl__stems">
+              <span class="ud-tl__stem"></span>
+              <span class="ud-tl__stem"></span>
+              <span class="ud-tl__stem"></span>
+              <span class="ud-tl__stem"></span>
+            </div>
+            <div class="ud-tl__row">
+              <div class="ud-tl__mark">
+                <span class="ud-tl__pill">1일차</span>
+                <span class="ud-tl__note">오후 3시 이용 시작</span>
+              </div>
+              <div class="ud-tl__mark">
+                <span class="ud-tl__pill">2일차</span>
+                <span class="ud-tl__note">오후 3시 갱신</span>
+              </div>
+              <div class="ud-tl__mark">
+                <span class="ud-tl__pill">3일차</span>
+                <span class="ud-tl__note">오후 3시 갱신</span>
+              </div>
+              <div class="ud-tl__mark">
+                <span class="ud-tl__pill">사용 종료</span>
+                <span class="ud-tl__note">오후 3시 사용 종료</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="ud-note">
+          💡 발급할 때 입력하는 <b>개통 시작일</b>은 안내용 기준이에요. 실제 차감은 현지에서
+          <b>회선이 처음 연결된 순간</b>부터 시작돼요.
+        </p>
+      </section>
+    </div>
+
+    <script src="../shared/export.js"></script>
+  </body>
+</html>

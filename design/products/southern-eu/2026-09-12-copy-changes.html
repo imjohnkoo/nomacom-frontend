@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>남유럽 상세페이지 변경 내역</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+    />
+    <style>
+      :root {
+        --p50: #f1edff;
+        --p100: #e3dbff;
+        --p500: #6239ff;
+        --p600: #5025e8;
+        --n0: #fff;
+        --n50: #fafafa;
+        --n100: #f5f5f5;
+        --n200: #e5e5e5;
+        --n300: #d4d4d4;
+        --n500: #737373;
+        --n600: #525252;
+        --n700: #404040;
+        --n900: #171717;
+        --red: #ef4444;
+        --red-bg: #fef5f5;
+        --red-ink: #b91c1c;
+        --grn: #22c55e;
+        --grn-bg: #f2fdf5;
+        --grn-ink: #15803d;
+        --amb-bg: #fffbeb;
+        --amb-ink: #b45309;
+        --blu-bg: #f0f9ff;
+        --blu-ink: #0369a1;
+        --font: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--n900);
+        background: #ededf2;
+        line-height: 1.6;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+      p,
+      li,
+      td {
+        text-wrap: pretty;
+      }
+      .wrap {
+        max-width: 1060px;
+        margin: 0 auto;
+        padding-block: 0 80px;
+        padding-inline: 20px;
+      }
+
+      header.top {
+        background: linear-gradient(135deg, #2f1499 0%, #6239ff 100%);
+        color: #fff;
+        padding-block: 44px 36px;
+        padding-inline: 20px;
+        margin-bottom: 30px;
+      }
+      .top__in {
+        max-width: 1060px;
+        margin: 0 auto;
+      }
+      .top__eyebrow {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 10px;
+      }
+      .top h1 {
+        margin: 0 0 12px;
+        font-size: 33px;
+        font-weight: 800;
+        line-height: 1.25;
+      }
+      .top p {
+        margin: 0;
+        font-size: 15.5px;
+        opacity: 0.86;
+        max-width: 680px;
+      }
+      .sb {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 22px;
+      }
+      .sc {
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 11px;
+        padding: 11px 15px;
+        min-width: 100px;
+      }
+      .sc__n {
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+      .sc__l {
+        font-size: 11.5px;
+        opacity: 0.8;
+        margin-top: 2px;
+      }
+
+      /* 지표 카드 */
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+      .metric {
+        background: #fff;
+        border: 1px solid var(--n200);
+        border-left: 4px solid var(--p500);
+        border-radius: 11px;
+        padding: 16px 18px;
+      }
+      .metric__l {
+        font-size: 12.5px;
+        color: var(--n500);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .metric__v {
+        font-size: 19px;
+        font-weight: 800;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .metric__from {
+        color: var(--red-ink);
+        text-decoration: line-through;
+        font-weight: 600;
+        font-size: 15px;
+      }
+      .metric__to {
+        color: var(--grn-ink);
+      }
+      .metric__note {
+        font-size: 12px;
+        color: var(--n500);
+        margin-top: 5px;
+      }
+
+      /* 섹션 카드 */
+      .sec {
+        background: #fff;
+        border: 1px solid var(--n200);
+        border-radius: 13px;
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      .sec__h {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        flex-wrap: wrap;
+        padding: 15px 20px;
+        background: var(--n50);
+        border-bottom: 1px solid var(--n200);
+      }
+      .sec__num {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 800;
+        color: #fff;
+        background: var(--p500);
+        border-radius: 5px;
+        padding: 3px 8px;
+      }
+      .sec__t {
+        margin: 0;
+        font-size: 16.5px;
+        font-weight: 800;
+        flex: 1 1 200px;
+        min-width: 0;
+      }
+      .sec__c {
+        font-size: 12px;
+        color: var(--n500);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .sec__b {
+        padding: 6px 20px 16px;
+      }
+
+      .tw {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 14px;
+        min-width: 600px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--n100);
+        vertical-align: top;
+      }
+      thead th {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--n500);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--n200);
+        white-space: nowrap;
+      }
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      td.before {
+        background: var(--red-bg);
+        color: var(--red-ink);
+        width: 38%;
+      }
+      td.after {
+        background: var(--grn-bg);
+        color: var(--grn-ink);
+        width: 38%;
+        font-weight: 500;
+      }
+      td.why {
+        font-size: 13px;
+        color: var(--n600);
+      }
+      td.del {
+        background: var(--red-bg);
+        color: var(--red-ink);
+        font-style: italic;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 12.5px;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 10.5px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 999px;
+        vertical-align: middle;
+        margin-right: 5px;
+        white-space: nowrap;
+      }
+      .t-p0 {
+        background: #fee2e2;
+        color: var(--red-ink);
+      }
+      .t-p1 {
+        background: var(--amb-bg);
+        color: var(--amb-ink);
+      }
+      .t-p2 {
+        background: var(--blu-bg);
+        color: var(--blu-ink);
+      }
+      .t-p3 {
+        background: var(--p50);
+        color: var(--p600);
+      }
+
+      pre {
+        margin: 10px 0 0;
+        background: var(--n900);
+        color: #e7e5ff;
+        border-radius: 9px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+      pre .c {
+        color: #8f8aa8;
+      }
+      pre .k {
+        color: #a78bff;
+      }
+      pre .d {
+        color: #fca5a5;
+      }
+      pre .a {
+        color: #86efac;
+      }
+
+      .band {
+        background: #fff;
+        border: 1px solid var(--n200);
+        border-radius: 13px;
+        padding: 20px 22px;
+        margin-bottom: 14px;
+      }
+      .band h2 {
+        margin: 0 0 6px;
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .band > p {
+        margin: 0 0 14px;
+        font-size: 14.5px;
+        color: var(--n600);
+      }
+      .band h2 + p {
+        margin-top: 0;
+      }
+      ul.tight {
+        margin: 0;
+        padding-left: 19px;
+        font-size: 14.5px;
+        color: var(--n700);
+      }
+      ul.tight li {
+        margin-bottom: 6px;
+      }
+      ul.tight li:last-child {
+        margin-bottom: 0;
+      }
+      .ok {
+        color: var(--grn-ink);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--red-ink);
+        font-weight: 700;
+      }
+      .callout {
+        background: var(--amb-bg);
+        border: 1px solid #fde68a;
+        border-radius: 9px;
+        padding: 12px 15px;
+        font-size: 13.5px;
+        color: var(--amb-ink);
+        margin-top: 12px;
+      }
+      .callout--ok {
+        background: var(--grn-bg);
+        border-color: #bbf7d0;
+        color: var(--grn-ink);
+      }
+      h2.grp {
+        font-size: 21px;
+        font-weight: 800;
+        margin: 34px 0 14px;
+      }
+      footer {
+        margin-top: 40px;
+        padding-top: 18px;
+        border-top: 1px solid var(--n300);
+        font-size: 13px;
+        color: var(--n500);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="top__in">
+        <div class="top__eyebrow">korean-web-copy · 변경 내역</div>
+        <h1>남유럽 상세페이지<br />카피 · 조판 수정 전체 기록</h1>
+        <p>
+          P0(사실관계) · P1(문장 품질) · P2(표기) · P3(조판) 전량 반영. 결정 5건 포함. 2026-09-12.
+        </p>
+        <div class="sb">
+          <div class="sc">
+            <div class="sc__n">18</div>
+            <div class="sc__l">수정 파일</div>
+          </div>
+          <div class="sc">
+            <div class="sc__n">15</div>
+            <div class="sc__l">섹션 전량</div>
+          </div>
+          <div class="sc">
+            <div class="sc__n">5</div>
+            <div class="sc__l">P0 사실관계</div>
+          </div>
+          <div class="sc">
+            <div class="sc__n">9</div>
+            <div class="sc__l">P1 문장</div>
+          </div>
+          <div class="sc">
+            <div class="sc__n">6</div>
+            <div class="sc__l">P2 표기</div>
+          </div>
+          <div class="sc">
+            <div class="sc__n">3</div>
+            <div class="sc__l">P3 조판</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <!-- ============ 지표 ============ -->
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric__l">어미 통일 — 해요체 비중</div>
+          <div class="metric__v">
+            <span class="metric__from">47%</span> →
+            <span class="metric__to">90%</span>
+          </div>
+          <div class="metric__note">남은 합쇼체 7건은 환불 규정·호환 단정 (의도적)</div>
+        </div>
+        <div class="metric">
+          <div class="metric__l">명사(체언) 종결</div>
+          <div class="metric__v">
+            <span class="metric__from">9건</span> → <span class="metric__to">0건</span>
+          </div>
+          <div class="metric__note">05-why 카드 4개 전면 서술형 전환 포함</div>
+        </div>
+        <div class="metric">
+          <div class="metric__l">한 문단 내 어미 혼재</div>
+          <div class="metric__v">
+            <span class="metric__from">FAQ 6곳</span> → <span class="metric__to">0곳</span>
+          </div>
+          <div class="metric__note">FAQ 질문 13개 모두 <code>~나요?</code></div>
+        </div>
+        <div class="metric">
+          <div class="metric__l">사실과 다른 비교 주장</div>
+          <div class="metric__v">
+            <span class="metric__from">3건</span> → <span class="metric__to">0건</span>
+          </div>
+          <div class="metric__note">공식 요금표 재조사로 확인·교체</div>
+        </div>
+      </div>
+
+      <!-- ============ P0 ============ -->
+      <h2 class="grp">P0 — 사실관계 · 규칙 (5건)</h2>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">10</span>
+          <h3 class="sec__t">Comparison — 로밍·포켓 WiFi 요금 정정</h3>
+          <span class="sec__c">공식 요금표 재조사</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>항목</th>
+                  <th>변경 전</th>
+                  <th>변경 후</th>
+                  <th>근거</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>로밍 7일</td>
+                  <td class="before">~35,000원</td>
+                  <td class="after">29,000~91,000원</td>
+                  <td class="why">
+                    하한 SKT baro 3GB/30일 · 상한 KT 하루종일 로밍 플러스 13,000원/일×7
+                  </td>
+                </tr>
+                <tr>
+                  <td>로밍 일일 정액</td>
+                  <td class="before">비싼 요금 (일 1만원+)<br /><i>출처 없음</i></td>
+                  <td class="after">일일 정액제는 하루 11,000원부터</td>
+                  <td class="why">KT 하루종일 로밍 베이직 1GB/일 공식가</td>
+                </tr>
+                <tr>
+                  <td>포켓 WiFi 7일</td>
+                  <td class="before">~28,000원</td>
+                  <td class="after">43,400원 <small>(하루 6,200원)</small></td>
+                  <td class="why">와이파이도시락 유럽 — 판매처 2곳 동일가</td>
+                </tr>
+                <tr>
+                  <td><span class="tag t-p0">거짓</span>로밍</td>
+                  <td class="before">⚠ 국가별 별도 요금제</td>
+                  <td class="after">⚠ 데이터팩은 30일 단위 — 짧은 여행엔 과잉</td>
+                  <td class="why">
+                    SKT baro 195개국·KT 191개국 <b>단일 요금제</b>. 나라마다 가입하지 않음
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="tag t-p0">무근거</span>로밍</td>
+                  <td class="before">⚠ 테더링 제한적</td>
+                  <td class="after">⚠ 요금제마다 조건이 제각각</td>
+                  <td class="why">데이터팩 로밍의 테더링 차단은 확인되지 않음</td>
+                </tr>
+                <tr>
+                  <td><span class="tag t-p0">거짓</span>포켓 WiFi</td>
+                  <td class="before">✕ 국가별 별도 임대</td>
+                  <td class="after">✕ 보증금 · 보험 별도</td>
+                  <td class="why">유럽 상품은 전역 단일 대여</td>
+                </tr>
+                <tr>
+                  <td>출처 각주</td>
+                  <td class="del">없음</td>
+                  <td class="after">섹션 하단에 근거 각주 신설</td>
+                  <td class="why">비교광고 객관적 근거 요건</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <b>LG U+ 는 넣지 않았습니다.</b> 공식 요금제 페이지가 스크립트로 값을 불러와 자동 조회가
+            막혔습니다. 2차 자료(2026-03-11)엔 유럽 무제한 14,900원/일로 나오지만
+            <b>공식 확인 전이라 비교표에서 제외</b>했습니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">07</span>
+          <h3 class="sec__t">Reviews — 부정 언급 문장 제외</h3>
+          <span class="sec__c">큐레이션 규칙</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td class="before">
+                    …오히려 와이파이보다 빨라 좋았습니다.
+                    <b>다만 국가 특성상 포르투갈에서는 스페인보다 느리다는 점 참고하시길..!</b>
+                  </td>
+                  <td class="after">…오히려 와이파이보다 빨라 좋았습니다.</td>
+                  <td class="why">
+                    5★ 여도 부정 언급이 있으면 제외가 규칙. <code>일부 발췌</code> 표기가 이미 있어
+                    <b>발췌 범위 조정</b>으로 해결 — 원문 훼손 없음
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">11 · 12</span>
+          <h3 class="sec__t">갤럭시 S22/S23 경계 — 두 섹션 표현 통일</h3>
+          <span class="sec__c">구매 차단 문구</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>변경 전</th>
+                  <th>변경 후</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>11 경고박스</td>
+                  <td class="before">갤럭시 S22 이하 국내판 (S22 / S21 / S20 시리즈…)</td>
+                  <td class="after">
+                    <b>갤럭시 S22 와 그 이전 국내판</b> — 갤럭시는 <b>S23 부터</b> eSIM 을 지원합니다.
+                  </td>
+                </tr>
+                <tr>
+                  <td>12 하단 주석</td>
+                  <td class="before">갤럭시 <b>S23 이전</b> 출시 모델은 … 사용이 불가합니다.</td>
+                  <td class="after">
+                    <b>갤럭시는 S23부터 eSIM 을 지원합니다.</b> S22 와 그 이전 국내판 모델은 …
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            「S23 이전」은 한국어에서 <b>S23 포함으로도 읽힙니다.</b> 양쪽 다
+            <b>되는 쪽(S23부터)을 먼저</b> 말하도록 바꿔 모호함을 없앴습니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">13 · 14</span>
+          <h3 class="sec__t">Refund — 수수료 3,500원 명시 + 완곡 표현 제거</h3>
+          <span class="sec__c">분쟁 소지</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>변경 전</th>
+                  <th>변경 후</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>13 카드 라벨</td>
+                  <td class="before">부분 환불</td>
+                  <td class="after">3,500원 차감</td>
+                </tr>
+                <tr>
+                  <td>13 카드 본문</td>
+                  <td class="before">
+                    ESIMmany 자체 정책으로 <b>수수료 차감 후</b> 부분 환불 가능합니다.
+                  </td>
+                  <td class="after">
+                    QR은 받았지만 아직 폰에 설치하지 않았다면 <b>수수료 3,500원</b>을 뺀 금액을
+                    돌려드립니다.
+                  </td>
+                </tr>
+                <tr>
+                  <td>13 환불 불가</td>
+                  <td class="before">…설치 하면 <b>환불이 어렵습니다.</b></td>
+                  <td class="after">…설치하면 <b>환불되지 않습니다.</b></td>
+                </tr>
+                <tr>
+                  <td>14 FAQ Q8</td>
+                  <td class="before">
+                    QR 발급 전 100% / 발급 후 미설치는 … 부분 환불 / 설치 후 환불 불가.
+                  </td>
+                  <td class="after">
+                    QR 을 받기 전이면 <b>100% 돌려드려요.</b> … <b>수수료 3,500원</b>을 뺀 금액을
+                    돌려드려요. 폰에 설치한 뒤에는 환불되지 않아요.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            「어렵다」는 <b>여지가 있다는 뜻으로 읽혀</b> 그 틈으로 환불 요청이 들어옵니다. 라벨과
+            본문 강도를 맞췄고, Q8 은 개조식(<code>/</code> 나열)도 문장으로 풀었습니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ P1 ============ -->
+      <h2 class="grp">P1 — 문장 품질 (9건)</h2>
+
+      <div class="band">
+        <h2>⚑ 최대 이슈 — 어미 체계 통일</h2>
+        <p>
+          해요체 28 / 합쇼체 32로 거의 반반이었고, <b>같은 FAQ 답변 한 문단 안에서도</b> 오갔습니다.
+          전 섹션을 해요체로 통일했습니다.
+        </p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>대표 사례</th>
+                <th>변경 전</th>
+                <th>변경 후</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>FAQ Q3<br /><small>한 답변에서 3번 오감</small></td>
+                <td class="before">
+                  …설치 <b>가능합니다.</b> …시작되지 <b>않아요.</b> …사용이 <b>시작됩니다.</b>
+                </td>
+                <td class="after">
+                  …설치할 수 <b>있어요.</b> …시작되지 <b>않아요.</b> …사용이 <b>시작돼요.</b>
+                </td>
+              </tr>
+              <tr>
+                <td>FAQ 질문 13개</td>
+                <td class="before">12개는 <code>~나요?</code> / Q13만 <code>됩니까?</code></td>
+                <td class="after">13개 모두 <code>~나요?</code></td>
+              </tr>
+              <tr>
+                <td>09 하단 노트</td>
+                <td class="before">데이터가 시작돼요. 야간·주말에도 <b>발급됩니다.</b></td>
+                <td class="after">데이터가 시작돼요. 야간에도 주말에도 <b>발급돼요.</b></td>
+              </tr>
+              <tr>
+                <td>08 lede</td>
+                <td class="before">현지 대표 통신망에 자동 <b>연결됩니다.</b></td>
+                <td class="after">현지 대표 통신망에 자동으로 <b>연결돼요.</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout--ok">
+          <b>의도적으로 남긴 합쇼체 7건</b> — 13-refund 의 환불 규정 3문장(단정적인 합쇼체가 신뢰를
+          줌), 11·12 의 「갤럭시는 S23부터 eSIM 을 지원합니다」 2문장(호환 단정),
+          10-comparison 의 요금 출처 각주(고지문). <b>섹션 안에서는 어느 것도 섞이지 않습니다.</b>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">05</span>
+          <h3 class="sec__t">Why — 체언 종결 4개 전면 서술형 + 「물리유심」</h3>
+          <span class="sec__c">기계적 병렬 해소</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>제목</td>
+                  <td class="before"><b>물리유심</b> 없이<br />입국 즉시 데이터.</td>
+                  <td class="after"><b>실물 유심</b> 없이<br />입국 즉시 데이터.</td>
+                </tr>
+                <tr>
+                  <td>⚡ 카드</td>
+                  <td class="before">…야간·주말에도 24시간 자동, <b>영업시간 제한 없음.</b></td>
+                  <td class="after">
+                    결제하면 카카오톡으로 QR 이 자동 발송돼요. 야간에도 주말에도 영업시간과 상관없이
+                    <b>나가요.</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td>🌐 카드</td>
+                  <td class="before">매일 한도 다 써도 끊김 없음. …그대로 <b>사용 가능.</b></td>
+                  <td class="after">
+                    매일 한도를 다 써도 끊기지 않아요. 메신저도 지도도 인터넷 전화도 그대로
+                    <b>써요.</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td>🔁 카드</td>
+                  <td class="before">
+                    …영상 스트리밍 모두 지원. <b>속도 제한 없음.</b><br />제목:
+                    <code>테더링 · 업로드 OK</code>
+                  </td>
+                  <td class="after">
+                    …영상 스트리밍까지 <b>돼요.</b> 속도를 따로 묶지 않아요.<br />제목:
+                    <code>테더링 · 업로드 자유</code>
+                  </td>
+                </tr>
+                <tr>
+                  <td>🌍 카드</td>
+                  <td class="before">…같은 eSIM. 현지 1티어 통신사로 <b>자동 전환.</b></td>
+                  <td class="after">
+                    …같은 eSIM 을 그대로 써요. 현지 대표 통신사로 알아서 <b>바뀌어요.</b>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">01</span>
+          <h3 class="sec__t">Hero — 같은 사실 3번 반복 제거</h3>
+          <span class="sec__c">칩 4개 삭제</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>하단 칩</td>
+                  <td class="del">
+                    삭제 — <code>매일 1GB · 2GB 선택</code> <code>소진 후 500Kbps 무제한</code>
+                    <code>테더링 가능</code> <code>1~30일 자유 선택</code>
+                  </td>
+                  <td class="why">
+                    <b>서브 리스트가 같은 내용을 이미 전부 말합니다.</b> 「1~30일 자유 선택」과
+                    「소진 후 500Kbps 무제한」은 <b>글자까지 동일</b>했고, 바로 아래 06-stats 가 같은
+                    값을 큰 숫자로 또 보여줍니다
+                  </td>
+                </tr>
+                <tr>
+                  <td>배지 · 서브</td>
+                  <td class="before">🔁 테더링 <b>OK</b> / …당일 자동 발송 · 테더링 <b>OK</b></td>
+                  <td class="after">🔁 테더링 <b>됨</b> / …당일 자동 발송 · 테더링 <b>가능</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">09</span>
+          <h3 class="sec__t">How it works — 한자투 · 경고 수위</h3>
+          <span class="sec__c">04번과 정합</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>안심번호</td>
+                  <td class="before">안심번호로는 <b>발급이 불가합니다.</b></td>
+                  <td class="after">안심번호로는 <b>발급되지 않아요.</b></td>
+                </tr>
+                <tr>
+                  <td>설치 시점</td>
+                  <td class="before">
+                    <b>자택에서</b> 미리 <b>해두시길 권장합니다.</b>
+                  </td>
+                  <td class="after"><b>집에서</b> 미리 <b>해두세요.</b></td>
+                </tr>
+                <tr>
+                  <td>개통 시작일</td>
+                  <td class="before">
+                    <b>🚨</b> 개통 시작 일시는 현지 시간 기준으로 입력해 주세요.
+                  </td>
+                  <td class="after">
+                    <b>☝️</b> 개통 시작 일시는 현지 시간 기준으로 입력해 주세요.
+                    <b>실제 차감은 현지에서 회선이 처음 연결된 순간부터 시작돼요.</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td>STEP 1</td>
+                  <td class="before">…카카오톡 받을 번호 <b>입력</b></td>
+                  <td class="after">…카카오톡 받을 번호를 <b>넣어요</b></td>
+                </tr>
+                <tr>
+                  <td>lede</td>
+                  <td class="before">…현지에서 회선만 ON 으로 <b>즉시 시작.</b></td>
+                  <td class="after">…현지에서 회선만 ON 하면 <b>바로 시작돼요.</b></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            04-usage-days 는 「개통 시작일은 <b>안내용 기준</b>」이라고 힘을 빼는데 09 는 🚨 로
+            경고해 <b>강조 수위가 정반대</b>였습니다. 아이콘을 낮추고 04 의 설명을 이어 붙였습니다.
+            이제 🚨 는 <b>모르면 발급이 실패하는 것</b>(안심번호·미지원 기기)에만 씁니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">14</span>
+          <h3 class="sec__t">FAQ — 개조식 · 잡초 · 일본어투</h3>
+          <span class="sec__c">Q4 · Q12 · Q13</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>Q4</td>
+                  <td class="before"><b>본 상품은</b> 데이터 전용입니다.</td>
+                  <td class="after">데이터 전용 상품이에요.</td>
+                </tr>
+                <tr>
+                  <td>Q12 질문</td>
+                  <td class="before">무제한 <b>vs</b> 종량제, 뭘 사야 하나요?</td>
+                  <td class="after">무제한<b>과</b> 종량제, 뭘 골라야 하나요?</td>
+                </tr>
+                <tr>
+                  <td>Q12 답변</td>
+                  <td class="before">
+                    짧은 일정 <b>(1주↓) =</b> 무제한 매일 1·2GB <b>/</b> 장기·다국가 <b>=</b> 종량제
+                    1~30GB…
+                  </td>
+                  <td class="after">
+                    일주일 안쪽 일정이면 무제한 (매일 1GB·2GB) 이 편해요. 2주가 넘거나 여러 나라를
+                    도는 일정이면 종량제 10GB 이상을 추천드려요. 날마다 쓰는 양이 들쭉날쭉하면
+                    종량제가 덜 아까워요.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Q13 질문</td>
+                  <td class="before">스페인 <b>↔</b> 포르투갈 국경 넘어도 같은 eSIM 으로 <b>됩니까?</b></td>
+                  <td class="after">스페인<b>에서</b> 포르투갈<b>로 넘어가도</b> 같은 eSIM 으로 <b>되나요?</b></td>
+                </tr>
+                <tr>
+                  <td>Q13 답변</td>
+                  <td class="before">…추가 작업·재발급 <b>불요.</b></td>
+                  <td class="after">…따로 할 일도, 재발급도 <b>없어요.</b></td>
+                </tr>
+                <tr>
+                  <td>Q9</td>
+                  <td class="before">…고를 수 있어요. <b>추가 구매로 연장도 가능합니다.</b></td>
+                  <td class="after">…고를 수 있어요. <i>(Q7 과 중복된 문장 삭제)</i></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">10 · 08</span>
+          <h3 class="sec__t">일본어투 <code>불요</code> · <code>불필요</code> 전량 제거</h3>
+          <span class="sec__c">4곳</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>10 로밍</td>
+                  <td class="before">내 폰 그대로 · 신청 <b>불요</b></td>
+                  <td class="after">내 폰 그대로 · 따로 신청할 것 없음</td>
+                </tr>
+                <tr>
+                  <td>10 자사</td>
+                  <td class="before">내 폰 그대로 · 짐·충전 <b>불요</b></td>
+                  <td class="after">내 폰 그대로 · 짐도 충전도 없이</td>
+                </tr>
+                <tr>
+                  <td>14 Q13</td>
+                  <td class="before">추가 작업·재발급 <b>불요</b></td>
+                  <td class="after">따로 할 일도, 재발급도 없어요</td>
+                </tr>
+                <tr>
+                  <td>08 하단</td>
+                  <td class="before">…자동 연결 · 별도 설정 <b>불필요</b></td>
+                  <td class="after">
+                    현지에 도착하면 신호가 가장 센 대표 통신망에 자동으로 연결돼요. 따로 설정할 게
+                    없어요.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">15</span>
+          <h3 class="sec__t">Final CTA — 정보 과밀 해소</h3>
+          <span class="sec__c">마지막 문장</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>서브라인</td>
+                  <td class="before">
+                    스페인·포르투갈 <b>1~30일 · 30일</b> 매일 1GB ₩993/일~ · 카카오톡 1분 발급
+                  </td>
+                  <td class="after">
+                    스페인·포르투갈을 eSIM 하나로. 하루 993원부터, 카카오톡으로 1~2분이면 받아요.
+                  </td>
+                </tr>
+                <tr>
+                  <td>카카오 채널</td>
+                  <td class="before">한국어 채팅 · <b>평균 30분 응답</b></td>
+                  <td class="after">한국어 채팅으로 문의</td>
+                </tr>
+                <tr>
+                  <td>CS 주석</td>
+                  <td class="before">호환 기기 · 일정 · 환불 · 기술 문의 모두 <b>OK</b></td>
+                  <td class="after">호환 기기 · 일정 · 환불 · 기술 문의 무엇이든</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <code>1~30일</code>과 <code>30일 매일 1GB</code>가 나란히 있어 <b>30일이 무엇을
+            가리키는지 헷갈렸습니다.</b> 제목 <q>두 나라, 한 SIM.</q> 은 그대로 뒀습니다 — 이
+            페이지에서 가장 좋은 문장입니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ P2 ============ -->
+      <h2 class="grp">P2 — 표기 통일 (6건)</h2>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">P2</span>
+          <h3 class="sec__t">맞춤법 · 외래어 표기</h3>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th>위치</th>
+                  <th>변경 전</th>
+                  <th>변경 후</th>
+                  <th>근거</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>12 제목</td>
+                  <td class="before">eSIM <b>사용가능 단말기 확인방법</b></td>
+                  <td class="after">내 폰이 eSIM 을 쓸 수 있는지<br />확인하는 방법</td>
+                  <td class="why">붙여쓰기 오류 2건 + <code>단말기</code>는 통신사 용어</td>
+                </tr>
+                <tr>
+                  <td>03 lede</td>
+                  <td class="before"><b>한번의</b> 설치로</td>
+                  <td class="after"><b>한 번만</b> 설치하면</td>
+                  <td class="why">횟수 뜻이므로 띄어씀</td>
+                </tr>
+                <tr>
+                  <td>08 ×2</td>
+                  <td class="before">포르<b>토</b></td>
+                  <td class="after">포르<b>투</b></td>
+                  <td class="why">외래어 표기법 — Porto</td>
+                </tr>
+                <tr>
+                  <td>13</td>
+                  <td class="before">발급 <b>받은</b> QR</td>
+                  <td class="after">발급<b>받은</b> QR</td>
+                  <td class="why"><code>발급받다</code> 한 단어</td>
+                </tr>
+                <tr>
+                  <td>04 ×2</td>
+                  <td class="before">사용<b>종료</b></td>
+                  <td class="after">사용 <b>종료</b></td>
+                  <td class="why">띄어쓰기</td>
+                </tr>
+                <tr>
+                  <td>12 다이얼</td>
+                  <td class="before"><b>기기정보</b>에 EID <b>정보가 확인되면</b> … 기기입니다</td>
+                  <td class="after"><b>기기 정보</b>에 EID <b>가 보이면</b> … 기기예요</td>
+                  <td class="why">띄어쓰기 + 피동 + <code>정보</code> 중복</td>
+                </tr>
+                <tr>
+                  <td>03 · 15</td>
+                  <td class="before"><b>₩</b>993/일</td>
+                  <td class="after"><b>하루 993원</b></td>
+                  <td class="why">한국 소비자 대상 — <code>원</code>으로 통일</td>
+                </tr>
+                <tr>
+                  <td>11 표</td>
+                  <td class="before">갤럭시 S22 <b>↓</b> 국내판 / Z <b>플립 3</b> · Z <b>폴드 3</b></td>
+                  <td class="after">갤럭시 S22 <b>이하</b> 국내판 / Z <b>Flip 3</b> · Z <b>Fold 3</b></td>
+                  <td class="why">기호 남용 + 한글/영문 기기명 혼용</td>
+                </tr>
+                <tr>
+                  <td>03 30GB 핀</td>
+                  <td class="before">노매드</td>
+                  <td class="after">장기 체류</td>
+                  <td class="why">표기법(노마드)보다 <b>뜻이 바로 읽히는 쪽</b>으로 — 결정 4</td>
+                </tr>
+                <tr>
+                  <td>07 · 11</td>
+                  <td class="before">2026년 <b>8월</b> 기준</td>
+                  <td class="after">2026년 <b>9월</b> 기준</td>
+                  <td class="why">발행 시점 반영</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <b>07-reviews 의 구매자 원문은 건드리지 않았습니다.</b>
+            <code>사용가능했고</code> · <code>바로왔아요</code> · <code>안터지는곳없이</code> 등은
+            <q>원문 그대로</q> 표기가 오히려 신뢰 장치입니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">P2</span>
+          <h3 class="sec__t"><code>1티어</code> → <code>현지 대표 통신망</code> (7곳)</h3>
+          <span class="sec__c">결정 3</span>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>08 lede · 지도 캡션 · 하단</td>
+                  <td class="before">현지 <b>1티어</b> 통신망</td>
+                  <td class="after">현지 <b>대표</b> 통신망</td>
+                </tr>
+                <tr>
+                  <td>08 국가 카드 ×2</td>
+                  <td class="before">현지 1티어 자동 연결</td>
+                  <td class="after">현지 대표 통신망 연결 <small>(배지 폭 맞춤)</small></td>
+                </tr>
+                <tr>
+                  <td>05 · 14 Q13</td>
+                  <td class="before">현지 <b>1티어</b> 통신사</td>
+                  <td class="after">현지 <b>대표</b> 통신사</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">P2</span>
+          <h3 class="sec__t"><code>OK</code> 7회 → 1회</h3>
+        </div>
+        <div class="sec__b">
+          <div class="tw">
+            <table>
+              <tbody>
+                <tr>
+                  <td>01 배지 · 서브</td>
+                  <td class="before">테더링 OK ×2</td>
+                  <td class="after">테더링 됨 / 테더링 가능</td>
+                </tr>
+                <tr>
+                  <td>02 라벨</td>
+                  <td class="before">야간·주말 OK</td>
+                  <td class="after">야간·주말에도</td>
+                </tr>
+                <tr>
+                  <td>05 카드 제목</td>
+                  <td class="before">테더링 · 업로드 OK</td>
+                  <td class="after">테더링 · 업로드 자유</td>
+                </tr>
+                <tr>
+                  <td>06 힌트</td>
+                  <td class="before">노트북·태블릿 OK</td>
+                  <td class="after">노트북·태블릿 연결</td>
+                </tr>
+                <tr>
+                  <td>10 자사</td>
+                  <td class="before">…발급 · 야간 OK</td>
+                  <td class="after">…발급 · 야간에도</td>
+                </tr>
+                <tr>
+                  <td>15 CS</td>
+                  <td class="before">…문의 모두 OK</td>
+                  <td class="after">…문의 무엇이든</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout--ok">
+            <b>남은 1회</b>는 10-comparison 포켓 WiFi 열의 <code>✓ 테더링 가능</code> — 이미 한글로
+            바뀌어 있어 실제 <code>OK</code> 잔여는 <b>0</b>입니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="band">
+        <h2>재검토 결과 — 브랜드 표기는 문제가 아니었습니다</h2>
+        <p>
+          리뷰 때 <q>3종 혼용</q>으로 올렸지만, 실제 쓰임을 다시 보니 <b>각각 정당한 용도</b>였습니다.
+          고치지 않았습니다.
+        </p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>표기</th>
+                <th>횟수</th>
+                <th>쓰임</th>
+                <th>판단</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ESIMmany</code></td>
+                <td>25</td>
+                <td>본문 전체</td>
+                <td class="ok">일관 — 유지</td>
+              </tr>
+              <tr>
+                <td><code>esimmany</code></td>
+                <td>1</td>
+                <td>Hero 로고 옆 워드마크</td>
+                <td class="ok">로고 표기 — 유지</td>
+              </tr>
+              <tr>
+                <td><code>이심마니</code></td>
+                <td>2</td>
+                <td>Hero 태그라인 · 카카오 채널 ID <code>@이심마니</code></td>
+                <td class="ok">한글 브랜드명·실제 채널 — 유지</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============ P3 ============ -->
+      <h2 class="grp">P3 — 조판 (3건)</h2>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">CSS</span>
+          <h3 class="sec__t">
+            <code>shared/base.css</code> — <code>text-wrap</code> 신규 적용
+          </h3>
+          <span class="sec__c">전체 0회 → 적용</span>
+        </div>
+        <div class="sec__b">
+          <p style="font-size: 14.5px; color: var(--n600); margin: 10px 0 0">
+            제목 줄 길이를 고르게 맞추는 <code>balance</code>, 문단 마지막 줄에 단어 하나만
+            떨어지는 것을 막는 <code>pretty</code> 둘 다 없었습니다. 860px 고정 폭이라
+            <b>제목이 어색하게 쪼개질 때 직접 개입해야 했는데</b> 이제 브라우저가 처리합니다.
+          </p>
+          <pre><span class="c">/* 2026-09-12 추가 — southern-eu + _generator/templates 양쪽 */</span>
+<span class="a">+</span> h1, h2, h3, h4,
+<span class="a">+</span> .section__title, .ds-card__h   { <span class="k">text-wrap</span>: balance; }
+<span class="a">+</span>
+<span class="a">+</span> p, li, .section__lede,
+<span class="a">+</span> .ds-card__body, .ds-note       { <span class="k">text-wrap</span>: pretty; }</pre>
+          <div class="callout">
+            Chrome/Edge 117+, Safari 17.4+. Firefox 는 미지원이지만 <b>기본 동작으로 퇴화</b>할 뿐
+            깨지지 않습니다. PNG 내보내기는 html-to-image 가 Chromium 엔진을 쓰므로 그대로
+            반영됩니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">CSS</span>
+          <h3 class="sec__t"><code>shared/tokens.css</code> — 자간 · 행간</h3>
+          <span class="sec__c">결정 5</span>
+        </div>
+        <div class="sec__b">
+          <pre><span class="c">/* letter-spacing — 대형 제목 구간은 유지, 본문·캡션만 0 복귀 */</span>
+  --ls-display-lg: -0.03em;   <span class="c">← 유지 (28px 이상)</span>
+  --ls-display:    -0.022em;  <span class="c">← 유지 (24–27px)</span>
+  --ls-heading:    -0.015em;  <span class="c">← 유지 (18–23px)</span>
+<span class="d">-</span> --ls-body:       -0.01em;
+<span class="a">+</span> --ls-body:       <span class="k">0</span>;         <span class="c">← 본문 (Pretendard 설계 자간 사용)</span>
+<span class="d">-</span> --ls-caption:    -0.005em;
+<span class="a">+</span> --ls-caption:    <span class="k">0</span>;         <span class="c">← 캡션</span>
+  --ls-eyebrow:     0.14em;   <span class="c">← 유지 (대문자 라벨)</span>
+
+<span class="c">/* line-height — 카드 본문이 한글 권장선(1.5배) 미만이었음 */</span>
+<span class="d">-</span> --lh-card: 1.45;
+<span class="a">+</span> --lh-card: <span class="k">1.5</span>;</pre>
+          <div class="callout callout--ok">
+            <b><code>_generator/templates/shared/</code> 에도 같이 적용</b>했습니다 — 앞으로 만드는
+            상품 페이지가 같은 값을 씁니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sec__h">
+          <span class="sec__num">09</span>
+          <h3 class="sec__t">중복 선언 정리</h3>
+          <span class="sec__c">정리</span>
+        </div>
+        <div class="sec__b">
+          <p style="font-size: 14.5px; color: var(--n600); margin: 10px 0 0">
+            09-how-it-works 가 <code>word-break: keep-all</code> 을 로컬에서 2번 다시 선언하고
+            있었습니다. base.css 전역과 중복이라 삭제했습니다 — 동작은 동일합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- ============ 검증 ============ -->
+      <div class="band">
+        <h2>검증</h2>
+        <ul class="tight">
+          <li>
+            <b class="ok">15개 섹션 전량 브라우저 렌더링 확인</b> — 가로 오버플로 <b>0</b>, 텍스트
+            잘림 <b>0</b>
+          </li>
+          <li>
+            <b class="ok">어미 재측정</b> — 해요체 47% → <b>90%</b>, 명사 종결 9 → <b>0</b>, 한
+            문단 내 혼재 <b>0</b>
+          </li>
+          <li>
+            <b class="ok">잔여 문자열 검사 통과</b> —
+            <code>불요</code> <code>불필요</code> <code>물리유심</code> <code>자택</code>
+            <code>본 상품</code> <code>노매드</code> <code>포르토</code> <code>한번의</code>
+            <code>확인방법</code> <code>기기정보</code> <code>사용종료</code> <code>1티어</code>
+            <code>₩</code> <code>OK</code> <code>됩니까</code> <code>1주↓</code> 전부 0건
+          </li>
+          <li>
+            <b>index.html 매니페스트 동기화</b> — 02 <code>발급 1~2분</code>, 08
+            <code>대표 통신망</code>, 10 설명 + 높이 <code>680 → 900</code>(출처 각주 추가분)
+          </li>
+        </ul>
+        <div class="callout">
+          <b>아직 안 한 것 — PNG 재내보내기.</b> 조판 토큰(<code>text-wrap</code> · 자간 · 행간)이
+          바뀌었으므로 <b>15개 섹션 PNG 를 다시 뽑아야</b> 스마트스토어에 올라가는 이미지가 지금
+          내용과 맞습니다.
+        </div>
+      </div>
+
+      <div class="band">
+        <h2>남은 판단거리</h2>
+        <ul class="tight">
+          <li>
+            <b>LG U+ 로밍 요금</b> — 비교표에서 빠져 있습니다. 공식 페이지 자동 조회가 막혀
+            2차 자료만 있고, 근거가 약해 넣지 않았습니다. 직접 확인해 주시면 반영하겠습니다.
+          </li>
+          <li>
+            <b>02-trust-strip <code>즉시 발급</code></b> — 위에 <code>카카오톡 1~2분</code>이
+            붙어 있어 「즉시」가 살짝 세게 읽힐 수 있습니다. 사실과 어긋나진 않아 그대로 뒀습니다.
+          </li>
+          <li>
+            <b>13-refund 어미</b> — 규정 3문장만 합쇼체로 남겼습니다(lede 는 해요체). 전부
+            해요체로 맞추길 원하시면 바로 바꿉니다.
+          </li>
+        </ul>
+      </div>
+
+      <footer>
+        korean-web-copy 스킬 기준(구조 → 문장 → 조판) · 2026-09-12 · 수정 파일 18개<br />
+        상세 진단은 <code>2026-09-12-copy-review.html</code> 참조. 07-reviews 의 구매자 원문은 전
+        과정에서 수정 대상에서 제외했습니다.
+      </footer>
+    </div>
+  </body>
+</html>
