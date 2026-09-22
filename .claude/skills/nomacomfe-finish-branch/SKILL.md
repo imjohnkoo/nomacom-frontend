@@ -119,8 +119,8 @@ gh pr create --base main --title "<type>(<scope>): <title>" --body "$(cat <<'EOF
 <2-3 bullets>
 
 ## Spec / Plan
-- spec: docs/specs/<app>/<file>.md
-- plan: docs/plans/<app>/<file>-plan.md
+- spec: nomacom-wiki wiki/frontend/specs/<app>/<file>.md
+- plan: nomacom-wiki wiki/frontend/plans/<app>/<file>-plan.md
 - Tier: T?
 
 ## QA 증거

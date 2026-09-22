@@ -60,9 +60,16 @@
       "Bash(gh pr*)",
       "Bash(gh issue*)",
       "Bash(gh run*)",
-      "Bash(gh api*)"
+      "Bash(gh api*)",
+      "Bash(git -C /Users/johnkoo/dev/current-projects/nomacom-wiki *)",
+      "Bash(python3 /Users/johnkoo/dev/current-projects/nomacom-wiki/scripts/*)",
+      "Bash(python3 /Users/johnkoo/dev/current-projects/nomacom-manager/scripts/*)"
     ],
-    "ask": ["Bash(rm -rf *)", "Bash(rm -r *)", "Bash(git worktree remove*)"],
+    "ask": [
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(git worktree remove*)"
+    ],
     "deny": [
       "Bash(git push --force*)",
       "Bash(git push -f*)",
@@ -77,6 +84,10 @@
       "Bash(rm -rf ../*)",
       "Bash(aws ssm put-parameter*)",
       "Bash(aws ssm delete-parameter*)"
+    ],
+    "additionalDirectories": [
+      "/Users/johnkoo/dev/current-projects/nomacom-wiki",
+      "/Users/johnkoo/dev/current-projects/nomacom-manager/docs/weekly"
     ]
   },
   "attribution": {

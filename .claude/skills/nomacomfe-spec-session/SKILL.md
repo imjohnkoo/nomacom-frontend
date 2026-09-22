@@ -34,11 +34,11 @@ description: Staged planning-session orchestrator for nomacom-frontend — tier 
 | ------------------------------------------------------- | --------------------------------------------------------------------------- |
 | **T1** — 버그픽스(파일 수 무관)·단일 파일 소기능·리팩터 | `nomacomfe-write-plan` 경량 양식으로 직행                                   |
 | **T0** — 한 문장 diff (오타·로그·리네임)                | plan 도 불필요, 검증 기준만 확인하고 바로 작업                              |
-| **D** — `design/` 캔버스 산출물 (상세페이지·썸네일)     | spec 면제. 게이트는 **오너 승인 + 렌더 대조** (`docs/specs/README.md` §2.5) |
+| **D** — `design/` 캔버스 산출물 (상세페이지·썸네일)     | spec 면제. 게이트는 **오너 승인 + 렌더 대조** (`$NOMACOM_WIKI/wiki/frontend/specs/spec-writing-guide.md` §2.5) |
 
 - 애매하면 README §2 의 5분 테스트: §2 목적·§5 상태·§6 범위밖 3개만 써 본다 — 안 써지면 면제.
-- **Tier 기록 (의무)**: spec 헤더 Tier pill + 주간 SoT(`docs/plans/weekly/current-week.html`) 트랙 행. 기록이 없으면 finish-branch 가 QA 게이트 적용 여부를 판정할 수 없다.
-- **T3** (아키텍처 변경 · 크로스앱 계약 · Nitro canonical API 계약 · 배포 파이프라인): spec 앞에 Proposal(`docs/proposals/`) 로 전략·트레이드오프·대안을 먼저 합의.
+- **Tier 기록 (의무)**: spec 헤더 Tier pill + 주간 SoT(`$NOMACOM_MANAGER/docs/weekly/frontend-current-week.md` — `nomacom-weekly` 스킬) 트랙 행. 기록이 없으면 finish-branch 가 QA 게이트 적용 여부를 판정할 수 없다.
+- **T3** (아키텍처 변경 · 크로스앱 계약 · Nitro canonical API 계약 · 배포 파이프라인): spec 앞에 Proposal(크로스앱·T3 는 nomacom-manager `docs/proposals/`, 리포 로컬 RFC 는 `$NOMACOM_WIKI/wiki/frontend/proposals/`) 로 전략·트레이드오프·대안을 먼저 합의.
 
 ## Stage ① — 실측 조사 (인터뷰보다 먼저)
 
@@ -46,7 +46,7 @@ description: Staged planning-session orchestrator for nomacom-frontend — tier 
 
 - **코드**: 관련 컴포넌트·Nitro server routes·기존 유사 패턴 (`apps/admin`, `apps/client`, `apps/mobile`, `packages/design-*`)
 - **데이터**: Drizzle 스키마 + 필요 시 **prod 실측** (read-only). 좋은 spec 의 품질 원천은 "추정"이 아니라 "실측" — prod 는 TypeORM 이 만든 camelCase 라 Drizzle 정의와 어긋날 수 있고, 그 차이가 설계를 바꾼다
-- **선례·결정**: memory 파일 · `.claude/rules/` · 기존 spec/proposal/research 에서 과거 결정 확인 (`docs/research/` 에 경쟁사 IA·Cafe24 조사 정본이 있다)
+- **선례·결정**: memory 파일 · `.claude/rules/` · 기존 spec/proposal/research 에서 과거 결정 확인 (`$NOMACOM_WIKI/raw/research/`·`wiki/research/` 에 경쟁사 IA·Cafe24 조사 정본이 있다)
 - **벤더 제약**: Maya / 스마트스토어 / Cafe24 는 **문서와 실거동이 다른 전례**가 있다 — 실 API 호출로 응답 형태 확인
 
 산출: **조사 노트** — 발견 사실 + "코드로 답 못 하는" 잔여 불확실성 목록. 이 목록만 Stage ② 로 넘어간다.
@@ -61,7 +61,7 @@ description: Staged planning-session orchestrator for nomacom-frontend — tier 
 
 ## Stage ③ — spec 작성
 
-1. `docs/specs/_template.html` → `docs/specs/<app>/YYYY-MM-DD-<topic>.html` 복사 (크로스앱은 `docs/specs/` 직하위)
+1. `$NOMACOM_WIKI/wiki/frontend/specs/_template.html` → `$NOMACOM_WIKI/wiki/frontend/specs/<app>/YYYY-MM-DD-<topic>.html` 복사 (크로스앱은 `wiki/frontend/specs/` 직하위). 문서는 위키에만 있다(이 리포 docs/ 없음, 2026-09-22) — 저장·커밋은 `nomacom-wiki-update`
 2. **`.md` 동반 산출** — 같은 basename 으로 두 벌. `.md` 는 LOCK 게이트의 마커 grep 대상이자 에이전트 정본, `.html` 은 john 열람용. 둘 중 하나만 고치지 않는다
 3. 조사 노트 + 인터뷰 결과로 §1~§8 작성. hard rule: **§2 사용자와 목적 · §4 보안 불변식 · §5 상태 블록 · §6 범위 밖**은 누가 쓰든 안 거른다
 4. **§7 성공지표**: 정량 지표 1개 이상, 또는 "측정하지 않기로 결정" 한 줄 명시 (무단 생략 금지). 지표를 쓰면 계측이 이번 scope 인지도 판정
@@ -116,7 +116,7 @@ DoD 도달 시: workspace-status in-review 전환 → nomacomfe-qa-session 진�
 ## Gotchas
 
 - **spec 없이 시작된 세션에서 T2 트리거가 뒤늦게 발견되면** — 즉시 이 스킬로 승격한다 (vibe→spec 승격). 반대로 써 보니 spec 이 안 써지면 T1 강등.
-- `docs/specs/`·`docs/plans/` 는 **git 공유** (2026-09-02 전환). `docs/proposals/`·`docs/research/` 는 여전히 로컬 전용.
+- 문서는 전부 `$NOMACOM_WIKI/wiki/frontend/{specs,plans,proposals,runbooks}/`(2026-09-22 전환, nomacom-wiki 결정 0001) — 이 리포에 `docs/` 는 없다. `.md` 는 `schema/templates/spec.md` frontmatter 로 시작하고, 커밋은 `nomacom-wiki-update`(자기 트리만 · `pull --rebase` · lint 훅).
 - 외부 연동 spec 에서 §1.5 의존성(선행 마이그·배포순서) 생략 금지 — "빌드는 되는데 실제론 막힌" 1순위 원인.
 - 사용자가 이미 방향을 정해 들고 온 경우 Stage ② 를 건너뛰지 말 것 — 결정된 것의 **기록**(§8 resolved 행)은 여전히 필요하다.
 - **admin 은 스테이징이 없다** — prod 가 첫 통합 환경. 데이터를 만드는 T3 는 배포 후 값 대조를 DoD 에 명시.

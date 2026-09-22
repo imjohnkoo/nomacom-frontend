@@ -1,7 +1,7 @@
 # 개발 프로세스 v2 — Tier · 게이트 · QA
 
 > **정본**. m8-frontend 에서 설계·검증한 프로세스 v2 를 nomacom-frontend 로 이식한 것 (2026-09-02).
-> 설계 배경·기각안·이식 판단은 `docs/proposals/2026-09-02-dev-process-v2-port-proposal.md` (로컬 전용).
+> 설계 배경·기각안·이식 판단은 `$NOMACOM_WIKI/wiki/frontend/proposals/2026-09-02-dev-process-v2-port-proposal.md`(2026-09-22 위키 이관).
 
 ## 파이프라인
 
@@ -44,7 +44,7 @@
 
 ### Tier 기록 (의무)
 
-spec/plan 헤더 **pill** + 주간 SoT(`docs/plans/weekly/current-week.html`) 트랙 행. 기록이 없으면 `nomacomfe-finish-branch` Step 0 이 게이트 적용 여부를 판정할 수 없다.
+spec/plan 헤더 **pill** + 주간 SoT(`$NOMACOM_MANAGER/docs/weekly/frontend-current-week.md`, `nomacom-weekly` 스킬로 자기 트랙 행만) 트랙 행. 기록이 없으면 `nomacomfe-finish-branch` Step 0 이 게이트 적용 여부를 판정할 수 없다.
 
 **양방향 이동 허용**: vibe 로 시작했는데 T2 트리거가 드러나면 승격 / spec 이 안 써지면 T1 강등.
 
