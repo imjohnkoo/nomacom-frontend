@@ -4814,6 +4814,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@portone/browser-sdk@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "@portone/browser-sdk@npm:0.1.11"
+  checksum: 10c0/000c1371b18f63c505e7d76760e905320cb9954ae2333986b7f4639568e804da654ba68a42bc8cc172851f18fa12ab29b1b6a12e1bb43b8bb50239d68164dda0
+  languageName: node
+  linkType: hard
+
 "@radix-ui/primitive@npm:1.1.3":
   version: 1.1.3
   resolution: "@radix-ui/primitive@npm:1.1.3"
@@ -16053,6 +16060,7 @@ __metadata:
     "@imjohnkoo/design-tokens": "workspace:*"
     "@imjohnkoo/design-vue": "workspace:*"
     "@pinia/nuxt": "npm:^0.11.3"
+    "@portone/browser-sdk": "npm:^0.1.11"
     "@tailwindcss/vite": "npm:^4"
     "@vueuse/nuxt": "npm:^14.1.0"
     date-fns: "npm:^4.1.0"
