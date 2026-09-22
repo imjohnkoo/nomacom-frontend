@@ -71,6 +71,8 @@ const onSubmit = async () => {
     isSubmitting.value = false
   }
 }
+// 게스트 발급 4-step 은 헤더 · 하단 탭 없는 flow 레이아웃 (spec D-2)
+definePageMeta({ layout: 'flow' })
 </script>
 
 <template>
