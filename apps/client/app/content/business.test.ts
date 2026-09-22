@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { BUSINESS_INFO, businessRows, ftcBusinessCheckUrl, type BusinessInfo } from './business'
 import { P9_4_PENDING, PENDING_LABEL, displayValue, isPending } from './pending'
-import { SMARTSTORE_URL, SUPPORT_CHANNELS, supportRows } from './support'
+import { SMARTSTORE_URL, SUPPORT_CHANNELS, supportRows, type SupportChannel } from './support'
 
+// 테스트는 «지금 무엇이 대기 중인가» 가 아니라 동작을 본다 — P9-4 문안이 채워져도 깨지지 않게 픽스처로.
 const FILLED: BusinessInfo = {
   brandName: '이심마니',
   companyName: '상호',
@@ -14,6 +15,13 @@ const FILLED: BusinessInfo = {
   email: 'help@example.com',
   privacyOfficer: '책임자',
   hostingProvider: '호스팅',
+}
+
+const PENDING_INFO: BusinessInfo = {
+  ...FILLED,
+  companyName: P9_4_PENDING,
+  mailOrderSalesNumber: P9_4_PENDING,
+  email: P9_4_PENDING,
 }
 
 describe('pending', () => {
@@ -39,26 +47,31 @@ describe('businessRows', () => {
     ])
   })
 
-  it('조사로 확정된 값은 그대로 · 나머지는 «(확정 전)»', () => {
+  it('조사로 확정된 사업자등록번호 · 고객센터 번호', () => {
     const rows = Object.fromEntries(businessRows().map((row) => [row.key, row.value]))
     expect(rows.businessRegistrationNumber).toBe('704-24-01747')
     expect(rows.phone).toBe('070-8064-5232')
-    expect(rows.companyName).toBe(PENDING_LABEL)
-    expect(rows.mailOrderSalesNumber).toBe(PENDING_LABEL)
   })
 
-  it('고객센터 번호는 휴대폰이 아니다 (PG 심사 — 유선전화 요건)', () => {
-    expect(String(BUSINESS_INFO.phone)).not.toMatch(/^01[016789]/)
+  it('확정 전 값만 «(확정 전)»', () => {
+    const rows = Object.fromEntries(businessRows(PENDING_INFO).map((row) => [row.key, row.value]))
+    expect(rows.companyName).toBe(PENDING_LABEL)
+    expect(rows.email).toBe(PENDING_LABEL)
+    expect(rows.representative).toBe('대표')
   })
 
   it('값이 채워지면 자리표시자가 남지 않는다', () => {
     expect(businessRows(FILLED).some((row) => row.value === PENDING_LABEL)).toBe(false)
   })
+
+  it('고객센터 번호는 휴대폰이 아니다 (PG 심사 — 유선전화 요건)', () => {
+    expect(String(BUSINESS_INFO.phone)).not.toMatch(/^01[016789]/)
+  })
 })
 
 describe('ftcBusinessCheckUrl', () => {
   it('통신판매업 신고번호 확정 전에는 링크를 만들지 않는다', () => {
-    expect(ftcBusinessCheckUrl()).toBeNull()
+    expect(ftcBusinessCheckUrl(PENDING_INFO)).toBeNull()
   })
 
   it('확정되면 사업자등록번호 숫자만으로 공정위 확인 링크', () => {
@@ -69,27 +82,32 @@ describe('ftcBusinessCheckUrl', () => {
 })
 
 describe('supportRows', () => {
-  const rows = Object.fromEntries(supportRows().map((row) => [row.key, row]))
-
-  it('카카오톡 채널명은 @이심마니 — URL 확정 전에는 링크 없이 글자만', () => {
+  it('카카오톡 채널명은 @이심마니 · 네이버 톡톡은 스토어로 · 전화는 사업자정보 번호의 tel 링크', () => {
+    const rows = Object.fromEntries(supportRows().map((row) => [row.key, row]))
     expect(rows.kakao?.text).toBe('@이심마니')
-    expect(rows.kakao?.href).toBeNull()
-  })
-
-  it('네이버 톡톡은 스토어로 · 전화는 사업자정보와 같은 번호로 tel 링크', () => {
     expect(rows.naver?.href).toBe(SMARTSTORE_URL)
     expect(rows.phone?.text).toBe(BUSINESS_INFO.phone)
     expect(rows.phone?.href).toBe('tel:070-8064-5232')
   })
 
-  it('이메일 · 운영 시간은 확정 전 — 링크 없음', () => {
-    expect(rows.email?.text).toBe(PENDING_LABEL)
-    expect(rows.email?.href).toBeNull()
-    expect(rows.hours?.text).toBe(PENDING_LABEL)
+  it('값 · 링크가 확정 전이면 글자만 (링크 없음)', () => {
+    const channels: SupportChannel[] = [
+      { key: 'kakao', label: '카카오톡 채널', value: '@이심마니', href: P9_4_PENDING },
+      { key: 'email', label: '이메일', value: P9_4_PENDING },
+      { key: 'hours', label: '운영 시간', value: P9_4_PENDING },
+    ]
+    const [kakao, email, hours] = supportRows(channels)
+    expect(kakao).toMatchObject({ text: '@이심마니', href: null })
+    expect(email).toMatchObject({ text: PENDING_LABEL, href: null })
+    expect(hours).toMatchObject({ text: PENDING_LABEL, href: null })
   })
 
-  it('이메일이 확정되면 mailto 링크', () => {
-    const [email] = supportRows([{ key: 'email', label: '이메일', value: 'help@example.com' }])
+  it('확정되면 링크 — 이메일은 mailto', () => {
+    const [kakao, email] = supportRows([
+      { key: 'kakao', label: '카카오톡 채널', value: '@이심마니', href: 'https://pf.kakao.com/_x' },
+      { key: 'email', label: '이메일', value: 'help@example.com' },
+    ])
+    expect(kakao?.href).toBe('https://pf.kakao.com/_x')
     expect(email?.href).toBe('mailto:help@example.com')
   })
 

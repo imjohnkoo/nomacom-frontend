@@ -3,8 +3,8 @@
  *
  * 값 정본은 John(Proposal P9-4). 콘텐츠 파일은 확정 전 값을 `P9_4_PENDING` 으로 두고, 화면은 «(확정 전)» 으로 보인다.
  * ⛔ main 머지 게이트(spec D-17): 이 파일 밖에서 `P9_4_PENDING` 을 쓰는 파일이 0 이어야 한다.
- *    grep -rln P9_4_PENDING apps/client/app | grep -v content/pending.ts   → 빈 결과
- * 판정 함수 · 타입은 이 파일에만 둔다 — 그래야 위 명령이 «남은 자리표시자» 만 센다.
+ *    grep -rln P9_4_PENDING apps/client/app | grep -v -e content/pending.ts -e '.test.ts'   → 빈 결과
+ * 판정 함수 · 타입은 이 파일에만 둔다 — 그래야 위 명령이 «남은 자리표시자» 만 센다(테스트 픽스처는 제외).
  */
 
 export const P9_4_PENDING = 'P9_4_PENDING' as const
