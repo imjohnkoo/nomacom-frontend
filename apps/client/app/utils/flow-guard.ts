@@ -1,0 +1,74 @@
+/**
+ * 게스트 발급 4-step 가드 판정 (K8 · spec §5 S-8 판정표) — `app/middleware/order-flow.ts` 가 쓴다. 순수 함수.
+ *
+ * 판정 순서: 목록 → 선택 → select-date 는 취소 → 전량 발급, view 는 발급 0 만 본다(취소 여부 무관).
+ * 판정표 (store 는 복원 시도 뒤 상태 · «선택 취소됨» 열은 발급된 eSIM 이 있는 취소 상품 기준):
+ *   화면        | 이 주문 목록 없음 | 선택 없음 | 선택 취소됨 | 선택 전량 발급 | 선택 발급 0
+ *   verify      | 통과              | 통과      | 통과        | 통과           | 통과
+ *   details     | → verify(reason)  | 통과      | 통과        | 통과           | 통과
+ *   select-date | → verify(reason)  | → details | → details   | → details      | 통과
+ *   view        | → verify(reason)  | → details | 통과        | 통과           | → details
+ */
+import type { Order } from '~/types/order'
+
+export type FlowStep = 'verify' | 'details' | 'select-date' | 'view'
+
+const FLOW_STEPS: readonly FlowStep[] = ['verify', 'details', 'select-date', 'view']
+
+export function flowStepOf(path: string): FlowStep | null {
+  const segment = (path.split(/[?#]/)[0] ?? '').split('/')[1] ?? ''
+  return (FLOW_STEPS as readonly string[]).includes(segment) ? (segment as FlowStep) : null
+}
+
+/** 경로 주문번호 — 숫자만 · 양의 안전 정수만 */
+export function parseOrderIdParam(param: unknown): number | null {
+  const raw = Array.isArray(param) ? param[0] : param
+  if (typeof raw !== 'string' || !/^\d+$/.test(raw)) return null
+  const value = Number(raw)
+  return Number.isSafeInteger(value) && value > 0 ? value : null
+}
+
+export const reverifyPath = (orderId: number) => `/verify/${orderId}?reason=reverify`
+export const detailsPath = (orderId: number) => `/details/${orderId}`
+
+export function isFullyIssued(order: Pick<Order, 'esims' | 'quantity'>): boolean {
+  return (order.esims?.length ?? 0) >= (order.quantity || 1)
+}
+
+export interface FlowState {
+  orders: readonly Order[] | null
+  selected: Order | null
+}
+
+/** 이 주문의 목록에 들어 있는 선택 상품만 인정한다 (다른 주문 · 목록 밖 상품은 «선택 없음») */
+function selectedFor(
+  orderId: number,
+  orders: readonly Order[],
+  selected: Order | null,
+): Order | null {
+  if (!selected || selected.orderId !== orderId) return null
+  return orders.some((order) => order.productOrderId === selected.productOrderId) ? selected : null
+}
+
+export function resolveFlowRedirect(
+  step: FlowStep,
+  orderId: number,
+  state: FlowState,
+): string | null {
+  if (step === 'verify') return null
+
+  const orders = (state.orders ?? []).filter((order) => order.orderId === orderId)
+  if (orders.length === 0) return reverifyPath(orderId)
+  if (step === 'details') return null
+
+  const selected = selectedFor(orderId, orders, state.selected)
+  if (!selected) return detailsPath(orderId)
+
+  if (step === 'select-date') {
+    if (selected.cancelled || isFullyIssued(selected)) return detailsPath(orderId)
+    return null
+  }
+
+  // view — 발급된 eSIM 이 없으면 볼 것이 없다(현행은 «불러오는 중» 에 멈췄다)
+  return (selected.esims?.length ?? 0) === 0 ? detailsPath(orderId) : null
+}
