@@ -7,7 +7,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['server/**/*.{test,spec}.ts', 'app/**/*.{test,spec}.ts'],
+    include: ['server/**/*.{test,spec}.ts', 'app/**/*.{test,spec}.ts', 'shared/**/*.{test,spec}.ts'],
     exclude: ['**/node_modules/**', '**/.nuxt/**', '**/.output/**'],
     // client 는 spark-mapping / verification 28건이 이미 있다.
     // 0건이 되면 «테스트가 사라진 것» 이므로 실패시킨다.
