@@ -11,6 +11,7 @@ import {
 } from '@imjohnkoo/design-vue'
 import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
+import { useFlowSession } from '~/composables/useFlowSession'
 import { formatDateString } from '~/utils/date'
 import type { Order } from '~/types/order'
 
@@ -18,10 +19,10 @@ const route = useRoute()
 const router = useRouter()
 const orderStore = useOrderStore()
 const api = useApi()
+const flowSession = useFlowSession()
 
 const orderId = computed(() => Number(route.params.orderId))
 
-const isPullingOrderVisible = ref(false)
 const isNoOrderAlertVisible = ref(false)
 const isCancelledOrderVisible = ref(false)
 const isLoadingVisible = ref(false)
@@ -70,6 +71,7 @@ const handleWithdrawCancel = async () => {
 
     if (refreshed && !refreshed.cancelled) {
       orderStore.setSingleOrder(refreshed)
+      flowSession.select(orderId.value, refreshed.productOrderId)
       router.push(`/select-date/${orderId.value}`)
     } else {
       // 철회는 됐으나 sync 가 아직 안 잡힌 극단 케이스 — 카드 화면 유지
@@ -139,12 +141,15 @@ const handleSelectOrder = async (idx: number) => {
 
     const response = await api.verifyOrder(verifyDto)
     const { verified, cancelled, details } = response
+    // 새 응답에서 productOrderId 로 찾는다 — DB 정렬 보장이 없어 위치(idx)로 집으면 다른 상품일 수 있다
+    const target = details?.find((o) => o.productOrderId === orders[idx]?.productOrderId)
 
-    if (verified && !cancelled) {
+    if (verified && !cancelled && target) {
       orderStore.setOrders(details || [])
-      orderStore.setSingleOrder(details?.[idx] || orders[idx])
+      orderStore.setSingleOrder(target)
+      flowSession.select(orderId.value, target.productOrderId)
       isLoadingVisible.value = false
-      if (isFullyIssued(orders[idx])) {
+      if (isFullyIssued(target)) {
         router.push(`/view/${orderId.value}`)
       } else {
         // 미발급 + 부분 발급 (resume) 모두 select-date 로
@@ -176,21 +181,9 @@ const handleSelectOrder = async (idx: number) => {
   }
 }
 
-onMounted(() => {
-  if (!orderStore.orders || orderStore.orders.length === 0) {
-    isPullingOrderVisible.value = true
-    setTimeout(() => {
-      isPullingOrderVisible.value = false
-      isNoOrderAlertVisible.value = true
-      setTimeout(() => {
-        isNoOrderAlertVisible.value = false
-        router.push(`/verify/${orderId.value}`)
-      }, 3000)
-    }, 3000)
-  }
-})
+// 진입 가드는 order-flow 미들웨어 — 주문 목록이 없으면 흐름 쿠키로 복원, 안 되면 본인 확인으로 (K8 · spec S-8)
 // 게스트 발급 4-step 은 헤더 · 하단 탭 없는 flow 레이아웃 (spec D-2)
-definePageMeta({ layout: 'flow' })
+definePageMeta({ layout: 'flow', middleware: 'order-flow' })
 </script>
 
 <template>
@@ -308,11 +301,6 @@ definePageMeta({ layout: 'flow' })
       <p>주문 정보를 불러오는 중이에요…</p>
     </div>
 
-    <NLoaderDialog
-      v-model="isPullingOrderVisible"
-      title="주문을 불러오고 있어요"
-      description="잠시만 기다려주세요…"
-    />
     <NLoaderDialog
       v-model="isLoadingVisible"
       title="이심을 준비하고 있어요"

@@ -11,14 +11,19 @@ import {
 } from '@imjohnkoo/design-vue'
 import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
+import { useFlowSession } from '~/composables/useFlowSession'
 import { formatPhoneNumber, isValidPhoneNumber } from '~/utils/formatter'
 
 const route = useRoute()
 const router = useRouter()
 const orderStore = useOrderStore()
 const api = useApi()
+const flowSession = useFlowSession()
 
 const orderId = computed(() => Number(route.params.orderId))
+
+// order-flow 미들웨어가 복원에 실패해 돌려보낸 경우 (쿠키 없음 · 만료 · 다른 주문)
+const isReverify = computed(() => route.query.reason === 'reverify')
 
 const fullName = ref('')
 const phoneNumber = ref('')
@@ -58,6 +63,12 @@ const onSubmit = async () => {
     const { verified, cancelled, details } = response
     if (verified && !cancelled) {
       orderStore.setOrders(details || [])
+      // 새로고침 · 탭 복원 뒤 이어가기용 — 입력해 통과한 값만 1시간 (K8)
+      flowSession.start({
+        orderId: orderId.value,
+        fullName: fullName.value,
+        phoneNumber: phoneNumber.value,
+      })
       router.push(`/details/${orderId.value}`)
     } else if (verified && cancelled) {
       isCancelledOrderVisible.value = true
@@ -71,8 +82,8 @@ const onSubmit = async () => {
     isSubmitting.value = false
   }
 }
-// 게스트 발급 4-step 은 헤더 · 하단 탭 없는 flow 레이아웃 (spec D-2)
-definePageMeta({ layout: 'flow' })
+// 게스트 발급 4-step 은 헤더 · 하단 탭 없는 flow 레이아웃 (spec D-2) · 가드는 order-flow 미들웨어 (K8)
+definePageMeta({ layout: 'flow', middleware: 'order-flow' })
 </script>
 
 <template>
@@ -108,6 +119,10 @@ definePageMeta({ layout: 'flow' })
         </template>
       </NInfoChip>
     </div>
+
+    <p v-if="isReverify" class="verify-page__reverify" role="status">
+      이어서 보려면 본인 확인을 다시 해 주세요.
+    </p>
 
     <form class="verify-page__form" @submit.prevent="onSubmit">
       <div class="verify-page__field">
@@ -215,6 +230,17 @@ definePageMeta({ layout: 'flow' })
 
 .verify-page__chip {
   margin-top: 18px;
+}
+
+.verify-page__reverify {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--n-color-primary-50, #f1edff);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--n-color-primary-800, #2f1499);
+  word-break: keep-all;
 }
 
 .verify-page__form {
