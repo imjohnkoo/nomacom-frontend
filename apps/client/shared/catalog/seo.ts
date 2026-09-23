@@ -96,7 +96,7 @@ export const STATIC_DESCRIPTIONS: Record<(typeof STATIC_ROUTES)[number], string>
   '/privacy': '이심마니가 주문 · 발급에 쓰는 개인정보와 보관 기간을 안내해요.',
   '/refund': '발급 전이면 전액 환불해 드려요. 신청 방법과 처리 기한을 안내해요.',
   '/business': '이심마니를 운영하는 사업자 정보와 고객센터 연락처예요.',
-  '/guide': '출국 전에 eSIM 을 설치해 두고, 도착하면 회선을 켜는 방법을 안내해요.',
+  '/guide': 'eSIM 설치 가이드와 지원 기기 확인으로 가는 길을 모아 두었어요.',
   '/supported-devices': 'eSIM 을 쓸 수 있는 아이폰 · 갤럭시 기종을 확인해 보세요.',
 }
 

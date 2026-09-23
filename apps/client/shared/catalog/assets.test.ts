@@ -221,6 +221,14 @@ describe('optimizeMapSvg', () => {
     expect(() => optimizeMapSvg(svg('<path d="10,10L50,50Z"/>'))).toThrow(/좌표를 읽지 못했다/)
   })
 
+  it.each([
+    ['닫는 태그가 따로', '<path d="M10,10L50,10L50,50Z"></path>'],
+    ['작은따옴표 d', "<path d='M10,10C1,1 2,2 3,3Z'/>"],
+    ['transform', '<g transform="translate(-300,0)"><path d="M310,10L350,10L350,50Z"/></g>'],
+  ])('읽지 않는 모양(%s)은 조용히 넘기지 않고 던진다', (_n, paths) => {
+    expect(() => optimizeMapSvg(svg(paths))).toThrow(/읽을 수 없는 모양|transform/)
+  })
+
   it('viewBox 가 없으면 던진다', () => {
     expect(() => optimizeMapSvg('<svg><path d="M1,1L2,2Z"/></svg>')).toThrow(/viewBox/)
   })

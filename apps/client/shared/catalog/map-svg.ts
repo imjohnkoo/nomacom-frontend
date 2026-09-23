@@ -90,6 +90,14 @@ export function optimizeMapSvg(svg: string, tolerance = 2): string {
   if (!vb || vb.length !== 4 || vb.some((n) => !Number.isFinite(n)))
     throw new Error('지도에 viewBox 가 없다')
   const [x0, y0, w, h] = vb as [number, number, number, number]
+  // 읽는 모양은 `<path … d="…"/>`(스스로 닫힘 · 큰따옴표) 하나뿐이다 — 다른 모양 · transform 은 조용히 넘기지 않고 멈춘다
+  // (transform 을 무시하면 화면 안의 고리를 밖으로 보고 버린다)
+  const paths = svg.match(/<path\b/g)?.length ?? 0
+  const readable = svg.match(/<path([^>]*?)\sd="([^"]+)"([^>]*)\/>/g)?.length ?? 0
+  if (paths !== readable)
+    throw new Error(`지도 path ${paths - readable}개가 읽을 수 없는 모양 — <path … d="…"/> 만`)
+  if (/\stransform\s*=/.test(svg))
+    throw new Error('지도에 transform 이 있다 — 좌표를 풀어 둔 원본만')
   const visible = (ring: Pt[]) => {
     const xs = ring.map((p) => p[0])
     const ys = ring.map((p) => p[1])

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
   capsOf,
@@ -13,7 +14,15 @@ import {
   zoneByCode,
   zonesOfCountry,
 } from './derive'
-import { ACTIVE_CATALOG_FILE, activeRaw, addSynthZone, fixtureRaw, setFinalWon } from './test-data'
+import {
+  ACTIVE_CATALOG_FILE,
+  APP_DIR,
+  FIXTURE_CATALOG_FILE,
+  activeRaw,
+  addSynthZone,
+  fixtureRaw,
+  setFinalWon,
+} from './test-data'
 import { CatalogValidationError, expectedNaverUrl, parseCatalog } from './validate'
 
 // 표본 픽스처 = 스냅샷 2026-09-22 추출(5 zone · 7 SKU). 아래 가격 기대값은 그 스냅샷 값이다.
@@ -56,6 +65,14 @@ describe('parseCatalog — 표본 픽스처', () => {
 
   it('이미지 경로에 네이버 CDN 이 없다', () => {
     expect(JSON.stringify(cat)).not.toMatch(/pstatic|shop-phinf/)
+  })
+
+  it.each([
+    ['표본', FIXTURE_CATALOG_FILE],
+    ['지금 빌드가 쓰는 카탈로그', ACTIVE_CATALOG_FILE],
+  ])('%s 원문(K1 전체 필드)에 네이버 CDN URL 이 없다(불변식 4)', (_n, file) => {
+    const text = readFileSync(`${APP_DIR}${file}`, 'utf8')
+    expect(text.match(/https?:\/\/[^"\s]*(pstatic\.net|shop-phinf)[^"\s]*/)?.[0] ?? null).toBeNull()
   })
 })
 
