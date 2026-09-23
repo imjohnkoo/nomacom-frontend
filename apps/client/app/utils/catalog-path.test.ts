@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { readSource } from '#shared/catalog/test-source'
+import { elementAttrs, readSource } from '#shared/catalog/test-source'
 import { catalogPageError, isCatalogParam, lowercaseRedirect } from './catalog-path'
 
 describe('lowercaseRedirect (catalog spec D-13)', () => {
@@ -80,10 +80,26 @@ describe('국가 · 상품 페이지가 catalogPageError 로 던진다(F-10 결�
 
 describe('상품 페이지 결선 — 가격 카드 · 구매 시트는 계산한 값을 그대로 넘긴다', () => {
   const APP = fileURLToPath(new URL('../../', import.meta.url))
-  const { template, script } = readSource(`${APP}app/pages/products/[zone].vue`)
+  const PAGE = `${APP}app/pages/products/[zone].vue`
+  const { script } = readSource(PAGE)
   it('PlanCards 는 고른 종류 · 그 기간 카드를, PurchaseSheet 는 purchaseSheetProps 결과를 받는다', () => {
-    expect(template).toMatch(/<PlanCards[^>]*:kind="kind"[^>]*:cards="cards"/)
-    expect(template).toMatch(/<PurchaseSheet[^>]*v-bind="purchase"/)
+    // 속성 목록 전체 — `v-bind="purchase"` 뒤에 덧붙인 속성(`:naver-url=…`)은 그 값을 덮는다(Vue 3)
+    expect(elementAttrs(PAGE, 'PlanCards')).toEqual([
+      [
+        { name: 'v-model', value: 'cap' },
+        { name: 'name', value: 'cap' },
+        { name: ':kind', value: 'kind' },
+        { name: ':cards', value: 'cards' },
+        { name: 'labelledby', value: 'cap-label' },
+      ],
+    ])
+    expect(elementAttrs(PAGE, 'PurchaseSheet')).toEqual([
+      [
+        { name: 'v-if', value: 'purchase' },
+        { name: 'v-model', value: 'sheetOpen' },
+        { name: 'v-bind', value: 'purchase' },
+      ],
+    ])
     const code = script.map((x) => x.text).join(' ')
     expect(code).toContain('const cards = computed ( ( ) => planCards ( zone , sel . value ) )')
     expect(code).toContain(

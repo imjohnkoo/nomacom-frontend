@@ -94,6 +94,46 @@ export function readSource(file: string): SourceParts {
   return parseSource(file, readFileSync(file, 'utf8'))
 }
 
+export interface TemplateAttr {
+  /** 원문 이름 — `v-if` · `v-bind` · `:naver-url` · `name` */
+  name: string
+  /** 식 · 값 원문 — 값 없는 속성이면 null */
+  value: string | null
+}
+
+interface TemplateNode {
+  tag?: string
+  props?: {
+    name: string
+    rawName?: string
+    exp?: { content: string }
+    value?: { content: string }
+  }[]
+  children?: TemplateNode[]
+}
+
+/**
+ * `.vue` 템플릿에서 태그가 `tag` 인 요소마다 속성 목록(적힌 순서)을 낸다 — 결선 테스트가 «이 속성뿐» 을 확인한다.
+ * 정규식으로 태그를 훑으면 뒤에 덧붙인 속성(`v-bind="obj"` 를 덮는 `:price=…`)을 놓친다.
+ */
+export function elementAttrs(file: string, tag: string): TemplateAttr[][] {
+  const { descriptor } = parseSfc(readFileSync(file, 'utf8'), { filename: file })
+  const out: TemplateAttr[][] = []
+  const walk = (n: TemplateNode) => {
+    if (n.tag === tag)
+      out.push(
+        (n.props ?? []).map((p) => ({
+          name: p.rawName ?? p.name,
+          value: p.exp?.content ?? p.value?.content ?? null,
+        })),
+      )
+    n.children?.forEach(walk)
+  }
+  const ast = descriptor.template?.ast as TemplateNode | undefined
+  if (ast) walk(ast)
+  return out
+}
+
 /** 토큰 가운데 문자열 · 템플릿 조각의 내용만 */
 export const stringsOf = (tokens: Token[]) =>
   tokens.filter((t) => t.kind === 'string').map((t) => t.value)
