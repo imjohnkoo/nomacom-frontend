@@ -138,7 +138,7 @@ yarn workspace @imjohnkoo/design-vue run test --run   # DS 변경 시 (17 files 
 yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 ```
 
-> ⚠️ client 는 순수 유닛 284건(2026-09-23 — shell · 흐름 가드 · 콘텐츠 포함), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
+> ⚠️ client 는 순수 유닛 413건(2026-09-23 — shell · 흐름 가드 · 콘텐츠 · 카탈로그 포함), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
 
 `verification-before-completion` 의 iron law 적용 — 결과를 직접 확인.
 
