@@ -1,4 +1,6 @@
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it, vi } from 'vitest'
+import { readSource } from '#shared/catalog/test-source'
 
 // catalog spec F-10 · D-13 — 대상 미들웨어를 그대로 돌린다. Nuxt 전역(defineNuxtRouteMiddleware · navigateTo)만 대신한다.
 const calls: unknown[][] = []
@@ -48,5 +50,12 @@ describe('catalog-path 미들웨어 — 소문자 정규화', () => {
     expect(run({ path: '/countries/fra', query: {}, hash: '' })).toBeUndefined()
     expect(run({ path: '/guide', query: {}, hash: '' })).toBeUndefined()
     expect(calls).toEqual([])
+  })
+
+  it('클라이언트 전용 분기 · replace 가 없다 — vitest 는 import.meta.client 를 돌리지 않으므로 소스로 잠근다', () => {
+    const FILE = fileURLToPath(new URL('./catalog-path.ts', import.meta.url))
+    const tokens = readSource(FILE).script.map((t) => t.text)
+    expect(tokens).not.toContain('replace')
+    expect(tokens.join(' ')).not.toMatch(/import \. meta \. (client|server)/)
   })
 })
