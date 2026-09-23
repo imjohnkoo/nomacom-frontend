@@ -57,7 +57,7 @@ const ROW_ORDER: readonly Omit<BusinessRow, 'value'>[] = [
   { key: 'hostingProvider', label: '호스팅 서비스 제공자' },
 ]
 
-/** 푸터 · /business 표 — 9항목 고정 순서, 확정 전 값은 «(확정 전)» */
+/** 푸터 · /business 표 — 9항목 고정 순서, 확정 전 값은 대기 표시 문구로 (pending.ts displayValue) */
 export function businessRows(info: BusinessInfo = BUSINESS_INFO): BusinessRow[] {
   return ROW_ORDER.map(({ key, label }) => ({ key, label, value: displayValue(info[key]) }))
 }

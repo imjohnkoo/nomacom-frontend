@@ -113,13 +113,12 @@ git checkout main && git pull --ff-only
 # 게이트 스크립트 — main 에 아직 없으면(그 스크립트를 들여오는 첫 머지) 워크트리 것을 메인 클론 저장소에 대고 부른다
 GATE=.github/scripts/content-pending-gate.sh
 [ -f "$GATE" ] || GATE="<worktree>/.github/scripts/content-pending-gate.sh"
-export CONTENT_GATE_ROOT="$(pwd)"           # 판정 대상 = 메인 클론(워크트리 HEAD 가 아니다)
+# 판정 대상 = 메인 클론(워크트리 HEAD 가 아니다) — CONTENT_GATE_ROOT 는 export 하지 말고 명령마다 앞에 붙인다(셸에 남으면 다른 저장소를 본다)
 # 머지 **전에** 양쪽 부모를 본다 — 둘 다 0 이어야 머지한다(머지 뒤 실패하면 로컬 main 에 커밋이 남는다)
-bash "$GATE" HEAD && bash "$GATE" <feature-branch> || exit 1
+CONTENT_GATE_ROOT="$(pwd)" bash "$GATE" HEAD && CONTENT_GATE_ROOT="$(pwd)" bash "$GATE" <feature-branch> || exit 1
 git merge --no-ff <feature-branch> || exit 1   # 충돌이면 멈춘다 — 손으로 해결했다면 아래 게이트 재검사부터 다시
 yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
-bash "$GATE" HEAD || exit 1                 # 머지 결과를 다시(충돌 해결에서 들어온 경우)
-unset CONTENT_GATE_ROOT
+CONTENT_GATE_ROOT="$(pwd)" bash "$GATE" HEAD || exit 1   # 머지 결과를 다시(충돌 해결에서 들어온 경우)
 git push origin main
 ```
 
@@ -135,7 +134,7 @@ git push -u origin <feature-branch>
 # 기본은 draft — ready 로 열면 GitHub UI 에서 바로 머지된다(main 에 required check 없음).
 # ready 는 콘텐츠 게이트 0 **이고** spec 의 머지 선행조건(예: client-shell 은 P6 #2)을 확인해 MERGE_PREREQ_OK=yes 로 둔 때만
 DRAFT="--draft"
-if bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && [ "${MERGE_PREREQ_OK:-}" = yes ]; then DRAFT=""; fi
+if env -u CONTENT_GATE_ROOT bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && [ "${MERGE_PREREQ_OK:-}" = yes ]; then DRAFT=""; fi
 # draft 를 ready 로 바꿀 때(`gh pr ready`)도 같은 두 조건을 **그때 다시** 확인한다 — PR 을 연 뒤 커밋이 늘었을 수 있다
 gh pr create --base main $DRAFT --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
 ## Summary

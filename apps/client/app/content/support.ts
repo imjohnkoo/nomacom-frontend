@@ -36,7 +36,7 @@ export interface SupportRow {
   href: string | null
 }
 
-/** 화면용 — 확정 전 값은 «(확정 전)», 링크는 확정된 것만 */
+/** 화면용 — 확정 전 값은 대기 표시 문구로(pending.ts displayValue), 링크는 확정된 것만 */
 export function supportRows(channels: readonly SupportChannel[] = SUPPORT_CHANNELS): SupportRow[] {
   return channels.map((channel) => {
     const linkable = !isPending(channel.value) && channel.href && !isPending(channel.href)

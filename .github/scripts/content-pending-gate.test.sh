@@ -113,19 +113,27 @@ labels=(
   'apps/client/app/content/business.ts|export const X = "(확정 전)"'
   "apps/client/app/content/business.ts|export const X = '상호 (확정 전)'"
   "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 (확정 전)</p>"
+  "apps/client/app/content/business.ts|export const X = '«(확정 전)»'"
+  "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 «(확정 전)»</p>"
+  "apps/client/app/content/business.ts|/** 확정 전 값은 «(확정 전)» */"
 )
 for entry in "${labels[@]}"; do
   g checkout -q "$CLEAN"
   put "${entry%%|*}" "${entry#*|}"
   commit "label: $entry"
-  expect 1 "표시 문구 우회 막힘 — ${entry#*|}"
+  expect 1 "표시 문구 막힘(예외 없음 — 주석 포함) — ${entry#*|}"
 done
-# 주석의 «(확정 전)» 은 세지 않는다
+
+# 바이너리 속성 파일의 표시 문구도 텍스트로 본다
 g checkout -q "$CLEAN"
-put apps/client/app/content/business.ts "/** 확정 전 값은 «(확정 전)» */
-export const X = '확정'"
-commit "comment only"
-expect 0 "주석의 «(확정 전)» 은 통과"
+put .gitattributes 'apps/client/app/content/*.ts -diff'
+put apps/client/app/content/business.ts "export const X = '(확정 전)'"
+commit "binary attr label"
+expect 1 "-diff 속성 파일의 표시 문구도 막힘"
+
+# rev 이름에 | 가 있어도(유효한 브랜치 이름) 판정이 깨지지 않는다
+g branch 'feat|x' "$PENDING"
+expect 1 "rev 'feat|x' — 막힘(구분자 충돌로 통과하지 않는다)" 'feat|x'
 
 # 임시 파일을 못 만들면 통과가 아니라 검사 불가
 g checkout -q "$PENDING"

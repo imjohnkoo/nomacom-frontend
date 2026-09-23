@@ -112,11 +112,13 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 # client 확정 전 문안(P9_4_PENDING) 0 — Phase 1.0 의 PROMOTE_SHA 를 본다 (W1-2 D-17).
 PROMOTE_SHA=<Phase 1.0 값>
 [ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || exit 1
-# 게이트 스크립트가 없는 SHA(도입 전 main)는 자리표시자도 없다 — «해당 없음» 으로 보고한다
+# 게이트 스크립트가 없는 SHA(도입 전 main)는 «해당 없음» — 단 스크립트만 빠진 경우를 막으려 자리표시자 글자를 직접 찾는다
 if [ -f .github/scripts/content-pending-gate.sh ]; then
-  bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
+  env -u CONTENT_GATE_ROOT bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
+elif git grep -q -F -e P9_4_PENDING -e PENDING_LABEL -e '(확정 전)' "$PROMOTE_SHA" -- apps/client ':(exclude)*.md' ':(exclude)*.test.ts' ':(exclude)apps/client/app/content/pending.ts'; then
+  echo "⛔ 게이트 스크립트가 없는데 자리표시자가 있다 — 중단"; exit 1
 else
-  echo "content gate: 해당 없음(게이트 도입 전 SHA)"
+  echo "content gate: 해당 없음(게이트 도입 전 SHA · 자리표시자 0)"
 fi
 bash .github/scripts/typecheck-gate.sh admin || exit 1
 bash .github/scripts/typecheck-gate.sh client || exit 1
@@ -231,7 +233,7 @@ Build:        ✓ yarn turbo run build (admin, client) pass
 Promote SHA:  <PROMOTE_SHA> (origin/main 에 있음 — push 는 `git push origin <PROMOTE_SHA>:prod`, 훅이 막으므로 사용자가)
 Content gate: ✓ content-pending-gate.sh <PROMOTE_SHA> exit 0 (client 확정 전 문안 0)
 Typecheck:    ✓ typecheck-gate.sh (admin 0 / client 4 기준선 초과 0)
-Tests:        ✓ design-vue 129 pass  /  — admin·client n/a
+Tests:        ✓ design-vue 129 · client <n> pass  /  — admin 0건
 UI manual:    ✓ admin/client golden path 검증 완료 (유일한 기능 검증)
 Migrations:   ✗ none
 DDL:          ✗ none

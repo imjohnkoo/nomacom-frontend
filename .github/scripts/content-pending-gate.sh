@@ -8,7 +8,7 @@
 #
 # 보는 것: **머지할 커밋**(기본 HEAD)의 apps/client/** — 디스크 파일이 아니다(워크트리에서만 채우고 커밋하지 않은 값은 통과가 아니다).
 #   바이너리 속성(.gitattributes -diff 등)이 붙은 파일도 텍스트로 본다.
-# 찾는 것: `P9_4_PENDING` · `PENDING_LABEL` · 표시 문구 `(확정 전)`(주석에 쓰는 «(확정 전)» 은 세지 않는다).
+# 찾는 것: `P9_4_PENDING` · `PENDING_LABEL` · 표시 문구 `(확정 전)` — 코드 · 템플릿 · 주석 어디든(주석에도 이 글자를 쓰지 않는다).
 # 세지 않는 것: 자리표시자 정의 · 판정 함수 파일(app/content/pending.ts) · 테스트 픽스처(*.test.ts) · 문서(*.md).
 #   대신 pending.ts 는 **파일 전체**를 git blob 해시로 고정한다 — 별칭(여러 줄 · 주석 · 재수출) · 판정 함수 본문 변경으로
 #   게이트를 비껴가지 않게. pending.ts 를 정당하게 고치면 아래 PENDING_BLOB 도 같은 커밋에서 갱신한다
@@ -47,33 +47,25 @@ check_grep() { # git grep 은 객체를 못 읽어도 «못 찾음»(1)으로 �
   [[ $rc -eq 0 || $rc -eq 1 ]] || unable "git grep 실패(exit $rc)"
 }
 
-# 1) 자리표시자 이름
-names="$(git -C "$ROOT" grep -l --text -F -e 'P9_4_PENDING' -e 'PENDING_LABEL' "$REV" -- apps/client "${EXCLUDES[@]}" 2>"$errf")"
+# 1) 자리표시자 이름 · 표시 문구 — 예외 없이(주석 포함). 주석에 예외를 두면 그 표기가 코드에 들어와도 통과한다
+found="$(git -C "$ROOT" grep -l --text -F -e 'P9_4_PENDING' -e 'PENDING_LABEL' -e '(확정 전)' "$REV" -- apps/client "${EXCLUDES[@]}" 2>"$errf")"
 check_grep $?
 
-# 2) 표시 문구 «(확정 전)» 를 글자로 넣은 곳 — 주석의 «(확정 전)» 표기는 빼고 남는 것만
-label_lines="$(git -C "$ROOT" grep -n --text -F '(확정 전)' "$REV" -- apps/client "${EXCLUDES[@]}" 2>"$errf")"
-check_grep $?
-labels="$(awk -v rev="$REV:" '{
-  line = $0
-  if (index(line, rev) == 1) line = substr(line, length(rev) + 1)
-  p = index(line, ":"); path = substr(line, 1, p - 1); rest = substr(line, p + 1)
-  q = index(rest, ":"); text = substr(rest, q + 1)
-  gsub(/«\(확정 전\)»/, "", text)
-  if (index(text, "(확정 전)") > 0) print path
-}' <<<"$label_lines" | sort -u)"
-
-# 3) pending.ts 는 파일 전체가 게이트가 아는 판이어야 한다
+# 2) pending.ts 는 파일 전체가 게이트가 아는 판이어야 한다
 drift=""
 if git -C "$ROOT" cat-file -e "$REV:$PENDING_FILE" 2>/dev/null; then
   blob="$(git -C "$ROOT" rev-parse "$REV:$PENDING_FILE" 2>"$errf")" || unable "$PENDING_FILE 를 읽을 수 없다"
   [[ "$blob" == "$PENDING_BLOB" ]] || drift="$blob"
 fi
 
-hits="$( { sed "s|^$REV:||" <<<"$names"; printf '%s\n' "$labels"; } | sed '/^$/d' | sort -u)"
+# "<rev>:<path>" → "<path>" — rev 에 sed 구분자(|) 등이 있어도 깨지지 않게 문자열로만 자른다
+hits=""
+while IFS= read -r line; do
+  [[ -n "$line" ]] && hits+="${line#"$REV:"}"$'\n'
+done <<<"$found"
 if [[ -n "$hits" || -n "$drift" ]]; then
   echo "⛔ 확정 전 콘텐츠(P9_4_PENDING)가 남아 있다 — main 머지 불가 (PR 은 draft 로) [$REV @ $ROOT]:"
-  [[ -n "$hits" ]] && printf '%s\n' "$hits" | sed 's/^/    /'
+  [[ -n "$hits" ]] && printf '%s' "$hits" | sed 's/^/    /'
   if [[ -n "$drift" ]]; then
     echo "    $PENDING_FILE 가 게이트가 아는 판과 다르다(blob $drift ≠ $PENDING_BLOB)"
     echo "    (별칭 · 본문 변경 차단 — 의도한 변경이면 이 스크립트의 PENDING_BLOB 을 같은 커밋에서 갱신)"
