@@ -35,6 +35,13 @@ const onSubmit = async () => {
 watch(value, () => {
   if (error.value) error.value = null
 })
+
+// 외부 이동 뒤 뒤로가기로 bfcache 에서 복원되면 JS 상태가 그대로 살아난다 — 로딩(=비활성)으로 굳지 않게 되돌린다 (spec D-21)
+const onPageShow = (event: PageTransitionEvent) => {
+  if (event.persisted) isNavigating.value = false
+}
+onMounted(() => window.addEventListener('pageshow', onPageShow))
+onBeforeUnmount(() => window.removeEventListener('pageshow', onPageShow))
 </script>
 
 <template>

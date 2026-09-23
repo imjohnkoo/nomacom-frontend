@@ -30,7 +30,10 @@ export function validateOrderNumber(raw: string): OrderLookupResult {
   if (!value) return { ok: false, error: 'empty' }
   if (!/^\d+$/.test(value)) return { ok: false, error: 'not-digits' }
   if (value.length < MIN_DIGITS || value.length > MAX_DIGITS) return { ok: false, error: 'length' }
-  if (!Number.isSafeInteger(Number(value))) return { ok: false, error: 'length' }
+  // 첫 자리 0 은 Number() 가 떼어 자릿수가 줄어든다 · 2^53−1 을 넘으면 정밀도가 깨진다 (spec D-15)
+  if (value.startsWith('0') || !Number.isSafeInteger(Number(value))) {
+    return { ok: false, error: 'length' }
+  }
   return { ok: true, orderId: value }
 }
 

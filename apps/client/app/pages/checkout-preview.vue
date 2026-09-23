@@ -3,6 +3,7 @@
 // 주문 저장 · 발급 · 서버 호출 0. 키는 runtimeConfig.public.portone(테스트 채널키만 — 이름에 TEST).
 import { NButton, NCheckbox } from '@imjohnkoo/design-vue'
 import {
+  PENDING_PAYMENT_KEY,
   PREVIEW_ITEM,
   PREVIEW_ORDER_NAME,
   createPaymentId,
@@ -23,7 +24,34 @@ const isConfigured = Boolean(storeId && channelKey)
 const agreed = ref(false)
 const isRequesting = ref(false)
 const openError = ref<string | null>(null)
-const result = computed(() => readPaymentResult(route.query))
+// 이 탭이 만든 결제 ID(sessionStorage) — 복귀 쿼리가 이것과 같을 때만 결과 줄을 그린다(링크로 만든 임의 문구 차단)
+const expectedPaymentId = ref<string | null>(null)
+const result = computed(() => readPaymentResult(route.query, expectedPaymentId.value))
+
+const readPendingPayment = () => {
+  try {
+    return sessionStorage.getItem(PENDING_PAYMENT_KEY)
+  } catch {
+    return null
+  }
+}
+const writePendingPayment = (paymentId: string) => {
+  try {
+    sessionStorage.setItem(PENDING_PAYMENT_KEY, paymentId)
+  } catch {
+    /* 저장이 막힌 브라우저 — 결과 줄만 안 보인다 */
+  }
+}
+
+// 결제창에서 뒤로 와 bfcache 로 복원되면 promise 가 끝나지 않은 채라 로딩으로 굳는다 — 되돌린다 (spec D-21)
+const onPageShow = (event: PageTransitionEvent) => {
+  if (event.persisted) isRequesting.value = false
+}
+onMounted(() => {
+  expectedPaymentId.value = readPendingPayment()
+  window.addEventListener('pageshow', onPageShow)
+})
+onBeforeUnmount(() => window.removeEventListener('pageshow', onPageShow))
 
 const onPay = async () => {
   if (!isConfigured || !agreed.value || isRequesting.value) return
@@ -32,10 +60,13 @@ const onPay = async () => {
   try {
     // SDK 는 클릭 때만 불러온다(SSR 번들 제외) — 첫 호출에 PortOne CDN 스크립트를 넣는다
     const PortOne = await import('@portone/browser-sdk/v2')
+    const paymentId = createPaymentId(Date.now(), crypto.getRandomValues(new Uint8Array(12)))
+    writePendingPayment(paymentId)
+    expectedPaymentId.value = paymentId
     const response = await PortOne.requestPayment({
       storeId,
       channelKey,
-      paymentId: createPaymentId(Date.now(), crypto.getRandomValues(new Uint8Array(12))),
+      paymentId,
       orderName: PREVIEW_ORDER_NAME,
       totalAmount: PREVIEW_ITEM.amount,
       currency: 'KRW',
@@ -128,14 +159,14 @@ const onPay = async () => {
     </div>
 
     <p
-      v-if="result.status === 'success'"
+      v-if="!openError && result.status === 'success'"
       class="checkout__result checkout__result--ok"
       role="status"
     >
       결제창 호출과 승인을 확인했어요. 테스트 결제라 실제로 청구되지 않아요.
       <span class="checkout__result-id">결제 ID {{ result.paymentId }}</span>
     </p>
-    <p v-else-if="result.status === 'failed'" class="checkout__result" role="status">
+    <p v-else-if="!openError && result.status === 'failed'" class="checkout__result" role="status">
       결제가 완료되지 않았어요. ({{ result.message }})
     </p>
     <p v-if="openError" class="checkout__result" role="alert">

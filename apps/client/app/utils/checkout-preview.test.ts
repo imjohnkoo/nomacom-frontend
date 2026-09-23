@@ -42,38 +42,53 @@ describe('상품 값 (PG 심사 요건)', () => {
 })
 
 describe('readPaymentResult', () => {
-  it('쿼리가 없으면 none', () => {
-    expect(readPaymentResult({})).toEqual({ status: 'none' })
-    expect(readPaymentResult({ code: 'X' })).toEqual({ status: 'none' })
+  const MINE = 'pv-1790105212345-abababababababababababab'
+
+  it('쿼리가 없거나 이 탭의 결제 ID 가 없으면 none', () => {
+    expect(readPaymentResult({}, MINE)).toEqual({ status: 'none' })
+    expect(readPaymentResult({ paymentId: MINE }, null)).toEqual({ status: 'none' })
   })
 
-  it('code 없음 → success', () => {
-    expect(readPaymentResult({ paymentId: 'pv-1-00' })).toEqual({
-      status: 'success',
-      paymentId: 'pv-1-00',
+  it('링크로 만든 임의 쿼리는 그리지 않는다 — ID 불일치 · 형식 밖 (반사 텍스트 차단)', () => {
+    expect(
+      readPaymentResult(
+        { paymentId: '입금확인요망', code: 'X', message: '010-0000-0000 으로 연락' },
+        MINE,
+      ),
+    ).toEqual({ status: 'none' })
+    expect(readPaymentResult({ paymentId: 'pv-1-00', code: 'X', message: '가짜' }, MINE)).toEqual({
+      status: 'none',
     })
   })
 
-  it('code 있음 → failed · message 우선, 없으면 pgMessage, 그것도 없으면 code', () => {
+  it('이 탭의 ID + code 없음 → success', () => {
+    expect(readPaymentResult({ paymentId: MINE }, MINE)).toEqual({
+      status: 'success',
+      paymentId: MINE,
+    })
+  })
+
+  it('이 탭의 ID + code → failed · message 우선 → pgMessage → code · 80자 상한', () => {
     expect(
-      readPaymentResult({
-        paymentId: 'pv-1-00',
-        code: 'FAILURE_TYPE_PG',
-        message: '사용자가 결제를 취소했습니다',
-      }),
-    ).toEqual({ status: 'failed', paymentId: 'pv-1-00', message: '사용자가 결제를 취소했습니다' })
+      readPaymentResult(
+        { paymentId: MINE, code: 'FAILURE_TYPE_PG', message: '사용자가 결제를 취소했습니다' },
+        MINE,
+      ),
+    ).toEqual({ status: 'failed', paymentId: MINE, message: '사용자가 결제를 취소했습니다' })
     expect(
-      readPaymentResult({ paymentId: 'pv-1-00', code: 'X', pgMessage: 'PG 사유' }),
+      readPaymentResult({ paymentId: MINE, code: 'X', pgMessage: 'PG 사유' }, MINE),
     ).toMatchObject({
       message: 'PG 사유',
     })
-    expect(readPaymentResult({ paymentId: 'pv-1-00', code: 'X' })).toMatchObject({ message: 'X' })
+    expect(readPaymentResult({ paymentId: MINE, code: 'X' }, MINE)).toMatchObject({ message: 'X' })
+    const long = readPaymentResult({ paymentId: MINE, code: 'X', message: '가'.repeat(200) }, MINE)
+    expect(long.status === 'failed' ? long.message.length : -1).toBe(80)
   })
 
   it('배열 쿼리는 첫 값', () => {
-    expect(readPaymentResult({ paymentId: ['pv-1-00', 'pv-2-00'] })).toEqual({
+    expect(readPaymentResult({ paymentId: [MINE, 'pv-2-00'] }, MINE)).toEqual({
       status: 'success',
-      paymentId: 'pv-1-00',
+      paymentId: MINE,
     })
   })
 })

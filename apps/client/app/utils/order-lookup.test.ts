@@ -22,6 +22,8 @@ describe('validateOrderNumber', () => {
     ['123456789', 'length'],
     ['12345678901234567', 'length'],
     ['9999999999999999', 'length'],
+    ['0012345678', 'length'],
+    ['0000000000', 'length'],
   ] as const)('%j → %s', (raw, error) => {
     expect(validateOrderNumber(raw)).toEqual({ ok: false, error })
   })

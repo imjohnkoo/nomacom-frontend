@@ -35,19 +35,30 @@ export type PaymentResult =
   | { status: 'success'; paymentId: string }
   | { status: 'failed'; paymentId: string; message: string }
 
+/** 이 탭이 방금 만든 결제 ID — 복귀 쿼리가 이것과 같을 때만 결과를 그린다(링크로 만든 임의 쿼리 무시) */
+export const PENDING_PAYMENT_KEY = 'nomacom_checkout_preview_payment'
+
+export const RESULT_MESSAGE_MAX = 80
+
 const first = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 const text = (value: unknown): string | null =>
   typeof value === 'string' && value.trim() ? value.trim() : null
 
 /**
  * 결제창 복귀 쿼리 해석 — forceRedirect 로 PC · 모바일 모두 `redirectUrl?paymentId=…&code=…&message=…` 로 돌아온다.
- * code 가 있으면 실패 · 취소. pgMessage 는 message 가 없을 때만 쓴다.
+ * - `paymentId` 가 형식에 맞고 `expectedPaymentId`(이 탭이 만든 ID)와 같을 때만 결과를 낸다 (spec S-7 · QA ⑥ 반사 텍스트 차단)
+ * - code 가 있으면 실패 · 취소. message 는 80자까지, 없으면 pgMessage → code 순
  */
-export function readPaymentResult(query: Record<string, unknown>): PaymentResult {
+export function readPaymentResult(
+  query: Record<string, unknown>,
+  expectedPaymentId: string | null,
+): PaymentResult {
   const paymentId = text(first(query.paymentId))
-  if (!paymentId) return { status: 'none' }
+  if (!paymentId || !PAYMENT_ID_PATTERN.test(paymentId) || paymentId !== expectedPaymentId) {
+    return { status: 'none' }
+  }
   const code = text(first(query.code))
   if (!code) return { status: 'success', paymentId }
   const message = text(first(query.message)) ?? text(first(query.pgMessage)) ?? code
-  return { status: 'failed', paymentId, message }
+  return { status: 'failed', paymentId, message: message.slice(0, RESULT_MESSAGE_MAX) }
 }
