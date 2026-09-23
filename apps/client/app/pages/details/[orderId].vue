@@ -144,7 +144,7 @@ const handleSelectOrder = async (idx: number) => {
     // 새 응답에서 productOrderId 로 찾는다 — DB 정렬 보장이 없어 위치(idx)로 집으면 다른 상품일 수 있다
     const target = details?.find((o) => o.productOrderId === orders[idx]?.productOrderId)
 
-    if (verified && !cancelled && target) {
+    if (verified && !cancelled && target && !target.cancelled) {
       orderStore.setOrders(details || [])
       orderStore.setSingleOrder(target)
       flowSession.select(orderId.value, target.productOrderId)
@@ -155,7 +155,8 @@ const handleSelectOrder = async (idx: number) => {
         // 미발급 + 부분 발급 (resume) 모두 select-date 로
         router.push(`/select-date/${orderId.value}`)
       }
-    } else if (verified && cancelled) {
+    } else if (verified && (cancelled || target?.cancelled)) {
+      // 목록을 불러온 뒤 그 상품이 취소 요청 상태가 된 경우도 같은 안내 — 미들웨어가 select-date 를 되돌려 조용히 끝나지 않게
       isLoadingVisible.value = false
       isCancelledOrderVisible.value = true
       setTimeout(() => {

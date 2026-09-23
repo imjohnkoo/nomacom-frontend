@@ -87,7 +87,7 @@ const shortcuts = [
   border: 1px solid var(--n-color-neutral-200, #e5e5e5);
   border-radius: 14px;
   background: var(--n-color-neutral-50, #fafafa);
-  color: var(--n-color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-500, #737373);
   font-size: 15px;
   text-decoration: none;
 }

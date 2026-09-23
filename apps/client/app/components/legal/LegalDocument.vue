@@ -83,6 +83,6 @@ const PENDING_BODY = '문안을 확정하고 있어요.'
 }
 
 .legal-doc__pending {
-  color: var(--n-color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-500, #737373);
 }
 </style>

@@ -165,8 +165,8 @@ const onConfirm = async () => {
     if (verified && !cancelled) {
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
-      // activate 는 발급한 상품주문 1건만 돌려준다
-      const issued = details?.[0]
+      // 발급한 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다)
+      const issued = details?.find((o) => o.productOrderId === orderStore.singleOrder?.productOrderId)
       if (activateVerified && issued) {
         isIssueQrCodesVisible.value = false
         orderStore.setSingleOrder(issued)
