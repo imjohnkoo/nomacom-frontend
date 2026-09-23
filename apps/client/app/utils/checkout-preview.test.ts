@@ -1,10 +1,9 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { PREVIEW_OPTION_CODE, checkoutPreviewFromCatalog } from '#shared/catalog/preview'
+import { ACTIVE_CATALOG_FILE, activeRaw, fixtureRaw } from '#shared/catalog/test-data'
 import { parseCatalog } from '#shared/catalog/validate'
 import {
   PAYMENT_ID_PATTERN,
-  PREVIEW_OPTION_CODE,
-  previewItemFrom,
   buildReturnQuery,
   createPaymentId,
   formatWon,
@@ -27,25 +26,45 @@ describe('createPaymentId', () => {
   })
 })
 
-const catalog = parseCatalog(
-  JSON.parse(readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8')),
-)
-const fra = catalog.zones.find((z) => z.zone === 'FRA00')!
-const option = fra.products[0]!.options.find((o) => o.code === PREVIEW_OPTION_CODE)!
-const PREVIEW_ITEM = previewItemFrom(fra.label, 'U', option)
+const PREVIEW_ITEM = checkoutPreviewFromCatalog(parseCatalog(fixtureRaw()))
 const PREVIEW_ORDER_NAME = PREVIEW_ITEM.orderName
+const previewOption = (raw: ReturnType<typeof fixtureRaw>) =>
+  raw.zones
+    .flatMap((z: { products: { options: { code: string; finalWon: number }[] }[] }) => z.products)
+    .flatMap((p: { options: { code: string; finalWon: number }[] }) => p.options)
+    .find((o: { code: string }) => o.code === PREVIEW_OPTION_CODE)
 
 describe('상품 값 (PG 심사 요건 · catalog F-12)', () => {
-  it('K1 옵션 FRA00U01D07V2 에서 만든다 — 스냅샷 기준 4,900원 · 프랑스 eSIM 무제한 · 매일 1GB · 7일', () => {
+  it('K1 옵션 FRA00U01D07V2 에서 만든다 — 스냅샷 기준 4,900원 · 옵션명은 K1 두 칸 그대로', () => {
     expect(PREVIEW_ITEM).toEqual({
       productName: '프랑스 eSIM 무제한',
-      optionName: '매일 1GB · 소진 후 512kbps · 7일',
+      optionName: '매일 1GB + 소진후 512kbps 무제한 · 7일',
       usage: '현지에서 처음 연결한 때부터 24시간 단위로 7일',
       quantity: 1,
-      amount: option.finalWon,
+      amount: 4900,
       orderName: '프랑스 eSIM 무제한 · 매일 1GB · 7일',
     })
-    expect(option.finalWon).toBe(4900)
+  })
+
+  it('금액 · 옵션명은 카탈로그를 따라간다(값이 바뀌면 표시도 바뀐다 — 코드에 금액을 박지 않는다)', () => {
+    const raw = fixtureRaw()
+    const o = previewOption(raw)
+    o.finalWon = 5200
+    o.optionName1 = '매일 1GB + 소진후 512kbps 무제한(개정)'
+    const item = checkoutPreviewFromCatalog(parseCatalog(raw))
+    expect(item.amount).toBe(5200)
+    expect(item.optionName).toBe('매일 1GB + 소진후 512kbps 무제한(개정) · 7일')
+  })
+
+  it(`지금 빌드가 쓰는 카탈로그(${ACTIVE_CATALOG_FILE})에 심사용 옵션이 있고 금액이 원본과 같다`, () => {
+    const raw = activeRaw()
+    expect(checkoutPreviewFromCatalog(parseCatalog(raw)).amount).toBe(previewOption(raw).finalWon)
+  })
+
+  it('카탈로그에 심사용 옵션이 없으면 throw — 빌드가 멈춘다(가짜 금액으로 대신하지 않는다)', () => {
+    expect(() => checkoutPreviewFromCatalog(parseCatalog(fixtureRaw()), 'XXX00U01D07V2')).toThrow(
+      /심사용 옵션 XXX00U01D07V2 가 없다/,
+    )
   })
 
   it('상품명에 TEST 가 없고 금액은 양수 · 주문명 100자 이하', () => {

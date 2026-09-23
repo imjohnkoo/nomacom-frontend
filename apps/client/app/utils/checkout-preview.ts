@@ -1,40 +1,7 @@
 /**
  * 테스트 체크아웃 `/checkout-preview` (K9 · spec F-19) — PG 심사 캡처 전용. 주문 저장 · 발급 · 서버 호출 없음.
- *
- * 상품 값(shell D-13 · catalog F-12): 심사는 «표시 금액 = 라이브 판매가» 를 보므로 실상품 · 실가격을 쓴다 —
- *   K1 카탈로그의 `PREVIEW_OPTION_CODE` 옵션(프랑스 무제한 매일 1GB · 7일)에서 SSR 때 읽는다(페이지 전용 라우트).
- *   주문 저장 · 발급 · 결제 서버 호출은 여전히 0.
- * 상품명에 «TEST» 금지 · 0원 금지 · 동의 체크 기본 해제 — PortOne / 토스 심사 요건.
+ * 상품 값(금액 · 옵션명)은 `#shared/catalog/preview`(빌드 때 K1 에서 계산 · catalog F-12). 이 파일은 결제 ID · 복귀 쿼리.
  */
-
-export const PREVIEW_OPTION_CODE = 'FRA00U01D07V2'
-
-export interface PreviewItem {
-  productName: string
-  optionName: string
-  usage: string
-  quantity: 1
-  amount: number
-  /** PortOne orderName — 100자 이하 */
-  orderName: string
-}
-
-export function previewItemFrom(
-  zoneLabel: string,
-  kind: 'U' | 'L',
-  option: { cap: number; days: number; finalWon: number },
-): PreviewItem {
-  const productName = `${zoneLabel} eSIM ${kind === 'U' ? '무제한' : '종량제'}`
-  const cap = kind === 'U' ? `매일 ${option.cap}GB` : `총 ${option.cap}GB`
-  return {
-    productName,
-    optionName: kind === 'U' ? `${cap} · 소진 후 512kbps · ${option.days}일` : `${cap} · ${option.days}일`,
-    usage: `현지에서 처음 연결한 때부터 24시간 단위로 ${option.days}일`,
-    quantity: 1,
-    amount: option.finalWon,
-    orderName: `${productName} · ${cap} · ${option.days}일`,
-  }
-}
 
 /** 토스(PortOne 경유) paymentId 규칙: 6~64자 · 영문 · 숫자 · - · _ */
 export const PAYMENT_ID_PATTERN = /^[A-Za-z0-9_-]{6,64}$/

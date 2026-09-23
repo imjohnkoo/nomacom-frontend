@@ -1,8 +1,10 @@
 <script setup lang="ts">
 // 사업자정보 — 푸터 9항목을 표로 (K5). 통신판매업 신고번호가 확정되면 공정위 사업자정보 확인 링크를 연다.
+import { STATIC_DESCRIPTIONS } from '#shared/catalog/seo'
 import { businessRows, ftcBusinessCheckUrl } from '~/content/business'
 
-useHead({ title: '사업자정보' })
+// canonical · 설명 — sitemap 에 든 정적 페이지(catalog F-9 · QA ⑥ R11)
+useCatalogSeo({ title: '사업자정보', description: STATIC_DESCRIPTIONS['/business'] })
 
 const rows = businessRows()
 const ftcUrl = ftcBusinessCheckUrl()

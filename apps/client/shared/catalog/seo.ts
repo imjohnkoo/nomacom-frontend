@@ -33,9 +33,9 @@ export function prerenderRoutes(catalog: CatalogView): string[] {
   return ['/', '/search', ...catalogRoutes(catalog), ...STATIC_ROUTES]
 }
 
-/** sitemap — 색인할 경로만(noindex 목록 단일 출처로 거른다) */
+/** sitemap = 프리렌더한 페이지 − noindex(`/search` 등 — noindex 목록 단일 출처로 거른다) */
 export function sitemapPaths(catalog: CatalogView): string[] {
-  return ['/', ...STATIC_ROUTES, ...catalogRoutes(catalog)].filter((p) => !isNoindexPath(p))
+  return prerenderRoutes(catalog).filter((p) => !isNoindexPath(p))
 }
 
 function xmlEscape(s: string): string {
@@ -59,12 +59,15 @@ export interface PageMeta {
   description: string
 }
 
-/** 국가 페이지 — «{나라} eSIM · 무제한 데이터 {최저가}부터»(제목 템플릿이 « · 이심마니» 를 붙인다) */
+/**
+ * 국가 페이지 — «{나라} eSIM · 무제한 데이터 {무제한 최저가}부터»(제목 템플릿이 « · 이심마니» 를 붙인다).
+ * «무제한 데이터» 뒤에는 무제한 옵션의 최저가만 쓴다(종량제가 더 싸도 그 값을 붙이지 않는다). 무제한이 없으면 전체 최저가.
+ */
 export function countryMeta(nameKr: string, zones: ZoneView[]): PageMeta {
-  const low = Math.min(...zones.map(lowestWon))
-  const hasU = zones.some((z) => productOf(z, 'U'))
+  const unlimited = zones.flatMap((z) => productOf(z, 'U')?.options ?? []).map((o) => o.finalWon)
+  const low = unlimited.length ? Math.min(...unlimited) : Math.min(...zones.map(lowestWon))
   return {
-    title: `${nameKr} eSIM · ${hasU ? '무제한 데이터 ' : ''}${formatWon(low)}부터`,
+    title: `${nameKr} eSIM · ${unlimited.length ? '무제한 데이터 ' : ''}${formatWon(low)}부터`,
     description:
       `${nameKr}에서 쓰는 eSIM 상품 ${zones.length}개. 사용일수는 현지에서 처음 연결된 때부터 24시간 단위로 세요. ` +
       '테더링 가능 · 카카오톡으로 1~2분 안에 발급 링크를 보내 드려요.',
@@ -84,6 +87,16 @@ export function zoneMeta(zone: ZoneView): PageMeta {
         : '') +
       '사용일수는 처음 연결된 때부터 24시간 단위 · 테더링 가능.',
   }
+}
+
+/** 정적 페이지 설명 — canonical 과 함께 넣는다(sitemap 에 든 URL 은 전부 canonical · description 이 있다) */
+export const STATIC_DESCRIPTIONS: Record<(typeof STATIC_ROUTES)[number], string> = {
+  '/terms': '이심마니 해외여행 eSIM 서비스 이용약관이에요.',
+  '/privacy': '이심마니가 주문 · 발급에 쓰는 개인정보와 보관 기간을 안내해요.',
+  '/refund': '발급 전이면 전액 환불해 드려요. 신청 방법과 처리 기한을 안내해요.',
+  '/business': '이심마니를 운영하는 사업자 정보와 고객센터 연락처예요.',
+  '/guide': '출국 전에 eSIM 을 설치해 두고, 도착하면 회선을 켜는 방법을 안내해요.',
+  '/supported-devices': 'eSIM 을 쓸 수 있는 아이폰 · 갤럭시 기종을 확인해 보세요.',
 }
 
 export const HOME_META: PageMeta = {

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // 테스트 체크아웃 (K9 · spec S-7) — PG 심사 캡처 전용. 사이트 어디에서도 링크하지 않는다 · noindex.
-// 주문 저장 · 발급 · 결제 서버 호출 0 — 상품 값만 SSR 때 카탈로그(K1)에서 읽는다(catalog F-12).
+// 주문 저장 · 발급 · 결제 서버 호출 0 — 상품 값은 빌드 때 카탈로그(K1)에서 계산해 앱 설정으로 들어온다(catalog F-12 ·
+// modules/catalog.ts). 이 페이지는 데이터 라우트도 부르지 않는다(shell F-19 «서버 호출 0»).
 // 키는 runtimeConfig.public.portone(테스트 채널키만 — 이름에 TEST).
 import { NButton, NCheckbox } from '@imjohnkoo/design-vue'
+import type { PreviewItem } from '#shared/catalog/preview'
 import {
   PENDING_PAYMENT_KEY,
-  type PreviewItem,
   createPaymentId,
   formatWon,
   buildReturnQuery,
@@ -15,11 +16,15 @@ import {
 definePageMeta({ layout: 'flow' })
 useHead({ title: '결제하기' })
 
-const { data: previewData } = await useFetch<PreviewItem>('/api/catalog/checkout-preview', {
-  key: 'catalog-checkout-preview',
-})
-if (!previewData.value) throw createError({ statusCode: 500, statusMessage: '상품 값을 읽지 못했어요', fatal: true })
-const PREVIEW_ITEM = previewData.value
+// 빌드 모듈이 넣지 못했으면(카탈로그에 심사용 옵션 없음 — 빌드가 이미 멈췄어야 한다) 가짜 금액 대신 500
+const preview = (useAppConfig() as { checkoutPreview?: PreviewItem }).checkoutPreview
+if (!preview)
+  throw createError({
+    statusCode: 500,
+    statusMessage: 'Checkout preview item missing',
+    fatal: true,
+  })
+const PREVIEW_ITEM: PreviewItem = preview
 
 const config = useRuntimeConfig()
 const route = useRoute()

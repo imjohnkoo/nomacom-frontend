@@ -1,8 +1,9 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { isNoindexPath } from '../utils/robots'
 import { countriesOf, zoneByCode, zonesOfCountry } from './derive'
 import {
   HOME_META,
+  STATIC_DESCRIPTIONS,
   STATIC_ROUTES,
   buildSitemapXml,
   canonicalUrl,
@@ -12,13 +13,10 @@ import {
   sitemapPaths,
   zoneMeta,
 } from './seo'
+import { fixtureCatalog, fixtureRaw } from './test-data'
 import { parseCatalog } from './validate'
 
-const catalog = parseCatalog(
-  JSON.parse(
-    readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8'),
-  ),
-)
+const catalog = fixtureCatalog()
 
 describe('프리렌더 · sitemap (catalog spec F-9 · E2E-15)', () => {
   it('프리렌더 = 홈 · 검색 · 국가 전수 · 상품 전수 · 정적 6 — 전부 소문자 · 중복 없음', () => {
@@ -32,12 +30,22 @@ describe('프리렌더 · sitemap (catalog spec F-9 · E2E-15)', () => {
     expect(routes).toContain('/products/eu340')
   })
 
-  it('sitemap 에는 noindex 경로(/search · 4-step · 마이 · 체크아웃)가 없다', () => {
+  it('sitemap = 프리렌더 − noindex — /search 는 프리렌더하지만 sitemap 에는 없다', () => {
     const paths = sitemapPaths(catalog)
+    expect(prerenderRoutes(catalog)).toContain('/search')
+    expect(isNoindexPath('/search')).toBe(true)
     expect(paths).not.toContain('/search')
-    for (const p of paths)
+    for (const p of paths) {
+      expect(isNoindexPath(p), p).toBe(false)
       expect(p).not.toMatch(/^\/(verify|details|select-date|view|my|checkout-preview)/)
-    expect(paths).toEqual(['/', ...STATIC_ROUTES, ...catalogRoutes(catalog)])
+    }
+    expect(paths).toEqual(['/', ...catalogRoutes(catalog), ...STATIC_ROUTES])
+  })
+
+  it('정적 페이지는 전부 설명이 있다(canonical 과 함께 — sitemap URL 에 빈 메타 없음)', () => {
+    expect(Object.keys(STATIC_DESCRIPTIONS).sort()).toEqual([...STATIC_ROUTES].sort())
+    for (const d of Object.values(STATIC_DESCRIPTIONS)) expect(d.length).toBeGreaterThan(10)
+    expect(STATIC_DESCRIPTIONS['/refund']).not.toMatch(/수수료|3,500|반품|불가|발급 후/)
   })
 
   it('sitemap XML — 판매 사이트 주소 · lastmod = 카탈로그 생성일', () => {
@@ -60,6 +68,24 @@ describe('메타 문구 (D-15)', () => {
     expect(m.description).toContain('상품 2개')
   })
 
+  it('«무제한 데이터» 뒤에는 무제한 최저가만 — 종량제가 더 싸도 그 값을 붙이지 않는다', () => {
+    const raw = fixtureRaw()
+    const l = raw.zones
+      .flatMap((z: { products: { sku: string }[] }) => z.products)
+      .find((p: { sku: string }) => p.sku === 'CZE00L')
+    l.options[0].finalWon = 300
+    const cat = parseCatalog(raw)
+    expect(countryMeta('체코', zonesOfCountry(cat, 'CZE')).title).toBe(
+      '체코 eSIM · 무제한 데이터 900원부터',
+    )
+  })
+
+  it('무제한 상품이 없는 나라는 «무제한 데이터» 없이 전체 최저가', () => {
+    const cze = structuredClone(zoneByCode(catalog, 'CZE00')!)
+    cze.products = cze.products.filter((p) => p.kind === 'L')
+    expect(countryMeta('체코', [cze]).title).toBe('체코 eSIM · 4,500원부터')
+  })
+
   it('상품 — «{라벨} eSIM — 무제한 · 종량제», 여러 나라면 자동 연결', () => {
     expect(zoneMeta(zoneByCode(catalog, 'CZE00')!).title).toBe('체코 eSIM — 무제한 · 종량제')
     expect(zoneMeta(zoneByCode(catalog, 'FRA00')!).title).toBe('프랑스 eSIM — 무제한')
@@ -70,6 +96,7 @@ describe('메타 문구 (D-15)', () => {
     const all = [
       HOME_META.title,
       HOME_META.description,
+      ...Object.values(STATIC_DESCRIPTIONS),
       ...catalog.zones.flatMap((z) => Object.values(zoneMeta(z))),
       ...countriesOf(catalog).flatMap((c) =>
         Object.values(countryMeta(c.nameKr, zonesOfCountry(catalog, c.iso3))),

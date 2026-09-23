@@ -40,3 +40,22 @@ export function validateOrderNumber(raw: string): OrderLookupResult {
 export function buildGuestVerifyUrl(guestAppOrigin: string, orderId: string): string {
   return `${guestAppOrigin.replace(/\/+$/, '')}/verify/${orderId}`
 }
+
+const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]'])
+
+/**
+ * 주문번호 조회가 보낼 발급 호스트(catalog D-17) — 프리렌더된 페이지에는 공개 설정(`guestAppOrigin`)이 **빌드 값**으로 굳고,
+ * 그 페이지에서 클라이언트 이동한 세션도 그 값을 쓴다. 그래서 루프백 주소(127.0.0.1 · localhost · ::1)에서 열린 페이지면
+ * 자기 출처로 보낸다 — 로컬 prod 봉투 walk 가 실호스트(app.esimmany.com)로 나가지 않게(John 09-23 안전 지시).
+ * 그 밖의 호스트(esimmany.com · app.esimmany.com)는 설정값 그대로.
+ */
+export function resolveGuestOrigin(configured: string, pageOrigin: string | undefined): string {
+  if (!pageOrigin) return configured
+  try {
+    const page = new URL(pageOrigin)
+    if (LOOPBACK_HOSTS.has(page.hostname)) return page.origin
+  } catch {
+    /* 출처를 못 읽으면 설정값 */
+  }
+  return configured
+}

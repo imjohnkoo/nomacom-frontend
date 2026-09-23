@@ -14,19 +14,19 @@ spec `nomacom-wiki wiki/frontend/specs/client/2026-09-23-client-shell.md` · pla
 - **사업자정보 · 고객센터 · 법정 문안** — `app/content/{business,support,legal}.ts`. 미확정 값은 `P9_4_PENDING`(화면 «(확정 전)»). ⛔ **main 머지 게이트**: `bash .github/scripts/content-pending-gate.sh` 가 0 — 머지할 **커밋** 기준(미커밋 수정은 통과가 아니다). 부르는 곳: finish-branch Step 0 첫 항목 · prod-push-check · CI `content-gate`(알림 — required check 없음). 환불정책에 «QR 발급 후 수수료 · 공제 · 청약철회 제한» 을 넣으면 `legal.test.ts` 가 막는다(A5).
 - **noindex 목록 한 곳** — `shared/utils/robots.ts` 가 meta(`app.vue`) · `X-Robots-Tag`(`nuxt.config` routeRules) · `/robots.txt`(`server/routes/robots.txt.ts`) 세 출력을 만든다. 4-step 은 `Cache-Control: no-store` 도. `public/robots.txt` 를 다시 만들지 말 것(라우트보다 먼저 잡힌다).
 - **CORS** — `server/utils/cors-origins.ts`. `esimmany.com` · `app.esimmany.com` 둘 다 있어야 각 호스트의 same-origin POST 가 403 을 피한다. `www` 는 없다.
-- **테스트 체크아웃** `/checkout-preview` — PG 심사 캡처 전용. 사이트 어디에서도 링크하지 않는다 · 주문 · 결제 서버 호출 · 저장 0 · 테스트 채널키만. 상품 값(금액 · 옵션명)은 SSR 때 K1 `FRA00U01D07V2` 에서 읽는다(W1-3 F-12).
+- **테스트 체크아웃** `/checkout-preview` — PG 심사 캡처 전용. 사이트 어디에서도 링크하지 않는다 · 주문 · 결제 서버 호출 · 저장 0 · 테스트 채널키만. 상품 값(금액 · 옵션명 = K1 두 칸)은 **빌드 때** `modules/catalog.ts` 가 K1 `FRA00U01D07V2` 에서 계산해 앱 설정(`checkoutPreview`)으로 넣는다 — 페이지는 데이터 라우트도 부르지 않는다(W1-3 F-12 · shell F-19). 그 옵션이 없으면 빌드 실패.
 
 ## 카탈로그 — 홈 · 검색 · 국가 · 상품 상세 (W1-3 · 2026-09-23)
 
 spec `nomacom-wiki wiki/frontend/specs/client/2026-09-23-client-catalog-pages.md` · plan 같은 이름 `-plan.md` · 목업 `-mockup.html`. 화면 배치는 **유심사 기준**(밑줄 탭 · 기간 드롭다운 · 용량 가격 카드 · 하단 구매 시트), 색은 브랜드 보라.
 
-- **카탈로그 = `server/data/catalog.json`(K1 · W1-1 export · 손편집 금지)** — 없으면 `catalog.fixture.json`(스냅샷 표본 5 zone · 7 SKU, 빌드 로그 «⚠ FIXTURE»). ⛔ 픽스처로는 main 머지 불가(spec DoD 4). 필드명은 `shared/catalog/adapter.ts` **한 곳**에서만 K1 에 맞춘다. `parseCatalog()`(검증기)가 판매/전시 SALE·ON · usable · 무제한 1~30일 빈칸 · 네이버 CDN 경로 · K2 링크 모양을 막고, 실패하면 `nuxt.config.ts`(프리렌더 목록 계산) 단계에서 빌드가 멈춘다.
-- **페이지 데이터는 페이지 전용 라우트** `server/api/catalog/*`(home · search-index · countries/[iso3] · zones/[zone] · checkout-preview) — 외부 계약 아님(`/api/v1` 밖). 옵션 7,701개 전체를 브라우저 번들 · payload 에 싣지 않으려는 구조다 — 페이지에서 catalog JSON 을 import 하지 말 것.
+- **카탈로그 = `server/data/catalog.json`(K1 · W1-1 export · 손편집 금지)** — 없으면 `catalog.fixture.json`(스냅샷 표본 5 zone · 7 SKU, 빌드 로그 «⚠ FIXTURE»). ⛔ 픽스처로는 main 머지 불가(spec DoD 4). 필드명은 `shared/catalog/adapter.ts` **한 곳**에서만 K1 에 맞춘다. `parseCatalog()`(검증기)가 판매/전시 SALE·ON · usable · 무제한 기간(1~30 빈칸 없음 · 60·90 · 용량마다 같게) · 옵션 코드↔용량/일수(용량 두 자리) · 썸네일/지도 경로 정확 일치 · 네이버 CDN · K2 링크 · 필드 **키 누락**(기본값으로 채우지 않는다) · 나라 중복/불일치 · 핀 어휘/범위 · ISO 생성일을 막는다. 검증은 `modules/catalog.ts`(자동 등록 모듈 — 프리렌더 목록 · 체크아웃 값)가 빌드 · dev 기동 때 하고, 실패하면 멈춘다. `nuxt prepare`(postinstall)는 건너뛴다 — 깨진 카탈로그가 `yarn install` 을 막지 않게.
+- **페이지 데이터는 페이지 전용 라우트** `server/api/catalog/*`(home · search-index · countries/[iso3] · zones/[zone]) — 외부 계약 아님(`/api/v1` 밖). 옵션 7,701개 전체를 브라우저 번들 · payload 에 싣지 않으려는 구조다 — 페이지에서 catalog JSON 을 import 하지 말 것.
 - **가격은 K1 최종가만**(판매가 119,900 · 즉시할인 · 할인율 · 정가 취소선 금지 — spec D-2) + 보조 «하루 약 N원» / «1GB당 약 N원»(내림). 원화는 `formatWon`(ICU 미사용 — hydration 일치).
-- **이미지 = 자사 자산만**(Proposal A6) — `yarn workspace nomacom-client catalog:assets --design <2609 design 폴더>`(W1-0 전에는 smartstore-assets 워크트리 — 읽기만)가 rep-v1 → 400px webp · 지도 SVG 축소 · flag-icons(MIT) 국기를 `public/catalog/{thumbs,maps,flags}/` 에 **해시 파일명**으로 쓰고 매니페스트 `app/content/catalog-assets.json` 을 만든다. K1 의 `images.*` 는 논리 경로 — `shared/catalog/assets.ts` 가 푼다. 실 catalog.json 이 오면 이 스크립트를 다시 돌린다(`assets.test.ts` 가 매니페스트 ↔ 카탈로그 불일치를 잡는다). 네이버 CDN(`shop-phinf` · `pstatic`) 핫링크 금지 · 이모지 국기 금지(Windows 에서 «CZ»).
+- **이미지 = 자사 자산만**(Proposal A6) — `yarn workspace nomacom-client catalog:assets --design <2609 design 폴더>`(W1-0 전에는 smartstore-assets 워크트리 — 읽기만)가 rep-v1 → 400px webp · 지도 SVG 축소 · flag-icons(MIT) 국기를 `public/catalog/{thumbs,maps,flags}/` 에 **해시 파일명**으로 쓰고 매니페스트 `app/content/catalog-assets.json` 을 만든다. K1 의 `images.*` 는 논리 경로 — `shared/catalog/assets.ts` 가 푼다. 실 catalog.json 이 오면 이 스크립트를 다시 돌린다(`assets.test.ts` 가 매니페스트 ↔ 카탈로그 · 파일 해시 불일치를 잡는다). `--design` 상대경로는 리포 루트 기준. ⚠️ rep-v1 PNG(`design/thumbnails/out/`)는 gitignore 라 머지로 옮겨지지 않는다 — main 에서 돌리려면 먼저 `node design/thumbnails/figma-2609/render-v1.mjs` 로 재렌더. 네이버 CDN(`shop-phinf` · `pstatic`) 핫링크 금지 · 이모지 국기 금지(Windows 에서 «CZ»).
 - **URL 은 소문자**(`/countries/fra` · `/products/cze00`) — `catalog-path` 미들웨어가 대문자를 301, 판매 안 하는 나라 · 모르는 코드는 404.
-- **프리렌더 목록은 명시**(`shared/catalog/seo.ts` `prerenderRoutes` — 와일드카드 routeRules 는 생성하지 않는다). canonical · og:url = `https://esimmany.com`(빌드 상수 · `shared/utils/site.ts`). `/search` 는 noindex(Disallow 7줄) · `sitemap.xml` 은 noindex 목록으로 거른다. ⚠️ `/` 프리렌더는 `guestAppOrigin` 을 빌드 값으로 굳힌다 — 로컬 prod walk 의 주문번호 이동은 실호스트로 나가니 dev 봉투로 확인.
-- **구매 = 스토어 이동**(K2) — 상세 «구매하기» → 하단 시트(K2 원문 · 3초 · **같은 탭** `location.assign(naverUrl)` · 옵션 사전선택 없음). 문안은 `app/content/product-detail.ts`, 금지어(«자정» · «iPhone» · «1~90일» · «즉시할인» · 환불 «수수료/3,500/반품») 는 `product-detail.test.ts` 가 막는다. 홈 인기 목록 = `app/content/popular.ts`(John 승인 · 실 카탈로그에 없는 코드면 빌드 실패).
+- **프리렌더 목록은 명시**(`shared/catalog/seo.ts` `prerenderRoutes` — 와일드카드 routeRules 는 생성하지 않는다). canonical · og:url = `https://esimmany.com`(빌드 상수 · `shared/utils/site.ts`). `/search` 는 noindex(Disallow 7줄) · `sitemap.xml` = 프리렌더 − noindex. 정적 6페이지도 canonical · 설명(`STATIC_DESCRIPTIONS`). ⚠️ 프리렌더된 **모든** 페이지는 `guestAppOrigin` 을 빌드 값으로 굳힌다 — 그래서 주문번호 조회는 루프백(127.0.0.1 · localhost · ::1)에서 열린 페이지면 자기 출처로 보낸다(`resolveGuestOrigin` · catalog D-17). 홈 · 검색은 데이터 라우트가 실패하면 페이지 500 으로 던져 프리렌더를 멈춘다(fail-closed — `useFetch` 는 에러를 삼킨다).
+- **구매 = 스토어 이동**(K2) — 상세 «구매하기» → 하단 시트(K2 원문 · 3초 · **같은 탭** `location.assign(naverUrl)` · 옵션 사전선택 없음). 문안은 `app/content/product-detail.ts`, 금지어(«자정» · «iPhone» · «1~90일» · «즉시할인» · 환불 «수수료/3,500/반품») 는 `product-detail.test.ts` 가 **내보낸 문안 전부 + 카탈로그 .vue 템플릿 + 환불 영역**에서 막는다(새 문안 함수는 테스트 `CALLS` 에 넣어야 통과). 가격 리터럴은 `price-literal.test.ts` 가 막는다. 컴포넌트 테스트(`SearchField` IME · `PurchaseSheet` 결선)는 happy-dom — 대상 컴포넌트는 `vue` 에서 명시 import. 홈 인기 목록 = `app/content/popular.ts`(John 승인 · 실 카탈로그에 없는 코드면 빌드 실패).
 
 ## 4-step 가드 (K8 · 2026-09-23)
 
@@ -102,7 +102,8 @@ apps/client/
 │   ├── types/{api,order}.ts
 │   └── utils/                         # date · formatter · shell-nav · order-lookup · flow-session · flow-guard · checkout-preview
 ├── shared/utils/robots.ts             # noindex 목록 단일 출처 (meta · X-Robots-Tag · robots.txt)
-├── shared/catalog/                   # 카탈로그 — adapter · validate · derive · picker · search · seo · assets · map-svg (순수 · 테스트)
+├── shared/catalog/                   # 카탈로그 — adapter · validate · derive · picker · search · seo · assets · map-svg · preview (순수 · 테스트) · test-data(테스트 전용)
+├── modules/catalog.ts                 # 빌드 모듈(자동 등록) — K1 검증 · 프리렌더 목록 · 체크아웃 상품 값
 ├── scripts/catalog-assets.ts          # 자산 생성(sharp · flag-icons) — design/ 는 읽기만
 ├── public/catalog/                    # 생성물 — 해시 파일명 썸네일 · 지도 · 국기
 ├── server/
