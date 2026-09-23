@@ -264,7 +264,8 @@ describe('parseCatalog — 깨진 입력은 빌드를 멈춘다', () => {
     ],
     ['schema 가 k1-v1 이 아님', (r) => (r.meta.schema = 'k1-v2'), /k1-v1 가 아니다/],
     ['schema 키 없음', (r) => delete r.meta.schema, /k1-v1 가 아니다\(키 없음\)/],
-    ['schema 가 숫자', (r) => (r.meta.schema = 1), /k1-v1 가 아니다\(1\)/],
+    ['schema 가 숫자', (r) => (r.meta.schema = 1), /k1-v1 가 아니다\(\(number\) 1\)/],
+    ['schema 가 배열', (r) => (r.meta.schema = ['k1-v1']), /k1-v1 가 아니다\(\(array\)/],
     ['cellCount 키 없음', (r) => delete r.meta.cellCount, /meta\.cellCount: 숫자가 없다/],
     ['skuCount 가 문자열', (r) => (r.meta.skuCount = '7'), /meta\.skuCount: 숫자가 없다/],
     [

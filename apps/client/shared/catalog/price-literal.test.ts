@@ -25,7 +25,8 @@ import {
  *     `v-text` · `v-html` · `v-for` 에 박힌 100 이상 숫자
  *  6. JSON 의 가격 키 아래(중첩 포함) 숫자 · 숫자 모양 문자열
  * 테스트 · 테스트 도우미 · 카탈로그 데이터 · 자산 매니페스트는 대상이 아니다. 0 · 한 자리는 가격으로 보지 않는다(누적 초기값).
- * 이것은 휴리스틱이다 — 실제로 가격을 그리는 컴포넌트는 행동 테스트(PlanCards · ZoneCard · PurchaseSheet)가 K1 과 대조한다.
+ * 이것은 휴리스틱이다 — 가격을 그리는 곳은 따로 K1 원본과 대조한다: PlanCards · ZoneCard(컴포넌트 행동 테스트) ·
+ * 구매 시트 값(`purchaseSheetProps` — picker.test · 페이지는 그 결과를 그대로 넘긴다 — catalog-path.test 결선).
  */
 const ROOTS = ['app', 'shared', 'server', 'modules']
 const EXTRA = ['nuxt.config.ts']
@@ -74,16 +75,22 @@ const startsWithWon = (t: Token | undefined) =>
  * from 부터 식 한 덩어리(같은 깊이의 `;` · `,` · 닫는 괄호 · 새 문장 키워드까지 — 줄바꿈은 넘는다)에서
  * 10 이상 숫자나 숫자 모양 문자열(«'4,900'»)을 찾는다. from 이 `(` 이면 그 괄호가 닫힐 때까지(함수 인자)
  */
-function numberInExpression(tokens: Token[], from: number): Token | undefined {
+function numberInExpression(tokens: Token[], from: number, args = false): Token | undefined {
   let depth = 0
-  const args = tokens[from]?.text === '('
   for (let j = from; j < tokens.length; j++) {
     const t = tokens[j]!
-    const stop = t.text === ';' || t.text === ',' || (t.kind === 'ident' && STATEMENT.has(t.text))
+    // 속성 이름으로 쓰인 키워드(`o.type` · `{ type: … }`)는 새 문장이 아니다
+    const keyword =
+      t.kind === 'ident' &&
+      STATEMENT.has(t.text) &&
+      tokens[j - 1]?.text !== '.' &&
+      tokens[j + 1]?.text !== ':'
+    const stop = t.text === ';' || t.text === ',' || keyword
     if (j > from && depth === 0 && stop) return undefined
     if (OPEN.has(t.text)) depth++
     else if (CLOSE.has(t.text)) {
       depth--
+      // 함수 인자(args — 가격 함수의 여는 괄호부터)는 그 괄호가 닫히면 끝, 대입식의 괄호는 묶음일 뿐이다
       if (depth < 0 || (args && depth === 0)) return undefined
     } else if (priceNumber(t) || numericString(t)) return t
   }
@@ -109,7 +116,7 @@ export function scriptOffenders(tokens: Token[]): string[] {
       if (n) out.push(`${name} ${next!.text} … ${n.text}`)
     }
     if (t.kind === 'ident' && PRICE_FN.test(t.text) && next?.text === '(') {
-      const n = numberInExpression(tokens, i + 1) // 여는 괄호부터 — 인자 안의 줄바꿈 · 괄호를 넘는다
+      const n = numberInExpression(tokens, i + 1, true) // 여는 괄호부터 — 인자 안의 줄바꿈 · 괄호를 넘는다
       if (n) out.push(`${t.text}(… ${n.text} …)`)
     }
     if (priceNumber(t)) {
@@ -136,20 +143,25 @@ const DIRECTIVE =
   /(?:^|\s)((?:v-[\w-]+(?::[\w.-]+)?|:[\w.-]+|\.[\w-]+|@[\w.-]+|#[\w.-]+))\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/g
 const STATIC_PRICE_ATTR =
   /(?:^|\s)(?![:@#.])([\w-]*(?:won|price|amount)[\w-]*)\s*=\s*["']?\s*[\d₩]/i
-/** 태그 · 공백 엔티티를 걷은 글자 — «4,900<small>원</small>» · «4,900&nbsp;원» 을 붙여 읽는다 */
+/** 태그 · 공백 엔티티를 걷은 글자 — «4,900<small>원</small>» · «4,900&nbsp;원» 을 붙여 읽는다.
+ *  보간식 `{{ }}` 안은 식이라 건드리지 않는다(`{{ n < 3 ? … }}` 의 `<` 를 태그로 읽지 않게) */
+const stripTags = (html: string) =>
+  html.replace(/<[^>]*>/g, '').replace(/&nbsp;|&#160;|&#xa0;/gi, ' ')
 const visibleText = (template: string) =>
-  template.replace(/<[^>]*>/g, '').replace(/&nbsp;|&#160;|&#xa0;/gi, ' ')
+  template
+    .split(/(\{\{[\s\S]*?\}\})/)
+    .map((part) => (part.startsWith('{{') ? part : stripTags(part)))
+    .join('')
 
 export function templateOffenders(template: string): string[] {
   const out: string[] = []
-  const text = visibleText(template)
-  const w = wonIn(text)
+  const w = wonIn(visibleText(template))
   if (w) out.push(`템플릿 «${w}»`)
-  for (const m of text.matchAll(INTERP)) {
+  for (const m of template.matchAll(INTERP)) {
     const tokens = scanScript(m[1]!)
     out.push(...scriptOffenders(tokens).map((o) => `{{ }} ${o}`))
     // {{ 4900 }}원 · {{ '4,900' }}원 · {{ 4900 }}<small>원</small>
-    const after = text.slice(m.index! + m[0].length)
+    const after = visibleText(template.slice(m.index! + m[0].length))
     const literal = tokens.some(
       (t) => priceNumber(t) || (t.kind === 'string' && /\d{2,}/.test(t.value)),
     )
@@ -288,6 +300,12 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       "const s = 4900 + '원'",
       "const s = '4,900' + '원'",
       "const s = `${(4900).toLocaleString('ko-KR')}원`",
+      // 괄호로 시작하는 대입식 · 속성 이름으로 쓰인 키워드(5회차 리뷰 — 예전 판이 잡던 모양)
+      'const lowestWon = (flag) ? 4900 : 9100',
+      'const price = (base) + 4900',
+      "lowestWon = o.type === 'U' ? 4900 : 9100",
+      'amount = el.class ? 4900 : 0',
+      'const t = { lowestWon: { type: 1 }.type ? 4900 : 0 }',
       // 한 줄에 정규식 속 따옴표 — 정규식으로 다시 읽지 않으면 뒤 문자열의 짝이 어긋나 금액을 놓친다
       "const r = /'/; const a = '4,900원'",
     ])('스크립트 %j', (code) => {
@@ -317,6 +335,11 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       '<strong>4,900<small>원</small></strong>',
       '<p>4,900&nbsp;원</p>',
       '<p>{{ 4900 }}<small>원</small></p>',
+      // 보간식 속 비교 `<` 를 태그로 읽지 않는다(5회차 리뷰 — 예전 판이 잡던 모양)
+      "<p>{{ n <= 3 ? '4,900원' : '' }}</p>",
+      "<p>{{ a<b ? '9,100원' : '' }}</p>",
+      '<p>{{ formatWon(a < b ? 4900 : x) }}</p>',
+      '<p>{{ n < 10 ? 4900 : 0 }}원</p>',
     ])('템플릿 %j', (tpl) => {
       expect(templateOffenders(tpl).length).toBeGreaterThan(0)
     })

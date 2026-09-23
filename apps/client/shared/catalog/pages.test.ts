@@ -86,6 +86,33 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
     )
   })
 
+  it('칸이 나라보다 많거나(«미국·캐나다·멕시코» 에 2개국) 적으면 나열이 아니다 · 구분자 «・» «,» 도 칸으로 센다', () => {
+    const raw = fixtureRaw()
+    addSynthZone(raw, {
+      zone: 'NA024',
+      iso3s: ['USA', 'CAN'],
+      lowestWon: 3000,
+      label: '미국·캐나다·멕시코',
+    })
+    addSynthZone(raw, {
+      zone: 'NA025',
+      iso3s: ['USA', 'CAN'],
+      lowestWon: 3000,
+      label: '미국・캐나다',
+    })
+    addSynthZone(raw, {
+      zone: 'NA026',
+      iso3s: ['USA', 'CAN'],
+      lowestWon: 3000,
+      label: '미국, 캐나다',
+    })
+    const cat = parseCatalog(raw)
+    const sub = (z: string) => countryPageData(cat, 'USA')!.multi.find((c) => c.zone === z)!.sub
+    expect(sub('NA024')).toBe('미국 · 캐나다')
+    expect(sub('NA025')).toBe('합성 부제 NA025')
+    expect(sub('NA026')).toBe('합성 부제 NA026')
+  })
+
   it('나열 판정은 칸 수 = 나라 수 — 다른 표기(«터키») · 다른 순서(«캐나다·미국»)도 나열로 본다', () => {
     const raw = fixtureRaw()
     addSynthZone(raw, {

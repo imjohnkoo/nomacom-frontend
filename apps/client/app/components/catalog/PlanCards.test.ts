@@ -36,16 +36,25 @@ describe('PlanCards — 렌더된 가격 = K1 원본 최종가 (실 카탈로그
               modelValue: cards[0]!.cap,
             },
           })
-          const expected = cards.map((c) => rawFinal.get(`${p.sku}/${c.cap}/${days}`)!)
-          expect(
-            w.findAll('.plan-card__price').map((x) => x.text()),
-            `${p.sku} ${days}일`,
-          ).toEqual(expected.map(formatWon))
-          const subs = w.findAll('.plan-card__sub').map((x) => x.text())
-          cards.forEach((c, k) => {
-            const unit = Math.floor(expected[k]! / (p.kind === 'U' ? days : c.cap))
-            expect(subs[k], `${p.sku} ${c.cap}GB ${days}일`).toContain(formatWon(unit))
+          // 기대 문구는 문안 함수를 쓰지 않고 따로 조립한다(제목 · 가격 · 단가가 제 카드에 붙었는지까지)
+          const expected = cards.map((c) => {
+            const won = rawFinal.get(`${p.sku}/${c.cap}/${days}`)!
+            const unit = formatWon(Math.floor(won / (p.kind === 'U' ? days : c.cap)))
+            return {
+              title: p.kind === 'U' ? `매일 ${c.cap}GB` : `총 ${c.cap}GB`,
+              price: formatWon(won),
+              sub:
+                p.kind === 'U'
+                  ? `다 쓰면 512kbps 로 계속 · 하루 약 ${unit}`
+                  : `30일 동안 나눠 쓰기 · 1GB당 약 ${unit}`,
+            }
           })
+          const shown = w.findAll('.plan-card').map((card) => ({
+            title: card.get('.plan-card__title').text(),
+            price: card.get('.plan-card__price').text(),
+            sub: card.get('.plan-card__sub').text(),
+          }))
+          expect(shown, `${p.sku} ${days}일`).toEqual(expected)
           checked += cards.length
           w.unmount()
         }

@@ -7,10 +7,12 @@ import {
   daysOf,
   defaultSelection,
   optionFor,
+  optionLabel,
   perDayWon,
   perGbWon,
   productOf,
 } from './derive'
+import { formatWon } from './format'
 import type { Kind, OptionView, ZoneView } from './types'
 
 export interface Selection {
@@ -84,4 +86,26 @@ export function selectedOption(zone: ZoneView, sel: Selection): OptionView | und
 /** 요약 한 줄 «체코 · 매일 2GB · 7일» / «체코 · 총 10GB · 30일» */
 export function selectionLabel(zone: ZoneView, sel: Selection): string {
   return `${zone.label} · ${sel.kind === 'U' ? '매일' : '총'} ${sel.cap}GB · ${sel.days}일`
+}
+
+export interface PurchaseSheetProps {
+  summary: string
+  /** 고른 옵션의 K1 최종가 «9,100원» */
+  price: string
+  /** 스토어 옵션명 두 칸 « · » */
+  optionName: string
+  naverUrl: string
+}
+
+/** 구매 시트에 넘길 값(S-5 · F-8) — 고른 옵션이 없으면 null(시트를 그리지 않는다) */
+export function purchaseSheetProps(zone: ZoneView, sel: Selection): PurchaseSheetProps | null {
+  const option = selectedOption(zone, sel)
+  const product = zone.products.find((p) => p.kind === sel.kind)
+  if (!option || !product) return null
+  return {
+    summary: selectionLabel(zone, sel),
+    price: formatWon(option.finalWon),
+    optionName: optionLabel(option),
+    naverUrl: product.naverUrl,
+  }
 }

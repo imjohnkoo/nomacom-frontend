@@ -3,9 +3,11 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { countriesOf } from '#shared/catalog/derive'
+import { thumbUrl, type AssetManifest } from '#shared/catalog/assets'
 import { formatWon } from '#shared/catalog/format'
 import { countryPageData } from '#shared/catalog/pages'
 import { activeCatalog, activeRaw } from '#shared/catalog/test-data'
+import manifest from '~/content/catalog-assets.json'
 import ZoneCard from './ZoneCard.vue'
 
 /**
@@ -41,6 +43,12 @@ describe('ZoneCard — 렌더된 최저가 = K1 원본 (실 카탈로그 · 전 
           formatWon(rawLowest.get(card.zone)!),
         )
         expect(w.get('a').attributes('href')).toBe(`/products/${card.zone.toLowerCase()}`)
+        const title = w.get('.zone-card__title').text()
+        expect(title.startsWith(card.label), `${card.zone} 라벨`).toBe(true)
+        expect(w.find('.zone-card__sub').exists() ? w.get('.zone-card__sub').text() : '').toBe(
+          card.sub,
+        )
+        expect(w.get('img').attributes('src')).toBe(thumbUrl(manifest as AssetManifest, card.thumb))
         expect(w.findAll('.zone-card__kind').map((k) => k.text())).toEqual(
           card.kinds.map((k) => (k === 'U' ? '무제한' : '종량제')),
         )

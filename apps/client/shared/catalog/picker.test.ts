@@ -4,6 +4,7 @@ import {
   initialSelection,
   periodOptions,
   planCards,
+  purchaseSheetProps,
   selectedOption,
   selectionLabel,
   withCap,
@@ -161,5 +162,33 @@ describe(`전 zone × 전 옵션 — 카드 가격 = K1 최종가 (spec 불변�
           expect(days.slice(0, 30)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1))
         else expect(days).toEqual([30])
       }
+  })
+})
+
+describe(`구매 시트 값(S-5 · F-8) — K1 원본 대조 (${ACTIVE_CATALOG_FILE})`, () => {
+  const raw = activeRaw()
+  const active = parseCatalog(activeRaw())
+  it('전 zone × 종류 × 용량 × 대표 기간 — 가격 · 옵션명 · 링크 = K1 원본, 요약 = 라벨 · 용량 · 일수', () => {
+    let checked = 0
+    for (const rz of raw.zones)
+      for (const rp of rz.products)
+        for (const o of rp.options) {
+          if (![1, 7, 30, 60, 90].includes(o.days)) continue
+          const z = zoneByCode(active, rz.zone)!
+          const got = purchaseSheetProps(z, { kind: rp.kind, cap: o.cap, days: o.days })
+          expect(got, o.code).toEqual({
+            summary: `${rz.nameKr} · ${rp.kind === 'U' ? '매일' : '총'} ${o.cap}GB · ${o.days}일`,
+            price: `${o.finalWon.toLocaleString('en-US')}원`,
+            optionName: `${o.optionName1} · ${o.optionName2}`,
+            naverUrl: rp.naverUrl,
+          })
+          checked++
+        }
+    expect(checked).toBeGreaterThan(1000)
+  })
+
+  it('없는 칸(용량 · 기간)은 null — 시트를 그리지 않는다', () => {
+    expect(purchaseSheetProps(cze, { kind: 'U', cap: 9, days: 7 })).toBeNull()
+    expect(purchaseSheetProps(fra, { kind: 'L', cap: 1, days: 30 })).toBeNull()
   })
 })

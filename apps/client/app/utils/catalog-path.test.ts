@@ -70,10 +70,24 @@ describe('국가 · 상품 페이지가 catalogPageError 로 던진다(F-10 결�
     const at = t.findIndex((x, i) => x === 'catalogPageError' && t[i + 1] === '(')
     expect(at, '호출이 없다').toBeGreaterThan(-1)
     expect(t.slice(at, at + 4)).toEqual(['catalogPageError', '(', 'error', '.'])
-    // 판정 뒤 처음 던지는 상태는 판정 결과(failed) — 404 · 500 을 따로 박지 않는다
-    // (앞쪽의 404 는 URL 모양 검사 isCatalogParam 몫이라 제외)
-    const after = t.slice(at)
-    const sc = after.indexOf('statusCode')
-    expect(after.slice(sc, sc + 3)).toEqual(['statusCode', ':', 'failed'])
+    // 판정 결과를 그대로 던진다 — 호출부터 createError 의 statusCode 까지 토큰 그대로
+    const run = t.slice(at - 3, at + 28).join(' ')
+    expect(run).toContain(
+      'const failed = catalogPageError ( error . value , ! ! data . value ) if ( failed ) throw createError ( { statusCode : failed',
+    )
+  })
+})
+
+describe('상품 페이지 결선 — 가격 카드 · 구매 시트는 계산한 값을 그대로 넘긴다', () => {
+  const APP = fileURLToPath(new URL('../../', import.meta.url))
+  const { template, script } = readSource(`${APP}app/pages/products/[zone].vue`)
+  it('PlanCards 는 고른 종류 · 그 기간 카드를, PurchaseSheet 는 purchaseSheetProps 결과를 받는다', () => {
+    expect(template).toMatch(/<PlanCards[^>]*:kind="kind"[^>]*:cards="cards"/)
+    expect(template).toMatch(/<PurchaseSheet[^>]*v-bind="purchase"/)
+    const code = script.map((x) => x.text).join(' ')
+    expect(code).toContain('const cards = computed ( ( ) => planCards ( zone , sel . value ) )')
+    expect(code).toContain(
+      'const purchase = computed ( ( ) => purchaseSheetProps ( zone , sel . value ) )',
+    )
   })
 })

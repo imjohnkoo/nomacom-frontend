@@ -4,13 +4,12 @@
 // 가격은 K1 최종가만(D-2). 안내 섹션(D-4)은 선택기 아래.
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import { thumbUrl, type AssetManifest } from '#shared/catalog/assets'
-import { optionLabel } from '#shared/catalog/derive'
-import { formatWon } from '#shared/catalog/format'
 import { zoneMeta } from '#shared/catalog/seo'
 import {
   initialSelection,
   periodOptions,
   planCards,
+  purchaseSheetProps,
   selectedOption,
   selectionLabel,
   withCap,
@@ -90,6 +89,8 @@ onMounted(() => {
 })
 
 const sheetOpen = ref(false)
+// 구매 시트 값(요약 · K1 최종가 · 옵션명 · 링크)은 순수 함수 하나에서 — picker.test 가 K1 원본과 대조한다
+const purchase = computed(() => purchaseSheetProps(zone, sel.value))
 </script>
 
 <template>
@@ -147,14 +148,7 @@ const sheetOpen = ref(false)
       </button>
     </div>
 
-    <PurchaseSheet
-      v-if="option"
-      v-model="sheetOpen"
-      :summary="selectionLabel(zone, sel)"
-      :price="formatWon(option.finalWon)"
-      :option-name="optionLabel(option)"
-      :naver-url="product.naverUrl"
-    />
+    <PurchaseSheet v-if="purchase" v-model="sheetOpen" v-bind="purchase" />
   </div>
 </template>
 
