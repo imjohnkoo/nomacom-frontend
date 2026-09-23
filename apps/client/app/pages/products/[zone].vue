@@ -11,7 +11,6 @@ import {
   planCards,
   purchaseSheetProps,
   selectedOption,
-  selectionLabel,
   withCap,
   withDays,
   withKind,
