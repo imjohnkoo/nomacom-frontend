@@ -10,7 +10,7 @@ export interface ZoneCardData {
   zone: string
   to: string
   label: string
-  /** 부제 — 단일국 · 5개국 이상 = 썸네일 아랫줄, 2~4개국 = 나라 이름 « · » */
+  /** 부제 — 단일국 · 5개국 이상 = 썸네일 아랫줄, 2~4개국 = 나라 이름 « · »(라벨이 이미 나라 나열이면 아랫줄) */
   sub: string
   countryCount: number
   kinds: Kind[]
@@ -26,6 +26,19 @@ export interface CountryPageData {
   multi: ZoneCardData[]
 }
 
+const bare = (s: string) => s.replace(/[\s·・,]/g, '')
+
+/**
+ * 카드 부제(S-3) — 2~4개국은 나라 나열, 단일국 · 5개국 이상은 썸네일 아랫줄.
+ * 라벨이 이미 그 나라 나열이면(«미국·캐나다») 되풀이하지 않고 아랫줄을 쓴다.
+ */
+function cardSub(z: ZoneView): string {
+  const n = z.countries.length
+  if (n < 2 || n > 4) return z.subtitle
+  const names = z.countries.map((c) => c.nameKr)
+  return bare(z.label) === bare(names.join('')) ? z.subtitle : names.join(' · ')
+}
+
 /** 국가 페이지(spec S-3 · D-11) — 판매하지 않는 나라면 null(→ 404) */
 export function countryPageData(catalog: CatalogView, iso3: string): CountryPageData | null {
   const zones = zonesOfCountry(catalog, iso3)
@@ -36,10 +49,7 @@ export function countryPageData(catalog: CatalogView, iso3: string): CountryPage
       zone: z.zone,
       to: `/products/${z.zone.toLowerCase()}`,
       label: z.label,
-      sub:
-        z.countries.length >= 2 && z.countries.length <= 4
-          ? z.countries.map((c) => c.nameKr).join(' · ')
-          : z.subtitle,
+      sub: cardSub(z),
       countryCount: z.countries.length,
       kinds: z.products.map((p) => p.kind),
       lowestWon: lowestWon(z),

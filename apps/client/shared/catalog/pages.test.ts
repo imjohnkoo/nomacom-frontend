@@ -1,14 +1,10 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { formatWon } from './format'
-import { countryPageData } from './pages'
+import { countryPageData, zonePageData } from './pages'
+import { addSynthZone, fixtureCatalog, fixtureRaw } from './test-data'
 import { parseCatalog } from './validate'
 
-const catalog = parseCatalog(
-  JSON.parse(
-    readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8'),
-  ),
-)
+const catalog = fixtureCatalog()
 
 describe('formatWon', () => {
   it.each([
@@ -44,14 +40,39 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
     expect(eu.countryCount).toBe(34)
   })
 
-  it('4개국 이하 zone 은 나라 이름을 « · » 로', () => {
-    expect(countryPageData(catalog, 'CAN')!.multi[0]!.sub).toBe('미국 · 캐나다')
+  it('2~4개국 zone 은 나라 이름을 « · » 로 · 5개국부터 썸네일 아랫줄(경계)', () => {
+    const raw = fixtureRaw()
+    addSynthZone(raw, {
+      zone: 'EU041',
+      iso3s: ['CZE', 'DEU', 'AUT', 'POL'],
+      lowestWon: 3000,
+      label: '중부 4개국',
+    })
+    addSynthZone(raw, {
+      zone: 'EU051',
+      iso3s: ['CZE', 'DEU', 'AUT', 'POL', 'HUN'],
+      lowestWon: 3000,
+      label: '중부 5개국',
+    })
+    const multi = countryPageData(parseCatalog(raw), 'CZE')!.multi
+    expect(multi.find((c) => c.zone === 'EU041')!.sub).toBe('체코 · 독일 · 오스트리아 · 폴란드')
+    expect(multi.find((c) => c.zone === 'EU051')!.sub).toBe('합성 부제 EU051')
   })
 
-  it('단일국 zone 이 없는 나라는 single 이 비어 있다(묶음 생략)', () => {
+  it('라벨이 이미 나라 나열(«미국·캐나다»)이면 부제는 되풀이 대신 썸네일 아랫줄', () => {
+    expect(countryPageData(catalog, 'CAN')!.multi[0]!.sub).toBe('뉴욕·LA·밴쿠버·토론토 등 전지역')
+  })
+
+  it('단일국 zone 이 없는 나라는 single 이 비어 있고, 머리는 그 나라(첫 zone 의 첫 나라가 아니다)', () => {
     const d = countryPageData(catalog, 'DEU')!
+    expect(d.country).toEqual({ iso3: 'DEU', iso2: 'DE', nameKr: '독일' })
     expect(d.single).toEqual([])
     expect(d.multi.map((c) => c.zone)).toEqual(['EU340'])
+  })
+
+  it('zonePageData — 모르는 zone 은 null(→ 404), 아는 zone 은 그 zone', () => {
+    expect(zonePageData(catalog, 'XXX00')).toBeNull()
+    expect(zonePageData(catalog, 'CZE00')!.zone).toBe('CZE00')
   })
 
   it('판매하지 않는 나라 · 모르는 코드는 null(→ 404)', () => {

@@ -3,16 +3,19 @@
  * 카피 불변식: 사용일수 = 처음 연결된 때부터 24시간 단위(«자정» 금지) · 여러 나라 = 자동 전환(나라별 재개통 안내 금지)
  * · 소진 후 512kbps · «아이폰» · 환불은 «발급 전 전액» 만 · 근거 없는 최상급 금지. `product-detail.test.ts` 가 금지어를 막는다.
  */
-import type { ZoneView } from '#shared/catalog/types'
+import type { Kind, ZoneView } from '#shared/catalog/types'
 
 export const SLOW_SPEED = '512kbps'
 export const HERO_BADGES = ['테더링 가능', '당일 자동 발송'] as const
 
 // ── 히어로 ──────────────────────────────────────────────────────────────
 
-export function heroLead(zone: ZoneView): string {
+export function heroLead(zone: ZoneView, kind: Kind): string {
   const n = zone.countries.length
-  if (n === 1) return `${zone.label} 어디서나, 데이터 넉넉하게`
+  if (n === 1)
+    return kind === 'U'
+      ? `${zone.label} 어디서나, 데이터 넉넉하게`
+      : `${zone.label} 어디서나, 필요한 만큼 나눠 써요`
   if (n <= 4) return `${zone.countries.map((c) => c.nameKr).join(' · ')}, 한 번 설치로 ${n}개국`
   return zone.subtitle ? `${zone.subtitle}, 한 번 설치로 ${n}개국` : `한 번 설치로 ${n}개국`
 }
@@ -28,34 +31,50 @@ export function daysPhrase(days: number[]): string {
   return rest.length ? `${head} · ${rest.join('·')}일` : head
 }
 
-export function heroChecks(zone: ZoneView): string[] {
-  const u = zone.products.find((p) => p.kind === 'U')
-  const l = zone.products.find((p) => p.kind === 'L')
-  const lines: string[] = []
-  if (u) {
-    const caps = [...new Set(u.options.map((o) => o.cap))].sort((a, b) => a - b)
-    lines.push(`매일 ${caps.join('·')}GB, 다 쓰면 ${SLOW_SPEED} 로 계속`)
-    lines.push(`${daysPhrase([...new Set(u.options.map((o) => o.days))])} 중에서 골라요`)
-  } else if (l) {
-    const caps = [...new Set(l.options.map((o) => o.cap))].sort((a, b) => a - b)
-    lines.push(`30일 동안 총 ${caps[0]}~${caps[caps.length - 1]}GB 를 나눠 써요`)
-  }
-  lines.push('결제하면 카카오톡으로 1~2분 안에 발급 링크가 와요')
-  return lines
+const capsOfKind = (zone: ZoneView, kind: Kind) =>
+  [...new Set(zone.products.find((p) => p.kind === kind)?.options.map((o) => o.cap) ?? [])].sort(
+    (a, b) => a - b,
+  )
+const daysOfKind = (zone: ZoneView, kind: Kind) =>
+  [...new Set(zone.products.find((p) => p.kind === kind)?.options.map((o) => o.days) ?? [])].sort(
+    (a, b) => a - b,
+  )
+
+/** «5GB» · «1~30GB» — 용량이 하나면 범위로 쓰지 않는다 */
+function capRange(caps: number[]): string {
+  return caps.length === 1 ? `${caps[0]}GB` : `${caps[0]}~${caps[caps.length - 1]}GB`
+}
+
+/** 체크 3줄 — **고른 종류**를 따른다(S-4). 종량제에 무제한 문구(512kbps · 매일)를 쓰지 않는다 */
+export function heroChecks(zone: ZoneView, kind: Kind): string[] {
+  const caps = capsOfKind(zone, kind)
+  const lines =
+    kind === 'U'
+      ? [
+          `매일 ${caps.join('·')}GB, 다 쓰면 ${SLOW_SPEED} 로 계속`,
+          `${daysPhrase(daysOfKind(zone, 'U'))} 중에서 골라요`,
+        ]
+      : [`30일 동안 총 ${capRange(caps)} 를 나눠 써요`, '하루 한도가 없고 다 쓰면 끝나요']
+  return [...lines, '결제하면 카카오톡으로 1~2분 안에 발급 링크가 와요']
 }
 
 // ── 선택기 ──────────────────────────────────────────────────────────────
 
-export const PERIOD_HINT = {
-  U: '1~30일은 하루 단위로, 그 밖에는 60일 · 90일을 고를 수 있어요.',
-  L: '하루 한도가 없고, 다 쓰면 사용이 끝나요. 30일은 처음 연결된 때부터 24시간 단위로 세요.',
-} as const
+/** 사용 기간 안내 — 그 상품의 실제 일수로 조립한다(S-4 · 검증기는 1~30일 + 60 · 90일 중 일부만 보장) */
+export function periodHint(kind: Kind, days: number[]): string {
+  if (kind === 'L')
+    return '하루 한도가 없고, 다 쓰면 사용이 끝나요. 30일은 처음 연결된 때부터 24시간 단위로 세요.'
+  const extra = days.filter((d) => d > 30).sort((a, b) => a - b)
+  return extra.length
+    ? `1~30일은 하루 단위로, 그 밖에는 ${extra.map((d) => `${d}일`).join(' · ')}을 고를 수 있어요.`
+    : '1~30일 중 하루 단위로 고를 수 있어요.'
+}
 
-export function planTitle(kind: 'U' | 'L', cap: number): string {
+export function planTitle(kind: Kind, cap: number): string {
   return kind === 'U' ? `매일 ${cap}GB` : `총 ${cap}GB`
 }
 
-export function planSub(kind: 'U' | 'L', unitWon: string): string {
+export function planSub(kind: Kind, unitWon: string): string {
   return kind === 'U'
     ? `다 쓰면 ${SLOW_SPEED} 로 계속 · 하루 약 ${unitWon}`
     : `30일 동안 나눠 쓰기 · 1GB당 약 ${unitWon}`
@@ -79,13 +98,14 @@ export function countdownText(remaining: number): string {
 export const USAGE = {
   title: '사용일수는 이렇게 계산해요',
   lead: '현지에서 데이터가 처음 연결된 때부터 24시간마다 하루씩 줄어요.',
+  // 모든 점에 시각을 붙인다 — 날짜만 쓰면 자정에 하루가 넘어가는 것으로 읽힌다(S-4)
   timeline: [
     { date: '3월 1일', text: '오후 3시 연결' },
-    { date: '3월 2일', text: '2일째' },
-    { date: '3월 3일', text: '3일째' },
+    { date: '3월 2일', text: '오후 3시 · 2일째' },
+    { date: '3월 3일', text: '오후 3시 · 3일째' },
     { date: '3월 4일', text: '오후 3시 끝' },
   ],
-  note: '예) 3일 상품을 3월 1일 오후 3시에 처음 연결한 경우. 발급할 때 넣는 개통 시작일은 안내용이고, 실제 차감은 현지에서 처음 연결될 때 시작돼요.',
+  note: '예) 3일 상품을 3월 1일 오후 3시에 처음 연결한 경우. 발급할 때 고르는 시작 날짜는 안내용이고, 실제 차감은 현지에서 처음 연결될 때 시작돼요.',
 } as const
 
 export function coverageTitle(zone: ZoneView): string {
@@ -130,7 +150,7 @@ export interface FaqItem {
   a: string
 }
 
-export function faqItems(zone: ZoneView, kind: 'U' | 'L'): FaqItem[] {
+export function faqItems(zone: ZoneView, kind: Kind): FaqItem[] {
   const n = zone.countries.length
   const items: FaqItem[] = [
     {

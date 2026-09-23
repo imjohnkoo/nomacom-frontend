@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // 구매 시트(catalog spec S-5 · F-8 · Proposal K2) — 유심사 수량 시트 자리. 선택 요약 + K2 원문 + 3초 카운트다운 →
 // **같은 탭** location.assign(naverUrl)(새 창은 팝업 차단). 취소 · ESC · 바깥 → 닫힘 + 중지. bfcache 복귀 시 닫힌다.
+// «지금 이동» · 카운트다운 끝 → «이동하고 있어요» 로 멈추고 이동은 한 번만. 결선은 PurchaseSheet.test.ts(vue 명시 import).
 import { NBottomSheet, NButton } from '@imjohnkoo/design-vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   COUNTDOWN_SECONDS,
   PURCHASE_TITLE,
@@ -19,15 +21,20 @@ const props = defineProps<{
 const open = defineModel<boolean>({ default: false })
 const remaining = ref(COUNTDOWN_SECONDS)
 let timer: Countdown | undefined
+let going = false
 
 function go() {
+  if (going) return // 느린 네트워크에서 «지금 이동» 을 다시 눌러도 한 번만
+  going = true
   timer?.stop()
+  remaining.value = 0 // «이동하고 있어요»
   window.location.assign(props.naverUrl)
 }
 
 watch(open, (isOpen) => {
   timer?.stop()
   timer = undefined
+  going = false
   if (isOpen) timer = startCountdown(COUNTDOWN_SECONDS, (n) => (remaining.value = n), go)
 })
 

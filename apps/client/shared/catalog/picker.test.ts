@@ -83,6 +83,29 @@ describe('상세 선택기 (catalog spec D-3 · D-16 · E2E-13)', () => {
   })
 })
 
+describe('선택기 경계', () => {
+  it('같은 종류를 다시 고르면 선택을 그대로 둔다(용량 · 기간 유지)', () => {
+    const s = withCap(cze, initialSelection(cze), 3)
+    expect(withKind(cze, s, 'U')).toBe(s)
+  })
+
+  it('없는 종류는 무시한다(무제한만 있는 zone 에서 종량제)', () => {
+    const s = initialSelection(fra)
+    expect(withKind(fra, s, 'L')).toBe(s)
+  })
+
+  it('고른 용량이 그 기간에 없으면 그 기간의 가장 작은 용량으로(검증기가 막는 경로 — 방어)', () => {
+    const z = structuredClone(cze)
+    const u = z.products[0]!
+    u.options = u.options.filter(
+      (o) => !(o.cap === 3 && o.days === 60) && !(o.cap === 1 && o.days === 60),
+    )
+    const s = withDays(z, withCap(z, initialSelection(z), 3), 60)
+    expect(s).toEqual({ kind: 'U', cap: 2, days: 60 })
+    expect(withDays(z, s, 45)).toBe(s) // 아무 용량도 없는 기간은 무시
+  })
+})
+
 describe(`전 zone × 전 옵션 — 카드 가격 = K1 최종가 (spec 불변식 2 · E2E-13 · ${ACTIVE_CATALOG_FILE})`, () => {
   // 원본 JSON 과 대조한다 — 어댑터가 필드를 잘못 집어도 걸리게
   const raw = activeRaw()

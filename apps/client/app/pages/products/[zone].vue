@@ -25,7 +25,7 @@ import ProductSections from '~/components/catalog/ProductSections.vue'
 import PurchaseSheet from '~/components/catalog/PurchaseSheet.vue'
 import UnderlineTabs from '~/components/catalog/UnderlineTabs.vue'
 import manifest from '~/content/catalog-assets.json'
-import { HERO_BADGES, PERIOD_HINT, heroChecks, heroLead } from '~/content/product-detail'
+import { HERO_BADGES, heroChecks, heroLead, periodHint } from '~/content/product-detail'
 import { isCatalogParam } from '~/utils/catalog-path'
 
 definePageMeta({ middleware: 'catalog-path' })
@@ -65,15 +65,20 @@ const periods = computed(() => periodOptions(zone, sel.value.kind))
 const cards = computed(() => planCards(zone, sel.value))
 const option = computed(() => selectedOption(zone, sel.value))
 const product = computed(() => zone.products.find((p) => p.kind === sel.value.kind)!)
-const heroSrc = thumbUrl(manifest as AssetManifest, zone.products[0]!.thumb)
+// 대표썸네일 · 체크 줄은 고른 종류를 따른다(S-4 — 종량제 탭 = 종량제 썸네일). og 이미지는 첫 상품(무제한 우선) 고정
+const heroSrc = computed(() => thumbUrl(manifest as AssetManifest, product.value.thumb))
 const heroAlt = [`${zone.label} eSIM`, zone.subtitle].filter(Boolean).join(' — ')
-useCatalogSeo(zoneMeta(zone), heroSrc)
+const countBadge = multi && !zone.label.includes('개국') // 라벨이 이미 «34개국» 이면 배지로 되풀이하지 않는다
+useCatalogSeo(zoneMeta(zone), thumbUrl(manifest as AssetManifest, zone.products[0]!.thumb))
+// 하단 구매 바(73px)만큼 스크롤 여백을 더 둔다 — 키보드 포커스가 구매 바 밑에 가리지 않게(WCAG 2.4.11)
+useHead({ htmlAttrs: { class: 'has-buybar' } })
 
 // «← 나라» — 국가 페이지에서 들어왔으면 그 나라, 아니면 홈(SSR 은 홈 — 하이드레이션 뒤에 바꾼다)
 const back = ref<{ to: string; label: string }>({ to: '/', label: '홈' })
 onMounted(() => {
   const prev = String(window.history.state?.back ?? '')
-  const m = prev.match(/^\/countries\/([a-z]{3})$/)
+  // 쿼리 · 해시가 붙어 들어와도(«?utm_source=naver») 그 나라로 돌아간다
+  const m = prev.split(/[?#]/)[0]!.match(/^\/countries\/([a-z]{3})$/)
   const c = m && zone.countries.find((x) => x.iso3 === m[1]!.toUpperCase())
   if (c) back.value = { to: prev, label: c.nameKr }
 })
@@ -97,13 +102,13 @@ const sheetOpen = ref(false)
         fetchpriority="high"
       />
       <div class="product__badges">
-        <span v-if="multi" class="product__badge">{{ zone.countries.length }}개국</span>
+        <span v-if="countBadge" class="product__badge">{{ zone.countries.length }}개국</span>
         <span v-for="b in HERO_BADGES" :key="b" class="product__badge">{{ b }}</span>
       </div>
       <h1 class="product__title">{{ zone.label }} eSIM</h1>
-      <p class="product__lead">{{ heroLead(zone) }}</p>
+      <p class="product__lead">{{ heroLead(zone, kind) }}</p>
       <ul class="product__checks">
-        <li v-for="line in heroChecks(zone)" :key="line">{{ line }}</li>
+        <li v-for="line in heroChecks(zone, kind)" :key="line">{{ line }}</li>
       </ul>
 
       <section class="product__picker" aria-label="상품 고르기">
@@ -114,10 +119,14 @@ const sheetOpen = ref(false)
           label="요금 종류"
           id-prefix="kind"
         />
-        <div id="kind-panel" :role="kindTabs.length > 1 ? 'tabpanel' : undefined">
+        <div
+          id="kind-panel"
+          :role="kindTabs.length > 1 ? 'tabpanel' : undefined"
+          :aria-labelledby="kindTabs.length > 1 ? `kind-tab-${kind}` : undefined"
+        >
           <label for="period" class="product__label">사용 기간</label>
           <PeriodSelect id="period" v-model="days" :days="periods" :disabled="kind === 'L'" />
-          <p class="product__hint">{{ PERIOD_HINT[kind] }}</p>
+          <p class="product__hint">{{ periodHint(kind, periods) }}</p>
           <h2 id="cap-label" class="product__label">데이터 용량</h2>
           <PlanCards v-model="cap" name="cap" :kind="kind" :cards="cards" labelledby="cap-label" />
         </div>
@@ -142,6 +151,14 @@ const sheetOpen = ref(false)
     />
   </div>
 </template>
+
+<style>
+html.has-shell-chrome.has-buybar {
+  scroll-padding-bottom: calc(
+    var(--shell-tabbar-height, 56px) + env(safe-area-inset-bottom) + 73px + 8px
+  );
+}
+</style>
 
 <style scoped>
 .product {

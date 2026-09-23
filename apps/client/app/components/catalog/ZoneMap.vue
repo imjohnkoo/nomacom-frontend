@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // zone 지도(catalog spec F-7) — 축소 SVG(자사 자산 · 해시 파일명) 위에 도시 핀을 % 좌표로 겹친다(2609 pins.json 그대로).
+// 라벨 위아래 보정(labelShift)은 2609 labelStyle(top 8px · −24px = 라벨 한 줄 아래 · 위)을 라벨 높이 100% 로 옮긴 것이다.
 // 지도 viewBox 1183.6 × 1015.8 비율을 고정해 핀이 어긋나지 않게 한다.
 import { mapUrl, type AssetManifest } from '#shared/catalog/assets'
 import type { PinView } from '#shared/catalog/types'
@@ -16,7 +17,12 @@ const url = computed(() => mapUrl(manifest as AssetManifest, props.src))
       v-for="p in pins"
       :key="p.name"
       class="zone-map__pin"
-      :class="{ 'zone-map__pin--big': p.big, 'zone-map__pin--left': p.labelLeft }"
+      :class="{
+        'zone-map__pin--big': p.big,
+        'zone-map__pin--left': p.labelLeft,
+        'zone-map__pin--down': p.labelShift === 'down',
+        'zone-map__pin--up': p.labelShift === 'up',
+      }"
       :style="{ left: `${p.x}%`, top: `${p.y}%` }"
       aria-hidden="true"
     >
@@ -79,5 +85,13 @@ const url = computed(() => mapUrl(manifest as AssetManifest, props.src))
   font-weight: 700;
   color: var(--n-color-neutral-900, #171717);
   white-space: nowrap;
+}
+
+.zone-map__pin--down em {
+  transform: translateY(100%);
+}
+
+.zone-map__pin--up em {
+  transform: translateY(-100%);
 }
 </style>
