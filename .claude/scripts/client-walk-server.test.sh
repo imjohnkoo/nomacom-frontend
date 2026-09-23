@@ -7,7 +7,8 @@ set -uo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 S="$DIR/client-walk-server.sh"
 ROOT="$(cd "$DIR/../.." && pwd)"
-FAKE="$(mktemp -d)"
+FAKE="$(mktemp -d)" || { echo "mktemp 실패 — 중단(가짜 node 없이 돌면 실제 서버가 뜬다)"; exit 1; }
+[[ -n "$FAKE" && -d "$FAKE" ]] || { echo "가짜 bin 디렉터리 없음 — 중단"; exit 1; }
 cleanup_paths=("$FAKE")
 trap 'rm -rf "${cleanup_paths[@]}"' EXIT
 pass=0
@@ -28,7 +29,7 @@ expect_refuse() { # 설명 · 인자…
 # 가짜 node — 받은 것을 그대로 출력(실제 nuxt · 서버는 뜨지 않는다)
 cat >"$FAKE/node" <<'EOF'
 #!/bin/sh
-echo "CWD=$(pwd)"
+echo "CWD=$(pwd -P)"
 for a in "$@"; do echo "ARG=$a"; done
 env | sed 's/^/ENV:/'
 EOF
@@ -78,7 +79,8 @@ lacks "$out" 'NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY' "안 준 키가 생김"
 
 # ── 실제 기동 줄 (dev) — env -i · 인자 · cwd
 out="$(run_real dev 3099)" || ng "dev 실제 기동 줄 실패"
-has "$out" "CWD=$ROOT/apps/client" "dev cwd = apps/client"
+CLIENT_P="$(cd "$ROOT/apps/client" && pwd -P)"
+has "$out" "CWD=$CLIENT_P" "dev cwd = apps/client"
 has "$out" "ARG=$ROOT/node_modules/nuxt/bin/nuxt.mjs" "yarn 미경유 — nuxt.mjs 직접"
 has "$out" 'ARG=--host' "--host 인자"
 has "$out" 'ARG=127.0.0.1' "--host 127.0.0.1"
@@ -100,7 +102,7 @@ extra="$(sed -n 's/^ENV:\([^=]*\)=.*/\1/p' <<<"$out" | grep -vxE 'PATH|HOME|PORT
 if [[ -f "$ROOT/apps/client/.output/server/index.mjs" ]]; then
   out="$(run_real prod 3099)" || ng "prod 실제 기동 줄 실패"
   has "$out" 'ARG=.output/server/index.mjs' "prod 는 .output 직접"
-  has "$out" "CWD=$ROOT/apps/client" "prod cwd = apps/client"
+  has "$out" "CWD=$CLIENT_P" "prod cwd = apps/client"
   lacks "$out" '^ENV:(SPARK|MAYA|ESIM_MANAGER|DATABASE_URL)' "prod 실제 env 누출"
 else
   run_real prod 3099 >/dev/null
@@ -122,8 +124,22 @@ out="$(FAKE_LSOF_55432="com.docker.backend" run_real dev 3099 "$DBU")" || ng "Do
 has "$out" "ENV:DATABASE_URL=$DBU" "로컬 DB 리스너면 합성 DATABASE_URL 전달"
 
 # ── 실제 기동에서 PortOne 공개키 통로
-out="$(NUXT_PUBLIC_PORTONE_STORE_ID=store-x run_real dev 3099)" || ng "PortOne 실제 기동 줄 실패"
-has "$out" 'ENV:NUXT_PUBLIC_PORTONE_STORE_ID=store-x' "실제 env PortOne 공개키 전달"
+out="$(NUXT_PUBLIC_PORTONE_STORE_ID=store-x NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY=channel-key-test-x run_real dev 3099)" || ng "PortOne 실제 기동 줄 실패"
+has "$out" 'ENV:NUXT_PUBLIC_PORTONE_STORE_ID=store-x' "실제 env PortOne storeId 전달"
+has "$out" 'ENV:NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY=channel-key-test-x' "실제 env PortOne 테스트 채널키 전달"
+
+# ── lsof 가 실패하면(없음 · 오류) 기동하지 않는다 — «리스너 없음» 으로 읽지 않게
+cat >"$FAKE/lsof-broken" <<'EOF'
+#!/bin/sh
+exit 3
+EOF
+chmod +x "$FAKE/lsof-broken"
+BROKEN="$(mktemp -d)" || exit 1
+cleanup_paths+=("$BROKEN")
+cp "$FAKE/node" "$BROKEN/node"
+cp "$FAKE/lsof-broken" "$BROKEN/lsof"
+PATH="$BROKEN:$PATH" bash "$S" dev 3099 >/dev/null 2>&1
+[[ $? -eq 2 ]] && ok || ng "lsof 오류 → 거부"
 
 # ── .env 계열이 있으면 거부 — 없을 때만 임시 심링크를 만들고 반드시 지운다
 for rel in apps/client/.env.local apps/client/.env .env .env.local; do

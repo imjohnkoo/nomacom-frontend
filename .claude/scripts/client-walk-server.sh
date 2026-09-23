@@ -25,7 +25,7 @@
 #        bash .claude/scripts/client-walk-server.sh prod <port>                 # .output 빌드 · DB 없음(헤더 · noindex 확인용)
 #        WALK_DRY_RUN=1 bash … dev 3005                                          # 넘길 env 만 출력하고 끝
 #        브라우저는 http://127.0.0.1:<port> 로 연다(localhost 금지 — 위 2).
-# 증거:  ps -E -o command= -p <pid> | tr ' ' '\n' | sed -nE 's/^([A-Z_]+)=.*/\1/p' | sort   # 키 이름만(값은 찍지 않는다)
+# 증거:  ps -E -o command= -p <pid> | tr ' ' '\n' | sed -nE 's/^([A-Za-z_][A-Za-z0-9_]*)=.*/\1/p' | sort   # 키 이름만(값은 찍지 않는다)
 #        → PATH HOME PORT HOST NUXT_PUBLIC_GUEST_APP_ORIGIN CORS_EXTRA_ORIGINS (+ DATABASE_URL · NUXT_PUBLIC_PORTONE_*)
 #          · DB 호스트는 ps -E … | tr ' ' '\n' | sed -nE 's#^DATABASE_URL=[^@]*@([^/]*)/.*#\1#p' = 127.0.0.1:55432
 # 회귀:  bash .claude/scripts/client-walk-server.test.sh (가짜 node 로 실제 기동 경로까지 본다)
@@ -75,13 +75,25 @@ if [[ -n "${WALK_DRY_RUN:-}" ]]; then
   exit 0
 fi
 
+# lsof 가 없거나 실패하면 «리스너 없음» 과 구분이 안 된다 — 검사를 못 하면 기동하지 않는다
+LSOF="$(command -v lsof || true)"
+[[ -z "$LSOF" && -x /usr/sbin/lsof ]] && LSOF=/usr/sbin/lsof
+[[ -n "$LSOF" ]] || refuse "lsof 가 없어 포트 · DB 리스너를 확인할 수 없다"
+listeners_of() { # 포트 → 리스너 이름들. lsof: 0 = 있음 · 1 = 없음 · 그 밖 = 오류(거부)
+  local out rc
+  out="$("$LSOF" -nP +c 0 -iTCP:"$1" -sTCP:LISTEN -Fc 2>/dev/null)"
+  rc=$?
+  [[ $rc -le 1 ]] || refuse "lsof 실패(exit $rc) — 포트 $1 를 확인할 수 없다"
+  sed -n 's/^c//p' <<<"$out" | sort -u
+}
+
 # walk 포트를 어느 주소(127.0.0.1 · ::1 · *)든 누가 듣고 있으면 거부 — localhost 가 봉투 밖 서버로 가거나 nuxi 가 포트를 옮긴다
-busy="$(lsof -nP +c 0 -iTCP:"$PORT" -sTCP:LISTEN -Fc 2>/dev/null | sed -n 's/^c//p' | sort -u | tr '\n' ' ' || true)"
+busy="$(listeners_of "$PORT" | tr '\n' ' ')" || exit 2   # 서브셸 안 refuse 를 여기서도 확실히
 [[ -z "$busy" ]] || refuse "포트 $PORT 를 이미 듣는 프로세스가 있다($busy) — 다른 포트로"
 
 if [[ -n "$DB_URL" ]]; then
   # 55432 를 듣는 프로세스가 **전부** 로컬 컨테이너 · postgres 여야 한다 — SSM 포트포워딩 · ssh 터널이면 prod RDS 다
-  listeners="$(lsof -nP +c 0 -iTCP:55432 -sTCP:LISTEN -Fc 2>/dev/null | sed -n 's/^c//p' | sort -u || true)"
+  listeners="$(listeners_of 55432)" || exit 2
   [[ -n "$listeners" ]] || refuse "127.0.0.1:55432 를 듣는 프로세스가 없다 — 합성 DB 컨테이너부터"
   while IFS= read -r listener; do
     [[ "$listener" =~ ^(com\.docker\.|docker|vpnkit|postgres|OrbStack|orbstack|limactl|colima) ]] ||
