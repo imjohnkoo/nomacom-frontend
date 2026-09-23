@@ -155,10 +155,11 @@ yarn workspace nomacom-client dev          # dev server (--dotenv .env.local)
 yarn workspace nomacom-client test         # vitest — server/** · app/** · shared/** 순수 로직
 yarn turbo run build --filter=nomacom-client
 
-# 로컬에서 prod DB 로 4-step walk — dev 서버는 안 된다: server/db/index.ts 가 dev 에서 ssl:false 를 명시하고
-# postgres.js 는 명시 옵션이 URL sslmode 보다 우선이라 prod RDS(SSL 필수)에 못 붙는다 → production 빌드로 띄운다.
-# prod RDS 는 SSM 포트포워딩 터널로만 닿는다(DATABASE_URL 호스트를 터널 로컬 포트로).
-node --env-file=apps/client/.env.local apps/client/.output/server/index.mjs
+# 로컬 walk(QA ⑦) — ⛔ prod DB 에 붙이지 않는다 · 벤더 · 내부 env 를 넘기지 않는다(John 지시 2026-09-23).
+# 봉투 스크립트가 env -i 허용 목록으로만 띄우고, DB 는 로컬 합성 DB(127.0.0.1:55432)만 받는다 · .env(.local) 가 있으면 거부.
+bash .claude/scripts/client-walk-server.sh dev  3005 postgres://walk:walk@127.0.0.1:55432/walk   # 4-step (합성 DB)
+bash .claude/scripts/client-walk-server.sh prod 3006                                            # 헤더 · noindex (DB 없음)
+# 실발급 성공 경로(activate → view)는 로컬에서 걷지 않는다 — prod 승격 당일 operator AC.
 
 # Docker
 docker build -f apps/client/Dockerfile -t nomacom-client:test .
