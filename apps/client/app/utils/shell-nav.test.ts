@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { LEGAL_LINKS, SHELL_MENU, SHELL_TABS, activeTabOf } from './shell-nav'
+import { LEGAL_LINKS, SHELL_MENU, SHELL_TABS, activeTabOf, tabAriaCurrent } from './shell-nav'
 
 describe('activeTabOf', () => {
   it.each([
@@ -93,5 +93,38 @@ describe('shell 목록', () => {
   it('전체 메뉴는 체크아웃 미리보기를 가리키지 않는다 (K9 — 링크 0)', () => {
     const targets = SHELL_MENU.flatMap((group) => group.links.map((link) => link.to))
     expect(targets.some((to) => to.includes('checkout-preview'))).toBe(false)
+  })
+})
+
+describe('tabAriaCurrent (spec F-6)', () => {
+  const tab = (key: string) => SHELL_TABS.find((t) => t.key === key)!
+
+  it('탭 주소와 같은 경로 → page (끝 / · 쿼리 · 해시 무시)', () => {
+    expect(tabAriaCurrent('/', tab('home'))).toBe('page')
+    expect(tabAriaCurrent('/my', tab('my'))).toBe('page')
+    expect(tabAriaCurrent('/my/', tab('my'))).toBe('page')
+    expect(tabAriaCurrent('/my#cs', tab('my'))).toBe('page')
+    expect(tabAriaCurrent('/my-esim?x=1', tab('my-esim'))).toBe('page')
+    expect(tabAriaCurrent('/guide', tab('guide'))).toBe('page')
+  })
+
+  it('탭 구역의 다른 경로 → true (현재 페이지로 읽히지 않게)', () => {
+    expect(tabAriaCurrent('/terms', tab('my'))).toBe('true')
+    expect(tabAriaCurrent('/business', tab('my'))).toBe('true')
+    expect(tabAriaCurrent('/search', tab('home'))).toBe('true')
+    expect(tabAriaCurrent('/supported-devices', tab('guide'))).toBe('true')
+  })
+
+  it('다른 탭 · 탭 밖 경로 → 없음', () => {
+    expect(tabAriaCurrent('/terms', tab('home'))).toBeUndefined()
+    expect(tabAriaCurrent('/view/1', tab('my-esim'))).toBeUndefined()
+    expect(tabAriaCurrent('/checkout-preview', tab('home'))).toBeUndefined()
+  })
+
+  it('한 경로에서 page 는 많아야 탭 하나', () => {
+    for (const path of ['/', '/my', '/terms', '/guide', '/search', '/my-esim']) {
+      const pages = SHELL_TABS.filter((t) => tabAriaCurrent(path, t) === 'page')
+      expect(pages.length).toBeLessThanOrEqual(1)
+    }
   })
 })

@@ -42,7 +42,8 @@ watch(
 </template>
 
 <style scoped>
-.shell-header {
+/* DS .n-header 보다 우선 — prod 는 컴포넌트 CSS 가 entry.css 보다 먼저 와서 같은 우선순위면 DS 가 이긴다 */
+.n-header.shell-header {
   justify-content: space-between;
   height: var(--shell-header-height, 56px);
   padding-top: 0;

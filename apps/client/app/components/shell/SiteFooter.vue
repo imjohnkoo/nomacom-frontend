@@ -96,6 +96,6 @@ const rows = businessRows()
 
 .site-footer__copy {
   margin: 12px 0 0;
-  color: var(--n-color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-500, #737373);
 }
 </style>

@@ -9,7 +9,7 @@ import {
   QrCodeIcon as QrCodeSolidIcon,
   UserIcon as UserSolidIcon,
 } from '@heroicons/vue/24/solid'
-import { SHELL_TABS, activeTabOf, type TabKey } from '~/utils/shell-nav'
+import { SHELL_TABS, activeTabOf, tabAriaCurrent, type TabKey } from '~/utils/shell-nav'
 
 const route = useRoute()
 const active = computed(() => activeTabOf(route.path))
@@ -31,7 +31,7 @@ const ICONS: Record<TabKey, { outline: Component; solid: Component }> = {
             :href="href"
             class="bottom-tab-bar__item"
             :class="{ 'bottom-tab-bar__item--active': active === tab.key }"
-            :aria-current="active === tab.key ? 'page' : undefined"
+            :aria-current="tabAriaCurrent(route.path, tab)"
             @click="navigate"
           >
             <component
@@ -81,7 +81,7 @@ const ICONS: Record<TabKey, { outline: Component; solid: Component }> = {
   align-items: center;
   justify-content: center;
   gap: 3px;
-  color: var(--n-color-neutral-400, #a3a3a3);
+  color: var(--n-color-neutral-500, #737373);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.2;

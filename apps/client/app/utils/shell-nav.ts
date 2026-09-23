@@ -64,3 +64,12 @@ export function activeTabOf(path: string): TabKey | null {
   if (isUnder(p, '/my') || LEGAL_LINKS.some((link) => link.to === p)) return 'my'
   return null
 }
+
+/**
+ * 탭의 aria-current (spec F-6) — 경로가 탭 주소와 같으면 'page', 그 탭 구역의 다른 경로(`/terms` 의 «마이» 등)면 'true'.
+ * 구역 강조를 'page' 로 두면 스크린리더가 이용약관 화면에서 «마이, 현재 페이지» 로 읽는다.
+ */
+export function tabAriaCurrent(path: string, tab: ShellTab): 'page' | 'true' | undefined {
+  if (activeTabOf(path) !== tab.key) return undefined
+  return normalizePath(path) === tab.to ? 'page' : 'true'
+}

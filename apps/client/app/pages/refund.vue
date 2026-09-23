@@ -16,7 +16,13 @@ const channels = supportRows().filter((row) => ['kakao', 'naver', 'phone'].inclu
       <ul v-if="section.key === 'how'" class="refund-channels">
         <li v-for="channel in channels" :key="channel.key" class="refund-channels__item">
           <span class="refund-channels__label">{{ channel.label }}</span>
-          <a v-if="channel.href" :href="channel.href" class="refund-channels__value">
+          <a
+            v-if="channel.href"
+            :href="channel.href"
+            class="refund-channels__value"
+            :target="channel.href.startsWith('http') ? '_blank' : undefined"
+            :rel="channel.href.startsWith('http') ? 'noopener noreferrer' : undefined"
+          >
             {{ channel.text }}
           </a>
           <span v-else class="refund-channels__value">{{ channel.text }}</span>
