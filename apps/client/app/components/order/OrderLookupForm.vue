@@ -3,6 +3,8 @@
 // 유효한 번호는 발급 호스트(runtimeConfig.public.guestAppOrigin)의 /verify/{주문번호} 로 «전체 이동» 한다 — SPA 이동 아님(K3).
 // 루프백 주소에서 열린 페이지면 자기 출처로 보낸다(resolveGuestOrigin — 프리렌더가 굳힌 실호스트로 새지 않게).
 import { NButton, NInput } from '@imjohnkoo/design-vue'
+// 컴포넌트 테스트(OrderLookupForm.test.ts)가 Nuxt 없이 그린다 — vue 는 명시 import · Nuxt 함수는 테스트가 끼운다
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import {
   ORDER_LOOKUP_MESSAGES,
   buildGuestVerifyUrl,

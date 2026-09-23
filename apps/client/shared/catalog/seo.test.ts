@@ -13,10 +13,18 @@ import {
   sitemapPaths,
   zoneMeta,
 } from './seo'
-import { fixtureCatalog, fixtureRaw, setFinalWon } from './test-data'
+import { activeCatalog, fixtureCatalog, fixtureRaw, setFinalWon } from './test-data'
 import { parseCatalog } from './validate'
 
 const catalog = fixtureCatalog()
+
+describe('정적 페이지 목록 (spec S-6)', () => {
+  it('법정 4종 · 가이드 · 지원 기기 — spec 이 정한 여섯 경로', () => {
+    expect([...STATIC_ROUTES].sort()).toEqual(
+      ['/business', '/guide', '/privacy', '/refund', '/supported-devices', '/terms'].sort(),
+    )
+  })
+})
 
 describe('프리렌더 · sitemap (catalog spec F-9 · E2E-15)', () => {
   it('프리렌더 = 홈 · 검색 · 국가 전수 · 상품 전수 · 정적 6 — 전부 소문자 · 중복 없음', () => {
@@ -87,6 +95,20 @@ describe('메타 문구 (D-15)', () => {
     expect(zoneMeta(zoneByCode(catalog, 'CZE00')!).title).toBe('체코 eSIM — 무제한 · 종량제')
     expect(zoneMeta(zoneByCode(catalog, 'FRA00')!).title).toBe('프랑스 eSIM — 무제한')
     expect(zoneMeta(zoneByCode(catalog, 'EU340')!).description).toContain('34개국에서 하나의 eSIM')
+  })
+
+  it('실 카탈로그 — 상품 설명마다 24시간 단위 · 여러 나라면 자동 연결 + 아랫줄 · 설명이 겹치지 않는다', () => {
+    const active = activeCatalog()
+    const seen = new Map<string, string>()
+    for (const z of active.zones) {
+      const d = zoneMeta(z).description
+      expect(d, z.zone).toContain('처음 연결된 때부터 24시간 단위')
+      expect(d.includes('나라를 옮겨도 자동으로 연결돼요'), z.zone).toBe(z.countries.length > 1)
+      if (z.countries.length > 1 && z.subtitle) expect(d, z.zone).toContain(z.subtitle)
+      expect(seen.get(d), `${z.zone} 설명이 ${seen.get(d)} 와 같다`).toBeUndefined()
+      seen.set(d, z.zone)
+    }
+    expect(HOME_META.description).toContain('처음 연결된 때부터 24시간 단위')
   })
 
   it('메타 문구도 카피 불변식을 지킨다', () => {

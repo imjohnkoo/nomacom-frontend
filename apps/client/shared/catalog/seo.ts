@@ -82,8 +82,9 @@ export function zoneMeta(zone: ZoneView): PageMeta {
     title: `${zone.label} eSIM — ${kinds}`,
     description:
       `${zone.label} eSIM ${formatWon(lowestWon(zone))}부터. ` +
+      // 여러 나라면 썸네일 아랫줄을 넣는다 — 같은 라벨 zone(«발칸 5개국» 둘)의 설명이 겹치지 않게(S-6)
       (multi
-        ? `${zone.countries.length}개국에서 하나의 eSIM 으로, 나라를 옮겨도 자동으로 연결돼요. `
+        ? `${zone.subtitle ? `${zone.subtitle} — ` : ''}${zone.countries.length}개국에서 하나의 eSIM 으로, 나라를 옮겨도 자동으로 연결돼요. `
         : '') +
       '사용일수는 처음 연결된 때부터 24시간 단위 · 테더링 가능.',
   }

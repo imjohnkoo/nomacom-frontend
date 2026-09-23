@@ -61,6 +61,22 @@ describe('상품 값 (PG 심사 요건 · catalog F-12)', () => {
     expect(checkoutPreviewFromCatalog(parseCatalog(raw)).amount).toBe(previewOption(raw).finalWon)
   })
 
+  it('종량제 옵션이면 «종량제» 상품명 · «총 NGB» 주문명 · 옵션명은 K1 두 칸', () => {
+    const raw = fixtureRaw()
+    const item = checkoutPreviewFromCatalog(parseCatalog(raw), 'CZE00L10D30V2')
+    const o = raw.zones
+      .flatMap((z: { products: { options: { code: string }[] }[] }) => z.products)
+      .flatMap((p: { options: { code: string }[] }) => p.options)
+      .find((x: { code: string }) => x.code === 'CZE00L10D30V2')
+    expect(item).toMatchObject({
+      productName: '체코 eSIM 종량제',
+      orderName: '체코 eSIM 종량제 · 총 10GB · 30일',
+      optionName: `${o.optionName1} · ${o.optionName2}`,
+      usage: '현지에서 처음 연결한 때부터 24시간 단위로 30일',
+      amount: o.finalWon,
+    })
+  })
+
   it('카탈로그에 심사용 옵션이 없으면 throw — 빌드가 멈춘다(가짜 금액으로 대신하지 않는다)', () => {
     expect(() => checkoutPreviewFromCatalog(parseCatalog(fixtureRaw()), 'XXX00U01D07V2')).toThrow(
       /심사용 옵션 XXX00U01D07V2 가 없다/,
