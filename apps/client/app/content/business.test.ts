@@ -88,6 +88,10 @@ describe('ftcBusinessCheckUrl', () => {
     expect(ftcBusinessCheckUrl(PENDING_INFO)).toBeNull()
   })
 
+  it('사업자등록번호가 확정 전이어도 링크를 만들지 않는다 (신고번호만 확정된 경우)', () => {
+    expect(ftcBusinessCheckUrl({ ...FILLED, businessRegistrationNumber: P9_4_PENDING })).toBeNull()
+  })
+
   it('확정되면 사업자등록번호 숫자만으로 공정위 확인 링크', () => {
     expect(ftcBusinessCheckUrl(FILLED)).toBe(
       'https://www.ftc.go.kr/bizCommPop.do?wrkr_no=7042401747',

@@ -97,7 +97,11 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
-> ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 7건). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
+```bash
+bash .github/scripts/content-pending-gate.sh origin/main || exit 1   # client 확정 전 문안(P9_4_PENDING) 0 — 승격 대상 커밋 기준 (W1-2 D-17)
+```
+
+> ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 4건 — 2026-09-23 7 → 4). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
 
 ### Phase 4 — 영향 앱 테스트 + UI 검증
 
@@ -223,6 +227,7 @@ READY to push. Proceed?
 - Working tree dirty
 - Secrets/env 파일 variations committed (`.env.local`, `.env.production` 등)
 - Build / Typecheck fail
+- 콘텐츠 자리표시자 게이트 fail (`content-pending-gate.sh` exit 1 · 2 — 확정 전 사업자정보 · 약관 문안이 prod 에 나간다)
 - Test fail
 - UI 변경인데 수동 검증 미완료
 - Migration 있는데 backend / DB 소유자와 합의/적용 계획 없음

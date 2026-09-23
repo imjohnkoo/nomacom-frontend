@@ -23,6 +23,10 @@ Guide completion of worktree development. **Gate → Verify → options → exec
 
 ### Step 0: Tier / QA 게이트 확인 — 머지 옵션을 열기 전 검사 ⭐
 
+0. **콘텐츠 자리표시자 게이트 — 모든 Tier(T0 포함) 먼저** — `bash .github/scripts/content-pending-gate.sh` (머지할 **커밋** HEAD 를 본다 — 디스크 파일이 아니다. 미커밋 변경은 먼저 커밋할 것)
+   - `0` → 계속
+   - `1` → 확정 전 문안(`P9_4_PENDING`)이 커밋에 남아 있다. **Step 3 에서 옵션 1(로컬 머지)을 빼고, 옵션 2 는 `--draft` 로만** 연다 (prod 승격에 실려 나가는 것 차단 — client W1-2 spec D-17). CI `content-gate` job 도 빨간불이다
+   - `2` → 검사 불가. 통과로 보지 않는다 — 원인을 고치고 다시
 1. **Tier 확인** — spec/plan 헤더 pill 또는 핸드오프 브리프에서. 기록이 없으면 지금 판정해 plan 헤더에 기록.
    - T2 트리거: 신규 화면/플로우 · 외부연동(Maya·스마트스토어·Cafe24·PG) · Drizzle 스키마 · 과금/PII · 다중 파일 신규 기능 · mobile 신규 화면
    - 버그픽스는 **파일 수 무관 T1**
@@ -36,8 +40,7 @@ Guide completion of worktree development. **Gate → Verify → options → exec
    - `apps/admin` 은 아직 테스트 0건 — 검증 증거로 대체하되 로직이 들어오는 트랙부터는 테스트 동봉
    - 둘 다 없으면 plan 에 불가 사유 1줄이 있는지 확인. 그것도 없으면 중단하고 확인 요청
 4. **D 트랙** (`design/` 캔버스) — 오너 승인 여부 + **슬라이더 런타임 값이 아니라 소스 기본값에 반영됐는지** 확인
-5. **T0** — 검사 없음, Step 1 로
-6. **콘텐츠 자리표시자 게이트** (client) — `bash .github/scripts/content-pending-gate.sh` 가 0 으로 끝나야 main 머지 옵션을 연다. 1 이면 PR 은 **draft** 로만 열고 머지 옵션을 제시하지 않는다 (확정 전 문안 `P9_4_PENDING` 이 prod 승격에 실려 나가는 것 차단 — client W1-2 spec D-17)
+5. **T0** — 0번(콘텐츠 게이트) 외 검사 없음, Step 1 로
 
 ### Step 1: Verify Build + Affected Apps
 
@@ -66,7 +69,7 @@ yarn turbo run lint typecheck test build --filter=... || exit 1
 > ✅ **2026-09-02 (INF-1) 부터 `typecheck`·`test`·`lint` 가 실제로 돈다.** 이전에는 admin/client 에
 > script 가 없어 no-op 이었다. 현재 실체:
 >
-> - `typecheck` — `.github/scripts/typecheck-gate.sh` 가 **baseline 초과분만 차단** (admin 0 / client 7건 기준선). 신규 타입 에러는 실패한다
+> - `typecheck` — `.github/scripts/typecheck-gate.sh` 가 **baseline 초과분만 차단** (admin 0 / client 4건 기준선 — 2026-09-23 7 → 4). 신규 타입 에러는 실패한다
 > - `test` — design-vue 129 + client 28 = **157건**. admin 은 아직 0건(`passWithNoTests: true`)
 > - `lint` — 에러만 차단(경고는 통과). prettier 포맷은 PostToolUse 훅이 담당
 >
@@ -83,6 +86,8 @@ git merge-base HEAD main   # 후보 확인
 사용자에게 확인: "Base branch로 `main` 을 사용할까요?" — `prod` 를 base 로 잡는 것은 **배포 의도가 명시된 경우만**이고, 그 경로는 `nomacomfe-prod-push-check` 를 먼저 지나야 한다.
 
 ### Step 3: Present Options
+
+> Step 0-0 콘텐츠 게이트가 `1` 이면 아래에서 **1 을 빼고**, 2 는 «draft PR» 로 제시한다.
 
 ```
 Implementation complete. What would you like to do?
@@ -115,7 +120,9 @@ git push origin main
 ```bash
 cd <worktree>
 git push -u origin <feature-branch>
-gh pr create --base main --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
+# 콘텐츠 게이트(Step 0-0)가 1 이면 draft 로만 — ready 로 열면 GitHub UI 에서 바로 머지된다
+DRAFT=$(bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && echo "" || echo "--draft")
+gh pr create --base main $DRAFT --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
 ## Summary
 <2-3 bullets>
 
@@ -217,8 +224,8 @@ Option 1, 4 에서만 정리한다. Option 2, 3 은 유지.
 
 | Option           | Step 0 게이트 | Build | Base push | Keep worktree       |
 | ---------------- | ------------- | ----- | --------- | ------------------- |
-| 1. Merge locally | ✓             | ✓     | ✓ (main)  | ✗ — **승인 후에만** |
-| 2. Push + PR     | ✓             | ✓     | — (PR)    | ✓                   |
+| 1. Merge locally | ✓ (콘텐츠 게이트 0 일 때만 제시) | ✓     | ✓ (main)  | ✗ — **승인 후에만** |
+| 2. Push + PR     | ✓ (게이트 1 이면 `--draft`)     | ✓     | — (PR)    | ✓                   |
 | 3. Push as-is    | ✓             | ✓     | ✗         | ✓                   |
 | 4. Discard       | —             | ✗     | ✗         | ✗ — **승인 후에만** |
 
