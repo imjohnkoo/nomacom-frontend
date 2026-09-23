@@ -6,6 +6,7 @@ import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
 import { thumbUrl, type AssetManifest } from '#shared/catalog/assets'
 import { optionLabel } from '#shared/catalog/derive'
 import { formatWon } from '#shared/catalog/format'
+import { zoneMeta } from '#shared/catalog/seo'
 import {
   initialSelection,
   periodOptions,
@@ -42,7 +43,6 @@ if (error.value || !data.value)
 
 const zone = data.value
 const multi = zone.countries.length > 1
-useHead({ title: `${zone.label} eSIM` })
 
 const sel = ref<Selection>(initialSelection(zone))
 const kindTabs = zone.products.map((p) => ({
@@ -67,6 +67,7 @@ const option = computed(() => selectedOption(zone, sel.value))
 const product = computed(() => zone.products.find((p) => p.kind === sel.value.kind)!)
 const heroSrc = thumbUrl(manifest as AssetManifest, zone.products[0]!.thumb)
 const heroAlt = [`${zone.label} eSIM`, zone.subtitle].filter(Boolean).join(' — ')
+useCatalogSeo(zoneMeta(zone), heroSrc)
 
 // «← 나라» — 국가 페이지에서 들어왔으면 그 나라, 아니면 홈(SSR 은 홈 — 하이드레이션 뒤에 바꾼다)
 const back = ref<{ to: string; label: string }>({ to: '/', label: '홈' })

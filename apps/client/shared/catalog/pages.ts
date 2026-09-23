@@ -3,6 +3,7 @@
  * 브라우저 번들 · payload 에 싣지 않는다). 순수 함수라 테스트로 모양을 잠근다.
  */
 import { lowestWon, zoneByCode, zonesOfCountry } from './derive'
+import { countryMeta, type PageMeta } from './seo'
 import type { CatalogView, Kind, ZoneView } from './types'
 
 export interface ZoneCardData {
@@ -20,6 +21,7 @@ export interface ZoneCardData {
 
 export interface CountryPageData {
   country: { iso3: string; iso2: string; nameKr: string }
+  meta: PageMeta
   single: ZoneCardData[]
   multi: ZoneCardData[]
 }
@@ -46,6 +48,7 @@ export function countryPageData(catalog: CatalogView, iso3: string): CountryPage
   )
   return {
     country: { iso3, iso2: country.iso2, nameKr: country.nameKr },
+    meta: countryMeta(country.nameKr, zones),
     single: cards.filter((c) => c.countryCount === 1),
     multi: cards.filter((c) => c.countryCount > 1),
   }

@@ -2,9 +2,11 @@
 // 국가 페이지(catalog spec S-3 · F-5) — 그 나라가 들어간 zone 카드. 단일국 먼저 → 여러 나라(국가 수 오름차순).
 // URL 은 소문자(D-13 · catalog-path 미들웨어가 대문자를 301), 판매하지 않는 나라 · 모르는 코드는 404.
 import { ChevronLeftIcon } from '@heroicons/vue/24/outline'
+import { thumbUrl, type AssetManifest } from '#shared/catalog/assets'
 import type { CountryPageData } from '#shared/catalog/pages'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import ZoneCard from '~/components/catalog/ZoneCard.vue'
+import manifest from '~/content/catalog-assets.json'
 import { isCatalogParam } from '~/utils/catalog-path'
 
 definePageMeta({ middleware: 'catalog-path' })
@@ -22,7 +24,7 @@ if (error.value || !data.value)
 
 const page = data.value
 const count = page.single.length + page.multi.length
-useHead({ title: `${page.country.nameKr} eSIM` })
+useCatalogSeo(page.meta, thumbUrl(manifest as AssetManifest, (page.single[0] ?? page.multi[0])!.thumb))
 </script>
 
 <template>

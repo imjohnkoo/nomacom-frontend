@@ -8,10 +8,12 @@ import {
   DevicePhoneMobileIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/vue/24/outline'
+import { HOME_META } from '#shared/catalog/seo'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import UnderlineTabs from '~/components/catalog/UnderlineTabs.vue'
 import OrderLookupForm from '~/components/order/OrderLookupForm.vue'
 
+useCatalogSeo(HOME_META)
 const { data: home } = await useFetch('/api/catalog/home', { key: 'catalog-home' })
 const tabs = [
   { key: 'popular', label: '인기국가' },

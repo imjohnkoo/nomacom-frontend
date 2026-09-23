@@ -1,0 +1,81 @@
+import { readFileSync } from 'node:fs'
+import { describe, expect, it } from 'vitest'
+import { countriesOf, zoneByCode, zonesOfCountry } from './derive'
+import {
+  HOME_META,
+  STATIC_ROUTES,
+  buildSitemapXml,
+  canonicalUrl,
+  catalogRoutes,
+  countryMeta,
+  prerenderRoutes,
+  sitemapPaths,
+  zoneMeta,
+} from './seo'
+import { parseCatalog } from './validate'
+
+const catalog = parseCatalog(
+  JSON.parse(
+    readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8'),
+  ),
+)
+
+describe('프리렌더 · sitemap (catalog spec F-9 · E2E-15)', () => {
+  it('프리렌더 = 홈 · 검색 · 국가 전수 · 상품 전수 · 정적 6 — 전부 소문자 · 중복 없음', () => {
+    const routes = prerenderRoutes(catalog)
+    expect(routes).toHaveLength(
+      2 + countriesOf(catalog).length + catalog.zones.length + STATIC_ROUTES.length,
+    )
+    expect(new Set(routes).size).toBe(routes.length)
+    for (const r of routes) expect(r).toBe(r.toLowerCase())
+    expect(routes).toContain('/countries/fra')
+    expect(routes).toContain('/products/eu340')
+  })
+
+  it('sitemap 에는 noindex 경로(/search · 4-step · 마이 · 체크아웃)가 없다', () => {
+    const paths = sitemapPaths(catalog)
+    expect(paths).not.toContain('/search')
+    for (const p of paths)
+      expect(p).not.toMatch(/^\/(verify|details|select-date|view|my|checkout-preview)/)
+    expect(paths).toEqual(['/', ...STATIC_ROUTES, ...catalogRoutes(catalog)])
+  })
+
+  it('sitemap XML — 판매 사이트 주소 · lastmod = 카탈로그 생성일', () => {
+    const xml = buildSitemapXml(['/', '/countries/fra'], '2026-09-23T00:00:00+09:00')
+    expect(xml).toContain('<loc>https://esimmany.com/</loc><lastmod>2026-09-23</lastmod>')
+    expect(xml).toContain('<loc>https://esimmany.com/countries/fra</loc>')
+    expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true)
+  })
+
+  it('canonical 은 빌드 상수 https://esimmany.com + 경로(끝 / 제거)', () => {
+    expect(canonicalUrl('/')).toBe('https://esimmany.com/')
+    expect(canonicalUrl('/countries/fra/')).toBe('https://esimmany.com/countries/fra')
+  })
+})
+
+describe('메타 문구 (D-15)', () => {
+  it('국가 — «{나라} eSIM · 무제한 데이터 {최저가}부터»', () => {
+    const m = countryMeta('프랑스', zonesOfCountry(catalog, 'FRA'))
+    expect(m.title).toBe('프랑스 eSIM · 무제한 데이터 900원부터')
+    expect(m.description).toContain('상품 2개')
+  })
+
+  it('상품 — «{라벨} eSIM — 무제한 · 종량제», 여러 나라면 자동 연결', () => {
+    expect(zoneMeta(zoneByCode(catalog, 'CZE00')!).title).toBe('체코 eSIM — 무제한 · 종량제')
+    expect(zoneMeta(zoneByCode(catalog, 'FRA00')!).title).toBe('프랑스 eSIM — 무제한')
+    expect(zoneMeta(zoneByCode(catalog, 'EU340')!).description).toContain('34개국에서 하나의 eSIM')
+  })
+
+  it('메타 문구도 카피 불변식을 지킨다', () => {
+    const all = [
+      HOME_META.title,
+      HOME_META.description,
+      ...catalog.zones.flatMap((z) => Object.values(zoneMeta(z))),
+      ...countriesOf(catalog).flatMap((c) =>
+        Object.values(countryMeta(c.nameKr, zonesOfCountry(catalog, c.iso3))),
+      ),
+    ].join('\n')
+    expect(all).not.toMatch(/자정|iPhone|즉시할인|정가|할인율|최고|1위|재개통/)
+    expect(all).toContain('처음 연결된 때부터 24시간 단위')
+  })
+})

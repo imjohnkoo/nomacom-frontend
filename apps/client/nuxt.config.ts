@@ -1,6 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
 import { buildRobotsRouteRules } from './shared/utils/robots'
+import { existsSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { prerenderRoutes } from './shared/catalog/seo'
+import { parseCatalog } from './shared/catalog/validate'
+
+// 카탈로그(K1) — 실 catalog.json(W1-1 export)이 없으면 표본 픽스처. 여기서 검증하므로 깨진 카탈로그는 빌드 초입에서 멈춘다.
+const catalogFile = ['./server/data/catalog.json', './server/data/catalog.fixture.json']
+  .map((f) => fileURLToPath(new URL(f, import.meta.url)))
+  .find((f) => existsSync(f))!
+const catalog = parseCatalog(JSON.parse(readFileSync(catalogFile, 'utf8')))
+if (catalog.fixture) {
+  console.warn('⚠ FIXTURE 카탈로그(server/data/catalog.fixture.json · 표본 5 zone) — main 머지 전 W1-1 catalog.json 이 필요하다')
+}
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-15',
@@ -25,6 +38,9 @@ export default defineNuxtConfig({
   nitro: {
     // 카탈로그(K1) — server/data/catalog.json(W1-1 export) 또는 표본 픽스처. server/utils/catalog.ts 가 읽는다
     serverAssets: [{ baseName: 'catalog', dir: 'data' }],
+    // 프리렌더 = 홈 · 검색 · 국가 전수 · 상품 전수 · 정적(catalog spec F-9) — 목록을 명시한다(와일드카드는 생성하지 않는다).
+    // 200 이 아닌 라우트가 하나라도 있으면 빌드가 실패한다(failOnError 기본값).
+    prerender: { routes: prerenderRoutes(catalog) },
   },
 
   runtimeConfig: {

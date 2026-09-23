@@ -1,8 +1,10 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { parseCatalog } from '#shared/catalog/validate'
 import {
   PAYMENT_ID_PATTERN,
-  PREVIEW_ITEM,
-  PREVIEW_ORDER_NAME,
+  PREVIEW_OPTION_CODE,
+  previewItemFrom,
   buildReturnQuery,
   createPaymentId,
   formatWon,
@@ -25,7 +27,27 @@ describe('createPaymentId', () => {
   })
 })
 
-describe('상품 값 (PG 심사 요건)', () => {
+const catalog = parseCatalog(
+  JSON.parse(readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8')),
+)
+const fra = catalog.zones.find((z) => z.zone === 'FRA00')!
+const option = fra.products[0]!.options.find((o) => o.code === PREVIEW_OPTION_CODE)!
+const PREVIEW_ITEM = previewItemFrom(fra.label, 'U', option)
+const PREVIEW_ORDER_NAME = PREVIEW_ITEM.orderName
+
+describe('상품 값 (PG 심사 요건 · catalog F-12)', () => {
+  it('K1 옵션 FRA00U01D07V2 에서 만든다 — 스냅샷 기준 4,900원 · 프랑스 eSIM 무제한 · 매일 1GB · 7일', () => {
+    expect(PREVIEW_ITEM).toEqual({
+      productName: '프랑스 eSIM 무제한',
+      optionName: '매일 1GB · 소진 후 512kbps · 7일',
+      usage: '현지에서 처음 연결한 때부터 24시간 단위로 7일',
+      quantity: 1,
+      amount: option.finalWon,
+      orderName: '프랑스 eSIM 무제한 · 매일 1GB · 7일',
+    })
+    expect(option.finalWon).toBe(4900)
+  })
+
   it('상품명에 TEST 가 없고 금액은 양수 · 주문명 100자 이하', () => {
     expect(`${PREVIEW_ITEM.productName} ${PREVIEW_ORDER_NAME}`.toUpperCase()).not.toContain('TEST')
     expect(PREVIEW_ITEM.amount).toBeGreaterThan(0)

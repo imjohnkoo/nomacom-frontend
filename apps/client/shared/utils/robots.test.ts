@@ -21,6 +21,8 @@ describe('isNoindexPath', () => {
     '/my-esim',
     '/checkout-preview',
     '/checkout-preview?paymentId=pv-1&code=FAILURE',
+    '/search',
+    '/search?q=fr',
   ])('%s 는 noindex', (path) => {
     expect(isNoindexPath(path)).toBe(true)
   })
@@ -32,8 +34,9 @@ describe('isNoindexPath', () => {
     '/refund',
     '/business',
     '/guide',
-    '/search',
     '/supported-devices',
+    '/countries/fra',
+    '/products/cze00',
     '/myanmar',
     '/verifyx',
   ])('%s 는 색인 허용', (path) => {
@@ -67,7 +70,7 @@ describe('buildRobotsRouteRules', () => {
         'Cache-Control': 'no-store',
       })
     }
-    for (const pattern of ['/my', '/my/**', '/my-esim', '/checkout-preview']) {
+    for (const pattern of ['/my', '/my/**', '/my-esim', '/checkout-preview', '/search']) {
       expect(rules[pattern]?.headers).toEqual({ 'X-Robots-Tag': 'noindex, nofollow' })
     }
   })
@@ -80,7 +83,7 @@ describe('buildRobotsRouteRules', () => {
 })
 
 describe('robots.txt', () => {
-  it('Disallow 는 접두가 겹치지 않는 6줄', () => {
+  it('Disallow 는 접두가 겹치지 않는 7줄', () => {
     expect(robotsDisallowPrefixes()).toEqual([
       '/verify/',
       '/details/',
@@ -88,6 +91,7 @@ describe('robots.txt', () => {
       '/view/',
       '/my',
       '/checkout-preview',
+      '/search',
     ])
   })
 
@@ -102,6 +106,7 @@ describe('robots.txt', () => {
       '/my/x',
       '/my-esim',
       '/checkout-preview',
+      '/search',
     ]
     for (const path of samples) {
       expect(prefixes.some((prefix) => path.startsWith(prefix))).toBe(true)
@@ -111,7 +116,8 @@ describe('robots.txt', () => {
   it('본문 형식', () => {
     const txt = buildRobotsTxt()
     expect(txt).toContain('User-agent: *\n')
-    expect(txt.match(/^Disallow: /gm)).toHaveLength(6)
+    expect(txt.match(/^Disallow: /gm)).toHaveLength(7)
+    expect(txt).toContain('\nSitemap: https://esimmany.com/sitemap.xml\n')
     expect(txt.endsWith('\n')).toBe(true)
   })
 })
