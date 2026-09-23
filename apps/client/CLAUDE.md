@@ -158,11 +158,14 @@ yarn workspace nomacom-client test         # vitest — server/** · app/** · s
 yarn turbo run build --filter=nomacom-client
 
 # 로컬 walk(QA ⑦) — ⛔ prod DB 에 붙이지 않는다 · 벤더 · 내부 env 를 넘기지 않는다(John 지시 2026-09-23).
-# 봉투 스크립트가 env -i 허용 목록으로만(yarn 미경유 · 127.0.0.1 · CORS 는 자기 포트 1값) 띄우고, DB 는 dev 모드의 로컬 합성 DB
-# (postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자>)만 받는다 · .env(.local) 가 있으면 거부. 회귀: bash .claude/scripts/client-walk-server.test.sh
-bash .claude/scripts/client-walk-server.sh dev  3005 postgres://walk:walk@127.0.0.1:55432/walk   # 4-step (합성 DB)
-bash .claude/scripts/client-walk-server.sh prod 3006                                            # 헤더 · noindex (DB 없음)
-# 실발급 성공 경로(activate → view)는 로컬에서 걷지 않는다 — prod 승격 당일 operator AC.
+# 봉투 스크립트가 env -i 허용 목록으로만(yarn 미경유 · 127.0.0.1 · --dotenv /dev/null · CORS 는 자기 포트 값) 띄우고, DB 는 dev 모드의
+# 로컬 합성 DB(postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자> · 55432 리스너가 로컬 컨테이너일 때)만 받는다.
+# 워크트리의 apps/client/.env(.local) · 루트 .env(.local) 가 있으면 거부 — worktree-setup 이 만든 .env.local 심링크면 **링크만** 지운다
+# (메인 클론 원본은 건드리지 않는다). 브라우저는 http://localhost:<port>. 회귀: bash .claude/scripts/client-walk-server.test.sh
+bash .claude/scripts/client-walk-server.sh dev  3005                                             # shell · 비-DB 4-step
+bash .claude/scripts/client-walk-server.sh prod 3006                                             # 헤더 · noindex (DB 없음)
+# 합성 DB walk(E2E-3 · 4 · 7)는 아직 준비 명령이 없다 — 스키마 · 시드 명령 추가와 실행 모두 John 승인 대상.
+# ⛔ drizzle-kit push / db:push 금지(drizzle.config 는 셸의 DATABASE_URL 을 쓴다). 실발급 성공 경로는 prod 승격 당일 operator AC.
 
 # Docker
 docker build -f apps/client/Dockerfile -t nomacom-client:test .
