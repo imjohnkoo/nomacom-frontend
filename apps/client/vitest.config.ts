@@ -25,7 +25,7 @@ export default defineConfig({
       'shared/**/*.{test,spec}.ts',
     ],
     exclude: ['**/node_modules/**', '**/.nuxt/**', '**/.output/**'],
-    // client 는 server · app · shared 순수 로직 테스트가 있다(2026-09-23 W1-3 786건 — 컴포넌트 7종 · 파일 8 포함).
+    // client 는 server · app · shared 순수 로직 테스트가 있다(2026-09-23 W1-3 797건 — 컴포넌트 7종 · 파일 8 포함).
     // 0건이 되면 «테스트가 사라진 것» 이므로 실패시킨다.
     passWithNoTests: false,
   },
