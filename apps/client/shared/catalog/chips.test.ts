@@ -75,7 +75,9 @@ describe('표본 픽스처(개발) — strict: false 면 멈추지 않는다', (
     ] as const
     expect(() => errorChipsFromCatalog(...args)).toThrow()
     const sets = errorChipsFromCatalog(...args, { strict: false })
-    expect(sets.asia.length).toBeLessThan(ERROR_ASIA_COUNTRIES.length)
+    // 표본에 있는 나라만 — 인기는 8개 모두 · 아시아는 태국 하나(표본 5 zone)
+    expect(sets.popular.map((c) => c.iso3)).toEqual(POPULAR_COUNTRIES.slice(0, 8))
+    expect(sets.asia.map((c) => c.iso3)).toEqual(['THA'])
     for (const c of [...sets.popular, ...sets.asia])
       expect(fixture.zones.some((z) => z.countries.some((x) => x.iso3 === c.iso3))).toBe(true)
   })

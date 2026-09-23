@@ -14,7 +14,12 @@ const run = (to: Route) => (catalogPath as unknown as (to: Route) => unknown)(to
 describe('catalog-path 미들웨어 — 소문자 정규화', () => {
   it('대문자 → 소문자 주소로(쿼리 · 해시 유지) · SSR 301 · 클라이언트 이동은 방문 기록을 덮지 않는다(replace 없음)', () => {
     calls.length = 0
-    run({ path: '/products/FRA00', query: { utm_source: 'x' }, hash: '#plans' })
+    // 미들웨어가 돌려준 값이 이동을 바꾼다(돌려주지 않으면 SSR 301 도 클라이언트 정규화도 없다 — 대문자 주소가 404)
+    expect(run({ path: '/products/FRA00', query: { utm_source: 'x' }, hash: '#plans' })).toEqual({
+      path: '/products/fra00',
+      query: { utm_source: 'x' },
+      hash: '#plans',
+    })
     expect(calls).toEqual([
       [
         { path: '/products/fra00', query: { utm_source: 'x' }, hash: '#plans' },
@@ -23,6 +28,19 @@ describe('catalog-path 미들웨어 — 소문자 정규화', () => {
     ])
     const opts = calls[0]![1] as { replace?: boolean }
     expect(opts.replace).toBeUndefined()
+  })
+
+  it('/countries/JPN · /countries/Fra/ 도 소문자 한 벌로', () => {
+    expect(run({ path: '/countries/JPN', query: {}, hash: '' })).toEqual({
+      path: '/countries/jpn',
+      query: {},
+      hash: '',
+    })
+    expect(run({ path: '/countries/Fra/', query: {}, hash: '' })).toEqual({
+      path: '/countries/fra',
+      query: {},
+      hash: '',
+    })
   })
 
   it('이미 소문자 · 카탈로그 밖이면 그대로', () => {
