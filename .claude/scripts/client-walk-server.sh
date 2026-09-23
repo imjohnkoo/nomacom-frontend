@@ -41,6 +41,10 @@ PORT="${2:-}"
 DB_URL="${3:-}"
 [[ "$MODE" == dev || "$MODE" == prod ]] || refuse "사용: $0 dev|prod <port> [합성 DB url]"
 [[ "$PORT" =~ ^[1-9][0-9]{3,4}$ ]] || refuse "포트는 숫자 4~5자리(앞자리 0 금지 — 03005 는 nuxi 에겐 3005 인데 netstat 검사는 비껴간다)"
+# get-port-please(3.2.0, nuxi dev)가 버리는 unsafe 포트 — 받으면 nuxi 가 검사 안 한 3000~3100 의 다른 포트로 옮겨 간다
+case " 1719 1720 1723 2049 3659 4045 5060 5061 6566 6665 6666 6667 6668 6669 6697 10080 " in
+  *" $PORT "*) refuse "포트 $PORT 는 브라우저 · get-port-please 가 막는 unsafe 포트 — 다른 포트로" ;;
+esac
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
