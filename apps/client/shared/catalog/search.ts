@@ -163,7 +163,7 @@ export function norm(s: string): string {
     .normalize('NFC')
     .toLowerCase()
     .replace(/&/g, 'and')
-    .replace(/[\s\-.'’]+/g, '') // «bosnia-herzegovina» · «st. lucia» · «côte d’ivoire»
+    .replace(/[\s\-.'’]+/g, '') // 띄어쓰기 · 하이픈 · 마침표 · 아포스트로피(«st. lucia» · «côte d’ivoire»)
 }
 
 /** 낮을수록 앞 — 매칭이 없으면 null */
@@ -187,7 +187,7 @@ function score(e: SearchEntry, q: string): { rank: number; via: SearchVia; city?
     e.cities.find((c) => composingPrefix(norm(c), q)) ?? e.cities.find((c) => norm(c).includes(q))
   if (city) return { rank: 7, via: 'city', city }
   // 별칭은 앞부분만 — «la» 가 holland · england 에 걸리지 않게
-  if (e.aliases.some((a) => norm(a).startsWith(q))) return { rank: 8, via: 'alias' }
+  if (e.aliases.some((a) => composingPrefix(norm(a), q))) return { rank: 8, via: 'alias' }
   return null
 }
 

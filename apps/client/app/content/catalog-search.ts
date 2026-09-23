@@ -15,7 +15,6 @@ export const COUNTRY_ALIASES: Record<string, string[]> = {
   BIH: ['보스니아 헤르체고비나', 'bosnia'],
   CHE: ['swiss'],
   AUS: ['오스트레일리아'],
-  SGP: ['싱가폴'],
   LUX: ['룩셈부르그'],
   TWN: ['타이완'],
 }

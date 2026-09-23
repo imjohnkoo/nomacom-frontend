@@ -1,7 +1,7 @@
 /**
  * 조사 고르기 — 앞말 받침에 맞춘다(«방콕» 이 · «파리» 가 · «한국» 은 · «몰디브» 는).
- * 한글은 받침으로, 숫자는 읽는 소리로, 로마자는 끝 글자가 모음이면 받침 없음으로 본다(«LA» 가 · «London» 은).
- * 판단할 글자가 없으면 «이(가)» 처럼 둘 다 쓴다.
+ * 한글은 받침으로, 숫자는 읽는 소리로 판단한다. 로마자는 읽는 소리를 알 수 없어(Paris · Madrid · UK) «이(가)» 처럼
+ * 둘 다 쓴다 — 판단할 글자가 없을 때도 같다.
  */
 export type JosaPair = '이/가' | '은/는' | '을/를' | '과/와'
 
@@ -13,7 +13,7 @@ function hasFinal(word: string): boolean | null {
   const code = ch.charCodeAt(0)
   if (code >= 0xac00 && code <= 0xd7a3) return (code - 0xac00) % 28 !== 0
   if (/[0-9]/.test(ch)) return DIGIT_HAS_FINAL[Number(ch)]!
-  return !/[aeiouy]/i.test(ch)
+  return null
 }
 
 export function josa(word: string, pair: JosaPair): string {

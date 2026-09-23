@@ -264,11 +264,13 @@ describe(`실 카탈로그 검색(spec E2E-11 · ${ACTIVE_CATALOG_FILE})`, () =>
 
   it('흔한 다른 표기도 찾는다(별칭 · 하이픈)', () => {
     expect(iso('오스트레일리아')[0]).toBe('AUS')
-    expect(iso('싱가폴')[0]).toBe('SGP')
+    expect(iso('싱가폴')[0]).toBe('SGP') // 이름 «싱가포르» 를 치는 중인 모양 — 별칭 없이 찾는다
     expect(iso('룩셈부르그')[0]).toBe('LUX')
     expect(iso('타이완')[0]).toBe('TWN')
     expect(iso('great britain')[0]).toBe('GBR')
-    expect(norm('Bosnia-Herzegovina')).toBe('bosniaherzegovina')
+    expect(norm('St. Lucia')).toBe(norm('st lucia'))
+    expect(norm('Côte d’Ivoire')).toBe('cotedivoire')
+    expect(norm('Bosnia & Herzegovina')).toBe(norm('bosnia and herzegovina'))
   })
 })
 
@@ -298,5 +300,42 @@ describe('홈 목록 (spec D-5 · S-1)', () => {
     const got = resolveHome(parseCatalog(raw), ['CZE'], [])
     expect(got.popular).toEqual([])
     expect(got.missing[0]).toMatch(/단일국 zone CZE00 없음/)
+  })
+})
+
+describe(`조합 중 입력 — 별칭 · 도시(실 카탈로그 · spec F-4)`, () => {
+  const active = activeCatalog()
+  const idx = buildSearchIndex(active, upcoming, COUNTRY_ALIASES, enName)
+  const has = (q: string, iso3: string) =>
+    searchCountries(idx, q).some((h) => h.entry.iso3 === iso3)
+
+  it.each([
+    [
+      'AUS',
+      [
+        '오스',
+        '오스트',
+        '오스트레',
+        '오스트렝',
+        '오스트레이',
+        '오스트레일',
+        '오스트레일ㄹ',
+        '오스트레일리',
+        '오스트레일링',
+        '오스트레일리아',
+      ],
+    ],
+    ['LUX', ['룩셈', '룩셈부', '룩셈부륵', '룩셈부르', '룩셈부르그']],
+    ['TWN', ['타이', '타잉', '타이와', '타이완']],
+    ['CZE', ['체코', '체콕', '체코고', '체코공', '체코공확', '체코공화', '체코공화국']],
+  ])('별칭 %s — 매 키마다 결과에 있다', (iso3, steps) => {
+    for (const q of steps) expect(has(q, iso3), `«${q}»`).toBe(true)
+  })
+
+  it.each([
+    ['NLD', ['암스', '암스테', '암스텔', '암스테르', '암스테륻', '암스테르다', '암스테르담']],
+    ['GRC', ['아테', '아텐', '아테네']],
+  ])('도시 %s — 매 키마다 결과에 있다', (iso3, steps) => {
+    for (const q of steps) expect(has(q, iso3), `«${q}»`).toBe(true)
   })
 })
