@@ -2,8 +2,8 @@
  * 페이지별 데이터 조각 — 페이지 전용 라우트(`server/api/catalog/*`)가 이것만 응답한다(plan §2.1 — 옵션 전체를
  * 브라우저 번들 · payload 에 싣지 않는다). 순수 함수라 테스트로 모양을 잠근다.
  */
-import { lowestWon, zonesOfCountry } from './derive'
-import type { CatalogView, Kind } from './types'
+import { lowestWon, zoneByCode, zonesOfCountry } from './derive'
+import type { CatalogView, Kind, ZoneView } from './types'
 
 export interface ZoneCardData {
   zone: string
@@ -49,4 +49,9 @@ export function countryPageData(catalog: CatalogView, iso3: string): CountryPage
     single: cards.filter((c) => c.countryCount === 1),
     multi: cards.filter((c) => c.countryCount > 1),
   }
+}
+
+/** 상품 상세(spec S-4) — zone 하나(옵션 ≤ 103개). 모르는 zone 이면 null(→ 404). 판매가 · 즉시할인은 화면 모델에 없다 */
+export function zonePageData(catalog: CatalogView, code: string): ZoneView | null {
+  return zoneByCode(catalog, code) ?? null
 }
