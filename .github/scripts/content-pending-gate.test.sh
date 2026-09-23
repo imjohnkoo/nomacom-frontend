@@ -3,8 +3,11 @@
 # 사용: bash .github/scripts/content-pending-gate.test.sh
 set -uo pipefail
 
-GATE="$(cd "$(dirname "$0")" && pwd)/content-pending-gate.sh"
-TMP="$(mktemp -d)"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+GATE="$HERE/content-pending-gate.sh"
+REPO_ROOT="$(cd "$HERE/../.." && pwd)"
+PENDING_FILE=apps/client/app/content/pending.ts
+TMP="$(mktemp -d)" || { echo "mktemp 실패 — 중단"; exit 1; }
 trap 'rm -rf "$TMP"' EXIT
 pass=0
 fail=0
@@ -12,12 +15,17 @@ fail=0
 g() { git -C "$TMP" -c user.name=gate-test -c user.email=gate-test@example.invalid "$@" >/dev/null 2>&1; }
 commit() { g add -A && g commit -q --allow-empty -m "$1"; }
 put() { mkdir -p "$(dirname "$TMP/$1")" && printf '%s\n' "$2" >"$TMP/$1"; }
+put_real_pending() { mkdir -p "$(dirname "$TMP/$PENDING_FILE")" && cp "$REPO_ROOT/$PENDING_FILE" "$TMP/$PENDING_FILE"; }
+record() { if [[ $2 -eq $1 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: $3 (want $1, got $2)"; fi; }
 expect() { # 기대 exit · 설명 · [rev]
-  local want="$1" name="$2"
   CONTENT_GATE_ROOT="$TMP" bash "$GATE" ${3:+"$3"} >/dev/null 2>&1
-  local got=$?
-  if [[ $got -eq $want ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: $name (want $want, got $got)"; fi
+  record "$1" $? "$2"
 }
+
+# 실제 pending.ts 가 게이트의 PENDING_BLOB 과 같아야 한다 — 어긋나면 P9-4 반영 뒤에야 드러나는 거짓 차단
+real_blob="$(git hash-object "$REPO_ROOT/$PENDING_FILE")"
+gate_blob="$(sed -n 's/^PENDING_BLOB=\([0-9a-f]*\)$/\1/p' "$GATE")"
+record 0 "$([[ -n "$gate_blob" && "$real_blob" == "$gate_blob" ]] && echo 0 || echo 1)" "실제 pending.ts($real_blob) = 게이트 PENDING_BLOB($gate_blob)"
 
 g init -q
 expect 2 "커밋 없음 → 검사 불가"
@@ -26,9 +34,9 @@ put README.md 'x'
 commit "no client"
 expect 2 "apps/client/app 없음 → 검사 불가"
 
-put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const"
+put_real_pending
 put apps/client/app/content/pending.test.ts "expect(P9_4_PENDING)"
-put apps/client/CLAUDE.md '`P9_4_PENDING` 규칙 설명'
+put apps/client/CLAUDE.md '`P9_4_PENDING` 규칙 설명 · (확정 전)'
 put apps/client/app/content/business.ts "export const X = '확정'"
 commit "clean"
 CLEAN="$(git -C "$TMP" rev-parse HEAD)"
@@ -63,8 +71,9 @@ g checkout -q "$PENDING"
 expect 1 "detached HEAD 도 같은 판정"
 
 CONTENT_GATE_ROOT="$TMP" bash "$GATE" "" >/dev/null 2>&1
-got=$?
-if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: 빈 리비전 인자 → 검사 불가 (want 2, got $got)"; fi
+record 2 $? "빈 리비전 인자 → 검사 불가"
+CONTENT_GATE_ROOT="$TMP" bash "$GATE" "$CLEAN" "$PENDING" >/dev/null 2>&1
+record 2 $? "여러 인자 → 검사 불가(한 ref 만 보고 통과하지 않게)"
 
 # 바이너리 속성이 붙어도 텍스트로 본다(.gitattributes -diff)
 g checkout -q "$CLEAN"
@@ -73,29 +82,43 @@ put apps/client/app/content/business.ts "export const X = P9_4_PENDING"
 commit "binary attr"
 expect 1 "-diff 속성 파일도 막힘"
 
-# pending.ts 는 정해진 이름만 — 별칭 · 재수출로 비껴가지 않게
-for alias in "export const TBD = P9_4_PENDING" "export { P9_4_PENDING as TBD }" "export default P9_4_PENDING" "export const displayValue\$ = P9_4_PENDING" "export  const TBD = 1"; do
+# pending.ts 는 파일 전체가 고정 — 별칭(한 줄 · 여러 줄 · 주석 · 재수출) · 판정 함수 본문 변경 모두 막힌다
+aliases=(
+  "export const TBD = P9_4_PENDING"
+  "export { P9_4_PENDING as TBD }"
+  "export default P9_4_PENDING"
+  "const TBD = P9_4_PENDING; export { TBD }"
+  "export/**/const TBD = P9_4_PENDING"
+  "  , TBD = PENDING_LABEL"
+)
+for alias in "${aliases[@]}"; do
   g checkout -q "$CLEAN"
-  put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const
-$alias"
+  put_real_pending
+  printf '%s\n' "$alias" >>"$TMP/$PENDING_FILE"
   put apps/client/app/content/business.ts "export const X = TBD"
   commit "alias: $alias"
   expect 1 "pending.ts 별칭 막힘 — $alias"
 done
-
-# 쉼표 선언으로 허용 줄에 별칭을 붙이면 그 줄이 목록과 달라진다
 g checkout -q "$CLEAN"
-put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const, TBD = P9_4_PENDING"
-put apps/client/app/content/business.ts "export const X = TBD"
-commit "comma alias"
-expect 1 "쉼표 선언 별칭 막힘"
+put_real_pending
+sed -i.orig "s/return value === P9_4_PENDING/return value === P9_4_PENDING || value === '-'/" "$TMP/$PENDING_FILE"
+put apps/client/app/content/business.ts "export const X = '-'"
+commit "body change"
+expect 1 "판정 함수 본문 변경 막힘"
 
-# 글자 P9_4_PENDING 없이 표시 문구로 채우는 우회
-for value in "export const X = PENDING_LABEL" "export const X = '(확정 전)'" 'export const X = "(확정 전)"'; do
+# 글자 P9_4_PENDING 없이 표시 문구로 채우는 우회 — 따옴표 · 앞뒤 글자 · .vue 템플릿
+labels=(
+  "apps/client/app/content/business.ts|export const X = PENDING_LABEL"
+  "apps/client/app/content/business.ts|export const X = '(확정 전)'"
+  'apps/client/app/content/business.ts|export const X = "(확정 전)"'
+  "apps/client/app/content/business.ts|export const X = '상호 (확정 전)'"
+  "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 (확정 전)</p>"
+)
+for entry in "${labels[@]}"; do
   g checkout -q "$CLEAN"
-  put apps/client/app/content/business.ts "$value"
-  commit "label: $value"
-  expect 1 "표시 문구 우회 막힘 — $value"
+  put "${entry%%|*}" "${entry#*|}"
+  commit "label: $entry"
+  expect 1 "표시 문구 우회 막힘 — ${entry#*|}"
 done
 # 주석의 «(확정 전)» 은 세지 않는다
 g checkout -q "$CLEAN"
@@ -104,25 +127,19 @@ export const X = '확정'"
 commit "comment only"
 expect 0 "주석의 «(확정 전)» 은 통과"
 
-# 여러 인자 → 검사 불가(한 ref 만 보고 통과하지 않게)
-CONTENT_GATE_ROOT="$TMP" bash "$GATE" "$CLEAN" "$PENDING" >/dev/null 2>&1
-got=$?
-if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: 여러 인자 → 검사 불가 (want 2, got $got)"; fi
-
 # 임시 파일을 못 만들면 통과가 아니라 검사 불가
 g checkout -q "$PENDING"
-NOTMP="$(mktemp -d)"
+NOTMP="$TMP/fake-bin"
+mkdir -p "$NOTMP"
 printf '#!/bin/sh\nexit 1\n' >"$NOTMP/mktemp"
 chmod +x "$NOTMP/mktemp"
 PATH="$NOTMP:$PATH" CONTENT_GATE_ROOT="$TMP" bash "$GATE" >/dev/null 2>&1
-got=$?
-rm -rf "$NOTMP"
-if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: mktemp 실패 → 검사 불가 (want 2, got $got)"; fi
+record 2 $? "mktemp 실패 → 검사 불가"
 
 # 객체를 못 읽으면(손상 · 누락) «없음» 이 아니라 검사 불가
 g checkout -q "$CLEAN"
 blob="$(git -C "$TMP" rev-parse "$CLEAN:apps/client/app/content/business.ts")"
-rm -f "$TMP/.git/objects/${blob:0:2}/${blob:2}"
+mv "$TMP/.git/objects/${blob:0:2}/${blob:2}" "$TMP/missing-object"
 expect 2 "blob 누락 → 검사 불가 (통과 아님)" "$CLEAN"
 
 echo "content-pending-gate: $pass pass · $fail fail"

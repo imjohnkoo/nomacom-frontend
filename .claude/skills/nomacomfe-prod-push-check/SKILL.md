@@ -112,7 +112,14 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 # client 확정 전 문안(P9_4_PENDING) 0 — Phase 1.0 의 PROMOTE_SHA 를 본다 (W1-2 D-17).
 PROMOTE_SHA=<Phase 1.0 값>
 [ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || exit 1
-bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
+# 게이트 스크립트가 없는 SHA(도입 전 main)는 자리표시자도 없다 — «해당 없음» 으로 보고한다
+if [ -f .github/scripts/content-pending-gate.sh ]; then
+  bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
+else
+  echo "content gate: 해당 없음(게이트 도입 전 SHA)"
+fi
+bash .github/scripts/typecheck-gate.sh admin || exit 1
+bash .github/scripts/typecheck-gate.sh client || exit 1
 ```
 
 > ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 4건 — 2026-09-23 7 → 4). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
@@ -132,7 +139,7 @@ yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 
 **UI 변경이 포함된 경우** 추가로:
 
-- 영향 앱 dev 서버 띄워서 (`yarn workspace nomacom-admin run dev`) golden path 수동 검증
+- 영향 앱 dev 서버 띄워서 golden path 수동 검증 — admin 은 `yarn workspace nomacom-admin run dev`. **client 는 로컬 walk 안전 봉투로만**(`bash .claude/scripts/client-walk-server.sh dev <port>` → `http://127.0.0.1:<port>` — prod DB · 벤더 키 없이. John 지시 2026-09-23 · client-shell spec D-18). 실발급 · 실주문 경로는 로컬에서 걷지 않고 승격 당일 operator AC 로
 - 자동 테스트는 feature correctness 가 아닌 code correctness 만 검증함
 
 ### Phase 5 — 마이그레이션/DB 변경 안전성

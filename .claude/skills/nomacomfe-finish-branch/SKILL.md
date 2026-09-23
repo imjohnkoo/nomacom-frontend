@@ -116,7 +116,7 @@ GATE=.github/scripts/content-pending-gate.sh
 export CONTENT_GATE_ROOT="$(pwd)"           # 판정 대상 = 메인 클론(워크트리 HEAD 가 아니다)
 # 머지 **전에** 양쪽 부모를 본다 — 둘 다 0 이어야 머지한다(머지 뒤 실패하면 로컬 main 에 커밋이 남는다)
 bash "$GATE" HEAD && bash "$GATE" <feature-branch> || exit 1
-git merge --no-ff <feature-branch>
+git merge --no-ff <feature-branch> || exit 1   # 충돌이면 멈춘다 — 손으로 해결했다면 아래 게이트 재검사부터 다시
 yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 bash "$GATE" HEAD || exit 1                 # 머지 결과를 다시(충돌 해결에서 들어온 경우)
 unset CONTENT_GATE_ROOT
@@ -124,9 +124,6 @@ git push origin main
 ```
 
 > 머지 뒤 게이트가 실패하면 **push 하지 않고** 사용자에게 보고한다. 로컬 main 을 되돌리는 것(`git reset --keep origin/main`)도 사용자 승인 뒤에만 — 그 전에 prod-push-check 를 돌리면 안 된다(로컬 main 에 자리표시자 커밋이 있다).
-
-```bash
-```
 
 > `main` push 는 `packages/design-*` 변경이 포함되면 `design-system-publish.yml` 을 트리거한다 — **DS version bump 선행 여부**를 확인할 것.
 
@@ -240,12 +237,12 @@ Option 1, 4 에서만 정리한다. Option 2, 3 은 유지.
 
 ## Decision Table
 
-| Option           | Step 0 게이트 | Build | Base push | Keep worktree       |
-| ---------------- | ------------- | ----- | --------- | ------------------- |
+| Option           | Step 0 게이트                    | Build | Base push | Keep worktree       |
+| ---------------- | -------------------------------- | ----- | --------- | ------------------- |
 | 1. Merge locally | ✓ (콘텐츠 게이트 0 일 때만 제시) | ✓     | ✓ (main)  | ✗ — **승인 후에만** |
-| 2. Push + PR     | ✓ (게이트 1 이면 `--draft`)     | ✓     | — (PR)    | ✓                   |
-| 3. Push as-is    | ✓             | ✓     | ✗         | ✓                   |
-| 4. Discard       | —             | ✗     | ✗         | ✗ — **승인 후에만** |
+| 2. Push + PR     | ✓ (게이트 1 이면 `--draft`)      | ✓     | — (PR)    | ✓                   |
+| 3. Push as-is    | ✓                                | ✓     | ✗         | ✓                   |
+| 4. Discard       | —                                | ✗     | ✗         | ✗ — **승인 후에만** |
 
 ## Red Flags
 
