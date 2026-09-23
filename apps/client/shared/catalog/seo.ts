@@ -70,7 +70,7 @@ export function countryMeta(nameKr: string, zones: ZoneView[]): PageMeta {
     title: `${nameKr} eSIM · ${unlimited.length ? '무제한 데이터 ' : ''}${formatWon(low)}부터`,
     description:
       `${nameKr}에서 쓰는 eSIM 상품 ${zones.length}개. 사용일수는 현지에서 처음 연결된 때부터 24시간 단위로 세요. ` +
-      '테더링 가능 · 카카오톡으로 1~2분 안에 발급 링크를 보내 드려요.',
+      '테더링 가능 · 보통 1~2분 안에 카카오톡으로 발급 링크를 보내 드려요.',
   }
 }
 

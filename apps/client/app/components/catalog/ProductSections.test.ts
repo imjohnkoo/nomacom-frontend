@@ -65,7 +65,10 @@ describe('ProductSections', () => {
     expect(text()).toContain('나라를 옮기면 다시 설정해야 하나요?')
     expect(w.findAll('.sec__country')).toHaveLength(6)
     expect(w.find('.sec__grid').exists()).toBe(false)
-    for (const c of w.findAll('.sec__cities')) expect(c.text()).not.toContain('·')
+    // 나라마다 대표 도시 하나 = K1 도시 목록의 첫 값(검색용 목록이라 같은 도시의 다른 표기가 섞여 있다)
+    const shown = w.findAll('.sec__country').map((li) => li.find('.sec__cities').text())
+    const sorted = [...z.countries].sort((a, b) => a.nameKr.localeCompare(b.nameKr, 'ko'))
+    expect(shown).toEqual(sorted.map((c) => c.cities[0]))
     expect(text()).toContain(OPERATOR_NOTE)
     w.unmount()
   })
@@ -80,11 +83,12 @@ describe('ProductSections', () => {
     w.unmount()
   })
 
-  it('단일국 — «현지 통신사» · 통신사가 미확정(null)이면 대체 문구', () => {
+  it('단일국 — 소제목 «현지 통신사» · 단서 · 통신사가 미확정(null)이면 대체 문구', () => {
     const fra = zoneByCode(cat, 'FRA00')!
     const unknown = { ...fra, countries: [{ ...fra.countries[0]!, operators: null }] }
     const { w, text } = render(unknown, 'U')
-    expect(text()).toContain('현지 통신사')
+    expect(w.get('.sec__sub').text()).toBe('현지 통신사')
+    expect(text()).toContain(OPERATOR_NOTE)
     expect(w.findAll('.sec__op').map((o) => o.text())).toContain(OPERATOR_FALLBACK)
     expect(text()).not.toContain('나라를 옮기면 다시 설정해야 하나요?')
     w.unmount()
