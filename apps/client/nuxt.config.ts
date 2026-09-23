@@ -22,6 +22,11 @@ export default defineNuxtConfig({
   // noindex · 캐시 금지 헤더 — 목록은 shared/utils/robots.ts 하나 (meta · robots.txt 와 같은 출처)
   routeRules: buildRobotsRouteRules(),
 
+  nitro: {
+    // 카탈로그(K1) — server/data/catalog.json(W1-1 export) 또는 표본 픽스처. server/utils/catalog.ts 가 읽는다
+    serverAssets: [{ baseName: 'catalog', dir: 'data' }],
+  },
+
   runtimeConfig: {
     public: {
       apiBase: '/api/v1',
