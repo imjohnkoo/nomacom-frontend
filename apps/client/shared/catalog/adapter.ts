@@ -4,6 +4,8 @@
  * 필드명은 W1-1 export 의 README(H-002)가 정한다. 이름이 바뀌면 이 파일만 고친다
  * (자주 쓰는 이름은 `K` 표, 옵션 · 나라 · 핀의 잎 필드는 각 함수 안).
  * 모양이 틀린 값은 버리지 않고 `issues` 에 적는다 — 판정(빌드 실패)은 `validate.ts` 가 한다.
+ * 키가 없으면 기본값으로 채우지 않고 issue 로 적는다(export 가 필드 이름을 바꾸면 빌드가 멈춰야 한다 — spec F-1).
+ * null 을 허용하는 것은 미확정 통신사 · 망뿐이다.
  */
 import type { CountryView, Kind, OptionView, PinView, ProductView, ZoneView } from './types'
 
@@ -72,12 +74,38 @@ class Reader {
     return []
   }
 
-  str(o: Rec, key: string, at: string, { optional = false } = {}): string {
+  /** 키가 반드시 있어야 한다 — `allowEmpty` 는 빈 문자열만 허용한다(키 누락 · null 은 여전히 실패) */
+  str(o: Rec, key: string, at: string, { allowEmpty = false } = {}): string {
     const v = o[key]
-    if (typeof v === 'string' && (optional || v.trim() !== '')) return v
-    if (optional && (v === undefined || v === null)) return ''
+    if (typeof v === 'string' && (allowEmpty || v.trim() !== '')) return v
     this.issues.push(`${at}.${key}: 문자열이 없다`)
     return ''
+  }
+
+  /** 키가 반드시 있어야 하고 값은 문자열 또는 null(미확정) */
+  strOrNull(o: Rec, key: string, at: string): string | null {
+    const v = o[key]
+    if (v === null) return null
+    if (typeof v === 'string' && v.trim() !== '') return v
+    this.issues.push(`${at}.${key}: 문자열 또는 null 이 아니다(키 누락 포함)`)
+    return null
+  }
+
+  /** 키가 반드시 있어야 하고 값은 빈 칸 없는 문자열 배열 */
+  strs(o: Rec, key: string, at: string): string[] {
+    const v = o[key]
+    if (Array.isArray(v) && v.every((x) => typeof x === 'string' && x.trim() !== ''))
+      return v as string[]
+    this.issues.push(`${at}.${key}: 문자열 배열이 아니다(키 누락 포함)`)
+    return []
+  }
+
+  /** 정해진 어휘 중 하나 */
+  oneOf<T extends string>(o: Rec, key: string, at: string, words: readonly T[]): T {
+    const v = o[key]
+    if (typeof v === 'string' && (words as readonly string[]).includes(v)) return v as T
+    this.issues.push(`${at}.${key}: ${words.join(' · ')} 중 하나가 아니다(${String(v)})`)
+    return words[0]!
   }
 
   num(o: Rec, key: string, at: string): number {
@@ -124,18 +152,15 @@ function adaptProduct(r: Reader, raw: unknown, at: string): AdaptedProduct {
 
 function adaptCountry(r: Reader, raw: unknown, at: string): CountryView {
   const c = r.rec(raw, at)
-  const operators = c.operators
+  const operators = c.operators === null ? null : r.strs(c, 'operators', at)
   return {
     iso3: r.str(c, 'iso3', at),
     iso2: r.str(c, 'iso2', at),
     nameKr: r.str(c, 'nameKr', at),
-    cities: Array.isArray(c.cities)
-      ? c.cities.filter((x): x is string => typeof x === 'string')
-      : [],
-    operators: Array.isArray(operators)
-      ? operators.filter((x): x is string => typeof x === 'string')
-      : null,
-    network: typeof c.network === 'string' ? c.network : null,
+    cities: r.strs(c, 'cities', at),
+    // 빈 배열은 «미확정» 과 같다 — 화면은 대체 문구를 쓴다
+    operators: operators && operators.length > 0 ? operators : null,
+    network: r.strOrNull(c, 'network', at),
   }
 }
 
@@ -145,8 +170,13 @@ function adaptPin(r: Reader, raw: unknown, at: string): PinView {
     name: r.str(p, 'name', at),
     x: r.num(p, 'x', at),
     y: r.num(p, 'y', at),
-    big: p.size === 'big',
-    labelLeft: p.labelDir === 'left',
+    big: r.oneOf(p, 'size', at, ['big', 'normal'] as const) === 'big',
+    labelLeft: r.oneOf(p, 'labelDir', at, ['left', 'right'] as const) === 'left',
+    // 보정이 없는 핀은 키가 없다(H-002)
+    labelShift:
+      p.labelShift === undefined || p.labelShift === null
+        ? null
+        : r.oneOf(p, 'labelShift', at, ['up', 'down'] as const),
   }
 }
 
@@ -160,13 +190,13 @@ function adaptZone(r: Reader, raw: unknown, at: string): AdaptedZone {
   return {
     zone: r.str(z, K.zone, at),
     label: r.str(z, K.zoneLabel, at),
-    subtitle: r.str(z, K.zoneSubtitle, at, { optional: true }),
+    subtitle: r.str(z, K.zoneSubtitle, at, { allowEmpty: true }),
     countries: r.arr(z, K.countries, at).map((c, i) => adaptCountry(r, c, `${at}.countries[${i}]`)),
     map: {
       src: r.str(map, K.mapSvg, `${at}.${K.map}`),
-      pins: Array.isArray(map[K.pins])
-        ? (map[K.pins] as unknown[]).map((p, i) => adaptPin(r, p, `${at}.map.pins[${i}]`))
-        : [],
+      pins: r
+        .arr(map, K.pins, `${at}.${K.map}`)
+        .map((p, i) => adaptPin(r, p, `${at}.map.pins[${i}]`)),
     },
     products,
   }

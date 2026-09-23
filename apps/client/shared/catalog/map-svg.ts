@@ -4,30 +4,49 @@
  *  2. 앞 점과 가로 + 세로 거리가 `tolerance` 미만인 점을 솎는다(기본 2 — 390px 화면에서 0.6px 이하)
  *  3. 좌표를 정수로 반올림하고 상대 좌표(`l`)로 적는다 · 주석 · 태그 사이 공백 제거
  * 2026-09-23 실측: 78 zone 31.5MB → 7.27MB, 장당 최대 184KB(plan §2.3 상한 8MB · 250KB).
- * 원본 경로는 절대 좌표 M · L · Z 만 쓴다 — 다른 명령이 보이면 망가뜨리지 않도록 throw 한다.
+ * 원본 경로는 절대 좌표 M · L · Z 만 쓴다 — 다른 명령 · 읽을 수 없는 좌표가 보이면 망가뜨리지 않도록 throw 한다.
  */
 
 type Pt = [number, number]
 
 const MARGIN = 20
 
+/**
+ * 경로 문자열을 고리 목록으로 — 절대 좌표 M · L(좌표를 이어 쓴 암묵 L 포함) · Z 만 받는다.
+ * 모르는 글자 · 짝이 안 맞는 숫자 · 숫자가 아닌 값은 전부 throw — 조용히 버리거나 NaN 을 쓰지 않는다.
+ */
 function parseRings(d: string): Pt[][] {
   const rings: Pt[][] = []
   let cur: Pt[] = []
-  const re = /([A-Za-z])\s*(?:(-?[\d.]+)[ ,](-?[\d.]+))?/g
-  for (const m of d.matchAll(re)) {
-    const cmd = m[1]!
+  let cmd = ''
+  const tokens = d.match(/[A-Za-z]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?|[^\s,]/gi) ?? []
+  for (let i = 0; i < tokens.length; ) {
+    const t = tokens[i]!
+    if (/^[A-Za-z]$/.test(t)) {
+      if (t === 'Z' || t === 'z') {
+        if (cur.length) rings.push(cur)
+        cur = []
+        cmd = ''
+      } else if (t === 'M' || t === 'L') {
+        cmd = t
+      } else {
+        throw new Error(`지도 경로에 지원하지 않는 명령 «${t}» — M · L · Z 만`)
+      }
+      i++
+      continue
+    }
+    const x = Number(t)
+    const y = Number(tokens[i + 1])
+    if (!cmd || !Number.isFinite(x) || !Number.isFinite(y))
+      throw new Error(`지도 경로 좌표를 읽지 못했다(«${tokens.slice(i, i + 2).join(' ')}»)`)
     if (cmd === 'M') {
       if (cur.length) rings.push(cur)
-      cur = [[Number(m[2]), Number(m[3])]]
-    } else if (cmd === 'L') {
-      cur.push([Number(m[2]), Number(m[3])])
-    } else if (cmd === 'Z' || cmd === 'z') {
-      if (cur.length) rings.push(cur)
-      cur = []
+      cur = [[x, y]]
+      cmd = 'L' // M 뒤에 이어 쓴 좌표는 L 이다(SVG 규칙)
     } else {
-      throw new Error(`지도 경로에 지원하지 않는 명령 «${cmd}» — M · L · Z 만`)
+      cur.push([x, y])
     }
+    i += 2
   }
   if (cur.length) rings.push(cur)
   return rings
@@ -83,13 +102,14 @@ export function optimizeMapSvg(svg: string, tolerance = 2): string {
   }
   return svg
     .replace(
-      /<path([^>]*?)d="([^"]+)"([^>]*)\/>/g,
+      // d 앞에 공백을 요구한다 — `id="…"` · `data-d="…"` 의 끝 글자를 d 로 잡지 않게
+      /<path([^>]*?)\sd="([^"]+)"([^>]*)\/>/g,
       (_all, before: string, d: string, after: string) => {
         const enc = parseRings(d)
           .filter(visible)
           .map((r) => encodeRing(simplify(r, tolerance)))
           .join('')
-        return enc ? `<path${before}d="${enc}"${after}/>` : ''
+        return enc ? `<path${before} d="${enc}"${after}/>` : ''
       },
     )
     .replace(/<!--[\s\S]*?-->/g, '')

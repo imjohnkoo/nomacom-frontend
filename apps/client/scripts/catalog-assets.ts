@@ -4,7 +4,9 @@
  *   yarn workspace nomacom-client catalog:assets --design <design 폴더>
  *
  * --design = 2609 자산이 있는 `design/` 폴더(W1-0 머지 전에는 smartstore-assets 워크트리, 뒤에는 리포 루트 design/).
- *            **읽기만 한다** — design/ 은 이 트랙이 고치지 않는다.
+ *            **읽기만 한다** — design/ 은 이 트랙이 고치지 않는다. 상대경로는 **리포 루트** 기준(예: `--design design`).
+ * ⚠️ rep-v1 PNG(`design/thumbnails/out/`)는 gitignore 라 머지로 옮겨지지 않는다 — main 에서 돌리려면 먼저
+ *    `node design/thumbnails/figma-2609/render-v1.mjs` 로 재렌더한다(spec ①.5 W1-0).
  * 입력:  thumbnails/out/rep-v1/{SKU}/{SKU}_00_rep.png (1000px) · products/_generator/maps/{ZONE}.svg
  *        · flag-icons(MIT) flags/1x1/{iso2}.svg · app/content/catalog-upcoming.json(준비 중 나라 국기)
  * 출력:  public/catalog/thumbs/{SKU}.{hash8}.webp (400px) · maps/{ZONE}.{hash8}.svg (map-svg.ts 축소)
@@ -22,6 +24,7 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
@@ -32,7 +35,8 @@ import { parseCatalog } from '../shared/catalog/validate'
 const APP = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(APP, 'public/catalog')
 const MANIFEST = join(APP, 'app/content/catalog-assets.json')
-const FLAGS = resolve(APP, '../../node_modules/flag-icons')
+// 끌어올림(hoist) 위치에 기대지 않고 패키지 해석으로 찾는다
+const FLAGS = dirname(createRequire(import.meta.url).resolve('flag-icons/package.json'))
 const THUMB_PX = 400
 const MAP_TOLERANCE = 2
 /** 원본 위치가 다른 zone — 2609 생성기 overrides 기준 */
@@ -56,8 +60,11 @@ function loadCatalog() {
 }
 
 async function main() {
-  const design = arg('design')
-  if (!design || !existsSync(design)) throw new Error('--design <2609 design 폴더> 가 필요하다')
+  const given = arg('design')
+  if (!given) throw new Error('--design <2609 design 폴더> 가 필요하다')
+  // yarn workspace 는 스크립트를 apps/client 에서 돌린다(INIT_CWD 도 그 폴더) — 상대경로는 리포 루트 기준으로 푼다
+  const design = resolve(process.env.PROJECT_CWD ?? resolve(APP, '../..'), given)
+  if (!existsSync(design)) throw new Error(`--design 폴더가 없다(${design})`)
   const { file, catalog } = loadCatalog()
   const upcoming = JSON.parse(
     readFileSync(join(APP, 'app/content/catalog-upcoming.json'), 'utf8'),

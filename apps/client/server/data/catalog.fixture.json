@@ -2974,7 +2974,8 @@
       "x": 40.1,
       "y": 52.6,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "left",
+      "labelShift": "down"
      },
      {
       "name": "부다페스트",
@@ -2988,7 +2989,8 @@
       "x": 31.4,
       "y": 76.4,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "right",
+      "labelShift": "down"
      },
      {
       "name": "이스탄불",
@@ -3016,7 +3018,8 @@
       "x": 57.6,
       "y": 38.0,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "right",
+      "labelShift": "down"
      },
      {
       "name": "헬싱키",

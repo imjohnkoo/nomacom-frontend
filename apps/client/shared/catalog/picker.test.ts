@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { zoneByCode } from './derive'
 import {
@@ -11,13 +10,10 @@ import {
   withDays,
   withKind,
 } from './picker'
+import { ACTIVE_CATALOG_FILE, activeRaw, fixtureCatalog, type RawCatalog } from './test-data'
 import { parseCatalog } from './validate'
 
-const catalog = parseCatalog(
-  JSON.parse(
-    readFileSync(new URL('../../server/data/catalog.fixture.json', import.meta.url), 'utf8'),
-  ),
-)
+const catalog = fixtureCatalog()
 const cze = zoneByCode(catalog, 'CZE00')!
 const fra = zoneByCode(catalog, 'FRA00')!
 
@@ -84,5 +80,47 @@ describe('상세 선택기 (catalog spec D-3 · D-16 · E2E-13)', () => {
     expect(selectionLabel(cze, s)).toBe('체코 · 매일 2GB · 7일')
     expect(selectionLabel(cze, withKind(cze, s, 'L'))).toBe('체코 · 총 1GB · 30일')
     expect(selectedOption(cze, s)!.finalWon).toBe(9100)
+  })
+})
+
+describe(`전 zone × 전 옵션 — 카드 가격 = K1 최종가 (spec 불변식 2 · E2E-13 · ${ACTIVE_CATALOG_FILE})`, () => {
+  // 원본 JSON 과 대조한다 — 어댑터가 필드를 잘못 집어도 걸리게
+  const raw = activeRaw()
+  const active = parseCatalog(activeRaw())
+  const rawOptions = raw.zones.flatMap((z: RawCatalog) =>
+    z.products.flatMap((p: RawCatalog) =>
+      p.options.map((o: RawCatalog) => ({ zone: z.zone, kind: p.kind, o })),
+    ),
+  )
+
+  it('모든 옵션이 제 칸의 카드로 한 번씩 나오고 가격 · 코드가 원본과 같다', () => {
+    expect(rawOptions.length).toBeGreaterThan(0)
+    const seen = new Set<string>()
+    for (const { zone, kind, o } of rawOptions) {
+      const z = zoneByCode(active, zone)!
+      const cards = planCards(z, { kind, cap: o.cap, days: o.days })
+      const card = cards.find((c) => c.cap === o.cap)
+      expect(card, o.code).toBeDefined()
+      expect([card!.option.code, card!.option.finalWon, card!.selected]).toEqual([
+        o.code,
+        o.finalWon,
+        true,
+      ])
+      expect(cards.filter((c) => c.selected)).toHaveLength(1)
+      seen.add(card!.option.code)
+    }
+    expect(seen.size).toBe(rawOptions.length)
+    if (active.fixture) expect(rawOptions).toHaveLength(494)
+  })
+
+  it('드롭다운 기간은 짧은 것부터 · 무제한은 1~30 다음 60 · 90', () => {
+    for (const z of active.zones)
+      for (const p of z.products) {
+        const days = periodOptions(z, p.kind)
+        expect(days).toEqual([...days].sort((a, b) => a - b))
+        if (p.kind === 'U')
+          expect(days.slice(0, 30)).toEqual(Array.from({ length: 30 }, (_, i) => i + 1))
+        else expect(days).toEqual([30])
+      }
   })
 })

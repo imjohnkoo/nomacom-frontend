@@ -38,8 +38,9 @@ export interface CountryView {
   nameKr: string
   /** 첫 도시 = 대표 */
   cities: string[]
-  /** 미확정이면 null */
+  /** 미확정이면 null(K1 이 null 로 명시한다 — 키가 없으면 검증 실패) */
   operators: string[] | null
+  /** «4G/LTE · 5G» — 미확정이면 null */
   network: string | null
 }
 
@@ -52,6 +53,8 @@ export interface PinView {
   big: boolean
   /** 라벨을 점 왼쪽에 둔다 */
   labelLeft: boolean
+  /** 라벨을 점보다 한 줄 아래 · 위로 — 이웃 핀과 겹침 보정(2609 labelStyle). 없으면 null */
+  labelShift: 'up' | 'down' | null
 }
 
 export interface ZoneView {

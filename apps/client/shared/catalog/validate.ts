@@ -18,21 +18,50 @@ const ZONE_RE = /^[A-Z0-9]{5}$/
 const ISO3_RE = /^[A-Z]{3}$/
 const ISO2_RE = /^[A-Z]{2}$/
 const DAILY_DAYS = Array.from({ length: 30 }, (_, i) => i + 1)
+/** 무제한 판매 기간 — 1~30일 · 60 · 90일(D-3) */
+const DAILY_ALLOWED = new Set([...DAILY_DAYS, 60, 90])
 const QUOTA_DAYS = 30
+/** ISO 8601 날짜 · 시각(시간대 필수) — sitemap lastmod 가 앞 10자를 쓴다 */
+const ISO_DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/
+/** 옵션 코드 `{SKU}{cap}D{dd}V2` — 레지스트리는 cap 2~3자리지만 지금은 2자리만 지원한다(H-002 검증기 계약) */
+const CODE_RE = /^(?<sku>[A-Z0-9]{5}[UL])(?<cap>\d+)D(?<days>\d+)V2$/
 
 export function expectedNaverUrl(channelProductNo: number, sku: string): string {
   return `https://smartstore.naver.com/esimmany/products/${channelProductNo}?nt_source=esimmany-web&nt_medium=detail&nt_detail=${sku}`
 }
 
-function checkAssetPath(path: string, prefix: string, at: string, issues: string[]) {
+function checkAssetPath(path: string, expected: string, at: string, issues: string[]) {
   if (/pstatic\.net|shop-phinf/i.test(path))
     issues.push(`${at}: 네이버 CDN 경로(${path}) — 자사 자산만(A6)`)
-  else if (!path.startsWith(prefix)) issues.push(`${at}: ${prefix} 로 시작하지 않는다(${path})`)
+  else if (path !== expected) issues.push(`${at}: ${expected} 가 아니다(${path})`)
+}
+
+function checkCode(
+  o: { code: string; cap: number; days: number },
+  sku: string,
+  at: string,
+  issues: string[],
+) {
+  const m = CODE_RE.exec(o.code)?.groups
+  if (!m || m.sku !== sku) {
+    issues.push(`${at}: 옵션 코드가 ${sku}{cap}D{dd}V2 모양이 아니다(${o.code})`)
+    return
+  }
+  if (m.cap!.length !== 2)
+    issues.push(
+      `${at}: 용량 ${m.cap!.length}자리 코드는 아직 지원하지 않는다 — 검증기 · export 를 함께 고친다`,
+    )
+  else if (m.days!.length !== 2 || Number(m.cap) !== o.cap || Number(m.days) !== o.days)
+    issues.push(`${at}: 코드(${o.code})와 용량 ${o.cap} · ${o.days}일이 어긋난다`)
 }
 
 function check(c: AdaptedCatalog, issues: string[]) {
   const zones = new Set<string>()
   const skus = new Set<string>()
+  /** iso3 → 처음 본 «iso2 이름» — zone 마다 같아야 한다(검색 · 국가 페이지가 서로 다른 zone 값을 쓴다) */
+  const countryOf = new Map<string, string>()
+  if (!ISO_DATETIME_RE.test(c.generatedAt) || Number.isNaN(Date.parse(c.generatedAt)))
+    issues.push(`meta.generatedAt: ISO 8601 날짜 · 시각이 아니다(${c.generatedAt})`)
   if (c.zones.length === 0) issues.push('zones: 비어 있다')
   for (const z of c.zones) {
     const at = `zone ${z.zone || '?'}`
@@ -41,12 +70,22 @@ function check(c: AdaptedCatalog, issues: string[]) {
     zones.add(z.zone)
     if (z.label.trim() === '') issues.push(`${at}: 라벨이 비었다`)
     if (z.countries.length === 0) issues.push(`${at}: 나라가 없다`)
+    const inZone = new Set<string>()
     for (const k of z.countries) {
       if (!ISO3_RE.test(k.iso3)) issues.push(`${at}: iso3 모양이 아니다(${k.iso3})`)
       if (!ISO2_RE.test(k.iso2)) issues.push(`${at}: ${k.iso3} iso2 가 없다`)
       if (k.nameKr.trim() === '') issues.push(`${at}: ${k.iso3} 이름이 없다`)
+      if (inZone.has(k.iso3)) issues.push(`${at}: 나라 ${k.iso3} 중복`)
+      inZone.add(k.iso3)
+      const id = `${k.iso2} ${k.nameKr}`
+      const seen = countryOf.get(k.iso3)
+      if (seen === undefined) countryOf.set(k.iso3, id)
+      else if (seen !== id) issues.push(`${at}: ${k.iso3} 가 다른 zone 과 다르다(${id} ≠ ${seen})`)
     }
-    checkAssetPath(z.map.src, '/catalog/maps/', `${at}.map`, issues)
+    checkAssetPath(z.map.src, `/catalog/maps/${z.zone}.svg`, `${at}.map`, issues)
+    for (const pin of z.map.pins)
+      if (!(pin.x >= 0 && pin.x <= 100 && pin.y >= 0 && pin.y <= 100))
+        issues.push(`${at}: 핀 ${pin.name} 좌표가 0~100% 밖(${pin.x}, ${pin.y})`)
     if (z.products.length === 0) issues.push(`${at}: 상품이 없다`)
     const kinds = new Set<string>()
     for (const p of z.products) {
@@ -63,7 +102,7 @@ function check(c: AdaptedCatalog, issues: string[]) {
         issues.push(`${pat}: 채널상품번호가 없다`)
       else if (p.naverUrl !== expectedNaverUrl(p.channelProductNo, p.sku))
         issues.push(`${pat}: naverUrl 이 K2 모양이 아니다(${p.naverUrl})`)
-      checkAssetPath(p.thumb, '/catalog/thumbs/', `${pat}.thumb`, issues)
+      checkAssetPath(p.thumb, `/catalog/thumbs/${p.sku}.webp`, `${pat}.thumb`, issues)
       if (p.options.length === 0) issues.push(`${pat}: 옵션이 없다`)
       const cells = new Set<string>()
       for (const o of p.options) {
@@ -76,17 +115,25 @@ function check(c: AdaptedCatalog, issues: string[]) {
         if (!(o.cap > 0)) issues.push(`${oat}: 용량이 0 이하`)
         if (!Number.isInteger(o.days) || o.days <= 0) issues.push(`${oat}: 일수가 0 이하`)
         if (o.usable !== true) issues.push(`${oat}: 판매 가능(usable)이 true 가 아니다`)
+        checkCode(o, p.sku, oat, issues)
         if (p.kind === 'L' && o.days !== QUOTA_DAYS)
           issues.push(`${oat}: 종량제 일수가 ${QUOTA_DAYS}일이 아니다(${o.days})`)
+        if (p.kind === 'U' && !DAILY_ALLOWED.has(o.days))
+          issues.push(`${oat}: 무제한 기간이 1~30 · 60 · 90일 밖(${o.days})`)
       }
       if (p.kind === 'U') {
+        const daysByCap = new Map<number, string>()
         for (const cap of new Set(p.options.map((o) => o.cap))) {
           const missing = DAILY_DAYS.filter((d) => !cells.has(`${cap}/${d}`))
           if (missing.length > 0)
             issues.push(
               `${pat}: 매일 ${cap}GB 에 ${missing.join(',')}일이 없다 — 1~30일은 하루 단위`,
             )
+          const days = p.options.filter((o) => o.cap === cap).map((o) => o.days)
+          daysByCap.set(cap, [...days].sort((a, b) => a - b).join(','))
         }
+        // 용량마다 기간 목록이 같아야 드롭다운의 어느 기간을 골라도 용량 카드가 다 나온다
+        if (new Set(daysByCap.values()).size > 1) issues.push(`${pat}: 용량마다 기간 목록이 다르다`)
       }
     }
   }
