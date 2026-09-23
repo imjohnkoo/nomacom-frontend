@@ -100,16 +100,14 @@ export function pickSelection(
   return orders?.find((order) => order.productOrderId === session.productOrderId) ?? null
 }
 
-/** 상품주문번호 비교 — 응답 경로에 따라 number · string 이 섞여도 같은 상품을 찾는다 */
-const sameProductOrder = (a: unknown, b: unknown) =>
-  a !== null && a !== undefined && b !== null && b !== undefined && Number(a) === Number(b)
-
 /** 응답 목록에서 이 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다). 없으면 null */
 export function findProductOrder(
   orders: readonly Order[] | null | undefined,
-  productOrderId: unknown,
+  productOrderId: number | null | undefined,
 ): Order | null {
-  return orders?.find((order) => sameProductOrder(order.productOrderId, productOrderId)) ?? null
+  // 엄격 비교 — 다른 판정(pickSelection · selectedFor · 쿠키 검증)과 같다. Drizzle bigint mode:number 라 둘 다 number
+  if (productOrderId === null || productOrderId === undefined) return null
+  return orders?.find((order) => order.productOrderId === productOrderId) ?? null
 }
 
 export type SelectionOutcome =
@@ -123,7 +121,7 @@ export type SelectionOutcome =
  */
 export function decideSelection(
   response: { verified: boolean; cancelled?: boolean; details?: readonly Order[] | null },
-  productOrderId: unknown,
+  productOrderId: number | null | undefined,
 ): SelectionOutcome {
   const target = findProductOrder(response.details, productOrderId)
   if (response.verified && !response.cancelled && target && !target.cancelled) {

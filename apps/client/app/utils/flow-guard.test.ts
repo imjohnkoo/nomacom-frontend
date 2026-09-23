@@ -216,16 +216,6 @@ describe('findProductOrder (D-14 — 위치가 아니라 productOrderId)', () =>
     expect(findProductOrder([b], ORDER_ID + 1)).toBeNull()
   })
 
-  it('number · string 이 섞여도 같은 번호면 찾는다', () => {
-    expect(findProductOrder([a], String(ORDER_ID + 1))).toBe(a)
-    expect(
-      findProductOrder(
-        [{ ...a, productOrderId: String(ORDER_ID + 1) as unknown as number }],
-        ORDER_ID + 1,
-      ),
-    ).not.toBeNull()
-  })
-
   it('목록 · 번호가 없으면 null', () => {
     expect(findProductOrder(undefined, ORDER_ID + 1)).toBeNull()
     expect(findProductOrder([], ORDER_ID + 1)).toBeNull()
@@ -267,5 +257,15 @@ describe('decideSelection (details «선택하기» — spec S-8)', () => {
       kind: 'missing',
     })
     expect(decideSelection({ verified: true, details: [] }, PO)).toEqual({ kind: 'missing' })
+    // 검증 실패면 취소 여부도 알려 주지 않는다(서버 소유권 원칙과 같다)
+    expect(
+      decideSelection(
+        { verified: false, details: [order({ productOrderId: PO, cancelled: true })] },
+        PO,
+      ),
+    ).toEqual({ kind: 'missing' })
+    expect(decideSelection({ verified: false, cancelled: true, details: [target] }, PO)).toEqual({
+      kind: 'missing',
+    })
   })
 })

@@ -164,10 +164,12 @@ const onConfirm = async () => {
     const { verified, cancelled } = verifyResponse
 
     if (verified && !cancelled) {
+      // 요청한 상품주문번호를 먼저 잡는다 — 발급을 기다리는 동안 다른 상품을 고르면 store 가 바뀐다
+      const requestedProductOrderId = orderStore.singleOrder?.productOrderId
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
       // 발급한 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다 · flow-guard 순수함수)
-      const issued = findProductOrder(details, orderStore.singleOrder?.productOrderId)
+      const issued = findProductOrder(details, requestedProductOrderId)
       if (activateVerified && issued) {
         isIssueQrCodesVisible.value = false
         orderStore.setSingleOrder(issued)
