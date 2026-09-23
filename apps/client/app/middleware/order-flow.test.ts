@@ -88,14 +88,17 @@ describe('쿠키 없이 · 다른 주문', () => {
 
   it('쿠키 주문번호가 경로와 다르면 복원하지 않는다 (다른 주문 복원 금지)', async () => {
     cookie.value = session({ orderId: OTHER_ORDER_ID })
-    expect(await run(`/details/${ORDER_ID}`)).toMatchObject({
+    expect(await run(`/details/${ORDER_ID}`)).toEqual({
       redirect: `/verify/${ORDER_ID}?reason=reverify`,
+      replace: true,
     })
     expect(api.verifyOrder).not.toHaveBeenCalled()
   })
 
   it('잘못된 주문번호 → /my-esim · verify 화면은 통과', async () => {
     expect(await run('/view/abc')).toEqual({ redirect: '/my-esim', replace: true })
+    // ① 주문번호 검사가 ② verify 통과보다 먼저 — /verify/abc 도 폼이 아니라 /my-esim
+    expect(await run('/verify/abc')).toEqual({ redirect: '/my-esim', replace: true })
     expect(await run(`/verify/${ORDER_ID}`)).toEqual({ pass: 'verify' })
   })
 })
@@ -141,8 +144,9 @@ describe('쿠키로 복원', () => {
   it('verify 거절이면 쿠키를 지우고 reverify', async () => {
     cookie.value = session({ productOrderId: PO_A })
     api.verifyOrder.mockResolvedValue({ verified: false })
-    expect(await run(`/details/${ORDER_ID}`)).toMatchObject({
+    expect(await run(`/details/${ORDER_ID}`)).toEqual({
       redirect: `/verify/${ORDER_ID}?reason=reverify`,
+      replace: true,
     })
     expect(cookie.cleared).toBe(1)
     expect(useOrderStore().orders).toBeNull()
@@ -151,17 +155,29 @@ describe('쿠키로 복원', () => {
   it('verify 통과인데 목록이 비면 거절과 같다', async () => {
     cookie.value = session()
     api.verifyOrder.mockResolvedValue({ verified: true, details: [] })
-    expect(await run(`/details/${ORDER_ID}`)).toMatchObject({
+    expect(await run(`/details/${ORDER_ID}`)).toEqual({
       redirect: `/verify/${ORDER_ID}?reason=reverify`,
+      replace: true,
     })
     expect(cookie.cleared).toBe(1)
+  })
+
+  it('2xx 인데 JSON 이 아닌 응답(CDN 오류 페이지)은 오류 — 쿠키를 남긴다', async () => {
+    cookie.value = session()
+    api.verifyOrder.mockResolvedValue('<html>error</html>')
+    expect(await run(`/details/${ORDER_ID}`)).toEqual({
+      redirect: `/verify/${ORDER_ID}?reason=reverify`,
+      replace: true,
+    })
+    expect(cookie.cleared).toBe(0)
   })
 
   it('verify 오류(네트워크 · 500)면 쿠키는 남기고 reverify', async () => {
     cookie.value = session()
     api.verifyOrder.mockRejectedValue(new Error('500'))
-    expect(await run(`/details/${ORDER_ID}`)).toMatchObject({
+    expect(await run(`/details/${ORDER_ID}`)).toEqual({
       redirect: `/verify/${ORDER_ID}?reason=reverify`,
+      replace: true,
     })
     expect(cookie.cleared).toBe(0)
     expect(cookie.value).not.toBeNull()
@@ -169,6 +185,16 @@ describe('쿠키로 복원', () => {
 })
 
 describe('store 에 이미 있으면 (hydration 두 번째 실행 · SPA 이동)', () => {
+  it('store 가 다른 주문의 목록이면 쿠키로 이 주문을 복원한다 (목록 교체)', async () => {
+    const store = useOrderStore()
+    store.setOrders([order({ orderId: OTHER_ORDER_ID, productOrderId: OTHER_ORDER_ID + 1 })])
+    cookie.value = session({ productOrderId: PO_A })
+    api.verifyOrder.mockResolvedValue({ verified: true, details: [order({ esims: [esim()] })] })
+    expect(await run(`/view/${ORDER_ID}`)).toEqual({ pass: 'view' })
+    expect(api.verifyOrder).toHaveBeenCalledTimes(1)
+    expect(store.orders?.every((o) => o.orderId === ORDER_ID)).toBe(true)
+  })
+
   it('verify 를 다시 부르지 않는다', async () => {
     const store = useOrderStore()
     store.setOrders([order({ esims: [esim()] })])

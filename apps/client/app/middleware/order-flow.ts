@@ -11,7 +11,8 @@
  *  ② verify 화면은 통과
  *  ③ store 에 이 주문의 목록이 없으면 흐름 쿠키로 복원 — 쿠키 주문번호 = 경로 주문번호일 때만,
  *     쿠키의 이름 · 전화로 POST /api/v1/verify 를 «그대로» 부른다(요청 body = verify 화면과 동일 · 계약 불변).
- *     쿠키 없음 · 다른 주문 · verify 거절 · 오류 → /verify/{주문번호}?reason=reverify (거절이면 쿠키도 지운다)
+ *     쿠키 없음 · 다른 주문 · verify 거절 · 오류 → /verify/{주문번호}?reason=reverify
+ *     (거절이면 쿠키도 지운다 · 네트워크 · 서버 오류나 JSON 이 아닌 응답이면 남긴다)
  *  ④ 선택 상품이 store 에 없으면 쿠키의 상품주문번호로 목록에서 고른다(API 호출 없음)
  *  ⑤ 판정표(~/utils/flow-guard)로 이동 또는 통과
  */
@@ -48,6 +49,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
         fullName: session.fullName,
         phoneNumber: session.phoneNumber,
       })
+      // 2xx 인데 JSON 이 아닌 응답(CDN 오류 페이지 등)은 거절이 아니라 오류 — 쿠키를 지우지 않는다
+      if (!response || typeof response !== 'object') {
+        return navigateTo(reverifyPath(orderId), { replace: true })
+      }
       if (!response.verified || !response.details?.length) {
         flowSession.clear()
         return navigateTo(reverifyPath(orderId), { replace: true })
