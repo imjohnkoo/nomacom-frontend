@@ -4,6 +4,10 @@
 import ShellHeader from '~/components/shell/ShellHeader.vue'
 import SiteFooter from '~/components/shell/SiteFooter.vue'
 import BottomTabBar from '~/components/shell/BottomTabBar.vue'
+
+// sticky 헤더 · fixed 탭바에 앵커 목적지(/my#cs)와 키보드 포커스가 가리지 않게 (spec D-20 · WCAG 2.4.11)
+// html 에 거는 여백이라 이 레이아웃일 때만 클래스를 붙인다 — flow 레이아웃에는 헤더 · 탭바가 없다.
+useHead({ htmlAttrs: { class: 'has-shell-chrome' } })
 </script>
 
 <template>
@@ -17,6 +21,13 @@ import BottomTabBar from '~/components/shell/BottomTabBar.vue'
     <BottomTabBar />
   </div>
 </template>
+
+<style>
+html.has-shell-chrome {
+  scroll-padding-top: calc(var(--shell-header-height, 56px) + 8px);
+  scroll-padding-bottom: calc(var(--shell-tabbar-height, 56px) + env(safe-area-inset-bottom) + 8px);
+}
+</style>
 
 <style scoped>
 .layout-default {

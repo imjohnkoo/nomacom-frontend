@@ -25,12 +25,20 @@ describe('isNoindexPath', () => {
     expect(isNoindexPath(path)).toBe(true)
   })
 
-  it.each(['/', '/terms', '/privacy', '/refund', '/business', '/guide', '/search', '/supported-devices', '/myanmar', '/verifyx'])(
-    '%s 는 색인 허용',
-    (path) => {
-      expect(isNoindexPath(path)).toBe(false)
-    },
-  )
+  it.each([
+    '/',
+    '/terms',
+    '/privacy',
+    '/refund',
+    '/business',
+    '/guide',
+    '/search',
+    '/supported-devices',
+    '/myanmar',
+    '/verifyx',
+  ])('%s 는 색인 허용', (path) => {
+    expect(isNoindexPath(path)).toBe(false)
+  })
 })
 
 describe('buildRobotsRouteRules', () => {
@@ -45,8 +53,22 @@ describe('buildRobotsRouteRules', () => {
 
   it('4-step 경로만 no-store — 나머지 noindex 경로는 캐시 헤더를 건드리지 않는다', () => {
     for (const pattern of NOINDEX_ROUTES) {
-      const expected = (NO_STORE_ROUTES as readonly string[]).includes(pattern) ? 'no-store' : undefined
+      const expected = (NO_STORE_ROUTES as readonly string[]).includes(pattern)
+        ? 'no-store'
+        : undefined
       expect(rules[pattern]?.headers['Cache-Control']).toBe(expected)
+    }
+  })
+
+  it('4-step 4경로는 정확히 no-store (spec 불변식 — 목록에서 빠지면 실패)', () => {
+    for (const pattern of ['/verify/**', '/details/**', '/select-date/**', '/view/**']) {
+      expect(rules[pattern]?.headers).toEqual({
+        'X-Robots-Tag': 'noindex, nofollow',
+        'Cache-Control': 'no-store',
+      })
+    }
+    for (const pattern of ['/my', '/my/**', '/my-esim', '/checkout-preview']) {
+      expect(rules[pattern]?.headers).toEqual({ 'X-Robots-Tag': 'noindex, nofollow' })
     }
   })
 
@@ -71,7 +93,16 @@ describe('robots.txt', () => {
 
   it('모든 noindex 경로가 어떤 Disallow 접두에 덮인다', () => {
     const prefixes = robotsDisallowPrefixes()
-    const samples = ['/verify/1', '/details/1', '/select-date/1', '/view/1', '/my', '/my/x', '/my-esim', '/checkout-preview']
+    const samples = [
+      '/verify/1',
+      '/details/1',
+      '/select-date/1',
+      '/view/1',
+      '/my',
+      '/my/x',
+      '/my-esim',
+      '/checkout-preview',
+    ]
     for (const path of samples) {
       expect(prefixes.some((prefix) => path.startsWith(prefix))).toBe(true)
     }

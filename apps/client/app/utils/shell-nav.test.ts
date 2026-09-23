@@ -38,6 +38,41 @@ describe('shell 목록', () => {
     expect(SHELL_TABS.map((tab) => tab.label)).toEqual(['홈', '내 eSIM', '가이드', '마이'])
   })
 
+  it('탭 목적지 (spec F-6)', () => {
+    expect(SHELL_TABS.map((tab) => [tab.label, tab.to])).toEqual([
+      ['홈', '/'],
+      ['내 eSIM', '/my-esim'],
+      ['가이드', '/guide'],
+      ['마이', '/my'],
+    ])
+  })
+
+  it('전체 메뉴 3묶음 · 항목 · 목적지 (spec F-5)', () => {
+    expect(
+      SHELL_MENU.map((group) => [group.title, group.links.map((l) => [l.label, l.to])]),
+    ).toEqual([
+      [
+        'eSIM',
+        [
+          ['국가 검색', '/search'],
+          ['내 eSIM 조회', '/my-esim'],
+          ['설치 가이드', '/guide'],
+          ['지원 기기 확인', '/supported-devices'],
+        ],
+      ],
+      ['고객지원', [['고객센터', '/my#cs']]],
+      [
+        '약관 및 정책',
+        [
+          ['이용약관', '/terms'],
+          ['개인정보처리방침', '/privacy'],
+          ['환불정책', '/refund'],
+          ['사업자정보', '/business'],
+        ],
+      ],
+    ])
+  })
+
   it('각 탭의 목적지는 그 탭을 활성으로 만든다', () => {
     for (const tab of SHELL_TABS) {
       expect(activeTabOf(tab.to)).toBe(tab.key)

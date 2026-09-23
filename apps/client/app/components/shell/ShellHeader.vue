@@ -6,6 +6,15 @@ import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 import ShellMenu from '~/components/shell/ShellMenu.vue'
 
 const isMenuOpen = ref(false)
+
+// 경로가 바뀌면 닫는다 — 항목 누름 말고도 뒤로가기(안드로이드 back 제스처 포함)로 이동할 때 시트 · 스크롤 잠금이 남지 않게
+const route = useRoute()
+watch(
+  () => route.fullPath,
+  () => {
+    isMenuOpen.value = false
+  },
+)
 </script>
 
 <template>
