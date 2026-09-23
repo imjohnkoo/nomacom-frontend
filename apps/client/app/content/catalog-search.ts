@@ -6,7 +6,7 @@
 export const COUNTRY_ALIASES: Record<string, string[]> = {
   TUR: ['터키', 'turkey'],
   CZE: ['체코공화국', 'czech republic'],
-  GBR: ['잉글랜드', '스코틀랜드', 'uk', 'england'],
+  GBR: ['잉글랜드', '스코틀랜드', 'uk', 'england', 'britain', 'great britain'],
   USA: ['미합중국', 'usa', 'america'],
   NLD: ['홀란드', 'holland'],
   CYP: ['사이프러스'],
@@ -14,4 +14,8 @@ export const COUNTRY_ALIASES: Record<string, string[]> = {
   GEO: ['그루지야'],
   BIH: ['보스니아 헤르체고비나', 'bosnia'],
   CHE: ['swiss'],
+  AUS: ['오스트레일리아'],
+  SGP: ['싱가폴'],
+  LUX: ['룩셈부르그'],
+  TWN: ['타이완'],
 }

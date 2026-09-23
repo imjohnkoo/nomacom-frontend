@@ -5,6 +5,7 @@ import { POPULAR_COUNTRIES, POPULAR_MULTI_ZONES } from '~/content/popular'
 import { resolveHome } from './home'
 import {
   buildSearchIndex,
+  composingPrefix,
   norm,
   searchCountries,
   toChosung,
@@ -211,5 +212,91 @@ describe('홈 격자 (spec D-5)', () => {
       '다국가 CZE00(여러 나라 zone 없음)',
     ])
     expect(resolveHome(catalog, ['EU3'], []).missing[0]).toMatch(/단일국 zone EU300 없음/)
+  })
+})
+
+describe('한글 조합 중 입력 (spec F-4 — 치는 도중 «찾지 못했어요» 가 깜빡이지 않게)', () => {
+  // 두벌식으로 한 키씩 칠 때 입력창에 보이는 값
+  it.each([
+    ['체코', ['ㅊ', '체', '쳌', '체코']],
+    ['스페인', ['스', '슾', '스페', '스펭', '스페이', '스페인']],
+    ['이탈리아', ['이', '잍', '이타', '이탈', '이탈ㄹ', '이탈리', '이탈링', '이탈리아']],
+    ['프랑스', ['프', '플', '프라', '프랑', '프랑ㅅ', '프랑스']],
+    ['스위스', ['스', '스우', '스위', '스윗', '스위스']],
+  ])('«%s» — 매 키마다 결과에 그 나라가 있다', (name, steps) => {
+    for (const q of steps) {
+      if (/^[ㄱ-ㅎ]$/.test(q)) continue // 첫소리 한 글자는 초성 검색 경로
+      expect(
+        searchCountries(index, q).some((h) => h.entry.ko === name),
+        `«${q}»`,
+      ).toBe(true)
+    }
+  })
+
+  it('앞말이 다르면 잡지 않는다(«첵» 은 체코가 아니다 · «프로» 는 프랑스가 아니다)', () => {
+    expect(composingPrefix('체코', '첵')).toBe(false)
+    expect(composingPrefix('프랑스', '프로')).toBe(false)
+    expect(composingPrefix('이탈리아', '이탈ㅁ')).toBe(false)
+    expect(composingPrefix('스페인', '스펙')).toBe(false)
+  })
+
+  it('겹받침은 나뉘어 다음 첫소리가 된다(«닭» → «달걀»)', () => {
+    expect(composingPrefix('달걀', '닭')).toBe(true)
+  })
+})
+
+describe(`실 카탈로그 검색(spec E2E-11 · ${ACTIVE_CATALOG_FILE})`, () => {
+  const active = activeCatalog()
+  const idx = buildSearchIndex(active, upcoming, COUNTRY_ALIASES, enName)
+  const iso = (q: string) => searchCountries(idx, q).map((h) => h.entry.iso3)
+
+  it('«ㅍㄹ» → 포르투갈 · 폴란드 · 프랑스 · 핀란드 · 필리핀(준비 중), 그 뒤 초성 부분 일치 싱가포르 · 키프로스', () => {
+    expect(iso('ㅍㄹ')).toEqual(['PRT', 'POL', 'FRA', 'FIN', 'PHL', 'SGP', 'CYP'])
+  })
+
+  it('«파리» → 프랑스(도시) · «France» → 프랑스 · «터키» → 튀르키예 · «일본» → 준비 중 · «몰디브» → 없음', () => {
+    expect(searchCountries(idx, '파리')[0]).toMatchObject({ entry: { iso3: 'FRA' }, via: 'city' })
+    expect(iso('France')[0]).toBe('FRA')
+    expect(iso('터키')[0]).toBe('TUR')
+    expect(searchCountries(idx, '일본')[0]!.entry).toMatchObject({ iso3: 'JPN', upcoming: true })
+    expect(iso('몰디브')).toEqual([])
+  })
+
+  it('흔한 다른 표기도 찾는다(별칭 · 하이픈)', () => {
+    expect(iso('오스트레일리아')[0]).toBe('AUS')
+    expect(iso('싱가폴')[0]).toBe('SGP')
+    expect(iso('룩셈부르그')[0]).toBe('LUX')
+    expect(iso('타이완')[0]).toBe('TWN')
+    expect(iso('great britain')[0]).toBe('GBR')
+    expect(norm('Bosnia-Herzegovina')).toBe('bosniaherzegovina')
+  })
+})
+
+describe('홈 목록 (spec D-5 · S-1)', () => {
+  it('인기국가 · 다국가 목록은 12칸씩 · 중복 없음', () => {
+    expect(POPULAR_COUNTRIES).toHaveLength(12)
+    expect(POPULAR_MULTI_ZONES).toHaveLength(12)
+    expect(new Set(POPULAR_COUNTRIES).size).toBe(12)
+    expect(new Set(POPULAR_MULTI_ZONES).size).toBe(12)
+  })
+
+  it('실 카탈로그 — 칸마다 국기가 있고 인기국가 국기는 그 나라 것', () => {
+    const active = activeCatalog()
+    const home = resolveHome(active, POPULAR_COUNTRIES, POPULAR_MULTI_ZONES)
+    for (const t of [...home.popular, ...home.multi]) expect(t.iso2s.length).toBeGreaterThan(0)
+    home.popular.forEach((t, i) => {
+      const c = active.zones.find((z) => z.zone === `${POPULAR_COUNTRIES[i]}00`)!.countries[0]!
+      expect(t).toMatchObject({ to: `/countries/${c.iso3.toLowerCase()}`, iso2s: [c.iso2] })
+    })
+  })
+
+  it('인기국가 코드의 zone 이 여러 나라면 missing(단일국만)', () => {
+    const raw = fixtureRaw()
+    const cze = raw.zones.find((z: { zone: string }) => z.zone === 'CZE00')
+    const fra = raw.zones.find((z: { zone: string }) => z.zone === 'FRA00')
+    cze.countries.push(structuredClone(fra.countries[0]))
+    const got = resolveHome(parseCatalog(raw), ['CZE'], [])
+    expect(got.popular).toEqual([])
+    expect(got.missing[0]).toMatch(/단일국 zone CZE00 없음/)
   })
 })

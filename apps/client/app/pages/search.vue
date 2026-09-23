@@ -3,6 +3,7 @@
 // 매칭 규칙은 shared/catalog/search.ts(D-9), 상품 없는 나라는 «준비 중» 행 · 링크 없음(D-10).
 import { ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { searchCountries, type SearchEntry, type SearchHit } from '#shared/catalog/search'
+import { josa } from '#shared/utils/josa'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import SearchField from '~/components/catalog/SearchField.vue'
 import { POPULAR_COUNTRIES } from '~/content/popular'
@@ -30,7 +31,8 @@ const hasUpcoming = computed(() => hits.value.some((h) => h.entry.upcoming))
 
 function note(hit: SearchHit): string {
   if (hit.entry.upcoming) return '아직 판매하지 않는 나라예요'
-  if (hit.via === 'city' && hit.city) return `도시 «${hit.city}» 가 있는 나라`
+  if (hit.via === 'city' && hit.city)
+    return `도시 «${hit.city}» ${josa(hit.city, '이/가')} 있는 나라`
   return ''
 }
 function countryPath(e: SearchEntry) {
@@ -77,7 +79,9 @@ function countryPath(e: SearchEntry) {
         </p>
       </template>
       <div v-else class="search-page__empty">
-        <p class="search-page__empty-title">«{{ trimmed }}» 는 찾지 못했어요</p>
+        <p class="search-page__empty-title">
+          «{{ trimmed }}» {{ josa(trimmed, '은/는') }} 찾지 못했어요
+        </p>
         <p class="search-page__empty-sub">나라 이름을 다시 확인해 주세요.</p>
       </div>
     </template>
