@@ -13,6 +13,7 @@ import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
 import { useFlowSession } from '~/composables/useFlowSession'
 import { formatDateString } from '~/utils/date'
+import { isFullyIssued } from '~/utils/flow-guard'
 import type { Order } from '~/types/order'
 
 const route = useRoute()
@@ -110,7 +111,6 @@ const handleWithdrawCancel = async () => {
 
 // 발급 상태 판정 — quantity 대비 esims 수 기준. 부분 발급 (activate 중간 실패)
 // 은 "이어서 발급하기" 로 select-date 재진입시켜 서버 resume 로직과 연결
-const isFullyIssued = (order: Order) => (order.esims?.length ?? 0) >= (order.quantity || 1)
 const isPartiallyIssued = (order: Order) =>
   (order.esims?.length ?? 0) > 0 && !isFullyIssued(order)
 

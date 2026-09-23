@@ -10,6 +10,7 @@
  *   view        | → verify(reason)  | → details | 통과        | 통과           | → details
  */
 import type { Order } from '~/types/order'
+import type { FlowSession } from '~/utils/flow-session'
 
 export type FlowStep = 'verify' | 'details' | 'select-date' | 'view'
 
@@ -71,4 +72,30 @@ export function resolveFlowRedirect(
 
   // view — 발급된 eSIM 이 없으면 볼 것이 없다(현행은 «불러오는 중» 에 멈췄다)
   return (selected.esims?.length ?? 0) === 0 ? detailsPath(orderId) : null
+}
+
+export type RestoreDecision = 'use-store' | 'restore' | 'reverify'
+
+/**
+ * 미들웨어 ③ — store 에 이 주문 목록이 있으면 그대로, 없으면 쿠키로 복원할지 · 본인 확인으로 보낼지.
+ * ⛔ 쿠키 주문번호 ≠ 경로 주문번호면 복원하지 않는다(다른 주문 복원 금지 — spec 불변식).
+ */
+export function decideRestore(
+  session: FlowSession | null,
+  orderId: number,
+  storeHasOrders: boolean,
+): RestoreDecision {
+  if (storeHasOrders) return 'use-store'
+  if (!session || session.orderId !== orderId) return 'reverify'
+  return 'restore'
+}
+
+/** 미들웨어 ④ — 선택 상품이 store 에 없을 때, 같은 주문의 쿠키 productOrderId 로 목록에서 고른다(없으면 null) */
+export function pickSelection(
+  orders: readonly Order[] | null,
+  session: FlowSession | null,
+  orderId: number,
+): Order | null {
+  if (!session || session.orderId !== orderId || !session.productOrderId) return null
+  return orders?.find((order) => order.productOrderId === session.productOrderId) ?? null
 }

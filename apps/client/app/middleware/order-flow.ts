@@ -19,8 +19,10 @@ import { useApi } from '~/composables/useApi'
 import { useFlowSession } from '~/composables/useFlowSession'
 import { useOrderStore } from '~/stores/order'
 import {
+  decideRestore,
   flowStepOf,
   parseOrderIdParam,
+  pickSelection,
   resolveFlowRedirect,
   reverifyPath,
 } from '~/utils/flow-guard'
@@ -37,10 +39,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const flowSession = useFlowSession()
   const session = flowSession.read()
 
-  if (!store.hasOrdersFor(orderId)) {
-    if (!session || session.orderId !== orderId) {
-      return navigateTo(reverifyPath(orderId), { replace: true })
-    }
+  const decision = decideRestore(session, orderId, store.hasOrdersFor(orderId))
+  if (decision === 'reverify') return navigateTo(reverifyPath(orderId), { replace: true })
+  if (decision === 'restore' && session) {
     try {
       const response = await useApi().verifyOrder({
         orderId,
@@ -58,8 +59,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
   }
 
-  if (store.singleOrder?.orderId !== orderId && session?.orderId === orderId) {
-    const picked = store.orders?.find((order) => order.productOrderId === session.productOrderId)
+  if (store.singleOrder?.orderId !== orderId) {
+    const picked = pickSelection(store.orders, session, orderId)
     if (picked) store.setSingleOrder(picked)
   }
 

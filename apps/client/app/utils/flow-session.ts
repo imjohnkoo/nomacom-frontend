@@ -9,8 +9,8 @@
 
 export const FLOW_COOKIE = 'nomacom_flow'
 export const FLOW_COOKIE_MAX_AGE = 60 * 60
-/** 비정상적으로 긴 입력이면 쓰지 않는다(메모리 흐름은 그대로) — 쿠키 4KB 한도 · 요청 헤더 비대화 방지 */
-export const FLOW_COOKIE_MAX_BYTES = 1024
+/** spec 불변식 «직렬화 크기 < 300B» — 넘는 입력(비정상적으로 긴 이름 등)이면 쓰지 않는다(메모리 흐름은 그대로) */
+export const FLOW_COOKIE_MAX_BYTES = 299
 
 export interface FlowSession {
   v: 1
@@ -59,7 +59,11 @@ export function parseFlowSession(raw: unknown): FlowSession | null {
     fullName: o.fullName,
     phoneNumber: o.phoneNumber,
   }
-  if (isPositiveSafeInt(o.productOrderId)) session.productOrderId = o.productOrderId
+  // productOrderId 는 선택 — 있는데 형식이 틀리면 세션 전체를 없는 것으로 본다(spec F-15)
+  if (o.productOrderId !== undefined) {
+    if (!isPositiveSafeInt(o.productOrderId)) return null
+    session.productOrderId = o.productOrderId
+  }
   return session
 }
 

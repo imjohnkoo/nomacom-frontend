@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { Esim, Order } from '../types/order'
+import type { FlowSession } from './flow-session'
 import {
-  detailsPath,
+  decideRestore,
   flowStepOf,
   isFullyIssued,
   parseOrderIdParam,
+  pickSelection,
   resolveFlowRedirect,
-  reverifyPath,
   type FlowStep,
 } from './flow-guard'
 
@@ -56,8 +57,9 @@ const cases = {
 }
 
 const PASS = null
-const V = reverifyPath(ORDER_ID)
-const D = detailsPath(ORDER_ID)
+// 목적지는 spec S-8 · D-8 문자열 그대로 — 구현 함수로 만들지 않는다(미러링 금지)
+const V = `/verify/${ORDER_ID}?reason=reverify`
+const D = `/details/${ORDER_ID}`
 
 // spec §5 S-8 판정표 — 행: 화면, 열: noOrders · noSelection · cancelled · fullyIssued · zeroIssued · partial
 const TABLE: Record<FlowStep, (string | null)[]> = {
@@ -87,6 +89,12 @@ describe('resolveFlowRedirect — 판정 순서', () => {
 })
 
 describe('resolveFlowRedirect — 다른 주문 · 목록 밖 선택', () => {
+  it('선택 상품의 주문번호가 다르면 productOrderId 가 같아도 «선택 없음»', () => {
+    const mine = order({ esims: [esim()] })
+    const impostor = order({ orderId: OTHER_ORDER_ID, esims: [esim()] })
+    expect(resolveFlowRedirect('view', ORDER_ID, { orders: [mine], selected: impostor })).toBe(D)
+  })
+
   it('store 목록이 다른 주문이면 «목록 없음» → 본인 확인', () => {
     const other = order({ orderId: OTHER_ORDER_ID, productOrderId: OTHER_ORDER_ID + 1 })
     expect(resolveFlowRedirect('details', ORDER_ID, { orders: [other], selected: other })).toBe(V)
@@ -137,7 +145,57 @@ describe('parseOrderIdParam', () => {
 describe('isFullyIssued', () => {
   it('발급 수 ≥ 수량이면 전량 발급 (수량 0 은 1 로 본다)', () => {
     expect(isFullyIssued({ quantity: 1, esims: [esim()] })).toBe(true)
+    expect(isFullyIssued({ quantity: 1, esims: [esim(), esim()] })).toBe(true)
     expect(isFullyIssued({ quantity: 2, esims: [esim()] })).toBe(false)
     expect(isFullyIssued({ quantity: 0, esims: [] })).toBe(false)
+  })
+})
+
+const session = (over: Partial<FlowSession> = {}): FlowSession => ({
+  v: 1,
+  orderId: ORDER_ID,
+  fullName: '테스트고객',
+  phoneNumber: '010-0000-0001',
+  ...over,
+})
+
+describe('decideRestore — 미들웨어 ③ (spec 불변식: 쿠키 주문번호 ≠ 경로 주문번호 → 쓰지 않는다)', () => {
+  it('store 에 이 주문 목록이 있으면 복원하지 않는다', () => {
+    expect(decideRestore(session(), ORDER_ID, true)).toBe('use-store')
+    expect(decideRestore(null, ORDER_ID, true)).toBe('use-store')
+  })
+
+  it('쿠키 없음 → 본인 확인', () => {
+    expect(decideRestore(null, ORDER_ID, false)).toBe('reverify')
+  })
+
+  it('다른 주문의 쿠키 → 본인 확인 (다른 주문 복원 금지)', () => {
+    expect(decideRestore(session({ orderId: OTHER_ORDER_ID }), ORDER_ID, false)).toBe('reverify')
+  })
+
+  it('같은 주문의 쿠키 → 복원', () => {
+    expect(decideRestore(session(), ORDER_ID, false)).toBe('restore')
+  })
+})
+
+describe('pickSelection — 미들웨어 ④', () => {
+  const a = order({ productOrderId: ORDER_ID + 1 })
+  const b = order({ productOrderId: ORDER_ID + 2 })
+
+  it('같은 주문 쿠키의 productOrderId 로 목록에서 고른다', () => {
+    expect(pickSelection([a, b], session({ productOrderId: ORDER_ID + 2 }), ORDER_ID)).toBe(b)
+  })
+
+  it('다른 주문의 쿠키 · productOrderId 없음 · 목록에 없음 → null', () => {
+    expect(
+      pickSelection(
+        [a, b],
+        session({ orderId: OTHER_ORDER_ID, productOrderId: ORDER_ID + 2 }),
+        ORDER_ID,
+      ),
+    ).toBeNull()
+    expect(pickSelection([a, b], session(), ORDER_ID)).toBeNull()
+    expect(pickSelection([a, b], session({ productOrderId: ORDER_ID + 9 }), ORDER_ID)).toBeNull()
+    expect(pickSelection(null, session({ productOrderId: ORDER_ID + 1 }), ORDER_ID)).toBeNull()
   })
 })
