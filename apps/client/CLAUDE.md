@@ -144,7 +144,7 @@ apps/client/
 | `MAYA_API_ENDPOINT` / `MAYA_API_CLIENT_ID` / `MAYA_API_CLIENT_SECRET`                                         | Maya B2B API (Basic auth)                                                                                                                     |
 | `SPARK_API_ENDPOINT` · `SPARK_API_TOKEN` · `SPARK_ACCOUNT_ID` · `SPARK_PROXY_ENDPOINT` · `SPARK_PROXY_SECRET` | Spark 발급 (프록시 = backend 화이트리스트 IP 경유)                                                                                            |
 | `ESIM_MANAGER_INTERNAL_ENDPOINT` · `ESIM_MANAGER_INTERNAL_SECRET`                                             | 취소철회 backend 위임                                                                                                                         |
-| `CORS_EXTRA_ORIGINS`                                                                                          | `/api/**` 허용 origin 추가(쉼표 구분 · `server/utils/cors-origins.ts`). 로컬 walk 는 봉투 스크립트가 `http://localhost:<port>` 한 값만 넣는다 |
+| `CORS_EXTRA_ORIGINS`                                                                                          | `/api/**` 허용 origin 추가(쉼표 구분 · `server/utils/cors-origins.ts`). 로컬 walk 는 봉투 스크립트가 `http://127.0.0.1:<port>` 한 값만 넣는다 |
 | `NUXT_PUBLIC_GUEST_APP_ORIGIN`                                                                                | runtimeConfig — 주문번호 조회가 보내는 발급 호스트. 기본 `https://app.esimmany.com`, 로컬은 `http://localhost:3000`                           |
 | `NUXT_PUBLIC_PORTONE_STORE_ID` · `NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY`                                       | runtimeConfig — `/checkout-preview` 전용 공개값. SSM `/nomacom/client/` 에 같은 이름(키 끝 토막 = env 이름). ⚠️ 테스트 채널키만               |
 
@@ -161,7 +161,8 @@ yarn turbo run build --filter=nomacom-client
 # 봉투 스크립트가 env -i 허용 목록으로만(yarn 미경유 · 127.0.0.1 · --dotenv /dev/null · CORS 는 자기 포트 값) 띄우고, DB 는 dev 모드의
 # 로컬 합성 DB(postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자> · 55432 리스너가 로컬 컨테이너일 때)만 받는다.
 # 워크트리의 apps/client/.env(.local) · 루트 .env(.local) 가 있으면 거부 — worktree-setup 이 만든 .env.local 심링크면 **링크만** 지운다
-# (메인 클론 원본은 건드리지 않는다). 브라우저는 http://localhost:<port>. 회귀: bash .claude/scripts/client-walk-server.test.sh
+# (메인 클론 원본은 건드리지 않는다). 브라우저 · curl 은 **http://127.0.0.1:<port>** — localhost 는 ::1 로 먼저 붙어 같은 포트의
+# 봉투 밖 서버에 닿을 수 있다(그래서 포트가 어느 주소든 점유돼 있으면 기동 거부). 회귀: bash .claude/scripts/client-walk-server.test.sh
 bash .claude/scripts/client-walk-server.sh dev  3005                                             # shell · 비-DB 4-step
 bash .claude/scripts/client-walk-server.sh prod 3006                                             # 헤더 · noindex (DB 없음)
 # 합성 DB walk(E2E-3 · 4 · 7)는 아직 준비 명령이 없다 — 스키마 · 시드 명령 추가와 실행 모두 John 승인 대상.
