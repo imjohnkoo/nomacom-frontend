@@ -61,6 +61,12 @@ describe('readPaymentResult', () => {
     })
   })
 
+  it('형식 밖 ID 는 이 탭의 값과 같아도 그리지 않는다 (형식 검사 단독)', () => {
+    for (const bad of ['pv 1', 'pv-1-<b>', 'x'.repeat(65), 'abc']) {
+      expect(readPaymentResult({ paymentId: bad }, bad)).toEqual({ status: 'none' })
+    }
+  })
+
   it('이 탭의 ID + code 없음 → success', () => {
     expect(readPaymentResult({ paymentId: MINE }, MINE)).toEqual({
       status: 'success',

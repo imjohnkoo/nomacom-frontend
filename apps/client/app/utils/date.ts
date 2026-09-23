@@ -13,7 +13,10 @@ const KST_DATE = new Intl.DateTimeFormat('en-US', {
 });
 
 export function formatDateString(date: Date | string): string {
-  const parts = KST_DATE.formatToParts(new Date(date));
+  const value = new Date(date);
+  // 해석할 수 없는 값이면 빈 글자 — formatToParts 가 RangeError 를 던져 SSR 페이지 전체가 500 이 되지 않게
+  if (Number.isNaN(value.getTime())) return '';
+  const parts = KST_DATE.formatToParts(value);
   const get = (type: string) => parts.find((part) => part.type === type)?.value ?? '';
   return `${get('year')}년 ${get('month')}월 ${get('day')}일`;
 }

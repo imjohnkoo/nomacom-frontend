@@ -32,8 +32,10 @@ const onSubmit = async () => {
   })
 }
 
+// 입력이 바뀌면 오류 · 로딩을 푼다 — 이동이 취소되거나(중지 · 인앱 가로채기) 문서가 남은 경우에도 버튼이 굳지 않게 (D-21)
 watch(value, () => {
   if (error.value) error.value = null
+  isNavigating.value = false
 })
 
 // 외부 이동 뒤 뒤로가기로 bfcache 에서 복원되면 JS 상태가 그대로 살아난다 — 로딩(=비활성)으로 굳지 않게 되돌린다 (spec D-21)

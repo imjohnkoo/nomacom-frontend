@@ -75,18 +75,25 @@ const onPay = async () => {
       // PC(iframe) · 모바일(리다이렉트) 모두 결과를 복귀 쿼리로 받는다 — 결과 처리는 readPaymentResult 하나
       forceRedirect: true,
     })
-    if (response) {
-      await navigateTo(
-        {
-          path: '/checkout-preview',
-          query: { paymentId: response.paymentId, code: response.code, message: response.message },
+    // 응답 없음 = 리디렉트로 페이지를 떠나는 중 — 로딩을 유지한다(다시 누르면 결제 ID 가 덮인다). bfcache 복귀는 pageshow 가 푼다
+    if (!response) return
+    // 창 없이 끝난 응답(창을 열기 전 오류 등)도 같은 복귀 쿼리로 — 결과 처리는 readPaymentResult 하나 (spec F-19)
+    await navigateTo(
+      {
+        path: '/checkout-preview',
+        query: {
+          paymentId: response.paymentId || paymentId,
+          code: response.code,
+          message: response.message,
+          pgCode: response.pgCode,
+          pgMessage: response.pgMessage,
         },
-        { replace: true },
-      )
-    }
+      },
+      { replace: true },
+    )
+    isRequesting.value = false
   } catch (error) {
     openError.value = error instanceof Error ? error.message : String(error)
-  } finally {
     isRequesting.value = false
   }
 }
