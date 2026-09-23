@@ -6,7 +6,7 @@ import { searchCountries, type SearchEntry, type SearchHit } from '#shared/catal
 import { josa } from '#shared/utils/josa'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import SearchField from '~/components/catalog/SearchField.vue'
-import { POPULAR_COUNTRIES } from '~/content/popular'
+import { pickChips } from '~/utils/error-view'
 
 useHead({ title: '국가 검색' })
 
@@ -21,11 +21,8 @@ const query = ref('')
 const entries = computed(() => index.value!)
 const hits = computed<SearchHit[]>(() => searchCountries(entries.value, query.value))
 const trimmed = computed(() => query.value.trim())
-const popular = computed(() =>
-  POPULAR_COUNTRIES.map((iso3) => entries.value.find((e) => e.iso3 === iso3 && !e.upcoming))
-    .filter((e): e is SearchEntry => !!e)
-    .slice(0, 8),
-)
+// 인기 칩 8 — 오류 화면(S-7)과 같은 함수 · 같은 목록
+const popular = computed(() => pickChips(entries.value).popular)
 const allCountries = computed(() => entries.value.filter((e) => !e.upcoming))
 const hasUpcoming = computed(() => hits.value.some((h) => h.entry.upcoming))
 
@@ -35,7 +32,7 @@ function note(hit: SearchHit): string {
     return `도시 «${hit.city}» ${josa(hit.city, '이/가')} 있는 나라`
   return ''
 }
-function countryPath(e: SearchEntry) {
+function countryPath(e: { iso3: string }) {
   return `/countries/${e.iso3.toLowerCase()}`
 }
 </script>

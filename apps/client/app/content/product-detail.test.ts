@@ -76,6 +76,8 @@ const VUE_FILES = [
   'app/pages/countries/[iso3].vue',
   'app/pages/index.vue',
   'app/pages/search.vue',
+  'app/components/shell/ErrorPanel.vue',
+  'app/error.vue',
 ]
 const APP = fileURLToPath(new URL('../../', import.meta.url))
 const vueParts = (file: string) => {
