@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // 환불정책 — A5: «발급 전 전액 환불» · 신청 경로 · 처리 기한만 게시.
+import { STATIC_DESCRIPTIONS } from '#shared/catalog/seo'
 import LegalDocument from '~/components/legal/LegalDocument.vue'
 import { REFUND } from '~/content/legal'
 import { supportRows } from '~/content/support'
 
-useHead({ title: REFUND.title })
+// canonical · 설명 — sitemap 에 든 정적 페이지(catalog F-9 · QA ⑥ R11)
+useCatalogSeo({ title: REFUND.title, description: STATIC_DESCRIPTIONS['/refund'] })
 
 // 신청 경로 = 카카오톡 · 네이버 톡톡 · 전화 (이메일 · 운영 시간은 마이 화면에서)
 const channels = supportRows().filter((row) => ['kakao', 'naver', 'phone'].includes(row.key))

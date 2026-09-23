@@ -1,14 +1,16 @@
 <script setup lang="ts">
 // eSIM 지원 기기 목록 — 근거: docs/data/2026-08-19-esim-supported-devices-kr.md (웹검색 검증본)
 import { NPageHeading, NInfoChip } from '@imjohnkoo/design-vue'
+import { STATIC_DESCRIPTIONS } from '#shared/catalog/seo'
+
+// canonical · 설명 — sitemap 에 든 정적 페이지(catalog F-9 · QA ⑥ R11)
+useCatalogSeo({ title: '지원 기기', description: STATIC_DESCRIPTIONS['/supported-devices'] })
 
 // 아코디언 상태 — 복수 열림 허용, 기본 전부 접힘 (view 페이지 multi-QR 패턴)
 const openKeys = ref<string[]>([])
 const isOpen = (key: string) => openKeys.value.includes(key)
 const toggle = (key: string) => {
-  openKeys.value = isOpen(key)
-    ? openKeys.value.filter((k) => k !== key)
-    : [...openKeys.value, key]
+  openKeys.value = isOpen(key) ? openKeys.value.filter((k) => k !== key) : [...openKeys.value, key]
 }
 
 interface DeviceGroup {
