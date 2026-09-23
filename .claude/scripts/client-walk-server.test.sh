@@ -34,19 +34,23 @@ for a in "$@"; do echo "ARG=$a"; done
 env | sed 's/^/ENV:/'
 EOF
 chmod +x "$FAKE/node"
-# 가짜 lsof — 포트별 리스너 이름을 환경변수로 준다(FAKE_LSOF_55432 · FAKE_LSOF_WALK, 공백 구분). 실제 소켓은 열지 않는다
-cat >"$FAKE/lsof" <<'EOF'
+# 가짜 netstat — macOS netstat -anv -p tcp 모양. 포트별 리스너 이름을 환경변수로 준다
+# (FAKE_NET_55432 · FAKE_NET_WALK · FAKE_NET_WALK6(::1) · FAKE_NET_NEAR(13099 — 접미사 오탐 확인), 공백 구분). 실제 소켓은 열지 않는다
+cat >"$FAKE/netstat" <<'EOF'
 #!/bin/sh
-case "$*" in
-  *-iTCP:55432*) names="$FAKE_LSOF_55432" ;;
-  *) names="$FAKE_LSOF_WALK" ;;
-esac
-for n in $names; do echo "p1"; echo "c$n"; done
+echo "Active Internet connections (including servers)"
+echo "Proto Recv-Q Send-Q  Local Address  Foreign Address  (state)  rxbytes txbytes rhiwat shiwat process:pid state options"
+row() { echo "$1       0      0  $2         *.*                    LISTEN                 0            0  131072  131072  $3:4242  00100 00000106"; }
+row tcp4 "*.631" "cupsd"
+for n in $FAKE_NET_55432; do row tcp4 "127.0.0.1.55432" "$n"; done
+for n in $FAKE_NET_WALK; do row tcp4 "127.0.0.1.3099" "$n"; done
+for n in $FAKE_NET_WALK6; do row tcp6 "::1.3099" "$n"; done
+for n in $FAKE_NET_NEAR; do row tcp4 "127.0.0.1.13099" "$n"; done
 EOF
-chmod +x "$FAKE/lsof"
+chmod +x "$FAKE/netstat"
 run_real() { PATH="$FAKE:$PATH" bash "$S" "$@" 2>&1; }
 real_exit() { PATH="$FAKE:$PATH" bash "$S" "$@" >/dev/null 2>&1; echo $?; }
-export FAKE_LSOF_55432="" FAKE_LSOF_WALK=""
+export FAKE_NET_55432="" FAKE_NET_WALK="" FAKE_NET_WALK6="" FAKE_NET_NEAR=""
 
 # 셸에 금지 키가 있어도 새지 않아야 한다
 export SPARK_API_TOKEN=leak MAYA_API_CLIENT_SECRET=leak ESIM_MANAGER_INTERNAL_SECRET=leak
@@ -110,17 +114,20 @@ else
 fi
 
 # ── walk 포트를 누가 이미 듣고 있으면 거부(localhost → ::1 봉투 밖 서버 · nuxi 포트 대체 차단)
-[[ "$(FAKE_LSOF_WALK=node real_exit dev 3099)" -eq 2 ]] && ok || ng "walk 포트 점유 → 거부"
-[[ "$(FAKE_LSOF_WALK=node real_exit prod 3099)" -eq 2 ]] && ok || ng "walk 포트 점유 → 거부(prod)"
+[[ "$(FAKE_NET_WALK=node real_exit dev 3099)" -eq 2 ]] && ok || ng "walk 포트 점유 → 거부"
+[[ "$(FAKE_NET_WALK=node real_exit prod 3099)" -eq 2 ]] && ok || ng "walk 포트 점유 → 거부(prod)"
+[[ "$(FAKE_NET_WALK6=node real_exit dev 3099)" -eq 2 ]] && ok || ng "walk 포트 ::1 점유 → 거부(localhost 가 닿는 곳)"
+[[ "$(FAKE_NET_WALK=cupsd real_exit dev 3099)" -eq 2 ]] && ok || ng "다른 uid(root) 리스너도 거부"
+[[ "$(FAKE_NET_NEAR=node real_exit dev 3099)" -eq 0 ]] && ok || ng "13099 리스너는 3099 점유가 아니다(접미사 오탐 없음)"
 
 # ── 실제 기동 + 합성 DB: 55432 리스너가 전부 로컬 DB 일 때만(터널 차단)
 DBU='postgres://walk:walk@127.0.0.1:55432/walk'
-[[ "$(FAKE_LSOF_55432="" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 리스너 없음 → 거부"
-[[ "$(FAKE_LSOF_55432="ssh" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 = ssh 터널 → 거부"
-[[ "$(FAKE_LSOF_55432="session-manager-plugin" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 = SSM 터널 → 거부"
-[[ "$(FAKE_LSOF_55432="com.docker.backend ssh" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "Docker + 터널 공존 → 거부"
-[[ "$(FAKE_LSOF_55432="ssh com.docker.backend" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "터널 + Docker(순서 반대) → 거부"
-out="$(FAKE_LSOF_55432="com.docker.backend" run_real dev 3099 "$DBU")" || ng "Docker 리스너 기동 줄 실패"
+[[ "$(FAKE_NET_55432="" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 리스너 없음 → 거부"
+[[ "$(FAKE_NET_55432="ssh" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 = ssh 터널 → 거부"
+[[ "$(FAKE_NET_55432="session-manag" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "55432 = SSM 터널(잘린 이름) → 거부"
+[[ "$(FAKE_NET_55432="com.docker.backe ssh" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "Docker + 터널 공존 → 거부"
+[[ "$(FAKE_NET_55432="ssh com.docker.backe" real_exit dev 3099 "$DBU")" -eq 2 ]] && ok || ng "터널 + Docker(순서 반대) → 거부"
+out="$(FAKE_NET_55432="com.docker.backe" run_real dev 3099 "$DBU")" || ng "Docker 리스너 기동 줄 실패"
 has "$out" "ENV:DATABASE_URL=$DBU" "로컬 DB 리스너면 합성 DATABASE_URL 전달"
 
 # ── 실제 기동에서 PortOne 공개키 통로
@@ -128,18 +135,16 @@ out="$(NUXT_PUBLIC_PORTONE_STORE_ID=store-x NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY
 has "$out" 'ENV:NUXT_PUBLIC_PORTONE_STORE_ID=store-x' "실제 env PortOne storeId 전달"
 has "$out" 'ENV:NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY=channel-key-test-x' "실제 env PortOne 테스트 채널키 전달"
 
-# ── lsof 가 실패하면(없음 · 오류) 기동하지 않는다 — «리스너 없음» 으로 읽지 않게
-cat >"$FAKE/lsof-broken" <<'EOF'
-#!/bin/sh
-exit 3
-EOF
-chmod +x "$FAKE/lsof-broken"
-BROKEN="$(mktemp -d)" || exit 1
-cleanup_paths+=("$BROKEN")
-cp "$FAKE/node" "$BROKEN/node"
-cp "$FAKE/lsof-broken" "$BROKEN/lsof"
-PATH="$BROKEN:$PATH" bash "$S" dev 3099 >/dev/null 2>&1
-[[ $? -eq 2 ]] && ok || ng "lsof 오류 → 거부"
+# ── netstat 이 실패하거나 빈 출력이면 기동하지 않는다 — «리스너 없음» 으로 읽지 않게
+for broken in 'exit 1' 'exit 0'; do
+  BROKEN="$(mktemp -d)" || exit 1
+  cleanup_paths+=("$BROKEN")
+  cp "$FAKE/node" "$BROKEN/node"
+  printf '#!/bin/sh\n%s\n' "$broken" >"$BROKEN/netstat"
+  chmod +x "$BROKEN/netstat"
+  PATH="$BROKEN:$PATH" bash "$S" dev 3099 >/dev/null 2>&1
+  [[ $? -eq 2 ]] && ok || ng "netstat '$broken'(실패 · 빈 출력) → 거부"
+done
 
 # ── .env 계열이 있으면 거부 — 없을 때만 임시 심링크를 만들고 반드시 지운다
 for rel in apps/client/.env.local apps/client/.env .env .env.local; do

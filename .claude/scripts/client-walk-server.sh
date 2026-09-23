@@ -75,25 +75,33 @@ if [[ -n "${WALK_DRY_RUN:-}" ]]; then
   exit 0
 fi
 
-# lsof 가 없거나 실패하면 «리스너 없음» 과 구분이 안 된다 — 검사를 못 하면 기동하지 않는다
-LSOF="$(command -v lsof || true)"
-[[ -z "$LSOF" && -x /usr/sbin/lsof ]] && LSOF=/usr/sbin/lsof
-[[ -n "$LSOF" ]] || refuse "lsof 가 없어 포트 · DB 리스너를 확인할 수 없다"
-listeners_of() { # 포트 → 리스너 이름들. lsof: 0 = 있음 · 1 = 없음 · 그 밖 = 오류(거부)
-  local out rc
-  out="$("$LSOF" -nP +c 0 -iTCP:"$1" -sTCP:LISTEN -Fc 2>/dev/null)"
-  rc=$?
-  [[ $rc -le 1 ]] || refuse "lsof 실패(exit $rc) — 포트 $1 를 확인할 수 없다"
-  sed -n 's/^c//p' <<<"$out" | sort -u
+# 리스너 판정은 netstat — lsof 는 다른 uid(root 등) 소유 리스너를 안 보여 주고 «없음» 과 «오류» 가 같은 exit 1 이다.
+# macOS netstat -anv 는 소유자와 무관하게 LISTEN 소켓과 process:pid 를 보여 준다. 검사를 못 하면 기동하지 않는다.
+NETSTAT="$(command -v netstat || true)"
+[[ -z "$NETSTAT" && -x /usr/sbin/netstat ]] && NETSTAT=/usr/sbin/netstat
+[[ -n "$NETSTAT" ]] || refuse "netstat 이 없어 포트 · DB 리스너를 확인할 수 없다"
+NET="$("$NETSTAT" -anv -p tcp 2>/dev/null)" || refuse "netstat 실패 — 포트 · DB 리스너를 확인할 수 없다"
+[[ -n "$NET" ]] || refuse "netstat 출력이 비었다 — 포트 · DB 리스너를 확인할 수 없다"
+listeners_of() { # 포트 → 그 포트(어느 주소든)를 LISTEN 하는 프로세스 이름들(netstat 은 16자에서 자른다)
+  awk -v port="$1" '$6 == "LISTEN" && $4 ~ ("[.:]" port "$") {
+    for (i = 7; i <= NF; i++) if ($i ~ /^[^:]+:[0-9]+$/) { sub(/:[0-9]+$/, "", $i); print $i; break }
+  }' <<<"$NET" | sort -u
+}
+answers() { # 그 포트에 127.0.0.1 · ::1 로 붙어지는가 — netstat 해석이 어긋나도 막히는 쪽으로
+  (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null && return 0
+  (exec 3<>"/dev/tcp/::1/$1") 2>/dev/null && return 0
+  return 1
 }
 
 # walk 포트를 어느 주소(127.0.0.1 · ::1 · *)든 누가 듣고 있으면 거부 — localhost 가 봉투 밖 서버로 가거나 nuxi 가 포트를 옮긴다
-busy="$(listeners_of "$PORT" | tr '\n' ' ')" || exit 2   # 서브셸 안 refuse 를 여기서도 확실히
+busy="$(listeners_of "$PORT" | tr '\n' ' ')"
 [[ -z "$busy" ]] || refuse "포트 $PORT 를 이미 듣는 프로세스가 있다($busy) — 다른 포트로"
+if answers "$PORT"; then refuse "포트 $PORT 에 이미 무언가 응답한다(netstat 에 안 보이는 리스너) — 다른 포트로"; fi
 
 if [[ -n "$DB_URL" ]]; then
   # 55432 를 듣는 프로세스가 **전부** 로컬 컨테이너 · postgres 여야 한다 — SSM 포트포워딩 · ssh 터널이면 prod RDS 다
-  listeners="$(listeners_of 55432)" || exit 2
+  listeners="$(listeners_of 55432)"
+  if [[ -z "$listeners" ]] && answers 55432; then refuse "55432 가 응답하는데 리스너를 확인할 수 없다 — 소유자 불명"; fi
   [[ -n "$listeners" ]] || refuse "127.0.0.1:55432 를 듣는 프로세스가 없다 — 합성 DB 컨테이너부터"
   while IFS= read -r listener; do
     [[ "$listener" =~ ^(com\.docker\.|docker|vpnkit|postgres|OrbStack|orbstack|limactl|colima) ]] ||
