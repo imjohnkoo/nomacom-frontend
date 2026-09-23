@@ -1,6 +1,7 @@
 /**
- * 국가 검색 별칭 — spec D-9. 공식 한글 이름(K1)과 다르게 부르는 이름만 둔다. 영문 이름은 자동(Intl.DisplayNames).
- * 키 = ISO3. 준비 중 나라 목록은 `catalog-upcoming.json`.
+ * 국가 검색 별칭 — spec D-9. 공식 한글 이름(K1)과 다르게 부르는 이름만 둔다. 영문 이름은 자동(Intl.DisplayNames ·
+ * 발음 기호와 «&» 는 검색이 풀어 비교한다 — «turkiye» · «bosnia and herzegovina» 는 별칭 없이 찾는다).
+ * 별칭은 **앞부분 일치**만 한다. 키 = ISO3. 준비 중 나라 목록은 `catalog-upcoming.json`.
  */
 export const COUNTRY_ALIASES: Record<string, string[]> = {
   TUR: ['터키', 'turkey'],

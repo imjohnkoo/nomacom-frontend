@@ -1,7 +1,7 @@
 /**
  * 홈 «인기국가 · 다국가» 격자 해석 — spec D-5. 목록(`app/content/popular.ts`)의 코드를 카탈로그로 푼다.
- * 목록에 있는데 카탈로그에 없으면 `missing` 에 적는다 — 서버 라우트가 실 카탈로그에서는 throw(빌드 실패),
- * 표본 픽스처(5 zone)에서는 건너뛴다.
+ * 목록에 있는데 카탈로그에 없으면 `missing` 에 적는다 — 서버 라우트가 실 카탈로그에서는 500 을 던지고
+ * 홈 페이지가 그 에러를 페이지 500 으로 다시 던져 프리렌더(빌드)가 멈춘다. 표본 픽스처(5 zone)에서는 건너뛴다.
  */
 import { zoneByCode } from './derive'
 import type { CatalogView, ZoneView } from './types'
@@ -30,6 +30,11 @@ export function resolveHome(
     const zone = zoneByCode(catalog, `${iso3}00`)
     if (!zone || zone.countries.length !== 1) {
       missing.push(`인기국가 ${iso3}(단일국 zone ${iso3}00 없음)`)
+      continue
+    }
+    // zone 코드와 나라가 어긋나면(«CZE00» 에 프랑스) 엉뚱한 국기 · 국가 페이지 칸이 생긴다
+    if (zone.countries[0]!.iso3 !== iso3) {
+      missing.push(`인기국가 ${iso3}(zone ${iso3}00 의 나라가 ${zone.countries[0]!.iso3})`)
       continue
     }
     popular.push({

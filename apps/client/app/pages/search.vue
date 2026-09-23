@@ -1,21 +1,23 @@
 <script setup lang="ts">
 // 국가 검색 (catalog spec S-2 · F-4) — 입력할 때마다 결과(색인은 프리렌더 payload). noindex(D-12).
 // 매칭 규칙은 shared/catalog/search.ts(D-9), 상품 없는 나라는 «준비 중» 행 · 링크 없음(D-10).
-import { ChevronRightIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { searchCountries, type SearchEntry, type SearchHit } from '#shared/catalog/search'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
+import SearchField from '~/components/catalog/SearchField.vue'
 import { POPULAR_COUNTRIES } from '~/content/popular'
 
 useHead({ title: '국가 검색' })
 
-const { data: index } = await useFetch<SearchEntry[]>('/api/catalog/search-index', {
+const { data: index, error } = await useFetch<SearchEntry[]>('/api/catalog/search-index', {
   key: 'catalog-search-index',
 })
+// 색인이 없으면 모든 입력에 «찾지 못했어요» 가 뜬다 — 빈 화면 대신 500(프리렌더 실패)
+if (error.value || !index.value)
+  throw createError({ statusCode: 500, statusMessage: 'Search index unavailable', fatal: true })
 const query = ref('')
-const input = ref<HTMLInputElement>()
-onMounted(() => input.value?.focus())
 
-const entries = computed(() => index.value ?? [])
+const entries = computed(() => index.value!)
 const hits = computed<SearchHit[]>(() => searchCountries(entries.value, query.value))
 const trimmed = computed(() => query.value.trim())
 const popular = computed(() =>
@@ -39,28 +41,7 @@ function countryPath(e: SearchEntry) {
 <template>
   <div class="search-page">
     <h1 class="sr-only">국가 검색</h1>
-    <div class="search-page__field">
-      <MagnifyingGlassIcon class="search-page__icon" aria-hidden="true" />
-      <input
-        ref="input"
-        v-model="query"
-        type="search"
-        class="search-page__input"
-        placeholder="나라나 도시 이름을 입력해 주세요"
-        aria-label="나라나 도시 이름"
-        autocomplete="off"
-        enterkeyhint="search"
-      />
-      <button
-        v-if="query"
-        type="button"
-        class="search-page__clear"
-        aria-label="입력 지우기"
-        @click="query = ''"
-      >
-        <XMarkIcon aria-hidden="true" />
-      </button>
-    </div>
+    <SearchField v-model="query" autofocus />
 
     <p class="sr-only" aria-live="polite">
       {{ trimmed ? (hits.length ? `결과 ${hits.length}개` : '결과가 없어요') : '' }}
@@ -132,54 +113,6 @@ function countryPath(e: SearchEntry) {
   padding: 20px 20px 32px;
   word-break: keep-all;
   overflow-wrap: break-word;
-}
-
-.search-page__field {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 14px;
-  border: 1px solid var(--n-color-primary-500, #6239ff);
-  border-radius: 14px;
-  background: var(--n-color-neutral-0, #fff);
-  box-shadow: 0 0 0 3px var(--n-color-primary-100, #e3dbff);
-}
-
-.search-page__icon {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  color: var(--n-color-neutral-500, #737373);
-}
-
-.search-page__input {
-  flex: 1;
-  min-width: 0;
-  height: 48px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font: inherit;
-  font-size: 16px;
-  color: var(--n-color-neutral-900, #171717);
-}
-
-.search-page__input::-webkit-search-cancel-button {
-  display: none;
-}
-
-.search-page__clear {
-  display: inline-flex;
-  padding: 4px;
-  border: none;
-  background: none;
-  color: var(--n-color-neutral-500, #737373);
-  cursor: pointer;
-}
-
-.search-page__clear svg {
-  width: 18px;
-  height: 18px;
 }
 
 .search-page__label {

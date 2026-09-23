@@ -45,8 +45,11 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "@vue/test-utils": "^2.4.10",
     "drizzle-kit": "^0.31.8",
     "flag-icons": "^7.5.0",
+    "happy-dom": "^20.9.0",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.19.0",

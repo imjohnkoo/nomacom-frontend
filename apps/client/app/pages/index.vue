@@ -14,13 +14,17 @@ import UnderlineTabs from '~/components/catalog/UnderlineTabs.vue'
 import OrderLookupForm from '~/components/order/OrderLookupForm.vue'
 
 useCatalogSeo(HOME_META)
-const { data: home } = await useFetch('/api/catalog/home', { key: 'catalog-home' })
+const { data: home, error } = await useFetch('/api/catalog/home', { key: 'catalog-home' })
+// 데이터 라우트가 실패하면 빈 격자로 두지 않는다 — 페이지를 500 으로 던져 프리렌더(빌드)를 멈춘다(S-1).
+// useFetch 는 에러를 삼키고 페이지는 200 으로 굳기 때문에 여기서 다시 던져야 한다.
+if (error.value || !home.value)
+  throw createError({ statusCode: 500, statusMessage: 'Catalog home unavailable', fatal: true })
 const tabs = [
   { key: 'popular', label: '인기국가' },
   { key: 'multi', label: '다국가' },
 ] as const
 const tab = ref<(typeof tabs)[number]['key']>('popular')
-const tiles = computed(() => (tab.value === 'popular' ? home.value?.popular : home.value?.multi) ?? [])
+const tiles = computed(() => (tab.value === 'popular' ? home.value!.popular : home.value!.multi))
 
 const shortcuts = [
   { to: '/guide', label: '설치 가이드', sub: '출발 전에 미리 설치해 두세요', icon: BookOpenIcon },
@@ -46,15 +50,15 @@ const shortcuts = [
 
     <section class="home__catalog" aria-label="나라 고르기">
       <UnderlineTabs v-model="tab" :tabs="[...tabs]" label="나라 목록" id-prefix="home" />
-      <div
-        id="home-panel"
-        class="home__grid"
-        role="tabpanel"
-        :aria-labelledby="`home-tab-${tab}`"
-      >
+      <div id="home-panel" class="home__grid" role="tabpanel" :aria-labelledby="`home-tab-${tab}`">
         <NuxtLink v-for="t in tiles" :key="t.to" :to="t.to" class="home__tile">
           <span class="home__tile-flags" :class="{ 'home__tile-flags--many': t.iso2s.length > 1 }">
-            <FlagIcon v-for="iso2 in t.iso2s" :key="iso2" :iso2="iso2" :size="t.iso2s.length > 1 ? 24 : 32" />
+            <FlagIcon
+              v-for="iso2 in t.iso2s"
+              :key="iso2"
+              :iso2="iso2"
+              :size="t.iso2s.length > 1 ? 24 : 32"
+            />
           </span>
           <span class="home__tile-name">{{ t.label }}</span>
           <span class="home__tile-badge">{{ t.badge }}</span>

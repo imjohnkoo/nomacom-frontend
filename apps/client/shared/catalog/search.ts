@@ -2,7 +2,8 @@
  * 국가 검색 — spec F-4 · D-9 · D-10. 색인은 서버가 만들어 프리렌더하고(`/api/catalog/search-index`),
  * 매칭은 브라우저에서 입력할 때마다 한다(56개국 — 디바운스 불필요).
  *
- * 찾는 규칙(순위 순): 이름 앞부분 > 초성 앞부분 > 이름 부분 > 초성 부분 > 영문 · ISO > 영문 부분 > 도시 > 별칭.
+ * 찾는 규칙(순위 순): 이름 앞부분 > 초성 앞부분 > 이름 부분 > 초성 부분 > ISO 정확 일치 > 영문 앞부분 > 영문 부분
+ * > 도시 > 별칭(앞부분만). 영문은 발음 기호 · «&» 를 풀어 비교한다(«turkiye» → Türkiye).
  * 권역 이름(«북유럽»)으로 zone 을 찾지는 않는다(D-9).
  */
 import { countriesOf, zonesOfCountry } from './derive'
@@ -87,8 +88,18 @@ export function toChosung(s: string): string {
   return out
 }
 
-function norm(s: string): string {
-  return s.trim().toLowerCase().replace(/\s+/g, '')
+/**
+ * 비교용 정규화 — 소문자 · 공백 제거 · 라틴 발음 기호 제거(ü → u) · «&» → and.
+ * NFD 로 풀어 결합 기호(U+0300–036F)만 지운 뒤 NFC 로 다시 묶는다 — 한글 음절은 그대로 돌아온다(초성 변환이 쓴다).
+ */
+export function norm(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/\s+/g, '')
 }
 
 /** 낮을수록 앞 — 매칭이 없으면 null */
@@ -104,14 +115,15 @@ function score(e: SearchEntry, q: string): { rank: number; via: SearchVia; city?
   if (ko.includes(q)) return { rank: 2, via: 'name' }
   if (q === e.iso3.toLowerCase() || q === e.iso2.toLowerCase()) return { rank: 4, via: 'iso' }
   const en = norm(e.en)
-  if (en.startsWith(q)) return { rank: 4, via: 'en' }
-  if (q.length >= 3 && en.includes(q)) return { rank: 5, via: 'en' }
+  if (en.startsWith(q)) return { rank: 5, via: 'en' }
+  if (q.length >= 3 && en.includes(q)) return { rank: 6, via: 'en' }
   // 도시 · 별칭은 두 글자부터 — 한 글자(«스»)는 도시 이름에 줄줄이 걸린다(D-9)
   if ([...q].length < 2) return null
   const city =
     e.cities.find((c) => norm(c).startsWith(q)) ?? e.cities.find((c) => norm(c).includes(q))
-  if (city) return { rank: 6, via: 'city', city }
-  if (e.aliases.some((a) => norm(a).includes(q))) return { rank: 7, via: 'alias' }
+  if (city) return { rank: 7, via: 'city', city }
+  // 별칭은 앞부분만 — «la» 가 holland · england 에 걸리지 않게
+  if (e.aliases.some((a) => norm(a).startsWith(q))) return { rank: 8, via: 'alias' }
   return null
 }
 
