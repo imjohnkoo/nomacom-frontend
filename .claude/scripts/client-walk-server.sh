@@ -3,49 +3,70 @@
 #
 # John 지시(2026-09-23): 로컬 walk 에서 prod DB 의 데이터를 수정하지 않는다 · 실제 전화번호로 메시지가 가지 않는다.
 # 안전 봉투:
-#  1. env -i 로 셸 환경을 버리고 허용 목록만 넘긴다. SPARK_* · MAYA_* · ESIM_MANAGER_INTERNAL_* · CORS_EXTRA_ORIGINS 는
+#  1. env -i 로 셸 환경을 버리고 허용 목록만 넘긴다. 셸의 SPARK_* · MAYA_* · ESIM_MANAGER_INTERNAL_* · CORS_EXTRA_ORIGINS 는
 #     넘기지 않는다 → activate 는 벤더 호출 · DB 쓰기 전에(useSparkApi / useMayaApi 첫 줄) 실패하고, 취소철회는 DB 조회
 #     전에 503 이다. Spark/Maya 실발급 · backend 위임 · 네이버 호출 · 알림 경로 0 (client 에 SMS · 알림톡 코드는 없다).
-#  2. DATABASE_URL 은 로컬 합성 DB(127.0.0.1:55432)만 받는다 — 다른 호스트면 기동 거부. 주지 않으면 DB 없이 뜬다.
-#  3. .env · .env.local(이 워크트리 · 메인 클론)이 있으면 기동 거부 — nuxt 의 dotenv 로드가 prod 값을 끌어오는 것 차단.
+#     CORS_EXTRA_ORIGINS 는 봉투가 http://localhost:<port> 한 값만 만든다 — 브라우저는 같은 출처 POST 에도 Origin 을
+#     붙이므로 이것 없이는 walk 포트의 /api/** 가 403 이다.
+#  2. yarn 을 거치지 않고 node 로 직접 띄운다(yarn 의 .env.yarn 주입 차단) · 127.0.0.1 에만 묶는다.
+#  3. DATABASE_URL 은 dev 모드에서만, postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자> 전체 일치만 받는다.
+#     prod 모드는 DB 인자를 거부한다 — prod 빌드는 ssl:require 라 닿는 곳이 TLS 를 말하는 prod RDS 터널뿐이다.
+#  4. .env · .env.local(이 워크트리 · 메인 클론)이 있으면 기동 거부 — nuxt 의 dotenv 로드가 prod 값을 끌어오는 것 차단.
+#  5. NUXT_PUBLIC_PORTONE_STORE_ID · NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY(공개값)만 호출자 환경에서 받는다 — E2E-6 용.
 #
 # 사용:  bash .claude/scripts/client-walk-server.sh dev  <port> [합성 DB url]   # nuxt dev(dev 는 DB ssl:false → 합성 DB 가능)
 #        bash .claude/scripts/client-walk-server.sh prod <port>                 # .output 빌드 · DB 없음(헤더 · noindex 확인용)
-# 증거:  ps -E -o command= -p <pid> | tr ' ' '\n' | grep -E '^(SPARK|MAYA|ESIM_MANAGER|CORS_EXTRA)'   # 빈 결과여야 한다
+#        WALK_DRY_RUN=1 bash … dev 3005                                          # 넘길 env 만 출력하고 끝(회귀 테스트용)
+# 증거:  ps -E -o command= -p <pid> | tr ' ' '\n' | grep -E '^(SPARK|MAYA|ESIM_MANAGER)'   # 빈 결과여야 한다
+# 회귀:  bash .claude/scripts/client-walk-server.test.sh
 set -euo pipefail
 
-MODE="${1:?dev|prod}"
-PORT="${2:?port}"
+refuse() {
+  echo "⛔ $1 — 기동 거부" >&2
+  exit 2
+}
+
+MODE="${1:-}"
+PORT="${2:-}"
 DB_URL="${3:-}"
+[[ "$MODE" == dev || "$MODE" == prod ]] || refuse "사용: $0 dev|prod <port> [합성 DB url]"
+[[ "$PORT" =~ ^[0-9]{4,5}$ ]] || refuse "포트는 숫자 4~5자리"
+
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 MAIN="$(git -C "$ROOT" worktree list --porcelain | awk '/^worktree /{print $2; exit}')"
 
 for f in "$ROOT/apps/client/.env" "$ROOT/apps/client/.env.local" "$MAIN/apps/client/.env" "$MAIN/apps/client/.env.local"; do
-  if [[ -e "$f" || -L "$f" ]]; then
-    echo "⛔ $f 가 있다 — prod 값 유입 위험, 기동 거부" >&2
-    exit 2
-  fi
+  if [[ -e "$f" || -L "$f" ]]; then refuse "$f 가 있다 — prod 값 유입 위험"; fi
 done
 
-if [[ -n "$DB_URL" && ! "$DB_URL" =~ ^postgres(ql)?://[^@/]+@127\.0\.0\.1:55432/ ]]; then
-  echo "⛔ DATABASE_URL 은 로컬 합성 DB(127.0.0.1:55432)만 허용 — 기동 거부" >&2
-  exit 2
+if [[ -n "$DB_URL" ]]; then
+  [[ "$MODE" == dev ]] || refuse "prod 모드는 DB 인자를 받지 않는다"
+  [[ "$DB_URL" =~ ^postgres(ql)?://[A-Za-z0-9_]+:[A-Za-z0-9_]+@127\.0\.0\.1:55432/[A-Za-z0-9_]+$ ]] ||
+    refuse "DATABASE_URL 은 postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자> 만 허용"
 fi
 
+NODE="$(command -v node)"
 ALLOW=(
-  "PATH=/usr/bin:/bin:/usr/sbin:/sbin:$(dirname "$(command -v node)")"
+  "PATH=/usr/bin:/bin:/usr/sbin:/sbin:$(dirname "$NODE")"
   "HOME=$HOME"
   "PORT=$PORT"
+  "HOST=127.0.0.1"
   "NUXT_PUBLIC_GUEST_APP_ORIGIN=http://localhost:$PORT"
+  "CORS_EXTRA_ORIGINS=http://localhost:$PORT"
 )
 if [[ -n "$DB_URL" ]]; then ALLOW+=("DATABASE_URL=$DB_URL"); fi
+for key in NUXT_PUBLIC_PORTONE_STORE_ID NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY; do
+  if [[ -n "${!key:-}" ]]; then ALLOW+=("$key=${!key}"); fi
+done
+
+if [[ -n "${WALK_DRY_RUN:-}" ]]; then
+  printf '%s\n' "${ALLOW[@]}" | sed -E 's/^(NUXT_PUBLIC_PORTONE_[A-Z_]+)=.*/\1=***/'
+  exit 0
+fi
 
 cd "$ROOT/apps/client"
-case "$MODE" in
-  dev) exec env -i "${ALLOW[@]}" "$(command -v yarn)" nuxt dev --port "$PORT" ;;
-  prod)
-    [[ -f .output/server/index.mjs ]] || { echo "⛔ .output 없음 — yarn turbo run build --filter=nomacom-client 먼저" >&2; exit 2; }
-    exec env -i "${ALLOW[@]}" "$(command -v node)" .output/server/index.mjs
-    ;;
-  *) echo "사용: $0 dev|prod <port> [합성 DB url]" >&2; exit 2 ;;
-esac
+if [[ "$MODE" == dev ]]; then
+  exec env -i "${ALLOW[@]}" "$NODE" "$ROOT/node_modules/nuxt/bin/nuxt.mjs" dev --port "$PORT" --host 127.0.0.1
+fi
+[[ -f .output/server/index.mjs ]] || refuse ".output 없음 — yarn turbo run build --filter=nomacom-client 먼저"
+exec env -i "${ALLOW[@]}" "$NODE" .output/server/index.mjs

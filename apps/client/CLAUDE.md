@@ -89,7 +89,7 @@ apps/client/
 ├── shared/utils/robots.ts             # noindex 목록 단일 출처 (meta · X-Robots-Tag · robots.txt)
 ├── server/
 │   ├── api/health.get.ts              # /api/health
-│   ├── api/v1/{verify,activate}.post.ts
+│   ├── api/v1/{verify,activate,withdraw-cancel}.post.ts
 │   ├── db/{index,schema}.ts           # Drizzle (order/esim/plan/plan-type)
 │   ├── middleware/{cors,auth}.ts      # cors: /api/** 화이트리스트(utils/cors-origins.ts), auth: placeholder (토큰 추출만)
 │   ├── routes/robots.txt.ts           # robots.txt (shared/utils/robots.ts 에서 생성)
@@ -115,11 +115,12 @@ apps/client/
 
 ## API Endpoints
 
-| 경로               | 메서드 | 동작                                                                                                                                                                           |
-| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/api/health`      | GET    | `{ status: 'ok', app: 'nomacom-client', commit, timestamp }`                                                                                                                   |
-| `/api/v1/verify`   | POST   | 수신자 대조 후 주문 상세 + esims + planType 반환. planTypes 는 `inArray` 일괄 조회 (N+1 없음). `productOrderId` 로 필터 가능                                                   |
-| `/api/v1/activate` | POST   | 수신자 대조 (403) → 부족분만 Maya `createEsim` → esim + plan 쌍 트랜잭션 insert. 전량 발급돼 있으면 기존 상태로 idempotent 성공. 같은 주문의 동시 요청은 in-flight lock 직렬화 |
+| 경로                      | 메서드 | 동작                                                                                                                                                                                                                                                                   |
+| ------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/health`             | GET    | `{ status: 'ok', app: 'nomacom-client', commit, timestamp }`                                                                                                                                                                                                           |
+| `/api/v1/verify`          | POST   | 수신자 대조 후 주문 상세 + esims + planType 반환. planTypes 는 `inArray` 일괄 조회 (N+1 없음). `productOrderId` 로 필터 가능                                                                                                                                           |
+| `/api/v1/activate`        | POST   | 수신자 대조 (403) → 부족분만 발급 — planType `provider` 로 Maya `createEsim`(esim + plan 쌍 트랜잭션 insert) 또는 Spark(`utils/spark-issuance.ts` — 원장 · 동시성 규약). 전량 발급돼 있으면 기존 상태로 idempotent 성공. 같은 주문의 동시 요청은 in-flight lock 직렬화 |
+| `/api/v1/withdraw-cancel` | POST   | 수신자 대조 + 취소요청 상태 사전 체크 후 backend 내부 endpoint 에 위임(Naver 발송처리 · DB 갱신은 backend 소유). 내부 env 없으면 503                                                                                                                                   |
 
 ### activate 신뢰성 설계 (변경 시 유지할 불변식)
 
@@ -137,14 +138,15 @@ apps/client/
 
 ## 환경 변수
 
-| 키                                                                                                            | 용도                                                                                                                            |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                                                                                                | postgres 연결. prod 는 SSL require                                                                                              |
-| `MAYA_API_ENDPOINT` / `MAYA_API_CLIENT_ID` / `MAYA_API_CLIENT_SECRET`                                         | Maya B2B API (Basic auth)                                                                                                       |
-| `SPARK_API_ENDPOINT` · `SPARK_API_TOKEN` · `SPARK_ACCOUNT_ID` · `SPARK_PROXY_ENDPOINT` · `SPARK_PROXY_SECRET` | Spark 발급 (프록시 = backend 화이트리스트 IP 경유)                                                                              |
-| `ESIM_MANAGER_INTERNAL_ENDPOINT` · `ESIM_MANAGER_INTERNAL_SECRET`                                             | 취소철회 backend 위임                                                                                                           |
-| `NUXT_PUBLIC_GUEST_APP_ORIGIN`                                                                                | runtimeConfig — 주문번호 조회가 보내는 발급 호스트. 기본 `https://app.esimmany.com`, 로컬은 `http://localhost:3000`             |
-| `NUXT_PUBLIC_PORTONE_STORE_ID` · `NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY`                                       | runtimeConfig — `/checkout-preview` 전용 공개값. SSM `/nomacom/client/` 에 같은 이름(키 끝 토막 = env 이름). ⚠️ 테스트 채널키만 |
+| 키                                                                                                            | 용도                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                                                                | postgres 연결. prod 는 SSL require                                                                                                            |
+| `MAYA_API_ENDPOINT` / `MAYA_API_CLIENT_ID` / `MAYA_API_CLIENT_SECRET`                                         | Maya B2B API (Basic auth)                                                                                                                     |
+| `SPARK_API_ENDPOINT` · `SPARK_API_TOKEN` · `SPARK_ACCOUNT_ID` · `SPARK_PROXY_ENDPOINT` · `SPARK_PROXY_SECRET` | Spark 발급 (프록시 = backend 화이트리스트 IP 경유)                                                                                            |
+| `ESIM_MANAGER_INTERNAL_ENDPOINT` · `ESIM_MANAGER_INTERNAL_SECRET`                                             | 취소철회 backend 위임                                                                                                                         |
+| `CORS_EXTRA_ORIGINS`                                                                                          | `/api/**` 허용 origin 추가(쉼표 구분 · `server/utils/cors-origins.ts`). 로컬 walk 는 봉투 스크립트가 `http://localhost:<port>` 한 값만 넣는다 |
+| `NUXT_PUBLIC_GUEST_APP_ORIGIN`                                                                                | runtimeConfig — 주문번호 조회가 보내는 발급 호스트. 기본 `https://app.esimmany.com`, 로컬은 `http://localhost:3000`                           |
+| `NUXT_PUBLIC_PORTONE_STORE_ID` · `NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY`                                       | runtimeConfig — `/checkout-preview` 전용 공개값. SSM `/nomacom/client/` 에 같은 이름(키 끝 토막 = env 이름). ⚠️ 테스트 채널키만               |
 
 서버 키는 `process.env` 직접 참조, `NUXT_PUBLIC_*` 는 runtimeConfig 런타임 덮어쓰기. prod 는 `/nomacom/shared/maya/*`, `/nomacom/shared/db/*`, `/nomacom/client/*` SSM 경로에서 `after_deploy.sh` 가 주입. 상세는 `.claude/rules/ssm-paths.md`.
 
@@ -156,7 +158,8 @@ yarn workspace nomacom-client test         # vitest — server/** · app/** · s
 yarn turbo run build --filter=nomacom-client
 
 # 로컬 walk(QA ⑦) — ⛔ prod DB 에 붙이지 않는다 · 벤더 · 내부 env 를 넘기지 않는다(John 지시 2026-09-23).
-# 봉투 스크립트가 env -i 허용 목록으로만 띄우고, DB 는 로컬 합성 DB(127.0.0.1:55432)만 받는다 · .env(.local) 가 있으면 거부.
+# 봉투 스크립트가 env -i 허용 목록으로만(yarn 미경유 · 127.0.0.1 · CORS 는 자기 포트 1값) 띄우고, DB 는 dev 모드의 로컬 합성 DB
+# (postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자>)만 받는다 · .env(.local) 가 있으면 거부. 회귀: bash .claude/scripts/client-walk-server.test.sh
 bash .claude/scripts/client-walk-server.sh dev  3005 postgres://walk:walk@127.0.0.1:55432/walk   # 4-step (합성 DB)
 bash .claude/scripts/client-walk-server.sh prod 3006                                            # 헤더 · noindex (DB 없음)
 # 실발급 성공 경로(activate → view)는 로컬에서 걷지 않는다 — prod 승격 당일 operator AC.

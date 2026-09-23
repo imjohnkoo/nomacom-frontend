@@ -121,3 +121,8 @@ jobs:
       # prod 차단이 조용히 사라지므로 여기서 함께 지킨다 (ALLOW 22 / BLOCK 15).
       - name: guard 훅 회귀 테스트
         run: bash .claude/hooks/guard-prod-push.test.sh
+
+      # 로컬 walk 안전 봉투 — 판정이 깨지면 walk 서버가 prod DB · 벤더 키를 받게 된다(John 지시 2026-09-23).
+      # 서버는 띄우지 않는다(거부 경로 + dry-run 출력만).
+      - name: walk 봉투 회귀 테스트
+        run: bash .claude/scripts/client-walk-server.test.sh
