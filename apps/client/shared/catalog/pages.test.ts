@@ -63,7 +63,7 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
     expect(countryPageData(catalog, 'CAN')!.multi[0]!.sub).toBe('뉴욕·LA·밴쿠버·토론토 등 전지역')
   })
 
-  it('칸 수가 나라 수와 다르거나 라벨에 «개국» 이 있으면 나열이 아니다 — 나라 이름을 쓴다', () => {
+  it('칸 수가 나라 수와 다르면 나열이 아니다(나라 이름) · 같으면(«체코·독일 2개국») 나열(아랫줄)', () => {
     const raw = fixtureRaw()
     addSynthZone(raw, {
       zone: 'EU031',
@@ -82,7 +82,7 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
       '영국 · 프랑스 · 독일',
     )
     expect(countryPageData(cat, 'CZE')!.multi.find((c) => c.zone === 'EU021')!.sub).toBe(
-      '체코 · 독일',
+      '합성 부제 EU021',
     )
   })
 

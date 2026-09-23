@@ -224,7 +224,8 @@ export function adaptCatalog(raw: unknown, issues: string[]): AdaptedCatalog {
     generatedAt: r.str(meta, K.generatedAt, 'catalog.meta'),
     // 표본 표시 — 설명 문자열(비어 있지 않음)이나 true 면 표본이다(경고 · 머지 게이트가 이 값을 본다)
     fixture: fixture === true || (typeof fixture === 'string' && fixture.trim() !== ''),
-    schema: typeof meta.schema === 'string' ? meta.schema : null,
+    // 원래 값을 글자로 남겨 진단이 원인을 가리키게 한다(숫자 1 → «1» · 키 없음 → null)
+    schema: meta.schema === undefined || meta.schema === null ? null : String(meta.schema),
     counts: {
       skuCount: count('skuCount'),
       zoneCount: count('zoneCount'),

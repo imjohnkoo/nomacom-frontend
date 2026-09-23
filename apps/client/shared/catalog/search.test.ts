@@ -268,6 +268,7 @@ describe(`실 카탈로그 검색(spec E2E-11 · ${ACTIVE_CATALOG_FILE})`, () =>
     expect(iso('룩셈부르그')[0]).toBe('LUX')
     expect(iso('타이완')[0]).toBe('TWN')
     expect(iso('great britain')[0]).toBe('GBR')
+    expect(iso('new-zealand')[0]).toBe('NZL') // 하이픈 · 대소문자를 풀어 영문 이름과 비교
     expect(norm('St. Lucia')).toBe(norm('st lucia'))
     expect(norm('Côte d’Ivoire')).toBe('cotedivoire')
     expect(norm('Bosnia & Herzegovina')).toBe(norm('bosnia and herzegovina'))

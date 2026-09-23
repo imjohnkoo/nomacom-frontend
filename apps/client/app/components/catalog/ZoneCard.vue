@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // 국가 페이지의 zone 카드(catalog spec S-3 · D-11) — 무제한 · 종량제를 한 카드에 칩으로, 가격은 «최저가부터».
+// 컴포넌트 테스트(ZoneCard.test.ts)가 Nuxt 없이 그린다 — vue 에서 명시 import 한다.
+import { computed } from 'vue'
 import { thumbUrl, type AssetManifest } from '#shared/catalog/assets'
 import { formatWon } from '#shared/catalog/format'
 import type { ZoneCardData } from '#shared/catalog/pages'

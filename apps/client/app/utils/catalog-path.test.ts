@@ -1,4 +1,6 @@
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
+import { readSource } from '#shared/catalog/test-source'
 import { catalogPageError, isCatalogParam, lowercaseRedirect } from './catalog-path'
 
 describe('lowercaseRedirect (catalog spec D-13)', () => {
@@ -58,5 +60,20 @@ describe('catalogPageError (spec F-10 — 404 가 아닌 오류는 500)', () => 
     [null, true, null],
   ] as const)('error %j · data %s → %s', (error, hasData, want) => {
     expect(catalogPageError(error, hasData)).toBe(want)
+  })
+})
+
+describe('국가 · 상품 페이지가 catalogPageError 로 던진다(F-10 결선)', () => {
+  const APP = fileURLToPath(new URL('../../', import.meta.url))
+  it.each(['app/pages/products/[zone].vue', 'app/pages/countries/[iso3].vue'])('%s', (file) => {
+    const t = readSource(`${APP}${file}`).script.map((x) => x.text)
+    const at = t.findIndex((x, i) => x === 'catalogPageError' && t[i + 1] === '(')
+    expect(at, '호출이 없다').toBeGreaterThan(-1)
+    expect(t.slice(at, at + 4)).toEqual(['catalogPageError', '(', 'error', '.'])
+    // 판정 뒤 처음 던지는 상태는 판정 결과(failed) — 404 · 500 을 따로 박지 않는다
+    // (앞쪽의 404 는 URL 모양 검사 isCatalogParam 몫이라 제외)
+    const after = t.slice(at)
+    const sc = after.indexOf('statusCode')
+    expect(after.slice(sc, sc + 3)).toEqual(['statusCode', ':', 'failed'])
   })
 })

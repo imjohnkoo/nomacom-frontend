@@ -8,8 +8,9 @@ import { fixtureRaw, readRaw } from '../../shared/catalog/test-data'
 async function loaderWith(files: Record<string, unknown>) {
   vi.resetModules()
   const reads: string[] = []
-  vi.stubGlobal('useStorage', () => ({
+  vi.stubGlobal('useStorage', (base: string) => ({
     getItem: async (name: string) => {
+      if (base !== 'assets:catalog') throw new Error(`다른 저장소 ${base}`)
       reads.push(name)
       return files[name] ?? null
     },
@@ -46,6 +47,24 @@ describe('useCatalog', () => {
     })
     await useCatalog()
     await useCatalog()
+    expect(reads).toEqual(['catalog.json'])
+  })
+})
+
+describe('카탈로그 파일 위치가 한 곳에서 맞물린다', () => {
+  it('CATALOG_DIR = server/ + serverAssets dir', async () => {
+    const { CATALOG_DIR, CATALOG_SERVER_ASSET_DIR } = await import('../../shared/catalog/files')
+    expect(CATALOG_DIR).toBe(`server/${CATALOG_SERVER_ASSET_DIR}`)
+  })
+
+  it('실 파일이 검증에 실패하면 표본으로 넘어가지 않고 멈춘다', async () => {
+    const broken = readRaw('server/data/catalog.json')
+    broken.zones[0].products[0].options[0].usable = false
+    const { useCatalog, reads } = await loaderWith({
+      'catalog.json': JSON.stringify(broken),
+      'catalog.fixture.json': JSON.stringify(fixtureRaw()),
+    })
+    await expect(useCatalog()).rejects.toThrow(/검증 실패/)
     expect(reads).toEqual(['catalog.json'])
   })
 })

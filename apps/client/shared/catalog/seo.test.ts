@@ -13,6 +13,7 @@ import {
   sitemapPaths,
   zoneMeta,
 } from './seo'
+import { bannedIn } from './test-copy'
 import { activeCatalog, fixtureCatalog, fixtureRaw, setFinalWon } from './test-data'
 import { parseCatalog } from './validate'
 
@@ -116,12 +117,12 @@ describe('메타 문구 (D-15)', () => {
       HOME_META.title,
       HOME_META.description,
       ...Object.values(STATIC_DESCRIPTIONS),
-      ...catalog.zones.flatMap((z) => Object.values(zoneMeta(z))),
-      ...countriesOf(catalog).flatMap((c) =>
-        Object.values(countryMeta(c.nameKr, zonesOfCountry(catalog, c.iso3))),
+      ...activeCatalog().zones.flatMap((z) => Object.values(zoneMeta(z))),
+      ...countriesOf(activeCatalog()).flatMap((c) =>
+        Object.values(countryMeta(c.nameKr, zonesOfCountry(activeCatalog(), c.iso3))),
       ),
     ].join('\n')
-    expect(all).not.toMatch(/자정|iPhone|즉시할인|정가|할인율|최고|1위|재개통/)
+    expect(bannedIn(all)).toEqual([]) // 상세 문안과 같은 금지어 목록
     expect(all).toContain('처음 연결된 때부터 24시간 단위')
   })
 })

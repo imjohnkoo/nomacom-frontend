@@ -14,45 +14,78 @@ import {
 /**
  * spec 불변식 2 · DoD 2 «가격 리터럴 0» — 화면에 나가는 가격은 K1 최종가에서만 나온다.
  * 앱 소스(app · shared · server · modules · nuxt.config · CSS)를 토큰으로 읽어(주석 제외 — test-source.ts) 찾는다.
- *  1. 금액 글자 — 문자열 · 템플릿 · 스타일(`content:`) · JSON 문자열의 «4,900원» · «50원» · «₩4,900» · «4900 KRW»(전각 숫자 포함)
- *  2. 가격 문맥의 숫자 — 가격 · 금액 이름(`…Won` · `…price(s)` · `…amount`)에 대입 · 속성으로 이어지는 식 안의 10 이상 숫자
- *     (`amount: 4900` · `lowestWon: number = 4900` · `won ||= 900` · `price: f ? 4900 : 9100` · `:price="+4900"` · `price="4900"`)
- *  3. 가격 함수 인자의 숫자 — `formatWon(4900)` · `formatWon(x ?? 4900)`
- *  4. «원» 으로 이어지는 숫자 — `${4900}원` · `4900 + '원'` · `(4900).toLocaleString() + '원'` · `'4,900' + '원'` · `{{ 4900 }}원`
- *  5. JSON 의 가격 키에 숫자
+ *  1. 금액 글자 — 문자열 · 템플릿(태그 · &nbsp; 를 걷고) · 스타일(`content:`) · JSON 문자열의
+ *     «4,900원» · «50원» · «₩4,900» · «KRW 4,900» · «4900 KRW» · «1만원»(전각 숫자 포함)
+ *  2. 가격 문맥의 숫자 — 가격 · 금액 이름(`…Won` · `…price(s)` · `…amount`)에 대입 · 속성으로 이어지는 식(여러 줄 포함)
+ *     안의 10 이상 숫자 · 숫자 모양 문자열(`amount: 4900` · `lowestWon: number =\n 4900` · `price: f\n ? 4900\n : 9100` ·
+ *     `fallbackPrice = '4,900'` · `:price="+4900"` · `price="4900"`)
+ *  3. 가격 함수 인자의 숫자 — `formatWon(4900)` · `formatWon(x ?? 4900)` · 여러 줄 인자
+ *  4. «원» 으로 이어지는 숫자 — `${4900}원` · `${'4,900'}원` · `4900 + '원'` · `(4900).toLocaleString() + '원'` · `{{ 4900 }}원`
+ *  5. 템플릿 디렉티브 — 모든 `v-*` · `:` · `.` · `@` · `#` 속성 값(따옴표 · 작은따옴표 · 따옴표 없음)을 식으로 읽는다,
+ *     `v-text` · `v-html` · `v-for` 에 박힌 100 이상 숫자
+ *  6. JSON 의 가격 키 아래(중첩 포함) 숫자 · 숫자 모양 문자열
  * 테스트 · 테스트 도우미 · 카탈로그 데이터 · 자산 매니페스트는 대상이 아니다. 0 · 한 자리는 가격으로 보지 않는다(누적 초기값).
+ * 이것은 휴리스틱이다 — 실제로 가격을 그리는 컴포넌트는 행동 테스트(PlanCards · ZoneCard · PurchaseSheet)가 K1 과 대조한다.
  */
 const ROOTS = ['app', 'shared', 'server', 'modules']
 const EXTRA = ['nuxt.config.ts']
 const EXT = /\.(ts|vue|json|css)$/
 const SKIP = [
   /\.test\.ts$/,
-  /^shared\/catalog\/test-(data|source)\.ts$/,
+  /^shared\/catalog\/test-(data|source|copy)\.ts$/,
   /^server\/data\//,
   /^app\/content\/catalog-assets\.json$/,
 ]
 
 const nfkc = (s: string) => s.normalize('NFKC')
-const WON = /₩\s*\d|(?<![\w.,])(?:\d{1,3}(?:,\d{3})+|\d{2,})\s*(?:원|KRW)/i
+const WON =
+  /₩\s*\d|KRW\s*\d|\d+\s*[만천]\s*원|(?<![\w.,])(?:\d{1,3}(?:,\d{3})+|\d{2,})\s*(?:원|KRW)/i
 const wonIn = (s: string) => nfkc(s).match(WON)?.[0]
 const PRICE_NAME = /(won|price|amount)s?$/i
 const PRICE_FN = /^(formatWon|perDayWon|perGbWon)$/
 const ASSIGN = new Set([':', '=', '||=', '??=', '&&=', '+=', '-=', '*='])
 const OPEN = new Set(['(', '[', '{'])
 const CLOSE = new Set([')', ']', '}'])
+/** 문장을 새로 여는 키워드 — 여러 줄 식은 이어 보되 여기서 끊는다 */
+const STATEMENT = new Set([
+  'const',
+  'let',
+  'var',
+  'return',
+  'if',
+  'else',
+  'for',
+  'while',
+  'export',
+  'import',
+  'function',
+  'class',
+  'type',
+  'interface',
+  'throw',
+])
 const priceNumber = (t: Token | undefined) => t?.kind === 'number' && Number(t.value) >= 10
+const numericString = (t: Token | undefined) =>
+  t?.kind === 'string' && /^\s*\d[\d,]{1,}\s*$/.test(nfkc(t.value))
 const startsWithWon = (t: Token | undefined) =>
   t?.kind === 'string' && nfkc(t.value).trimStart().startsWith('원')
 
-/** i 뒤 식 한 덩어리(같은 깊이의 `;` · `,` · 줄바꿈 · 닫는 괄호까지)에 10 이상 숫자가 있나 */
+/**
+ * from 부터 식 한 덩어리(같은 깊이의 `;` · `,` · 닫는 괄호 · 새 문장 키워드까지 — 줄바꿈은 넘는다)에서
+ * 10 이상 숫자나 숫자 모양 문자열(«'4,900'»)을 찾는다. from 이 `(` 이면 그 괄호가 닫힐 때까지(함수 인자)
+ */
 function numberInExpression(tokens: Token[], from: number): Token | undefined {
   let depth = 0
+  const args = tokens[from]?.text === '('
   for (let j = from; j < tokens.length; j++) {
     const t = tokens[j]!
-    if (j > from && depth === 0 && (t.newline || t.text === ';' || t.text === ',')) return undefined
+    const stop = t.text === ';' || t.text === ',' || (t.kind === 'ident' && STATEMENT.has(t.text))
+    if (j > from && depth === 0 && stop) return undefined
     if (OPEN.has(t.text)) depth++
-    else if (CLOSE.has(t.text) && --depth < 0) return undefined
-    else if (priceNumber(t)) return t
+    else if (CLOSE.has(t.text)) {
+      depth--
+      if (depth < 0 || (args && depth === 0)) return undefined
+    } else if (priceNumber(t) || numericString(t)) return t
   }
   return undefined
 }
@@ -60,24 +93,23 @@ function numberInExpression(tokens: Token[], from: number): Token | undefined {
 export function scriptOffenders(tokens: Token[]): string[] {
   const out: string[] = []
   tokens.forEach((t, i) => {
+    const next = tokens[i + 1]
     if (t.kind === 'string') {
       const w = wonIn(t.value)
       if (w) out.push(`문자열 «${w}»`)
-      // '4,900' + '원'
-      if (
-        /^\s*\d[\d,]*\s*$/.test(nfkc(t.value)) &&
-        tokens[i + 1]?.text === '+' &&
-        startsWithWon(tokens[i + 2])
-      )
-        out.push(`'${t.value}' + '원'`)
+      // '4,900' + '원' · `${'4,900'}원`
+      const joined =
+        (next?.text === '+' && startsWithWon(tokens[i + 2])) ||
+        (next?.text.startsWith('}') && startsWithWon(next))
+      if (numericString(t) && joined) out.push(`'${t.value}' … «원»`)
     }
     const name = t.kind === 'ident' ? t.text : t.kind === 'string' ? t.value : ''
-    if (name && PRICE_NAME.test(name) && ASSIGN.has(tokens[i + 1]?.text ?? '')) {
+    if (name && PRICE_NAME.test(name) && ASSIGN.has(next?.text ?? '')) {
       const n = numberInExpression(tokens, i + 2)
-      if (n) out.push(`${name} ${tokens[i + 1]!.text} … ${n.text}`)
+      if (n) out.push(`${name} ${next!.text} … ${n.text}`)
     }
-    if (t.kind === 'ident' && PRICE_FN.test(t.text) && tokens[i + 1]?.text === '(') {
-      const n = numberInExpression(tokens, i + 2)
+    if (t.kind === 'ident' && PRICE_FN.test(t.text) && next?.text === '(') {
+      const n = numberInExpression(tokens, i + 1) // 여는 괄호부터 — 인자 안의 줄바꿈 · 괄호를 넘는다
       if (n) out.push(`${t.text}(… ${n.text} …)`)
     }
     if (priceNumber(t)) {
@@ -99,45 +131,65 @@ export function scriptOffenders(tokens: Token[]): string[] {
 }
 
 const INTERP = /\{\{([\s\S]*?)\}\}/g
-const BOUND = /(?:^|\s)(?::|v-bind:|v-bind(?=\s*=))([\w.-]*)\s*=\s*"([^"]*)"/g
-const STATIC_PRICE_ATTR = /(?:^|\s)(?![:@#])([\w-]*(?:won|price|amount)[\w-]*)\s*=\s*["']\s*[\d₩]/i
+/** 모든 디렉티브 · 바인딩 · 이벤트 · 슬롯 속성(수식어 포함) — 값은 큰따옴표 · 작은따옴표 · 따옴표 없음 */
+const DIRECTIVE =
+  /(?:^|\s)((?:v-[\w-]+(?::[\w.-]+)?|:[\w.-]+|\.[\w-]+|@[\w.-]+|#[\w.-]+))\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>"']+))/g
+const STATIC_PRICE_ATTR =
+  /(?:^|\s)(?![:@#.])([\w-]*(?:won|price|amount)[\w-]*)\s*=\s*["']?\s*[\d₩]/i
+/** 태그 · 공백 엔티티를 걷은 글자 — «4,900<small>원</small>» · «4,900&nbsp;원» 을 붙여 읽는다 */
+const visibleText = (template: string) =>
+  template.replace(/<[^>]*>/g, '').replace(/&nbsp;|&#160;|&#xa0;/gi, ' ')
 
 export function templateOffenders(template: string): string[] {
   const out: string[] = []
-  const w = wonIn(template)
+  const text = visibleText(template)
+  const w = wonIn(text)
   if (w) out.push(`템플릿 «${w}»`)
-  for (const m of template.matchAll(INTERP)) {
+  for (const m of text.matchAll(INTERP)) {
     const tokens = scanScript(m[1]!)
     out.push(...scriptOffenders(tokens).map((o) => `{{ }} ${o}`))
-    // {{ 4900 }}원 · {{ '4,900' }}원
-    const after = template.slice(m.index! + m[0].length)
+    // {{ 4900 }}원 · {{ '4,900' }}원 · {{ 4900 }}<small>원</small>
+    const after = text.slice(m.index! + m[0].length)
     const literal = tokens.some(
       (t) => priceNumber(t) || (t.kind === 'string' && /\d{2,}/.test(t.value)),
     )
     if (/^\s*원/.test(after) && literal) out.push(`{{ ${m[1]!.trim()} }}원`)
   }
-  for (const m of template.matchAll(BOUND)) {
-    const tokens = scanScript(m[2]!)
-    out.push(...scriptOffenders(tokens).map((o) => `:${m[1]} ${o}`))
-    if (PRICE_NAME.test(m[1]!.replace(/-/g, '')) && tokens.some(priceNumber))
-      out.push(`:${m[1]}="${m[2]}"`)
+  for (const m of template.matchAll(DIRECTIVE)) {
+    const name = m[1]!
+    const value = m[2] ?? m[3] ?? m[4] ?? ''
+    const tokens = scanScript(value)
+    out.push(...scriptOffenders(tokens).map((o) => `${name} ${o}`))
+    const bare = name
+      .replace(/^(v-bind:|v-[\w-]+:|[:.@#])/, '')
+      .replace(/\.[\w-]+$/, '')
+      .replace(/-/g, '')
+    if (PRICE_NAME.test(bare) && tokens.some((t) => priceNumber(t) || numericString(t)))
+      out.push(`${name}="${value}"`)
+    // 값을 그대로 화면에 쓰거나 목록을 만드는 디렉티브에 박힌 금액(v-text="4900" · v-for="p in [4900]")
+    if (
+      /^v-(text|html|for)$/.test(name) &&
+      tokens.some((t) => t.kind === 'number' && Number(t.value) >= 100)
+    )
+      out.push(`${name}="${value}"`)
   }
   const attr = template.match(STATIC_PRICE_ATTR)?.[0]
   if (attr) out.push(`속성 ${attr.trim()}`)
   return out
 }
 
-export function jsonOffenders(v: unknown, at = ''): string[] {
+/** JSON — 문자열 속 금액 · 가격 키 아래(중첩 포함)의 숫자 · 숫자 모양 문자열 */
+export function jsonOffenders(v: unknown, at = '', inPrice = false): string[] {
   if (typeof v === 'string') {
     const w = wonIn(v)
-    return w ? [`${at}: «${w}»`] : []
+    if (w) return [`${at}: «${w}»`]
+    return inPrice && /^\s*\d[\d,]{1,}\s*$/.test(nfkc(v)) ? [`${at}: "${v}"`] : []
   }
-  if (Array.isArray(v)) return v.flatMap((x, i) => jsonOffenders(x, `${at}[${i}]`))
+  if (typeof v === 'number') return inPrice && v >= 10 ? [`${at}: ${v}`] : []
+  if (Array.isArray(v)) return v.flatMap((x, i) => jsonOffenders(x, `${at}[${i}]`, inPrice))
   if (v && typeof v === 'object')
     return Object.entries(v).flatMap(([k, x]) =>
-      typeof x === 'number' && PRICE_NAME.test(k) && x >= 10
-        ? [`${at}.${k}: ${x}`]
-        : jsonOffenders(x, `${at}.${k}`),
+      jsonOffenders(x, `${at}.${k}`, inPrice || PRICE_NAME.test(k)),
     )
   return []
 }
@@ -149,10 +201,13 @@ function partsOffenders({ script, template, style }: SourceParts): string[] {
   return out
 }
 
-function offenders(file: string): string[] {
-  if (file.endsWith('.json')) return jsonOffenders(JSON.parse(readFileSync(file, 'utf8')))
-  return partsOffenders(readSource(file))
+/** 파일 한 개 — 확장자로 길을 고른다(대조군이 글자로 같은 길을 탄다) */
+export function offendersOf(file: string, content: string): string[] {
+  if (file.endsWith('.json')) return jsonOffenders(JSON.parse(content))
+  return partsOffenders(parseSource(file, content))
 }
+
+const offenders = (file: string) => offendersOf(file, readFileSync(file, 'utf8'))
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
@@ -208,20 +263,28 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       "const a = '50원'",
       "const a = '₩4,900'",
       "const a = '4900 KRW'",
+      "const a = 'KRW 4,900'",
+      "const a = '1만원'",
       "const a = '４,９００원'",
       'const x = { amount: 4900 }',
       "const x = { 'amount': 4900 }",
       'let lowestWon = 900',
       'const b01Won: number = 4900',
+      'const lowestWon: number =\n  4900',
       'b09Won ||= 4900',
       'totalWon += 900',
       'const t = { perDayWon: 900, unitPrice: 900 }',
       'const t = { lowestWon: flag ? 4900 : 9100 }',
+      'const lowestWon = flag\n  ? 4900\n  : 9100',
+      'const t = {\n  price:\n    kind === 1\n      ? 4900\n      : 9100,\n}',
       'const prices = [4900, 9100]',
+      "const fallbackPrice = '4,900'",
       'formatWon(4900)',
       'formatWon((4900))',
       'formatWon(x ?? 4900)',
+      'formatWon(\n  x.days === 7\n    ? 4900\n    : x.finalWon,\n)',
       'const s = `${4900}원`',
+      "const s = `${'4,900'}원`",
       "const s = 4900 + '원'",
       "const s = '4,900' + '원'",
       "const s = `${(4900).toLocaleString('ko-KR')}원`",
@@ -237,12 +300,23 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       "<p>{{ '4,900' }}원</p>",
       '<p>{{ (4900).toLocaleString() }}원</p>',
       '<p>{{ formatWon(4900) }}</p>',
+      '<p>{{\n  formatWon(\n    x.days === 7\n      ? 4900\n      : x.finalWon,\n  )\n}}</p>',
       '<PlanCard :price="4900" />',
       '<PlanCard :price="+4900" />',
+      "<PlanCard :price='4900' />",
+      '<PlanCard :price=4900 />',
+      '<PlanCard :price.prop="4900" />',
+      '<PlanCard .price="4900" />',
       '<PlanCard :final-won="9100" />',
       '<PlanCard v-bind="{ price: 4900 }" />',
       '<PlanCard price="4900" />',
+      '<span v-text="formatWon(4900)" />',
+      '<span v-text="4900" />',
+      '<li v-for="p in [4900, 9100]" :key="p">{{ formatWon(p) }}</li>',
       '<p>₩4,900</p>',
+      '<strong>4,900<small>원</small></strong>',
+      '<p>4,900&nbsp;원</p>',
+      '<p>{{ 4900 }}<small>원</small></p>',
     ])('템플릿 %j', (tpl) => {
       expect(templateOffenders(tpl).length).toBeGreaterThan(0)
     })
@@ -264,13 +338,26 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       )
     })
 
-    it('JSON — 가격 키의 숫자 · 문자열 속 금액', () => {
+    it('JSON — 가격 키 아래 숫자(중첩 · 숫자 문자열) · 문자열 속 금액', () => {
       expect(jsonOffenders(JSON.parse('{"items":[{"finalWon": 4900}]}'))).toEqual([
         '.items[0].finalWon: 4900',
       ])
       expect(jsonOffenders(JSON.parse('{"note":"일본은 곧 4,900원부터"}'))).toEqual([
         '.note: «4,900원»',
       ])
+      expect(jsonOffenders(JSON.parse('{"price":"4900"}'))).toHaveLength(1)
+      expect(jsonOffenders(JSON.parse('{"price":{"value":4900}}'))).toHaveLength(1)
+      expect(jsonOffenders(JSON.parse('{"lowestWon":"4,900"}'))).toHaveLength(1)
+      expect(jsonOffenders(JSON.parse('{"iso2":"FR","cities":["파리"],"days":30}'))).toEqual([])
+    })
+
+    it('파일 길 — 확장자대로 JSON · SFC · TS · CSS 를 읽는다', () => {
+      expect(offendersOf('x.json', '{"note":"4,900원"}')).toHaveLength(1)
+      expect(
+        offendersOf('x.vue', '<template><p>{{ formatWon(4900) }}</p></template>'),
+      ).toHaveLength(1)
+      expect(offendersOf('x.ts', 'export const amount = 4900')).toHaveLength(1)
+      expect(offendersOf('x.css', '.a::after { content: "9,100원" }')).toHaveLength(1)
     })
 
     it.each([
@@ -280,6 +367,8 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       '/* 9,100원 */ const a = 1',
       'const x = { amount: option.finalWon }',
       'let totalWon = 0',
+      'let totalWon = 0\nconst width = 400',
+      'const priceLabel = kind === 1 ? label : other',
       'const s = `${won}원`',
       "const a = ['/verify/**']",
       'const t = { width: 400, status: 404 }',
@@ -295,6 +384,8 @@ describe('가격 리터럴 0 (spec 불변식 2 · DoD 2)', () => {
       '<p>{{ won }}원</p>',
       '<img width="400" height="400" />',
       '<PlanCard :price="0" />',
+      '<li v-for="d in 30" :key="d">{{ d }}일</li>',
+      '<span v-text="label" />',
     ])('허용 — 템플릿 %j', (tpl) => {
       expect(templateOffenders(tpl)).toEqual([])
     })

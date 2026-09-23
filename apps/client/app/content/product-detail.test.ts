@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { optionLabel, zoneByCode } from '#shared/catalog/derive'
 import { activeCatalog, fixtureCatalog } from '#shared/catalog/test-data'
+import { BANNED_COPY } from '#shared/catalog/test-copy'
 import { readSource, stringsOf } from '#shared/catalog/test-source'
 import type { Kind, ZoneView } from '#shared/catalog/types'
 import * as copy from './product-detail'
@@ -84,22 +85,7 @@ const vueParts = (file: string) => {
 }
 const template = (file: string) => vueParts(file).template
 
-const BANNED: [RegExp, string][] = [
-  [
-    /자정|밤 ?12시|(?<![\d:])(0|00|24)시(?!간)|정각|선택(한|하신)? 시각/,
-    '사용일수는 첫 연결부터 24h rolling',
-  ],
-  [/iPhone/i, '«아이폰»'],
-  [/1~90일/, '판매는 1~30 · 60 · 90'],
-  [/즉시할인|정가|할인율/, '최종가만(D-2)'],
-  [
-    /재개통|다시 개통|나라마다 (다시 )?설치|직접 (골라|선택)|수동으로|설정에서 [^.]{0,12}통신사|별도 (설정|조작)|(네트워크|통신사)를? (다시|새로) (골라|선택)|APN/,
-    '여러 나라 = 자동 전환',
-  ],
-  [/최고|최저가 보장|유일|1위/, '근거 없는 최상급'],
-  [/500\s?kbps|128\s?kbps/i, '소진 후 속도는 512kbps'],
-  [/이어 쓰기|충전/, 'top-up 없음'],
-]
+const BANNED = BANNED_COPY
 /** 환불 영역 — «발급 전 전액» 만(A5) */
 const REFUND_BANNED = /수수료|3,500|3500|반품|불가|발급 후|발급 뒤|공제|차감|청약철회/
 
@@ -324,14 +310,17 @@ describe('히어로 문구 (S-4 — 고른 종류를 따른다)', () => {
       }
   })
 
-  it('설치 FAQ 에도 요금 경고 두 줄(카피 규칙 3)', () => {
-    const a = faqItems(zoneByCode(catalog, 'CZE00')!, 'U').find(
-      (f) => f.q === '설치는 언제 하면 되나요?',
-    )!.a
-    expect(a).toContain('한국 회선과 함께 켜세요')
-    expect(a).toContain('데이터 로밍')
-    expect(a).toContain('셀룰러 데이터 전환 허용')
-  })
+  it.each(['U', 'L'] as const)(
+    '설치 FAQ(%s) — 두 회선 켜기 + 한국 회선 요금 경고 두 줄(카피 규칙 3 · 원문 그대로)',
+    (kind) => {
+      const a = faqItems(zoneByCode(catalog, 'CZE00')!, kind).find(
+        (f) => f.q === '설치는 언제 하면 되나요?',
+      )!.a
+      expect(a).toBe(
+        '발급받은 뒤 언제든 설치할 수 있어요. 출국 전에 미리 설치해 두고, 도착하면 한국 회선과 함께 켜세요. 한국 회선의 데이터 로밍과 셀룰러 데이터 전환 허용은 꺼 두세요.',
+      )
+    },
+  )
 
   it.each(['U', 'L'] as const)('사용일수 예시(%s) 전체 — 연결 · 2일째 · N일째 · 끝', (kind) => {
     const n = USAGE_EXAMPLE_DAYS[kind]

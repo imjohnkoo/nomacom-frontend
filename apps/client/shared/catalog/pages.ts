@@ -35,7 +35,7 @@ function cardSub(z: ZoneView): string {
   const n = z.countries.length
   if (n < 2 || n > 4) return z.subtitle
   const parts = z.label.split(/[·・,]/).filter((x) => x.trim() !== '')
-  const listed = !z.label.includes('개국') && parts.length === n
+  const listed = parts.length === n
   return listed ? z.subtitle : z.countries.map((c) => c.nameKr).join(' · ')
 }
 
