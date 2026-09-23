@@ -47,6 +47,28 @@ describe('자산 매니페스트 ↔ 카탈로그 (spec F-2 · D-14)', () => {
     }
   })
 
+  it('매니페스트 키 = 파일 이름 앞부분(다른 상품 · zone · 나라 파일을 가리키지 않는다)', () => {
+    for (const group of ['thumbs', 'maps', 'flags'] as const)
+      for (const [key, url] of Object.entries(manifest[group]))
+        expect(url.split('/').at(-1)!.split('.')[0], `${group}.${key}`).toBe(key)
+  })
+
+  it('같은 출처로 나가는 SVG(지도 · 국기)에 실행되는 내용이 없다', () => {
+    for (const url of [...Object.values(manifest.maps), ...Object.values(manifest.flags)]) {
+      const svg = readFileSync(publicFile(url), 'utf8')
+      expect(svg, url).not.toMatch(/<script|\son\w+\s*=|<foreignObject|href\s*=\s*["'](?!#)/i)
+    }
+  })
+
+  it('지도마다 강조 그룹(그 zone 나라 · #c7b6ff)에 도형이 있다', () => {
+    // 배경 그룹은 비어도 된다 — 몰타(MLT00)처럼 원본 배경이 화면 밖에만 있는 지도가 있다(가장자리 판정은 아래 단위 테스트)
+    for (const [zone, url] of Object.entries(manifest.maps)) {
+      const svg = readFileSync(publicFile(url), 'utf8')
+      const hl = svg.match(/<g fill="#c7b6ff"[^>]*>([\s\S]*?)<\/g>/)?.[1] ?? ''
+      expect(hl.match(/<path /g)?.length ?? 0, zone).toBeGreaterThan(0)
+    }
+  })
+
   it('파일명에 내용 해시 8자가 붙는다(쿼리스트링 버전 금지)', () => {
     for (const url of [
       ...Object.values(manifest.thumbs),
@@ -136,6 +158,33 @@ describe('optimizeMapSvg', () => {
     )
     expect(out).toContain('d="M10 10l40 0 0 40z"')
     expect(out).not.toMatch(/-300|300/)
+  })
+
+  // viewBox 0 0 100 100 · 여유 20 — 네 방향 모두 «걸친 고리는 남기고, 여유 밖은 버린다»
+  it.each([
+    ['왼쪽 가장자리에 걸침', 'M-50,40L10,40L10,60Z', true],
+    ['오른쪽 가장자리에 걸침', 'M90,40L150,40L150,60Z', true],
+    ['위쪽 가장자리에 걸침', 'M40,-50L60,-50L60,10Z', true],
+    ['아래쪽 가장자리에 걸침', 'M40,90L60,90L60,150Z', true],
+    ['오른쪽 아래 안쪽', 'M60,60L90,60L90,90Z', true],
+    ['오른쪽 밖이지만 여유 안(110~118)', 'M110,40L118,40L118,60Z', true],
+    ['오른쪽 여유 밖(125~140)', 'M125,40L140,40L140,60Z', false],
+    ['왼쪽 여유 밖', 'M-40,40L-25,40L-25,60Z', false],
+    ['위쪽 여유 밖', 'M40,-40L60,-40L60,-25Z', false],
+    ['아래쪽 여유 밖', 'M40,125L60,125L60,140Z', false],
+  ])('%s → 남김 %s', (_n, d, kept) => {
+    expect(optimizeMapSvg(svg(`<path d="${d}"/>`)).includes('<path'), d).toBe(kept)
+  })
+
+  it('점을 솎을 때 «마지막으로 남긴 점» 과 거리를 잰다(바로 앞 원본 점이 아니다)', () => {
+    // 간격 1 인 점이 이어져도 남긴 점에서 2 가 되면 남긴다 — 앞 점과만 비교하면 해안선이 통째로 사라진다
+    const out = optimizeMapSvg(svg('<path d="M0,0L1,0L2,0L3,0L4,0L4,1L4,2L4,3L4,4Z"/>'), 2)
+    expect(out).toContain('d="M0 0l2 0 2 0 0 2 0 2z"')
+  })
+
+  it('거리는 가로 + 세로(대각선 1,1 은 2 — 남긴다)', () => {
+    const out = optimizeMapSvg(svg('<path d="M0,0L1,1L10,0L10,10Z"/>'), 2)
+    expect(out).toContain('d="M0 0l1 1 9 -1 0 10z"')
   })
 
   it('허용치와 같은 거리의 점은 남긴다(경계 포함)', () => {
