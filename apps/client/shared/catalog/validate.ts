@@ -76,8 +76,8 @@ function check(c: AdaptedCatalog, issues: string[]) {
     !isCalendarDate(c.generatedAt)
   )
     issues.push(`meta.generatedAt: ISO 8601 날짜 · 시각이 아니다(${c.generatedAt})`)
-  if (c.schema !== null && c.schema !== SCHEMA)
-    issues.push(`meta.schema: ${SCHEMA} 가 아니다(${c.schema}) — 어댑터를 먼저 맞춘다`)
+  if (c.schema !== SCHEMA)
+    issues.push(`meta.schema: ${SCHEMA} 가 아니다(${c.schema ?? '키 없음'}) — 어댑터를 먼저 맞춘다`)
   const actual = {
     zoneCount: c.zones.length,
     skuCount: c.zones.reduce((n, z) => n + z.products.length, 0),
@@ -88,7 +88,9 @@ function check(c: AdaptedCatalog, issues: string[]) {
   }
   for (const key of ['zoneCount', 'skuCount', 'cellCount'] as const) {
     const said = c.counts[key]
-    if (said !== undefined && said !== actual[key])
+    if (said === undefined)
+      issues.push(`meta.${key}: 숫자가 없다 — export 가 적는 개수로 잘린 파일을 막는다`)
+    else if (said !== actual[key])
       issues.push(`meta.${key}: export 는 ${said} 인데 실제는 ${actual[key]} — 잘린 export 인가`)
   }
   if (c.zones.length === 0) issues.push('zones: 비어 있다')

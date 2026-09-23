@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from '@tailwindcss/vite'
+import { CATALOG_SERVER_ASSET_DIR } from './shared/catalog/files'
 import { buildRobotsRouteRules } from './shared/utils/robots'
 
 export default defineNuxtConfig({
@@ -25,7 +26,7 @@ export default defineNuxtConfig({
 
   nitro: {
     // 카탈로그(K1) — server/data/catalog.json(W1-1 export) 또는 표본 픽스처. server/utils/catalog.ts 가 읽는다
-    serverAssets: [{ baseName: 'catalog', dir: 'data' }],
+    serverAssets: [{ baseName: 'catalog', dir: CATALOG_SERVER_ASSET_DIR }],
     // 프리렌더 목록은 modules/catalog.ts 가 카탈로그에서 넣는다(홈 · 검색 · 국가 · 상품 · 정적 — catalog F-9).
     // 200 이 아닌 라우트가 하나라도 있으면 빌드가 실패한다(failOnError 기본값).
   },

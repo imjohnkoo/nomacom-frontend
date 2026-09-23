@@ -59,6 +59,8 @@ describe('parseCatalog — 표본 픽스처', () => {
       'displayStatus',
       'usable',
       'naverName',
+      'optionPriceWon',
+      'baseWon',
     ])
       expect(json).not.toContain(`"${key}"`)
   })
@@ -71,8 +73,9 @@ describe('parseCatalog — 표본 픽스처', () => {
     ['표본', FIXTURE_CATALOG_FILE],
     ['지금 빌드가 쓰는 카탈로그', ACTIVE_CATALOG_FILE],
   ])('%s 원문(K1 전체 필드)에 네이버 CDN URL 이 없다(불변식 4)', (_n, file) => {
+    // 호스트 글자 자체를 본다 — 스킴 없는 //… · 이스케이프된 https:\/\/… 도 걸린다
     const text = readFileSync(`${APP_DIR}${file}`, 'utf8')
-    expect(text.match(/https?:\/\/[^"\s]*(pstatic\.net|shop-phinf)[^"\s]*/)?.[0] ?? null).toBeNull()
+    expect(text.match(/pstatic|shop-phinf/)?.[0] ?? null).toBeNull()
   })
 })
 
@@ -260,6 +263,43 @@ describe('parseCatalog — 깨진 입력은 빌드를 멈춘다', () => {
       /meta\.zoneCount: export 는 5 인데 실제는 4/,
     ],
     ['schema 가 k1-v1 이 아님', (r) => (r.meta.schema = 'k1-v2'), /k1-v1 가 아니다/],
+    ['schema 키 없음', (r) => delete r.meta.schema, /k1-v1 가 아니다\(키 없음\)/],
+    ['schema 가 숫자', (r) => (r.meta.schema = 1), /k1-v1 가 아니다/],
+    ['cellCount 키 없음', (r) => delete r.meta.cellCount, /meta\.cellCount: 숫자가 없다/],
+    ['skuCount 가 문자열', (r) => (r.meta.skuCount = '7'), /meta\.skuCount: 숫자가 없다/],
+    [
+      '옵션 칸이 빠진 export(cellCount 불일치 — 60 · 90일 절단)',
+      (r) => {
+        const p = productRaw(r, 'CZE00U')
+        p.options = p.options.filter((o: any) => o.days <= 30)
+      },
+      /meta\.cellCount: export 는 494 인데 실제는 488/,
+    ],
+    [
+      '상품이 빠진 export(skuCount 불일치)',
+      (r) => (zoneRaw(r, 'CZE00').products = zoneRaw(r, 'CZE00').products.slice(0, 1)),
+      /meta\.skuCount: export 는 7 인데 실제는 6/,
+    ],
+    [
+      '최종가가 산식보다 작음(옵션가 누락)',
+      (r) => (productRaw(r, 'CZE00U').options[6].finalWon -= 100),
+      /≠ 판매가 119900 − 즉시할인 119000 \+ 옵션가/,
+    ],
+    [
+      '판매가 키 누락',
+      (r) => delete productRaw(r, 'CZE00U').salePriceWon,
+      /salePriceWon: 숫자가 없다/,
+    ],
+    [
+      '즉시할인 키 누락',
+      (r) => delete productRaw(r, 'CZE00U').immediateDiscountWon,
+      /immediateDiscountWon: 숫자가 없다/,
+    ],
+    [
+      '옵션가 키 누락',
+      (r) => delete productRaw(r, 'CZE00U').options[0].optionPriceWon,
+      /optionPriceWon: 숫자가 없다/,
+    ],
     ['없는 날짜(2월 30일)', (r) => (r.meta.generatedAt = '2026-02-30T00:00:00+09:00'), /ISO 8601/],
     // 나라 · 코드 모양 · 핀 범위
     [
