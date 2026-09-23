@@ -40,7 +40,7 @@ MODE="${1:-}"
 PORT="${2:-}"
 DB_URL="${3:-}"
 [[ "$MODE" == dev || "$MODE" == prod ]] || refuse "사용: $0 dev|prod <port> [합성 DB url]"
-[[ "$PORT" =~ ^[0-9]{4,5}$ ]] || refuse "포트는 숫자 4~5자리"
+[[ "$PORT" =~ ^[1-9][0-9]{3,4}$ ]] || refuse "포트는 숫자 4~5자리(앞자리 0 금지 — 03005 는 nuxi 에겐 3005 인데 netstat 검사는 비껴간다)"
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 

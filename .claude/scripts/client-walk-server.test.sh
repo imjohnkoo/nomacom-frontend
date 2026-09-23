@@ -60,6 +60,7 @@ export CORS_EXTRA_ORIGINS=https://evil.example DATABASE_URL=postgres://u:p@prod.
 expect_refuse "모드 없음"
 expect_refuse "잘못된 모드" bogus 3099
 expect_refuse "포트 형식" dev abc
+expect_refuse "포트 앞자리 0(netstat 검사 우회)" dev 03099
 expect_refuse "비로컬 DB" dev 3099 'postgres://u:p@db.example.com:5432/x'
 expect_refuse "로컬 다른 포트" dev 3099 'postgres://u:p@127.0.0.1:5432/x'
 expect_refuse "조각으로 호스트 위장" dev 3099 'postgres://a:b@prod.example.com:5432#@127.0.0.1:55432/x'
