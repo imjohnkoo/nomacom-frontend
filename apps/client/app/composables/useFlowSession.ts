@@ -20,6 +20,8 @@ export function useFlowSession() {
     secure: !import.meta.dev,
     path: '/',
     default: () => null,
+    // 같은 값을 다시 써도 Set-Cookie 를 다시 내보내 Max-Age 를 갱신한다(기본은 값이 같으면 쓰기 생략 — spec F-15)
+    refresh: true,
   })
 
   const read = (): FlowSession | null => parseFlowSession(cookie.value)

@@ -55,20 +55,18 @@ const onSubmit = async () => {
   isSubmitting.value = true
   await new Promise((resolve) => setTimeout(resolve, 1200))
   try {
-    const response = await api.verifyOrder({
+    // 보낸 body 를 그대로 쿠키에 쓴다 — 요청 중 입력칸이 바뀌어도 검증받지 않은 값이 들어가지 않게 (spec F-15)
+    const credentials = {
       fullName: fullName.value,
       phoneNumber: phoneNumber.value,
       orderId: orderId.value,
-    })
+    }
+    const response = await api.verifyOrder(credentials)
     const { verified, cancelled, details } = response
     if (verified && !cancelled) {
       orderStore.setOrders(details || [])
       // 새로고침 · 탭 복원 뒤 이어가기용 — 입력해 통과한 값만 1시간 (K8)
-      flowSession.start({
-        orderId: orderId.value,
-        fullName: fullName.value,
-        phoneNumber: phoneNumber.value,
-      })
+      flowSession.start(credentials)
       router.push(`/details/${orderId.value}`)
     } else if (verified && cancelled) {
       isCancelledOrderVisible.value = true
