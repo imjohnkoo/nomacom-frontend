@@ -39,13 +39,16 @@ description: QA stage for nomacom-frontend after implementation reaches DoD — 
 - **보내기 전후 워크트리 대조** — 디스패치는 커밋된 clean 상태에서. 리뷰어·walk 가 돌아오거나 **중단되면**(Esc · API 오류 · 컨텍스트 한도) 아래로 대조하고, 달라진 게 있으면 원인을 확인하기 전까지 커밋하지 않는다. 표식은 **디스패치 묶음마다 따로**(`<회차>`) — 뒤이은 디스패치에서 같은 파일을 다시 찍으면 앞 묶음의 기준선이 덮인다.
 
   ```bash
-  # 보내기 전 — <M> = <스크래치패드>/pre-review-<회차>.marker
+  # 보내기 전 — <M> = <스크래치패드>/pre-review-<회차>.marker  (.nuxt · .output 도 본다 — walk 서버를 깨는 사고가 거기서 난다)
   git -C <worktree> status --porcelain   # 빈 출력
-  touch <M>; find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.nuxt/*' -not -path '*/.output/*' | sort > <M>.files
+  git -C <worktree> rev-parse HEAD > <M>.head
+  touch <M>; find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' | sort > <M>.files
   # 돌아오거나 중단되면
   git -C <worktree> status --porcelain; git -C <worktree> diff HEAD --stat
-  find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.nuxt/*' -not -path '*/.output/*' | sort | diff <M>.files -   # 생기거나 사라진 파일(gitignore 경로 포함)
-  find <worktree> -cnewer <M> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.nuxt/*' -not -path '*/.output/*'   # 바뀐 파일
+  [ "$(git -C <worktree> rev-parse HEAD)" = "$(cat <M>.head)" ] || echo "⛔ HEAD 가 움직였다"
+  find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' | sort | diff <M>.files -   # 생기거나 사라진 파일(gitignore · .nuxt · .output 포함)
+  find <worktree> -cnewer <M> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*'   # 바뀐 파일(dev 서버 HMR 이 .nuxt 를 쓰면 여기 뜬다 — 무엇인지 연다)
+  find <worktree> -name node_modules -prune -o -type l -newer <M> -print   # 레시피 재실행이 워크트리 안에 만든 링크
   ```
 
 ### 2. 서브에이전트 디스패치 — 고정 브리프
@@ -89,14 +92,17 @@ f) 보고 끝에 git status --porcelain 을 다시 찍어 a) 와 같은지 적�
 환경 안전 (John 지시 2026-09-23 — 위반 금지):
 - prod DB · AWS(SSM 포함) · Spark/Maya/네이버 등 벤더 API 에 접속하지 않는다. mcp maya-api · naver-smartstore 도구 호출 금지
   (발급 · SMS · 주문 변경). 실제 고객 이름 · 전화번호를 어디에도 넣지 않는다.
-- 서버를 띄우거나 재시작하지 않는다 — 실행 확인은 코딩 세션이 봉투(.claude/scripts/client-walk-server.sh)로 띄운
-  <walk 서버 URL> 에 GET/OPTIONS 만. 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저 붙어 봉투 밖
-  서버에 닿는다).
+- 서버를 띄우거나 재시작하지 않는다 — spec 의 준비 단계(설치 · 빌드 · 서버 기동, 예: E2E-0)는 코딩 세션 몫이라 건너뛴다.
+  대상은 코딩 세션이 봉투(.claude/scripts/client-walk-server.sh)로 띄운 <walk 서버 URL> 뿐 — ⑥ 리뷰어는 GET/HEAD/OPTIONS 만,
+  ⑦ walk 는 브라우저로 spec 절차를 걷는다(폼 제출 · POST 포함 — 봉투 서버는 벤더 · prod 에 닿지 않는다. PortOne 테스트
+  결제창은 코딩 세션이 테스트 키를 넣어 띄운 경우만). 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저
+  붙어 봉투 밖 서버에 닿는다).
 - ps -E 는 그 walk 서버 pid 에만, 키 이름만 출력 — 이 리포 밖 프로세스의 env 는 훑지 않는다(다른 앱의 비밀 값이 찍힌다).
-- .env / .env.local 을 만들지 않는다. .nuxt · .output 을 지우고 다시 쓰는 명령은 워크트리에서도 복사본에서도 돌리지 않는다
-  (복사본의 .nuxt 는 워크트리 심링크다 — 떠 있는 walk 서버가 깨진다): yarn install · yarn build · yarn turbo run
-  build / test / typecheck(test 는 build 에 의존) · nuxt / npx nuxt 의 build · prepare · dev · typecheck-gate.sh ·
-  typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client test(vitest 만 — 빌드 없음)와 절의 레시피만.
+- .env / .env.local 을 만들지 않는다. 설치 · 빌드 · typecheck · lint · generate 계열은 **이름과 무관하게** 워크트리에서도
+  복사본에서도 돌리지 않는다(.nuxt · .output · dist 를 지우고 다시 써서 떠 있는 walk 서버가 깨진다): yarn install ·
+  yarn build · yarn turbo run <무엇이든>(test · lint 도 build 에 의존) · yarn workspace <앱> build/typecheck/generate/dev ·
+  nuxt / npx nuxt <무엇이든> · typecheck-gate.sh · typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client
+  test(vitest 만 — 빌드 없음)와 절의 레시피만.
   .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를 만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR ·
   설정) 금지.
 출력: findings 를 blocker(머지 불가) / major(수정 필요) / minor(선택) 로 분류하고,
@@ -166,14 +172,17 @@ g) Orca 브라우저 명령은 전부 --page <browserPageId> 로 고정한다 �
 환경 안전 (John 지시 2026-09-23 — 위반 금지):
 - prod DB · AWS(SSM 포함) · Spark/Maya/네이버 등 벤더 API 에 접속하지 않는다. mcp maya-api · naver-smartstore 도구 호출 금지
   (발급 · SMS · 주문 변경). 실제 고객 이름 · 전화번호를 어디에도 넣지 않는다.
-- 서버를 띄우거나 재시작하지 않는다 — 실행 확인은 코딩 세션이 봉투(.claude/scripts/client-walk-server.sh)로 띄운
-  <walk 서버 URL> 에 GET/OPTIONS 만. 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저 붙어 봉투 밖
-  서버에 닿는다).
+- 서버를 띄우거나 재시작하지 않는다 — spec 의 준비 단계(설치 · 빌드 · 서버 기동, 예: E2E-0)는 코딩 세션 몫이라 건너뛴다.
+  대상은 코딩 세션이 봉투(.claude/scripts/client-walk-server.sh)로 띄운 <walk 서버 URL> 뿐 — ⑥ 리뷰어는 GET/HEAD/OPTIONS 만,
+  ⑦ walk 는 브라우저로 spec 절차를 걷는다(폼 제출 · POST 포함 — 봉투 서버는 벤더 · prod 에 닿지 않는다. PortOne 테스트
+  결제창은 코딩 세션이 테스트 키를 넣어 띄운 경우만). 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저
+  붙어 봉투 밖 서버에 닿는다).
 - ps -E 는 그 walk 서버 pid 에만, 키 이름만 출력 — 이 리포 밖 프로세스의 env 는 훑지 않는다(다른 앱의 비밀 값이 찍힌다).
-- .env / .env.local 을 만들지 않는다. .nuxt · .output 을 지우고 다시 쓰는 명령은 워크트리에서도 복사본에서도 돌리지 않는다
-  (복사본의 .nuxt 는 워크트리 심링크다 — 떠 있는 walk 서버가 깨진다): yarn install · yarn build · yarn turbo run
-  build / test / typecheck(test 는 build 에 의존) · nuxt / npx nuxt 의 build · prepare · dev · typecheck-gate.sh ·
-  typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client test(vitest 만 — 빌드 없음)와 절의 레시피만.
+- .env / .env.local 을 만들지 않는다. 설치 · 빌드 · typecheck · lint · generate 계열은 **이름과 무관하게** 워크트리에서도
+  복사본에서도 돌리지 않는다(.nuxt · .output · dist 를 지우고 다시 써서 떠 있는 walk 서버가 깨진다): yarn install ·
+  yarn build · yarn turbo run <무엇이든>(test · lint 도 build 에 의존) · yarn workspace <앱> build/typecheck/generate/dev ·
+  nuxt / npx nuxt <무엇이든> · typecheck-gate.sh · typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client
+  test(vitest 만 — 빌드 없음)와 절의 레시피만.
   .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를 만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR ·
   설정) 금지.
 출력: DoD 체크리스트 항목별 pass/fail + 발견 이슈(blocker/major/minor) +
@@ -215,16 +224,18 @@ yarn workspace nomacom-client vitest run --config <Q>/probe/vitest.probe.config.
 ```bash
 mkdir -p "$Q/repo"
 git -C <wt> archive HEAD apps/client package.json tsconfig.base.json | tar -x -C "$Q/repo"
-ln -s <wt>/node_modules "$Q/repo/node_modules"
-ln -s <wt>/apps/client/node_modules "$Q/repo/apps/client/node_modules"
-ln -s <wt>/apps/client/.nuxt "$Q/repo/apps/client/.nuxt"     # tsconfig 가 .nuxt 를 참조한다 — 읽기만
-# 복사본 파일에 변이를 넣고(sed · 편집은 $Q/repo 안에서만) 실행
+# 링크는 없을 때만 — macOS ln -s 는 대상이 이미 디렉토리 링크면 그 안(= 워크트리)에 링크를 만든다(exit 0)
+[ -L "$Q/repo/node_modules" ] || ln -s <wt>/node_modules "$Q/repo/node_modules"
+[ -L "$Q/repo/apps/client/node_modules" ] || ln -s <wt>/apps/client/node_modules "$Q/repo/apps/client/node_modules"
+# .nuxt 는 링크가 아니라 복사(1MB 남짓) — tsconfig 가 참조한다. 복사라 복사본 안의 쓰기가 워크트리로 새지 않는다
+[ -d "$Q/repo/apps/client/.nuxt" ] || cp -R <wt>/apps/client/.nuxt "$Q/repo/apps/client/.nuxt"
+# 복사본 파일에 변이를 넣고 실행 — 편집은 $Q/repo 의 추적 파일만(node_modules 링크 안은 실체가 워크트리다)
 <wt>/node_modules/.bin/vitest run --root "$Q/repo/apps/client" "$Q/repo/apps/client/<spec 경로>"
 # 원복 = 원본을 다시 푼다(rm · 백업 불필요)
 git -C <wt> archive HEAD apps/client/<파일 경로> | tar -x -C "$Q/repo"
 ```
 
-- ⚠️ `.nuxt` 가 없으면 «TSCONFIG_ERROR … Tsconfig not found»(실측). `.nuxt` 는 워크트리 심링크라 복사본에서도 nuxt 명령(`prepare` · `build` · `dev`)을 돌리지 않는다 — 심링크 너머 워크트리 `.nuxt` 가 비워진다.
+- ⚠️ `.nuxt` 가 없으면 «TSCONFIG_ERROR … Tsconfig not found»(실측). 복사본에서도 nuxt 명령은 돌리지 않는다(lockfile 이 없어 실패하고, 옛 레시피대로 링크했다면 워크트리 `.nuxt` 를 비운다).
 - vitest 캐시(`apps/client/node_modules/.vite` · `.vite-temp` — 워크트리의 gitignore 경로)는 두 레시피가 쓴다 — 리포 산출물이 아니라 예외(porcelain 에 안 잡히고 walk 서버에 영향 없음).
 - 셸 회귀(`.claude/scripts/*.test.sh` · `.github/scripts/*.test.sh`)를 변이할 때도 같은 방식 — 복사본의 스크립트를 `TMPDIR=<Q>/tmp` 로 돌린다(스크립트가 자기 위치 기준으로 ROOT 를 잡는다):
 

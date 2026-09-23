@@ -23,7 +23,7 @@ Guide completion of worktree development. **Gate → Verify → options → exec
 
 ### Step 0: Tier / QA 게이트 확인 — 머지 옵션을 열기 전 검사 ⭐
 
-0. **콘텐츠 자리표시자 게이트 — 모든 Tier(T0 포함) 먼저** — `bash .github/scripts/content-pending-gate.sh` (머지할 **커밋** HEAD 를 본다 — 디스크 파일이 아니다. 미커밋 변경은 먼저 커밋할 것)
+0. **콘텐츠 자리표시자 게이트 — 모든 Tier(T0 포함) 먼저** — `env -u CONTENT_GATE_ROOT bash .github/scripts/content-pending-gate.sh` (머지할 **커밋** HEAD 를 본다 — 디스크 파일이 아니다. 미커밋 변경은 게이트 스크립트 포함 먼저 커밋할 것 — 판정 규칙은 디스크의 스크립트에서 읽는다)
    - `0` → 계속
    - `1` → 확정 전 문안(`P9_4_PENDING`)이 커밋에 남아 있다. **Step 3 에서 옵션 1(로컬 머지)을 빼고, 옵션 2 는 `--draft` 로만** 연다 (prod 승격에 실려 나가는 것 차단 — client W1-2 spec D-17). CI `content-gate` job 도 빨간불이다
    - `2` → 검사 불가. 통과로 보지 않는다 — 원인을 고치고 다시
@@ -108,7 +108,7 @@ Which option?
 ```bash
 cd ~/dev/current-projects/nomacom-frontend    # 메인 클론으로 이동 (worktree 에서 base 체크아웃 불가)
 git fetch origin
-git checkout main && git pull --ff-only
+git checkout main && git pull --ff-only || exit 1   # 실패하면(다른 워크트리에 main · dirty) 게이트 · 머지가 엉뚱한 브랜치에 일어난다
 [ "${MERGE_PREREQ_OK:-}" = yes ] || exit 1   # spec 머지 선행조건(예: client-shell 은 P6 #2)을 확인하고 yes 로 둔 뒤에만
 # 게이트 스크립트 — main 에 아직 없으면(그 스크립트를 들여오는 첫 머지) 워크트리 것을 메인 클론 저장소에 대고 부른다
 GATE=.github/scripts/content-pending-gate.sh
@@ -130,7 +130,7 @@ git push origin main
 
 ```bash
 cd <worktree>
-git push -u origin <feature-branch>
+git push -u origin <feature-branch> || exit 1   # 실패하면 게이트가 본 HEAD 와 PR 의 원격 상태가 어긋난다
 # 기본은 draft — ready 로 열면 GitHub UI 에서 바로 머지된다(main 에 required check 없음).
 # ready 는 콘텐츠 게이트 0 **이고** spec 의 머지 선행조건(예: client-shell 은 P6 #2)을 확인해 MERGE_PREREQ_OK=yes 로 둔 때만
 DRAFT="--draft"

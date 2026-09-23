@@ -115,10 +115,13 @@ PROMOTE_SHA=<Phase 1.0 값>
 # 게이트 스크립트가 없는 SHA(도입 전 main)는 «해당 없음» — 단 스크립트만 빠진 경우를 막으려 자리표시자 글자를 직접 찾는다
 if [ -f .github/scripts/content-pending-gate.sh ]; then
   env -u CONTENT_GATE_ROOT bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
-elif git grep -q -F -e P9_4_PENDING -e PENDING_LABEL -e '(확정 전)' "$PROMOTE_SHA" -- apps/client ':(exclude)*.md' ':(exclude)*.test.ts' ':(exclude)apps/client/app/content/pending.ts'; then
-  echo "⛔ 게이트 스크립트가 없는데 자리표시자가 있다 — 중단"; exit 1
 else
-  echo "content gate: 해당 없음(게이트 도입 전 SHA · 자리표시자 0)"
+  git grep -q -F -e P9_4_PENDING -e PENDING_LABEL -e '(확정' -e '（확정' "$PROMOTE_SHA" -- apps/client ':(exclude)*.md' ':(exclude)*.test.ts' ':(exclude)apps/client/app/content/pending.ts'
+  case $? in
+    1) echo "content gate: 해당 없음(게이트 도입 전 SHA · 자리표시자 0)" ;;
+    0) echo "⛔ 게이트 스크립트가 없는데 자리표시자가 있다 — 중단"; exit 1 ;;
+    *) echo "⛔ git grep 오류 — 검사 불가, 중단"; exit 1 ;;
+  esac
 fi
 bash .github/scripts/typecheck-gate.sh admin || exit 1
 bash .github/scripts/typecheck-gate.sh client || exit 1
@@ -142,6 +145,15 @@ yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 **UI 변경이 포함된 경우** 추가로:
 
 - 영향 앱 dev 서버 띄워서 golden path 수동 검증 — admin 은 `yarn workspace nomacom-admin run dev`. **client 는 로컬 walk 안전 봉투로만**(`bash .claude/scripts/client-walk-server.sh dev <port>` → `http://127.0.0.1:<port>` — prod DB · 벤더 키 없이. John 지시 2026-09-23 · client-shell spec D-18). 실발급 · 실주문 경로는 로컬에서 걷지 않고 승격 당일 operator AC 로
+- **client 렌더 확인 — 확정 전 문안 0** (W1-2 D-17 의 두 번째 겹 — 게이트는 소스 grep 이라 줄바꿈 · 엔티티 · 조립된 문자열을 놓칠 수 있다). PROMOTE_SHA 로 빌드한 봉투 prod 서버에서:
+
+  ```bash
+  for p in / /my /my-esim /terms /privacy /refund /business /guide /search /checkout-preview; do
+    n=$(curl -s "http://127.0.0.1:<port>$p" | sed -e 's/&nbsp;/ /g' -e 's/&#160;/ /g' | tr -s '[:space:]' ' ' | grep -o '(확정 전)' | wc -l)
+    [ "$n" -eq 0 ] || { echo "⛔ $p 에 «(확정 전)» ${n}건 — 중단"; exit 1; }
+  done
+  ```
+
 - 자동 테스트는 feature correctness 가 아닌 code correctness 만 검증함
 
 ### Phase 5 — 마이그레이션/DB 변경 안전성
