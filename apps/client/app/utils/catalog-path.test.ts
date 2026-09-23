@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isCatalogParam, lowercaseRedirect } from './catalog-path'
+import { catalogPageError, isCatalogParam, lowercaseRedirect } from './catalog-path'
 
 describe('lowercaseRedirect (catalog spec D-13)', () => {
   it.each([
@@ -43,5 +43,20 @@ describe('isCatalogParam', () => {
     ['products', 'cze-0'],
   ] as const)('%s/%s → 404', (section, param) => {
     expect(isCatalogParam(section, param)).toBe(false)
+  })
+})
+
+describe('catalogPageError (spec F-10 — 404 가 아닌 오류는 500)', () => {
+  it.each([
+    [{ statusCode: 404 }, false, 404],
+    [null, false, 404],
+    [undefined, false, 404],
+    [{ statusCode: 500 }, false, 500],
+    [{ statusCode: 502 }, false, 500],
+    [{}, false, 500],
+    [{ statusCode: 500 }, true, 500],
+    [null, true, null],
+  ] as const)('error %j · data %s → %s', (error, hasData, want) => {
+    expect(catalogPageError(error, hasData)).toBe(want)
   })
 })

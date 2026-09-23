@@ -7,7 +7,7 @@ import type { CountryPageData } from '#shared/catalog/pages'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import ZoneCard from '~/components/catalog/ZoneCard.vue'
 import manifest from '~/content/catalog-assets.json'
-import { isCatalogParam } from '~/utils/catalog-path'
+import { catalogPageError, isCatalogParam } from '~/utils/catalog-path'
 
 definePageMeta({ middleware: 'catalog-path' })
 
@@ -20,10 +20,13 @@ const { data, error } = await useFetch<CountryPageData>(`/api/catalog/countries/
   key: `catalog-country-${param}`,
 })
 // 판매하지 않는 나라는 404, 데이터 라우트의 그 밖의 오류는 500 — 서버 오류를 404 로 덮지 않는다(F-10)
-if (error.value?.statusCode === 404 || (!error.value && !data.value))
-  throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
-if (error.value || !data.value)
-  throw createError({ statusCode: 500, statusMessage: 'Catalog country unavailable', fatal: true })
+const failed = catalogPageError(error.value, !!data.value)
+if (failed)
+  throw createError({
+    statusCode: failed,
+    statusMessage: failed === 404 ? 'Not Found' : 'Catalog country unavailable',
+    fatal: true,
+  })
 
 const page = data.value
 const count = page.single.length + page.multi.length

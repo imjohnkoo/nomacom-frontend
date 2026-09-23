@@ -63,6 +63,29 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
     expect(countryPageData(catalog, 'CAN')!.multi[0]!.sub).toBe('뉴욕·LA·밴쿠버·토론토 등 전지역')
   })
 
+  it('칸 수가 나라 수와 다르거나 라벨에 «개국» 이 있으면 나열이 아니다 — 나라 이름을 쓴다', () => {
+    const raw = fixtureRaw()
+    addSynthZone(raw, {
+      zone: 'EU031',
+      iso3s: ['GBR', 'FRA', 'DEU'],
+      lowestWon: 3000,
+      label: '영국·프랑스',
+    })
+    addSynthZone(raw, {
+      zone: 'EU021',
+      iso3s: ['CZE', 'DEU'],
+      lowestWon: 3000,
+      label: '체코·독일 2개국',
+    })
+    const cat = parseCatalog(raw)
+    expect(countryPageData(cat, 'GBR')!.multi.find((c) => c.zone === 'EU031')!.sub).toBe(
+      '영국 · 프랑스 · 독일',
+    )
+    expect(countryPageData(cat, 'CZE')!.multi.find((c) => c.zone === 'EU021')!.sub).toBe(
+      '체코 · 독일',
+    )
+  })
+
   it('나열 판정은 칸 수 = 나라 수 — 다른 표기(«터키») · 다른 순서(«캐나다·미국»)도 나열로 본다', () => {
     const raw = fixtureRaw()
     addSynthZone(raw, {

@@ -46,10 +46,18 @@ watch(
 function onPageShow(e: PageTransitionEvent) {
   if (e.persisted) open.value = false
 }
-onMounted(() => window.addEventListener('pageshow', onPageShow))
+// «지금 이동» 뒤 이동이 앱 전환 · 인앱 가로채기로 흡수되면 이 문서가 남는다 — 다시 보이게 되면 닫는다(S-5)
+function onVisibility() {
+  if (going && document.visibilityState === 'visible') open.value = false
+}
+onMounted(() => {
+  window.addEventListener('pageshow', onPageShow)
+  document.addEventListener('visibilitychange', onVisibility)
+})
 onBeforeUnmount(() => {
   timer?.stop()
   window.removeEventListener('pageshow', onPageShow)
+  document.removeEventListener('visibilitychange', onVisibility)
 })
 </script>
 

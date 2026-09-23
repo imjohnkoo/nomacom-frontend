@@ -214,4 +214,19 @@ describe('PurchaseSheet (S-5 · F-8 · K2)', () => {
     expect(assign).toHaveBeenCalledTimes(1)
     w.unmount()
   })
+
+  it('이동이 흡수돼 다시 보이게 되면(visibilitychange) 시트를 닫는다 · 이동 전에는 닫지 않는다', async () => {
+    const { w, open } = host()
+    await openSheet(open)
+    document.dispatchEvent(new Event('visibilitychange'))
+    await nextTick()
+    expect(open.value).toBe(true) // 아직 «지금 이동» 전
+    button('지금 이동').click()
+    document.dispatchEvent(new Event('visibilitychange'))
+    await nextTick()
+    expect(document.visibilityState).toBe('visible')
+    expect(open.value).toBe(false)
+    expect(assign).toHaveBeenCalledTimes(1)
+    w.unmount()
+  })
 })

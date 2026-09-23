@@ -22,3 +22,15 @@ export function lowercaseRedirect(path: string): string | null {
 export function isCatalogParam(section: CatalogSection, param: string): boolean {
   return PARAM_RE[section].test(param)
 }
+
+/**
+ * 데이터 라우트 결과 → 페이지가 던질 상태(F-10). 모르는 코드(라우트 404 · 데이터 없음)는 404,
+ * 그 밖의 오류(카탈로그 검증 실패 · 네트워크)는 500 — 서버 오류를 404 로 덮지 않는다. 정상이면 null.
+ */
+export function catalogPageError(
+  error: { statusCode?: number } | null | undefined,
+  hasData: boolean,
+): 404 | 500 | null {
+  if (error) return error.statusCode === 404 ? 404 : 500
+  return hasData ? null : 404
+}

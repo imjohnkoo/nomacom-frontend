@@ -26,7 +26,7 @@ import PurchaseSheet from '~/components/catalog/PurchaseSheet.vue'
 import UnderlineTabs from '~/components/catalog/UnderlineTabs.vue'
 import manifest from '~/content/catalog-assets.json'
 import { HERO_BADGES, heroChecks, heroLead, periodHint } from '~/content/product-detail'
-import { isCatalogParam } from '~/utils/catalog-path'
+import { catalogPageError, isCatalogParam } from '~/utils/catalog-path'
 
 definePageMeta({ middleware: 'catalog-path' })
 
@@ -39,10 +39,13 @@ const { data, error } = await useFetch<ZoneView>(`/api/catalog/zones/${param}`, 
   key: `catalog-zone-${param}`,
 })
 // 모르는 zone 은 404, 데이터 라우트의 그 밖의 오류는 500 — 서버 오류를 404 로 덮지 않는다(F-10)
-if (error.value?.statusCode === 404 || (!error.value && !data.value))
-  throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
-if (error.value || !data.value)
-  throw createError({ statusCode: 500, statusMessage: 'Catalog zone unavailable', fatal: true })
+const failed = catalogPageError(error.value, !!data.value)
+if (failed)
+  throw createError({
+    statusCode: failed,
+    statusMessage: failed === 404 ? 'Not Found' : 'Catalog zone unavailable',
+    fatal: true,
+  })
 
 const zone = data.value
 const multi = zone.countries.length > 1
