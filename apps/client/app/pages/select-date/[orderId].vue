@@ -18,6 +18,7 @@ import { addDays, format } from 'date-fns'
 import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
 import type { Order } from '~/types/order'
+import { findProductOrder } from '~/utils/flow-guard'
 
 const route = useRoute()
 const router = useRouter()
@@ -165,8 +166,8 @@ const onConfirm = async () => {
     if (verified && !cancelled) {
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
-      // 발급한 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다)
-      const issued = details?.find((o) => o.productOrderId === orderStore.singleOrder?.productOrderId)
+      // 발급한 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다 · flow-guard 순수함수)
+      const issued = findProductOrder(details, orderStore.singleOrder?.productOrderId)
       if (activateVerified && issued) {
         isIssueQrCodesVisible.value = false
         orderStore.setSingleOrder(issued)

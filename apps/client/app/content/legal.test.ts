@@ -100,6 +100,22 @@ describe('법정 문서 공통', () => {
     }
   })
 
+  it("제목 · 문단은 대기이거나 비어 있지 않다 ('' 로 머지 게이트를 비껴가지 않게)", () => {
+    const filled = (value: string) => isPending(value) || value.trim().length > 0
+    for (const doc of [TERMS, PRIVACY, REFUND]) {
+      for (const section of doc.sections) {
+        expect([doc.slug, section.key, filled(section.heading)]).toEqual([
+          doc.slug,
+          section.key,
+          true,
+        ])
+        for (const paragraph of section.paragraphs) {
+          expect([doc.slug, section.key, filled(paragraph)]).toEqual([doc.slug, section.key, true])
+        }
+      }
+    }
+  })
+
   it('문서마다 절이 하나 이상 · 모든 절에 문단이 하나 이상 (빈 문서로 머지 게이트를 비껴가지 않게)', () => {
     for (const doc of [TERMS, PRIVACY, REFUND]) {
       expect(doc.sections.length).toBeGreaterThan(0)

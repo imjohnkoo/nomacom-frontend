@@ -85,7 +85,7 @@ onBeforeUnmount(() => window.removeEventListener('pageshow', onPageShow))
 .order-lookup__error {
   margin: 8px 0 0;
   font-size: 12px;
-  color: var(--n-color-error-500, #ef4444);
+  color: var(--n-color-error-600, #dc2626);
 }
 
 .order-lookup__cta {

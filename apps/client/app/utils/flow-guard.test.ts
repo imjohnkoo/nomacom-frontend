@@ -3,6 +3,8 @@ import type { Esim, Order } from '../types/order'
 import type { FlowSession } from './flow-session'
 import {
   decideRestore,
+  decideSelection,
+  findProductOrder,
   flowStepOf,
   isFullyIssued,
   parseOrderIdParam,
@@ -197,5 +199,73 @@ describe('pickSelection — 미들웨어 ④', () => {
     expect(pickSelection([a, b], session(), ORDER_ID)).toBeNull()
     expect(pickSelection([a, b], session({ productOrderId: ORDER_ID + 9 }), ORDER_ID)).toBeNull()
     expect(pickSelection(null, session({ productOrderId: ORDER_ID + 1 }), ORDER_ID)).toBeNull()
+  })
+})
+
+describe('findProductOrder (D-14 — 위치가 아니라 productOrderId)', () => {
+  const a = order({ productOrderId: ORDER_ID + 1 })
+  const b = order({ productOrderId: ORDER_ID + 2 })
+
+  it('순서와 무관하게 같은 상품주문을 찾는다', () => {
+    expect(findProductOrder([a, b], ORDER_ID + 2)).toBe(b)
+    expect(findProductOrder([b, a], ORDER_ID + 1)).toBe(a)
+  })
+
+  it('activate 응답 1건 — 요청한 상품이면 그것, 다른 상품이면 null(첫 항목을 집지 않는다)', () => {
+    expect(findProductOrder([b], ORDER_ID + 2)).toBe(b)
+    expect(findProductOrder([b], ORDER_ID + 1)).toBeNull()
+  })
+
+  it('number · string 이 섞여도 같은 번호면 찾는다', () => {
+    expect(findProductOrder([a], String(ORDER_ID + 1))).toBe(a)
+    expect(
+      findProductOrder(
+        [{ ...a, productOrderId: String(ORDER_ID + 1) as unknown as number }],
+        ORDER_ID + 1,
+      ),
+    ).not.toBeNull()
+  })
+
+  it('목록 · 번호가 없으면 null', () => {
+    expect(findProductOrder(undefined, ORDER_ID + 1)).toBeNull()
+    expect(findProductOrder([], ORDER_ID + 1)).toBeNull()
+    expect(findProductOrder([a], undefined)).toBeNull()
+    expect(findProductOrder([a], null)).toBeNull()
+  })
+})
+
+describe('decideSelection (details «선택하기» — spec S-8)', () => {
+  const PO = ORDER_ID + 1
+  const target = order({ productOrderId: PO })
+
+  it('검증 통과 · 상품 있음 · 취소 아님 → 진행(찾은 상품)', () => {
+    expect(
+      decideSelection({ verified: true, details: [order({ productOrderId: PO + 1 }), target] }, PO),
+    ).toEqual({
+      kind: 'proceed',
+      target,
+    })
+  })
+
+  it('주문 전체 취소 · 그 상품만 그사이 취소 → 취소 안내', () => {
+    expect(decideSelection({ verified: true, cancelled: true, details: [target] }, PO)).toEqual({
+      kind: 'cancelled',
+    })
+    expect(
+      decideSelection(
+        { verified: true, details: [order({ productOrderId: PO, cancelled: true })] },
+        PO,
+      ),
+    ).toEqual({ kind: 'cancelled' })
+  })
+
+  it('검증 실패 · 상품이 응답에 없음 → 주문 없음 안내', () => {
+    expect(decideSelection({ verified: false, details: [target] }, PO)).toEqual({ kind: 'missing' })
+    expect(
+      decideSelection({ verified: true, details: [order({ productOrderId: PO + 1 })] }, PO),
+    ).toEqual({
+      kind: 'missing',
+    })
+    expect(decideSelection({ verified: true, details: [] }, PO)).toEqual({ kind: 'missing' })
   })
 })

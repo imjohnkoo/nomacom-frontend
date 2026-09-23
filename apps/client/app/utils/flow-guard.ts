@@ -99,3 +99,36 @@ export function pickSelection(
   if (!session || session.orderId !== orderId || !session.productOrderId) return null
   return orders?.find((order) => order.productOrderId === session.productOrderId) ?? null
 }
+
+/** 상품주문번호 비교 — 응답 경로에 따라 number · string 이 섞여도 같은 상품을 찾는다 */
+const sameProductOrder = (a: unknown, b: unknown) =>
+  a !== null && a !== undefined && b !== null && b !== undefined && Number(a) === Number(b)
+
+/** 응답 목록에서 이 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다). 없으면 null */
+export function findProductOrder(
+  orders: readonly Order[] | null | undefined,
+  productOrderId: unknown,
+): Order | null {
+  return orders?.find((order) => sameProductOrder(order.productOrderId, productOrderId)) ?? null
+}
+
+export type SelectionOutcome =
+  | { kind: 'proceed'; target: Order }
+  | { kind: 'cancelled' }
+  | { kind: 'missing' }
+
+/**
+ * details «선택하기» — 새 verify 응답으로 진행 · 취소 안내 · 주문 없음 안내를 가른다 (spec S-8).
+ * 목록을 불러온 뒤 그 상품이 취소 요청 상태가 된 경우도 «취소» — 미들웨어가 select-date 를 되돌려 조용히 끝나지 않게.
+ */
+export function decideSelection(
+  response: { verified: boolean; cancelled?: boolean; details?: readonly Order[] | null },
+  productOrderId: unknown,
+): SelectionOutcome {
+  const target = findProductOrder(response.details, productOrderId)
+  if (response.verified && !response.cancelled && target && !target.cancelled) {
+    return { kind: 'proceed', target }
+  }
+  if (response.verified && (response.cancelled || target?.cancelled)) return { kind: 'cancelled' }
+  return { kind: 'missing' }
+}

@@ -13,7 +13,7 @@ import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
 import { useFlowSession } from '~/composables/useFlowSession'
 import { formatDateString } from '~/utils/date'
-import { isFullyIssued } from '~/utils/flow-guard'
+import { decideSelection, isFullyIssued } from '~/utils/flow-guard'
 import type { Order } from '~/types/order'
 
 const route = useRoute()
@@ -140,12 +140,12 @@ const handleSelectOrder = async (idx: number) => {
     }
 
     const response = await api.verifyOrder(verifyDto)
-    const { verified, cancelled, details } = response
-    // 새 응답에서 productOrderId 로 찾는다 — DB 정렬 보장이 없어 위치(idx)로 집으면 다른 상품일 수 있다
-    const target = details?.find((o) => o.productOrderId === orders[idx]?.productOrderId)
+    // 새 응답에서 productOrderId 로 찾아 진행 · 취소 · 없음을 가른다 — 위치(idx)로 집지 않는다 (flow-guard 순수함수)
+    const outcome = decideSelection(response, orders[idx]?.productOrderId)
 
-    if (verified && !cancelled && target && !target.cancelled) {
-      orderStore.setOrders(details || [])
+    if (outcome.kind === 'proceed') {
+      const { target } = outcome
+      orderStore.setOrders(response.details || [])
       orderStore.setSingleOrder(target)
       flowSession.select(orderId.value, target.productOrderId)
       isLoadingVisible.value = false
@@ -155,8 +155,7 @@ const handleSelectOrder = async (idx: number) => {
         // 미발급 + 부분 발급 (resume) 모두 select-date 로
         router.push(`/select-date/${orderId.value}`)
       }
-    } else if (verified && (cancelled || target?.cancelled)) {
-      // 목록을 불러온 뒤 그 상품이 취소 요청 상태가 된 경우도 같은 안내 — 미들웨어가 select-date 를 되돌려 조용히 끝나지 않게
+    } else if (outcome.kind === 'cancelled') {
       isLoadingVisible.value = false
       isCancelledOrderVisible.value = true
       setTimeout(() => {
