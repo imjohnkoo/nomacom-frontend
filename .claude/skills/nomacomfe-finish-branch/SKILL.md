@@ -109,10 +109,17 @@ Which option?
 cd ~/dev/current-projects/nomacom-frontend    # 메인 클론으로 이동 (worktree 에서 base 체크아웃 불가)
 git fetch origin
 git checkout main && git pull --ff-only
+# 머지 **전에** 양쪽 부모를 본다 — 둘 다 0 이어야 머지한다(머지 뒤 실패하면 로컬 main 에 커밋이 남는다)
+bash .github/scripts/content-pending-gate.sh HEAD && bash .github/scripts/content-pending-gate.sh <feature-branch> || exit 1
 git merge --no-ff <feature-branch>
 yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client
-bash .github/scripts/content-pending-gate.sh HEAD || exit 1   # 머지 결과를 다시 — Step 0 뒤 커밋이 추가됐거나 main 이 이미 오염된 경우
+bash .github/scripts/content-pending-gate.sh HEAD || exit 1   # 머지 결과를 다시(충돌 해결에서 들어온 경우)
 git push origin main
+```
+
+> 머지 뒤 게이트가 실패하면 **push 하지 않고** 사용자에게 보고한다. 로컬 main 을 되돌리는 것(`git reset --keep origin/main`)도 사용자 승인 뒤에만 — 그 전에 prod-push-check 를 돌리면 안 된다(로컬 main 에 자리표시자 커밋이 있다).
+
+```bash
 ```
 
 > `main` push 는 `packages/design-*` 변경이 포함되면 `design-system-publish.yml` 을 트리거한다 — **DS version bump 선행 여부**를 확인할 것.
@@ -122,8 +129,10 @@ git push origin main
 ```bash
 cd <worktree>
 git push -u origin <feature-branch>
-# 콘텐츠 게이트(Step 0-0)가 1 이면 draft 로만 — ready 로 열면 GitHub UI 에서 바로 머지된다
-DRAFT=$(bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && echo "" || echo "--draft")
+# 기본은 draft — ready 로 열면 GitHub UI 에서 바로 머지된다(main 에 required check 없음).
+# ready 는 콘텐츠 게이트 0 **이고** spec 의 머지 선행조건(예: client-shell 은 P6 #2)을 확인해 MERGE_PREREQ_OK=yes 로 둔 때만
+DRAFT="--draft"
+if bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && [ "${MERGE_PREREQ_OK:-}" = yes ]; then DRAFT=""; fi
 gh pr create --base main $DRAFT --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
 ## Summary
 <2-3 bullets>

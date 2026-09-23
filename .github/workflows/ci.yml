@@ -84,7 +84,7 @@ jobs:
         run: yarn install --immutable --mode=skip-build
 
       # 테스트(수 초)를 typecheck(수십 초)보다 앞에 — 빨리 깨질 수 있는 것부터.
-      # 현재 실체: design-vue 129 + client 28 = 157건 (admin 은 도메인 코드가 아직 없어 0건).
+      # 현재 실체: design-vue 129 + client 277(2026-09-23) (admin 은 도메인 코드가 아직 없어 0건).
       #
       # ⚠️ `--filter` 로 좁히는 것은 의도적이다. turbo 의 `test` 는 `dependsOn: ["build"]`
       #    라, 필터 없이 돌리면 **테스트가 없는 데모 워크스페이스의 build 까지** 끌고 온다
@@ -92,7 +92,7 @@ jobs:
       #    `design-storybook-mobile` 은 `--mode=skip-build` 설치 환경에서
       #    `@storybook/react-vite/preset` 을 찾지 못해 죽는다 (2026-09-02 CI 첫 실행에서 확인).
       #    데모 워크스페이스는 배포 대상도 검증 대상도 아니므로 게이트에서 제외한다.
-      - name: Test — design-vue · client · admin (157건)
+      - name: Test — design-vue · client · admin
         run: yarn turbo run test --filter=@imjohnkoo/design-vue --filter=nomacom-client --filter=nomacom-admin
 
       # `typecheck` 는 `dependsOn: ["^build"]` 라 DS 빌드가 선행되고,
@@ -123,7 +123,7 @@ jobs:
         run: bash .claude/hooks/guard-prod-push.test.sh
 
       # 로컬 walk 안전 봉투 — 판정이 깨지면 walk 서버가 prod DB · 벤더 키를 받게 된다(John 지시 2026-09-23).
-      # 서버는 띄우지 않는다(거부 경로 + dry-run 출력만).
+      # 서버는 띄우지 않는다 — 거부 경로 · dry-run 출력 · PATH 앞 가짜 node/lsof 로 실제 기동 줄(env · 인자 · cwd)까지.
       - name: walk 봉투 회귀 테스트
         run: bash .claude/scripts/client-walk-server.test.sh
 

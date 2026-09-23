@@ -98,10 +98,13 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
 ```bash
-# client 확정 전 문안(P9_4_PENDING) 0 — **fetch 뒤, 실제로 prod 에 올릴 SHA** 를 본다 (W1-2 D-17).
-# 오래된 origin/main 을 보면 그 사이 UI 로 머지된 자리표시자를 놓친다.
-git fetch origin --quiet
-bash .github/scripts/content-pending-gate.sh "$(git rev-parse origin/main)" || exit 1
+# client 확정 전 문안(P9_4_PENDING) 0 — **실제로 prod 에 올릴 SHA** 를 본다 (W1-2 D-17).
+# 1) fetch 가 실패하면 멈춘다(오래된 ref 로 판정하지 않는다) 2) 올릴 SHA 를 하나로 정한다 — 보통 origin/main 끝,
+#    다른 SHA 를 올린다면 그 SHA 3) 그 SHA 는 origin/main 에 있어야 한다(prod = main 의 한 SHA) 4) 게이트 · Phase 7 · push 모두 이 SHA
+git fetch origin --quiet || exit 1
+PROMOTE_SHA="$(git rev-parse origin/main)"      # 다른 SHA 를 올리면 여기서 바꾼다
+git merge-base --is-ancestor "$PROMOTE_SHA" origin/main || { echo "⛔ origin/main 에 없는 SHA"; exit 1; }
+bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
 ```
 
 > ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 4건 — 2026-09-23 7 → 4). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
@@ -176,7 +179,7 @@ git diff origin/prod...HEAD \
 ```bash
 git fetch origin --quiet
 git log --oneline --graph origin/main origin/prod | head -20
-git merge-base --is-ancestor origin/prod origin/main && echo "✔ fast-forward 가능" || echo "⛔ prod 가 main 에 없는 커밋을 갖고 있다 — 되감기 위험, 중단"
+git merge-base --is-ancestor origin/prod "$PROMOTE_SHA" && echo "✔ fast-forward 가능" || echo "⛔ prod 가 승격 SHA 에 없는 커밋을 갖고 있다 — 되감기 위험, 중단"
 ```
 
 **prod 에만 있는 커밋이 있으면 중단하고 사용자에게 보고한다.** ref 되감기는 남의 배포를 되돌리고 커밋을 소실시킨다 — `guard-prod-push.sh` 가 force 이동을 차단하는 이유다.
@@ -209,7 +212,8 @@ Paths-filter impact:
   - DS publish: ✗ (prod 브랜치 — publish 는 main 에서만)
 
 Build:        ✓ yarn turbo run build (admin, client) pass
-Content gate: ✓ content-pending-gate.sh <승격 SHA> exit 0 (client 확정 전 문안 0)
+Promote SHA:  <PROMOTE_SHA> (origin/main 에 있음 — push 는 `git push origin <PROMOTE_SHA>:prod`, 훅이 막으므로 사용자가)
+Content gate: ✓ content-pending-gate.sh <PROMOTE_SHA> exit 0 (client 확정 전 문안 0)
 Typecheck:    — n/a (admin/client 에 script 없음 — 인프라 갭)
 Tests:        ✓ design-vue 129 pass  /  — admin·client n/a
 UI manual:    ✓ admin/client golden path 검증 완료 (유일한 기능 검증)

@@ -62,6 +62,37 @@ done
 g checkout -q "$PENDING"
 expect 1 "detached HEAD 도 같은 판정"
 
+CONTENT_GATE_ROOT="$TMP" bash "$GATE" "" >/dev/null 2>&1
+got=$?
+if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: 빈 리비전 인자 → 검사 불가 (want 2, got $got)"; fi
+
+# 바이너리 속성이 붙어도 텍스트로 본다(.gitattributes -diff)
+g checkout -q "$CLEAN"
+put .gitattributes 'apps/client/app/content/*.ts -diff'
+put apps/client/app/content/business.ts "export const X = P9_4_PENDING"
+commit "binary attr"
+expect 1 "-diff 속성 파일도 막힘"
+
+# pending.ts 는 정해진 이름만 — 별칭 · 재수출로 비껴가지 않게
+for alias in "export const TBD = P9_4_PENDING" "export { P9_4_PENDING as TBD }" "export default P9_4_PENDING"; do
+  g checkout -q "$CLEAN"
+  put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const
+$alias"
+  put apps/client/app/content/business.ts "export const X = TBD"
+  commit "alias: $alias"
+  expect 1 "pending.ts 별칭 막힘 — $alias"
+done
+
+# 임시 파일을 못 만들면 통과가 아니라 검사 불가
+g checkout -q "$PENDING"
+NOTMP="$(mktemp -d)"
+printf '#!/bin/sh\nexit 1\n' >"$NOTMP/mktemp"
+chmod +x "$NOTMP/mktemp"
+PATH="$NOTMP:$PATH" CONTENT_GATE_ROOT="$TMP" bash "$GATE" >/dev/null 2>&1
+got=$?
+rm -rf "$NOTMP"
+if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: mktemp 실패 → 검사 불가 (want 2, got $got)"; fi
+
 # 객체를 못 읽으면(손상 · 누락) «없음» 이 아니라 검사 불가
 g checkout -q "$CLEAN"
 blob="$(git -C "$TMP" rev-parse "$CLEAN:apps/client/app/content/business.ts")"
