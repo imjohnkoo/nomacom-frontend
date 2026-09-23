@@ -8,7 +8,15 @@ import { COUNTRY_ALIASES } from '~/content/catalog-search'
 import upcomingJson from '~/content/catalog-upcoming.json'
 import * as copy from '~/content/error-page'
 import { POPULAR_COUNTRIES } from '~/content/popular'
-import { errorChips, errorHead, errorStatus, errorView, pickChips } from './error-view'
+import { effectScope, nextTick, shallowRef } from 'vue'
+import {
+  errorChips,
+  errorHead,
+  errorRouteOf,
+  errorStatus,
+  errorView,
+  pickChips,
+} from './error-view'
 
 /** catalog spec S-7 · F-13 · D-22 — 오류 화면 갈래 · 문안 · 칩 */
 const upcoming = upcomingJson.countries
@@ -205,27 +213,31 @@ describe('app/error.vue 결선 — 틀 · 판정 · 머리 · 칩', () => {
     ])
   })
 
-  it('갈래는 라우터의 지금 경로로 — useRoute()(페이지가 그려질 때만 바뀐다)를 쓰지 않는다', () => {
+  it('갈래 · 틀은 그 오류가 난 주소로 — errorRouteOf 를 아래로 내려 주고, useRoute() 는 쓰지 않는다', () => {
     expect(code).toContain('const router = useRouter ( )')
     expect(code).toContain(
-      'const view = computed ( ( ) => errorView ( errorStatus ( props . error ) , router . currentRoute . value . path ) )',
+      'const errorRoute = errorRouteOf ( ( ) => props . error , ( ) => router . currentRoute . value , )',
+    )
+    expect(code).toContain('provide ( ERROR_ROUTE_KEY , errorRoute )')
+    expect(code).toContain(
+      'const view = computed ( ( ) => errorView ( errorStatus ( props . error ) , errorRoute . path ) )',
     )
     expect(script.map((t) => t.text)).not.toContain('useRoute')
   })
 
-  it('머리 = errorHead(view) · 칩 = errorChips(view, 받은 칩) · 다시 시도 = 같은 주소 다시 불러오기', () => {
+  it('머리 = errorHead(view) · 칩 = errorChips(view, 빌드 때 앱 설정) · 다시 시도 = 같은 주소 다시 불러오기', () => {
     expect(code).toContain('useHead ( ( ) => errorHead ( view . value ) )')
     expect(code).toContain(
-      'const chips = computed ( ( ) => errorChips ( view . value , chipSets . value ) )',
+      'const chipSets : ErrorChipSets = ( useAppConfig ( ) as { errorChips ? : ErrorChipSets } ) . errorChips ?? { popular : [ ] , asia : [ ] , }',
+    )
+    expect(code).toContain(
+      'const chips = computed ( ( ) => errorChips ( view . value , chipSets ) )',
     )
     expect(code).toContain('function retry ( ) { window . location . reload ( ) }')
   })
 
-  it('칩은 검색 색인에서 골라 받고(잠시 오류는 부르지 않는다), 못 받아도 다시 던지지 않는다', () => {
-    expect(code).toContain("useFetch ( '/api/catalog/search-index'")
-    expect(code).toContain('transform : ( index : SearchEntry [ ] ) => pickChips ( index )')
-    expect(code).toContain('default : ( ) => pickChips ( [ ] )')
-    expect(code).toContain('immediate : view . value . chips !== null')
+  it('서버를 부르지 않고(칩은 빌드 때) 다시 던지지 않는다', () => {
+    expect(code).not.toMatch(/useFetch|useAsyncData|\$fetch|useLazyFetch/)
     expect(script.map((t) => t.text)).not.toContain('throw')
     expect(code).not.toMatch(/createError|showError/)
   })
@@ -270,4 +282,55 @@ describe('검색 빈 화면의 인기 칩 = 오류 화면과 같은 함수의 �
       'const popular = computed ( ( ) => pickChips ( entries . value ) . popular )',
     )
   })
+})
+
+describe('errorRouteOf — 그 오류가 난 주소(S-7)', () => {
+  const setup = () => {
+    const error = shallowRef<object>({ status: 404 })
+    const current = shallowRef({ path: '/abc', fullPath: '/abc?x=1', hash: '' })
+    const scope = effectScope()
+    const route = scope.run(() =>
+      errorRouteOf(
+        () => error.value,
+        () => current.value,
+      ),
+    )!
+    return { error, current, route, scope }
+  }
+
+  it('처음 = 지금 라우트 · 오류 화면을 떠나는 동안(라우트만 바뀜)에는 그대로', async () => {
+    const { current, route, scope } = setup()
+    expect(route.path).toBe('/abc')
+    expect(route.fullPath).toBe('/abc?x=1')
+    current.value = { path: '/countries/nld', fullPath: '/countries/nld', hash: '' }
+    await nextTick()
+    expect(route.path).toBe('/abc')
+    scope.stop()
+  })
+
+  it('오류가 바뀌면(오류 → 오류) 그때의 라우트로 — 없어진 키는 지운다', async () => {
+    const { error, current, route, scope } = setup()
+    current.value = { path: '/countries/jpn', fullPath: '/countries/jpn' } as typeof current.value
+    error.value = { status: 404 }
+    expect(route.path).toBe('/countries/jpn')
+    expect(route.fullPath).toBe('/countries/jpn')
+    expect('hash' in route).toBe(false)
+    // 다시 떠나는 동안은 그대로
+    current.value = { path: '/', fullPath: '/', hash: '' }
+    await nextTick()
+    expect(route.path).toBe('/countries/jpn')
+    scope.stop()
+  })
+})
+
+describe('셸(하단 탭 · 헤더)은 useShellRoute — 오류 화면이 내려 준 주소를 본다', () => {
+  it.each(['app/components/shell/BottomTabBar.vue', 'app/components/shell/ShellHeader.vue'])(
+    '%s',
+    (file) => {
+      const FILE = fileURLToPath(new URL(`../../${file}`, import.meta.url))
+      const tokens = readSource(FILE).script.map((t) => t.text)
+      expect(tokens.join(' ')).toContain('const route = useShellRoute ( )')
+      expect(tokens).not.toContain('useRoute')
+    },
+  )
 })
