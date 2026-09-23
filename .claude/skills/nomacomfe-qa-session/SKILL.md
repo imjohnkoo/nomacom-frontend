@@ -35,10 +35,11 @@ description: QA stage for nomacom-frontend after implementation reaches DoD — 
 - 넘길 것은 **spec/plan 경로 + diff 뿐.** 구현 세션의 추론·요약을 브리프에 쓰지 않는다.
 - **리뷰어·walk 는 워크트리를 바꾸지 않는다**(브리프 「작업 위생」 — 변이는 스크래치패드의 리포 복사본에서). 그래서 분할 리뷰를 **병렬로** 보내도 된다. 대신 코딩 세션은 리뷰가 도는 동안 그 워크트리에서 편집·커밋하지 않는다(리뷰어가 보는 HEAD 가 바뀐다).
 - 실행 확인·⑦ walk 용 서버는 **코딩 세션이 봉투로** 띄운다 — `bash .claude/scripts/client-walk-server.sh dev|prod <port>`. 리뷰어·walk 는 서버를 띄우지 않는다. 브리프의 `<walk 서버 URL>` 에 `http://127.0.0.1:<port>` 를 넣는다(localhost 금지 — macOS 에서 `::1` 로 먼저 붙어 봉투 밖 서버에 닿는다).
-- **보내기 전후 워크트리 대조** — 디스패치는 커밋된 clean 상태에서. 리뷰어·walk 가 돌아오거나 **중단되면**(Esc · API 오류 · 컨텍스트 한도) 아래로 대조하고, 달라진 게 있으면 원인을 확인하기 전까지 커밋하지 않는다.
+- **리뷰가 도는 동안 코딩 세션은 워크트리를 편집하지 않는다**(리뷰 대상 밖 파일도) — 리뷰어의 porcelain 대조가 코딩 세션 편집과 리뷰어 흔적을 구분하지 못한다. 수정은 모든 결과가 돌아온 뒤에.
+- **보내기 전후 워크트리 대조** — 디스패치는 커밋된 clean 상태에서. 리뷰어·walk 가 돌아오거나 **중단되면**(Esc · API 오류 · 컨텍스트 한도) 아래로 대조하고, 달라진 게 있으면 원인을 확인하기 전까지 커밋하지 않는다. 표식은 **디스패치 묶음마다 따로**(`<회차>`) — 뒤이은 디스패치에서 같은 파일을 다시 찍으면 앞 묶음의 기준선이 덮인다.
 
   ```bash
-  # 보내기 전 — <M> = <스크래치패드>/pre-review.marker
+  # 보내기 전 — <M> = <스크래치패드>/pre-review-<회차>.marker
   git -C <worktree> status --porcelain   # 빈 출력
   touch <M>; find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.nuxt/*' -not -path '*/.output/*' | sort > <M>.files
   # 돌아오거나 중단되면
@@ -82,7 +83,8 @@ d) 변이 테스트는 워크트리가 아니라 전용 폴더의 리포 복사�
    원본을 다시 푼다. git stash · 하드 리셋 · git clean 금지(stash 는 워크트리끼리 공유된다).
 e) 아무것도 지우지 않는다 — 워크트리든 스크래치패드든. rm · rm -rf · find -delete · unlink · 스크립트 안
    os.remove / shutil.rmtree 포함. 스크래치패드는 세션 임시 폴더라 남겨 둔다(rm -rf 는 경로와 무관하게 사람 승인
-   프롬프트를 띄운다). 지울 것이 생겼다면 b) 를 어긴 것이다.
+   프롬프트를 띄운다). 지울 것이 생겼다면 b) 를 어긴 것이다. 예외: 리포의 회귀 스크립트(*.test.sh)가 자기가 만든
+   임시 폴더를 스스로 치우는 것 — 그 스크립트는 TMPDIR=<전용 폴더>/tmp 로 돌린다.
 f) 보고 끝에 git status --porcelain 을 다시 찍어 a) 와 같은지 적는다(다르면 무엇이 남았는지).
 환경 안전 (John 지시 2026-09-23 — 위반 금지):
 - prod DB · AWS(SSM 포함) · Spark/Maya/네이버 등 벤더 API 에 접속하지 않는다. mcp maya-api · naver-smartstore 도구 호출 금지
@@ -91,9 +93,12 @@ f) 보고 끝에 git status --porcelain 을 다시 찍어 a) 와 같은지 적�
   <walk 서버 URL> 에 GET/OPTIONS 만. 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저 붙어 봉투 밖
   서버에 닿는다).
 - ps -E 는 그 walk 서버 pid 에만, 키 이름만 출력 — 이 리포 밖 프로세스의 env 는 훑지 않는다(다른 앱의 비밀 값이 찍힌다).
-- .env / .env.local 을 만들지 않는다. nuxt prepare · typecheck(typecheck-gate.sh · typecheck-gate.test.sh 포함)는 떠 있는
-  dev 서버의 .nuxt 를 다시 쓰므로 돌리지 않는다. .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를
-  만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR · 설정) 금지.
+- .env / .env.local 을 만들지 않는다. .nuxt · .output 을 지우고 다시 쓰는 명령은 워크트리에서도 복사본에서도 돌리지 않는다
+  (복사본의 .nuxt 는 워크트리 심링크다 — 떠 있는 walk 서버가 깨진다): yarn install · yarn build · yarn turbo run
+  build / test / typecheck(test 는 build 에 의존) · nuxt / npx nuxt 의 build · prepare · dev · typecheck-gate.sh ·
+  typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client test(vitest 만 — 빌드 없음)와 절의 레시피만.
+  .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를 만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR ·
+  설정) 금지.
 출력: findings 를 blocker(머지 불가) / major(수정 필요) / minor(선택) 로 분류하고,
 각 항목에 파일:라인 + 구체 반증 시나리오(어떤 입력·상태에서 어떻게 틀리는가).
 findings 없으면 "0건" + 실제로 검토한 범위를 보고. 수정은 금지 — 보고만. + a)·f) 의 porcelain 두 값.
@@ -151,7 +156,8 @@ d) 변이 테스트는 워크트리가 아니라 전용 폴더의 리포 복사�
    원본을 다시 푼다. git stash · 하드 리셋 · git clean 금지(stash 는 워크트리끼리 공유된다).
 e) 아무것도 지우지 않는다 — 워크트리든 스크래치패드든. rm · rm -rf · find -delete · unlink · 스크립트 안
    os.remove / shutil.rmtree 포함. 스크래치패드는 세션 임시 폴더라 남겨 둔다(rm -rf 는 경로와 무관하게 사람 승인
-   프롬프트를 띄운다). 지울 것이 생겼다면 b) 를 어긴 것이다.
+   프롬프트를 띄운다). 지울 것이 생겼다면 b) 를 어긴 것이다. 예외: 리포의 회귀 스크립트(*.test.sh)가 자기가 만든
+   임시 폴더를 스스로 치우는 것 — 그 스크립트는 TMPDIR=<전용 폴더>/tmp 로 돌린다.
 f) 보고 끝에 git status --porcelain 을 다시 찍어 a) 와 같은지 적는다(다르면 무엇이 남았는지).
 g) Orca 브라우저 명령은 전부 --page <browserPageId> 로 고정한다 — orca tab create 결과(또는 orca tab list --json 의
    tabs[].browserPageId)를 잡아 이후 모든 브라우저 명령에 붙인다. --page 가 없으면 같은 워크트리의 다른 세션 ·
@@ -164,9 +170,12 @@ g) Orca 브라우저 명령은 전부 --page <browserPageId> 로 고정한다 �
   <walk 서버 URL> 에 GET/OPTIONS 만. 주소는 http://127.0.0.1:<port> — localhost 금지(macOS 에서 ::1 로 먼저 붙어 봉투 밖
   서버에 닿는다).
 - ps -E 는 그 walk 서버 pid 에만, 키 이름만 출력 — 이 리포 밖 프로세스의 env 는 훑지 않는다(다른 앱의 비밀 값이 찍힌다).
-- .env / .env.local 을 만들지 않는다. nuxt prepare · typecheck(typecheck-gate.sh · typecheck-gate.test.sh 포함)는 떠 있는
-  dev 서버의 .nuxt 를 다시 쓰므로 돌리지 않는다. .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를
-  만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR · 설정) 금지.
+- .env / .env.local 을 만들지 않는다. .nuxt · .output 을 지우고 다시 쓰는 명령은 워크트리에서도 복사본에서도 돌리지 않는다
+  (복사본의 .nuxt 는 워크트리 심링크다 — 떠 있는 walk 서버가 깨진다): yarn install · yarn build · yarn turbo run
+  build / test / typecheck(test 는 build 에 의존) · nuxt / npx nuxt 의 build · prepare · dev · typecheck-gate.sh ·
+  typecheck-gate.test.sh. 테스트 실행은 yarn workspace nomacom-client test(vitest 만 — 빌드 없음)와 절의 레시피만.
+  .claude/scripts/client-walk-server.test.sh 는 리포 루트에 임시 .env 심링크를 만드므로 복사본에서만. git 쓰기 · gh 쓰기(PR ·
+  설정) 금지.
 출력: DoD 체크리스트 항목별 pass/fail + 발견 이슈(blocker/major/minor) +
 걸은 시나리오 중 회귀 스위트 편입 가치가 있는 것 + 스크린샷 경로(전용 폴더 절대경로) + a)·f) 의 porcelain 두 값.
 ```
@@ -215,9 +224,20 @@ ln -s <wt>/apps/client/.nuxt "$Q/repo/apps/client/.nuxt"     # tsconfig 가 .nux
 git -C <wt> archive HEAD apps/client/<파일 경로> | tar -x -C "$Q/repo"
 ```
 
-- ⚠️ `.nuxt` 가 없으면 «TSCONFIG_ERROR … Tsconfig not found»(실측). 심링크 대상은 쓰지 않는다.
-- 셸 회귀(`.claude/scripts/*.test.sh` · `.github/scripts/*.test.sh`)를 변이할 때도 같은 방식 — `git archive HEAD .claude .github apps/client` 로 풀고 복사본의 스크립트를 돌린다(스크립트가 자기 위치 기준으로 ROOT 를 잡는다). `content-pending-gate.test.sh` · `guard-prod-push.test.sh` 는 워크트리를 쓰지 않아 원본 그대로 돌려도 된다.
-- 워크트리에서 돌리지 않는다: `typecheck-gate.test.sh`(워크트리에 프로브 파일 + `nuxt prepare`) · `client-walk-server.test.sh`(리포 루트에 임시 `.env` 심링크).
+- ⚠️ `.nuxt` 가 없으면 «TSCONFIG_ERROR … Tsconfig not found»(실측). `.nuxt` 는 워크트리 심링크라 복사본에서도 nuxt 명령(`prepare` · `build` · `dev`)을 돌리지 않는다 — 심링크 너머 워크트리 `.nuxt` 가 비워진다.
+- vitest 캐시(`apps/client/node_modules/.vite` · `.vite-temp` — 워크트리의 gitignore 경로)는 두 레시피가 쓴다 — 리포 산출물이 아니라 예외(porcelain 에 안 잡히고 walk 서버에 영향 없음).
+- 셸 회귀(`.claude/scripts/*.test.sh` · `.github/scripts/*.test.sh`)를 변이할 때도 같은 방식 — 복사본의 스크립트를 `TMPDIR=<Q>/tmp` 로 돌린다(스크립트가 자기 위치 기준으로 ROOT 를 잡는다):
+
+  ```bash
+  mkdir -p "$Q/sh/apps/client/.output/server" "$Q/tmp"
+  git -C <wt> archive HEAD .claude .github apps/client package.json | tar -x -C "$Q/sh"
+  : > "$Q/sh/apps/client/.output/server/index.mjs"   # .output 스텁 — 없으면 봉투 테스트의 prod 기동 줄 검사가 조용히 빠진다
+  TMPDIR="$Q/tmp" bash "$Q/sh/.claude/scripts/client-walk-server.test.sh"   # 먼저 변이 없이 — 건수가 워크트리 기준선과 같아야 한다
+  ```
+
+  `content-pending-gate.test.sh` · `guard-prod-push.test.sh` 는 워크트리를 쓰지 않아 원본 그대로 돌려도 된다(`TMPDIR=<Q>/tmp`).
+
+- 어디서도 돌리지 않는다: `typecheck-gate.test.sh`(워크트리에 프로브 파일 + `nuxt prepare`). 워크트리에서 돌리지 않는다: `client-walk-server.test.sh`(리포 루트에 임시 `.env` 심링크).
 
 ## 산출 — QA 증거 기록 (finish-branch Step 0 이 읽는 것)
 
