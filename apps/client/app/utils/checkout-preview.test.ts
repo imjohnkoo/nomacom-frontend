@@ -3,6 +3,7 @@ import {
   PAYMENT_ID_PATTERN,
   PREVIEW_ITEM,
   PREVIEW_ORDER_NAME,
+  buildReturnQuery,
   createPaymentId,
   formatWon,
   readPaymentResult,
@@ -95,6 +96,33 @@ describe('readPaymentResult', () => {
     expect(readPaymentResult({ paymentId: [MINE, 'pv-2-00'] }, MINE)).toEqual({
       status: 'success',
       paymentId: MINE,
+    })
+  })
+})
+
+describe('buildReturnQuery (창 없이 끝난 응답 — spec F-19)', () => {
+  const LOCAL = 'pv-1790105212345-abababababababababababab'
+
+  it('5필드를 그대로 싣는다', () => {
+    expect(
+      buildReturnQuery(
+        { paymentId: LOCAL, code: 'C', message: 'M', pgCode: 'PC', pgMessage: 'PM' },
+        LOCAL,
+      ),
+    ).toEqual({ paymentId: LOCAL, code: 'C', message: 'M', pgCode: 'PC', pgMessage: 'PM' })
+  })
+
+  it('응답에 결제 ID 가 없거나 비면 이 탭의 ID — 결과 줄이 사라지지 않는다', () => {
+    expect(buildReturnQuery({ code: 'C' }, LOCAL).paymentId).toBe(LOCAL)
+    expect(buildReturnQuery({ paymentId: '', code: 'C' }, LOCAL).paymentId).toBe(LOCAL)
+  })
+
+  it('readPaymentResult 와 이어진다 — 창 전 오류는 실패 줄 · pgMessage 대체', () => {
+    const query = buildReturnQuery({ code: 'FAILURE', pgMessage: 'PG 사유' }, LOCAL)
+    expect(readPaymentResult(query, LOCAL)).toEqual({
+      status: 'failed',
+      paymentId: LOCAL,
+      message: 'PG 사유',
     })
   })
 })

@@ -62,3 +62,29 @@ export function readPaymentResult(
   const message = text(first(query.message)) ?? text(first(query.pgMessage)) ?? code
   return { status: 'failed', paymentId, message: message.slice(0, RESULT_MESSAGE_MAX) }
 }
+
+/** requestPayment 응답(창 없이 끝난 경우 포함)의 5필드 — PortOne PaymentResponse 의 부분 */
+export interface PaymentResponseLike {
+  paymentId?: string
+  code?: string
+  message?: string
+  pgCode?: string
+  pgMessage?: string
+}
+
+/**
+ * 창 없이 끝난 응답을 복귀 쿼리로 (spec F-19) — 결과 처리는 readPaymentResult 하나로 모은다.
+ * 응답에 결제 ID 가 없으면 이 탭이 만든 ID 를 쓴다(결과 줄이 «none» 으로 사라지지 않게).
+ */
+export function buildReturnQuery(
+  response: PaymentResponseLike,
+  localPaymentId: string,
+): Record<string, string | undefined> {
+  return {
+    paymentId: response.paymentId || localPaymentId,
+    code: response.code,
+    message: response.message,
+    pgCode: response.pgCode,
+    pgMessage: response.pgMessage,
+  }
+}

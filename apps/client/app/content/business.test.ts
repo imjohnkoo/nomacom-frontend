@@ -88,6 +88,11 @@ describe('ftcBusinessCheckUrl', () => {
     expect(ftcBusinessCheckUrl(PENDING_INFO)).toBeNull()
   })
 
+  it('빈 값(공백)도 확정이 아니다 — 링크를 만들지 않는다', () => {
+    expect(ftcBusinessCheckUrl({ ...FILLED, mailOrderSalesNumber: '' })).toBeNull()
+    expect(ftcBusinessCheckUrl({ ...FILLED, businessRegistrationNumber: '  ' })).toBeNull()
+  })
+
   it('사업자등록번호가 확정 전이어도 링크를 만들지 않는다 (신고번호만 확정된 경우)', () => {
     expect(ftcBusinessCheckUrl({ ...FILLED, businessRegistrationNumber: P9_4_PENDING })).toBeNull()
   })
@@ -137,5 +142,25 @@ describe('supportRows', () => {
       'email',
       'hours',
     ])
+  })
+})
+
+describe('실제 콘텐츠 값 (머지 게이트가 못 보는 빈 값 차단)', () => {
+  // 게이트는 P9_4_PENDING 글자만 찾는다 — '' 로 채워 게이트를 통과시키면 푸터에 빈 칸이 prod 로 나간다.
+  // 값이 무엇인지가 아니라 «대기이거나 비어 있지 않다» 만 본다 — P9-4 반영 때 깨지지 않는다.
+  const filled = (value: unknown) =>
+    isPending(value) || (typeof value === 'string' && value.trim().length > 0)
+
+  it('사업자정보 모든 항목', () => {
+    for (const [key, value] of Object.entries(BUSINESS_INFO))
+      expect([key, filled(value)]).toEqual([key, true])
+  })
+
+  it('고객센터 채널 값 · 링크', () => {
+    for (const channel of SUPPORT_CHANNELS) {
+      expect([channel.key, filled(channel.value)]).toEqual([channel.key, true])
+      if (channel.href !== undefined)
+        expect([channel.key, filled(channel.href)]).toEqual([channel.key, true])
+    }
   })
 })

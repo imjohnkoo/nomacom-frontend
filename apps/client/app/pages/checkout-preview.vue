@@ -8,6 +8,7 @@ import {
   PREVIEW_ORDER_NAME,
   createPaymentId,
   formatWon,
+  buildReturnQuery,
   readPaymentResult,
 } from '~/utils/checkout-preview'
 
@@ -79,16 +80,7 @@ const onPay = async () => {
     if (!response) return
     // 창 없이 끝난 응답(창을 열기 전 오류 등)도 같은 복귀 쿼리로 — 결과 처리는 readPaymentResult 하나 (spec F-19)
     await navigateTo(
-      {
-        path: '/checkout-preview',
-        query: {
-          paymentId: response.paymentId || paymentId,
-          code: response.code,
-          message: response.message,
-          pgCode: response.pgCode,
-          pgMessage: response.pgMessage,
-        },
-      },
+      { path: '/checkout-preview', query: buildReturnQuery(response, paymentId) },
       { replace: true },
     )
     isRequesting.value = false

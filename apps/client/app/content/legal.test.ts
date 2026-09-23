@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { LEGAL_DOCUMENTS, PRIVACY, REFUND, TERMS, documentText, isFullyPending } from './legal'
 import { P9_4_PENDING, isPending } from './pending'
 
-// spec S-4 `/refund` 확정 문구 — 문단은 이 목록과 글자 그대로 같을 때만 통과(허용 목록 · 바꿔 쓴 «발급 뒤» 문장도 막힌다).
-// 문구를 바꾸려면 spec 을 먼저 고치고 이 목록을 따라 고친다.
+// `/refund` 허용 목록 — 문단 · 절 제목은 이 목록과 글자 그대로 같을 때만 통과(바꿔 쓴 «발급 뒤» 문장도 막힌다).
+// ① · ③ 은 spec S-4 확정 문구, ② 안내 문장과 절 제목은 이 문서가 정한 것(P9-4 에서 John 확인 대상).
+// 바꾸려면 spec 을 먼저 고치고 이 목록을 따라 고친다.
+const REFUND_HEADINGS = ['eSIM 발급 전', '신청 방법', '처리 기한']
 const REFUND_APPROVED = [
   'eSIM 을 발급받기 전에는 단순 변심이라도 100% 환불이 가능합니다.',
   '주문번호와 함께 아래 고객센터로 요청해 주세요.',
@@ -17,6 +19,10 @@ describe('환불정책 (A5)', () => {
     for (const paragraph of REFUND.sections.flatMap((s) => s.paragraphs)) {
       expect(isPending(paragraph) || REFUND_APPROVED.includes(paragraph)).toBe(true)
     }
+  })
+
+  it('절 제목도 허용 목록 — «개통 후» 같은 절을 덧붙여 비껴가지 않게', () => {
+    expect(REFUND.sections.map((s) => s.heading)).toEqual(REFUND_HEADINGS)
   })
 
   it('발급 전 전액 환불 문구가 있다', () => {

@@ -65,6 +65,7 @@ export function businessRows(info: BusinessInfo = BUSINESS_INFO): BusinessRow[] 
 /** 공정거래위원회 사업자정보 확인 — 통신판매업 신고번호가 확정돼야 연다 */
 export function ftcBusinessCheckUrl(info: BusinessInfo = BUSINESS_INFO): string | null {
   const brn = info.businessRegistrationNumber
-  if (isPending(info.mailOrderSalesNumber) || isPending(brn)) return null
+  const missing = (value: string) => isPending(value) || value.trim() === ''
+  if (missing(info.mailOrderSalesNumber) || missing(brn)) return null
   return `https://www.ftc.go.kr/bizCommPop.do?wrkr_no=${brn.replace(/\D/g, '')}`
 }
