@@ -34,7 +34,7 @@ description: QA stage for nomacom-frontend after implementation reaches DoD — 
 - diff 범위 확정: `git diff main...HEAD` (base 는 항상 `main`). **400 LOC 초과면 plan 의 태스크 단위로 분할해 리뷰** — 초과분을 한 번에 넣으면 결함 검출률이 급락해 리뷰가 요식이 된다.
 - 넘길 것은 **spec/plan 경로 + diff 뿐.** 구현 세션의 추론·요약을 브리프에 쓰지 않는다.
 - **리뷰어·walk 는 워크트리를 바꾸지 않는다**(브리프 「작업 위생」 — 변이는 스크래치패드의 리포 복사본에서). 그래서 분할 리뷰를 **병렬로** 보내도 된다. 대신 코딩 세션은 리뷰가 도는 동안 그 워크트리에서 편집·커밋하지 않는다(리뷰어가 보는 HEAD 가 바뀐다).
-- 실행 확인·⑦ walk 용 서버는 **코딩 세션이 봉투로** 띄운다 — `bash .claude/scripts/client-walk-server.sh dev|prod <port>`. 리뷰어·walk 는 서버를 띄우지 않는다. 브리프의 `<walk 서버 URL>` 에 `http://127.0.0.1:<port>` 를 넣는다(localhost 금지 — macOS 에서 `::1` 로 먼저 붙어 봉투 밖 서버에 닿는다).
+- 실행 확인·⑦ walk 용 서버는 **코딩 세션이 봉투로** 띄운다 — `bash .claude/scripts/client-walk-server.sh dev|prod <port>`. 리뷰어·walk 는 서버를 띄우지 않는다. 브리프의 `<walk 서버 URL>` 에는 spec 절차가 요구하는 서버를 **전부** 용도와 함께 적는다 — 예: `http://127.0.0.1:3005(dev · E2E-1 · 2 · 6) · http://127.0.0.1:3006(prod 빌드 · E2E-5) · http://127.0.0.1:3007(합성 DB dev · E2E-3 · 4 · 7)`. localhost 금지(macOS 에서 `::1` 로 먼저 붙어 봉투 밖 서버에 닿는다).
 - **리뷰가 도는 동안 코딩 세션은 워크트리를 편집하지 않는다**(리뷰 대상 밖 파일도) — 리뷰어의 porcelain 대조가 코딩 세션 편집과 리뷰어 흔적을 구분하지 못한다. 수정은 모든 결과가 돌아온 뒤에.
 - **보내기 전후 워크트리 대조** — 디스패치는 커밋된 clean 상태에서. 리뷰어·walk 가 돌아오거나 **중단되면**(Esc · API 오류 · 컨텍스트 한도) 아래로 대조하고, 달라진 게 있으면 원인을 확인하기 전까지 커밋하지 않는다. 표식은 **디스패치 묶음마다 따로**(`<회차>`) — 뒤이은 디스패치에서 같은 파일을 다시 찍으면 앞 묶음의 기준선이 덮인다.
 
@@ -49,6 +49,9 @@ description: QA stage for nomacom-frontend after implementation reaches DoD — 
   find <worktree> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*' | sort | diff <M>.files -   # 생기거나 사라진 파일(gitignore · .nuxt · .output 포함)
   find <worktree> -cnewer <M> \( -type f -o -type l \) -not -path '*/.git/*' -not -path '*/node_modules/*'   # 바뀐 파일(dev 서버 HMR 이 .nuxt 를 쓰면 여기 뜬다 — 무엇인지 연다)
   find <worktree> -name node_modules -prune -o -type l -newer <M> -print   # 레시피 재실행이 워크트리 안에 만든 링크
+  # node_modules 는 위에서 빠진다 — 레시피가 쓸 수 있는 통로(복사본의 node_modules 링크)가 바로 거기라 최상위만 따로 본다
+  find <worktree>/node_modules <worktree>/apps/*/node_modules -maxdepth 1 -newer <M> -not -name .vite -not -name .vite-temp -not -name .cache
+  find <worktree>/node_modules <worktree>/apps/*/node_modules -maxdepth 2 -name node_modules -type l   # 재실행 ln -s 가 만든 node_modules/node_modules
   ```
 
 ### 2. 서브에이전트 디스패치 — 고정 브리프
@@ -201,7 +204,8 @@ g) Orca 브라우저 명령은 전부 --page <browserPageId> 로 고정한다 �
 ⑥ · ⑦ 브리프 「작업 위생」 c) · d) 가 가리키는 절 — 워크트리를 건드리지 않고 테스트를 돌린다(2026-09-23 실측 · client vitest 4.1, porcelain 전후 동일). `<wt>` = 워크트리 절대경로, `<Q>` = 전용 폴더.
 
 ```bash
-Q="$(mktemp -d <스크래치패드 실경로>/qa-XXXXXX)"   # 시스템 프롬프트의 스크래치패드(/private/tmp/…)는 이미 실경로
+Q="$(mktemp -d <스크래치패드 실경로>/qa-XXXXXX)"; echo "$Q"   # **한 번만** — 출력된 절대경로를 이후 모든 명령에 박아 쓴다
+# (Bash 호출마다 셸이 새로 떠서 $Q 는 이어지지 않는다 — 이 줄을 다시 부르면 새 폴더가 생겨 변이 · 원복 · 실행이 흩어진다)
 ```
 
 **프로브**(새 반증 테스트) — 리포 설정을 절대경로 import + spread 로 상속하고 `include` 만 교체한다:

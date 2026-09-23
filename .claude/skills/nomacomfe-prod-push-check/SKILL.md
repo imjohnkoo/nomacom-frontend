@@ -142,17 +142,27 @@ yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 
 `verification-before-completion` 의 iron law 적용 — 결과를 직접 확인.
 
+**client 가 승격 대상이면 무조건 — 렌더 확인(확정 전 문안 0)** (W1-2 D-17 의 두 번째 겹 — 게이트는 소스 grep 이라 줄바꿈 · 엔티티 · 조립된 문자열을 놓칠 수 있다. `app/content/*.ts` 만 바뀐 P9-4 승격도 여기서 본다). Phase 3 에서 PROMOTE_SHA 로 빌드한 `.output` 을 봉투 prod 서버로 띄우고(`bash .claude/scripts/client-walk-server.sh prod <port>`):
+
+```bash
+BASE=http://127.0.0.1:<port>
+want_build="$(sed -n 's/.*"id":"\([^"]*\)".*/\1/p' apps/client/.output/public/_nuxt/builds/latest.json)"
+[ -n "$want_build" ] || { echo "⛔ 빌드 id 없음 — Phase 3 빌드부터"; exit 1; }
+for p in / /my /my-esim /terms /privacy /refund /business /guide /search /checkout-preview /supported-devices; do
+  html="$(curl -fsS "$BASE$p")" || { echo "⛔ $p 응답 실패 — 중단"; exit 1; }       # 서버가 없거나 4xx · 5xx 면 0건으로 통과하지 않게
+  printf '%s' "$html" | grep -q "buildId:\"$want_build\"" || { echo "⛔ $p 가 이 빌드($want_build)의 응답이 아니다 — 중단"; exit 1; }
+  printf '%s' "$html" | grep -q '704-24-01747' || { echo "⛔ $p 에 푸터 사업자등록번호가 없다(양성 대조 실패) — 중단"; exit 1; }
+  norm="$(printf '%s' "$html" | sed -e 's/&nbsp;/ /g' -e 's/&#160;/ /g' -e 's/&#xa0;/ /g' -e $'s/\xc2\xa0/ /g' | tr -s '[:space:]' ' ')"
+  n=$(printf '%s' "$norm" | grep -o -e '(확정 전)' -e '（확정 전）' -e '문안을 확정하고 있어요' | wc -l | tr -d ' ')
+  [ "$n" -eq 0 ] || { echo "⛔ $p 에 확정 전 문안 ${n}건 — 중단"; exit 1; }
+done
+```
+
+게이트 스크립트 · 봉투가 없는 SHA(도입 전 main — 예: P6 #2)는 봉투가 없으니 이 단계를 «해당 없음(자리표시자 도입 전)» 으로 적는다 — 그 SHA 의 소스에는 자리표시자 자체가 없다(Phase 3 폴백 grep 이 0).
+
 **UI 변경이 포함된 경우** 추가로:
 
 - 영향 앱 dev 서버 띄워서 golden path 수동 검증 — admin 은 `yarn workspace nomacom-admin run dev`. **client 는 로컬 walk 안전 봉투로만**(`bash .claude/scripts/client-walk-server.sh dev <port>` → `http://127.0.0.1:<port>` — prod DB · 벤더 키 없이. John 지시 2026-09-23 · client-shell spec D-18). 실발급 · 실주문 경로는 로컬에서 걷지 않고 승격 당일 operator AC 로
-- **client 렌더 확인 — 확정 전 문안 0** (W1-2 D-17 의 두 번째 겹 — 게이트는 소스 grep 이라 줄바꿈 · 엔티티 · 조립된 문자열을 놓칠 수 있다). PROMOTE_SHA 로 빌드한 봉투 prod 서버에서:
-
-  ```bash
-  for p in / /my /my-esim /terms /privacy /refund /business /guide /search /checkout-preview; do
-    n=$(curl -s "http://127.0.0.1:<port>$p" | sed -e 's/&nbsp;/ /g' -e 's/&#160;/ /g' | tr -s '[:space:]' ' ' | grep -o '(확정 전)' | wc -l)
-    [ "$n" -eq 0 ] || { echo "⛔ $p 에 «(확정 전)» ${n}건 — 중단"; exit 1; }
-  done
-  ```
 
 - 자동 테스트는 feature correctness 가 아닌 code correctness 만 검증함
 
