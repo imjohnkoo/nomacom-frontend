@@ -140,3 +140,72 @@ describe('ErrorPanel — 갈래별 화면(S-7)', () => {
     }
   })
 })
+
+describe('ErrorPanel — 구조(목업 E-1 ~ E-4)', () => {
+  const upcomingViews = upcomingJson.countries.map((c) =>
+    errorView(404, `/countries/${c.iso3.toLowerCase()}`),
+  )
+  const all: ErrorView[] = [
+    errorView(404, '/abc'),
+    errorView(404, '/products/xxx00'),
+    errorView(500, '/abc'),
+    ...upcomingViews,
+  ]
+
+  it('설명은 두 줄 — 줄바꿈 하나로 나뉜 문안 두 줄', () => {
+    for (const view of all) {
+      const desc = render(view).get('.error-panel__desc')
+      expect(desc.findAll('br'), view.copy.title).toHaveLength(1)
+      const [first, second] = desc.element.innerHTML.split(/<br\b[^>]*>/)
+      expect(first!.trim()).toBe(view.copy.lines[0])
+      expect(second!.trim()).toBe(view.copy.lines[1])
+    }
+  })
+
+  it('점선 상자는 준비 중 나라(아시아 칩)만 — 인기 국가 칩은 상자 없이', () => {
+    expect(render(errorView(404, '/abc')).find('.error-panel__chips-wrap--box').exists()).toBe(
+      false,
+    )
+    expect(
+      render(errorView(404, '/products/xxx00')).find('.error-panel__chips-wrap--box').exists(),
+    ).toBe(false)
+    for (const view of upcomingViews)
+      expect(render(view).find('.error-panel__chips-wrap--box').exists(), view.copy.title).toBe(
+        true,
+      )
+  })
+
+  it('일러스트 표식 — 없는 주소 · 없는 상품은 «?» · 잠시 오류는 «!»', () => {
+    const marks = (view: ErrorView) =>
+      render(view)
+        .findAll('.error-panel__ill .error-panel__ill-mark')
+        .map((p) => p.attributes('d'))
+    const question = 'M75.5 76a4.5 4.5 0 1 1 6.3 4.1c-1.1.5-1.8 1.4-1.8 2.6v.8'
+    expect(marks(errorView(404, '/abc'))).toEqual([question])
+    expect(marks(errorView(404, '/products/xxx00'))).toEqual([question])
+    expect(marks(errorView(500, '/abc'))).toEqual(['M80 72v10'])
+  })
+
+  it('칩마다 국기(자체 호스팅 · 장식) — 인기 8 · 아시아 5', () => {
+    for (const [view, n] of [
+      [errorView(404, '/abc'), 8],
+      [errorView(404, '/countries/jpn'), 5],
+    ] as const) {
+      const w = render(view)
+      const chips = w.findAll('.error-panel__chip')
+      expect(chips).toHaveLength(n)
+      for (const chip of chips) {
+        const img = chip.get('img')
+        expect(img.attributes('src')).toMatch(/^\/catalog\/flags\/[A-Z]{2}\.[0-9a-f]{8}\.svg$/)
+        expect(img.attributes('alt')).toBe('')
+      }
+    }
+  })
+
+  it('모든 갈래 · 준비 중 7개국 — 화면 글자에 상태 코드 · 오류 · 알림 약속 · 판매 종료가 없다', () => {
+    for (const view of all)
+      expect(render(view).text(), view.copy.title).not.toMatch(
+        /\d{3}|error|not found|알림|출시되면|열리면|판매 종료|단종/i,
+      )
+  })
+})

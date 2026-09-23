@@ -5,26 +5,24 @@
 import type { NuxtError } from '#app'
 import type { SearchEntry } from '#shared/catalog/search'
 import ErrorPanel from '~/components/shell/ErrorPanel.vue'
-import { errorStatus, errorView, pickChips } from '~/utils/error-view'
+import { errorChips, errorHead, errorStatus, errorView, pickChips } from '~/utils/error-view'
 
 const props = defineProps<{ error: NuxtError }>()
-const route = useRoute()
-const view = computed(() => errorView(errorStatus(props.error), route.path))
+// 갈래는 지금 주소로 — useRoute() 는 페이지가 끝까지 그려질 때만 바뀌어서(오류는 페이지가 없다) 앞 화면의 경로가 남는다
+const router = useRouter()
+const view = computed(() => errorView(errorStatus(props.error), router.currentRoute.value.path))
 
-useHead(() => ({
-  htmlAttrs: { lang: 'ko' },
-  title: view.value.copy.title,
-  titleTemplate: (title?: string) => (title ? `${title} · 이심마니` : '이심마니'),
-  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
-}))
+useHead(() => errorHead(view.value))
 
-// 칩 — 검색 색인에서 필요한 나라만 골라 payload 에 싣는다. 못 읽으면 칩 없이 그린다(오류 화면은 다시 던지지 않는다)
+// 칩 — 검색 색인에서 필요한 나라만 골라 payload 에 싣는다. 못 읽으면 칩 없이 그린다(오류 화면은 다시 던지지 않는다).
+// 칩이 없는 잠시 오류는 부르지 않는다 — 느린 망에서 오류 화면이 이 요청을 기다리지 않게
 const { data: chipSets } = await useFetch('/api/catalog/search-index', {
   key: 'error-chips',
   transform: (index: SearchEntry[]) => pickChips(index),
   default: () => pickChips([]),
+  immediate: view.value.chips !== null,
 })
-const chips = computed(() => (view.value.chips ? chipSets.value[view.value.chips] : []))
+const chips = computed(() => errorChips(view.value, chipSets.value))
 
 function retry() {
   window.location.reload()
