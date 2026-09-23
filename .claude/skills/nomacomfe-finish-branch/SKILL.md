@@ -71,7 +71,7 @@ yarn turbo run lint typecheck test build --filter=... || exit 1
 > script 가 없어 no-op 이었다. 현재 실체:
 >
 > - `typecheck` — `.github/scripts/typecheck-gate.sh` 가 **baseline 초과분만 차단** (admin 0 / client 4건 기준선 — 2026-09-23 7 → 4). 신규 타입 에러는 실패한다
-> - `test` — design-vue 129 + client 277(2026-09-23 W1-2) 건. admin 은 아직 0건(`passWithNoTests: true`)
+> - `test` — design-vue 129 + client 284(2026-09-23 W1-2) 건. admin 은 아직 0건(`passWithNoTests: true`)
 > - `lint` — 에러만 차단(경고는 통과). prettier 포맷은 PostToolUse 훅이 담당
 >
 > ✅ **INF-2(2026-09-02) 부터 PR·main push 에서 CI 가 같은 검사를 강제한다** (`.github/workflows/ci.yml`). 로컬에서 돌리는 것은 여전히 빠른 피드백을 위해서다 — CI 실패를 기다리지 말 것.
@@ -109,11 +109,17 @@ Which option?
 cd ~/dev/current-projects/nomacom-frontend    # 메인 클론으로 이동 (worktree 에서 base 체크아웃 불가)
 git fetch origin
 git checkout main && git pull --ff-only
+[ "${MERGE_PREREQ_OK:-}" = yes ] || exit 1   # spec 머지 선행조건(예: client-shell 은 P6 #2)을 확인하고 yes 로 둔 뒤에만
+# 게이트 스크립트 — main 에 아직 없으면(그 스크립트를 들여오는 첫 머지) 워크트리 것을 메인 클론 저장소에 대고 부른다
+GATE=.github/scripts/content-pending-gate.sh
+[ -f "$GATE" ] || GATE="<worktree>/.github/scripts/content-pending-gate.sh"
+export CONTENT_GATE_ROOT="$(pwd)"           # 판정 대상 = 메인 클론(워크트리 HEAD 가 아니다)
 # 머지 **전에** 양쪽 부모를 본다 — 둘 다 0 이어야 머지한다(머지 뒤 실패하면 로컬 main 에 커밋이 남는다)
-bash .github/scripts/content-pending-gate.sh HEAD && bash .github/scripts/content-pending-gate.sh <feature-branch> || exit 1
+bash "$GATE" HEAD && bash "$GATE" <feature-branch> || exit 1
 git merge --no-ff <feature-branch>
-yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client
-bash .github/scripts/content-pending-gate.sh HEAD || exit 1   # 머지 결과를 다시(충돌 해결에서 들어온 경우)
+yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
+bash "$GATE" HEAD || exit 1                 # 머지 결과를 다시(충돌 해결에서 들어온 경우)
+unset CONTENT_GATE_ROOT
 git push origin main
 ```
 
@@ -133,6 +139,7 @@ git push -u origin <feature-branch>
 # ready 는 콘텐츠 게이트 0 **이고** spec 의 머지 선행조건(예: client-shell 은 P6 #2)을 확인해 MERGE_PREREQ_OK=yes 로 둔 때만
 DRAFT="--draft"
 if bash .github/scripts/content-pending-gate.sh >/dev/null 2>&1 && [ "${MERGE_PREREQ_OK:-}" = yes ]; then DRAFT=""; fi
+# draft 를 ready 로 바꿀 때(`gh pr ready`)도 같은 두 조건을 **그때 다시** 확인한다 — PR 을 연 뒤 커밋이 늘었을 수 있다
 gh pr create --base main $DRAFT --title "<type>(<scope>): <title>" --body "$(cat <<'EOF'
 ## Summary
 <2-3 bullets>

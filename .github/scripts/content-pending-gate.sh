@@ -8,8 +8,10 @@
 #
 # 보는 것: **머지할 커밋**(기본 HEAD)의 apps/client/** — 디스크 파일이 아니다(워크트리에서만 채우고 커밋하지 않은 값은 통과가 아니다).
 #   바이너리 속성(.gitattributes -diff 등)이 붙은 파일도 텍스트로 본다.
+# 찾는 것: `P9_4_PENDING` · `PENDING_LABEL` · 따옴표로 감싼 '(확정 전)' 문자열(글자 없이 표시 문구로 채우는 우회).
 # 세지 않는 것: 자리표시자 정의 · 판정 함수 파일(app/content/pending.ts) · 테스트 픽스처(*.test.ts) · 문서(*.md).
-#   pending.ts 는 정해진 이름만 내보내야 한다 — 별칭(export const TBD = P9_4_PENDING)으로 게이트를 비껴가지 않게.
+#   pending.ts 의 export 줄은 아래 목록과 글자 그대로 같아야 한다 — 별칭 · 쉼표 선언 · 재수출로 비껴가지 않게
+#   (pending.ts 를 고치면 이 목록도 같이 고친다).
 #
 # 사용: bash .github/scripts/content-pending-gate.sh [rev]
 # 종료: 0 = 없음 · 1 = 남아 있음(main 머지 불가 — PR 은 draft 로) · 2 = 검사 불가(통과로 보지 않는다)
@@ -22,10 +24,18 @@ unable() {
 }
 
 ROOT="${CONTENT_GATE_ROOT:-$(cd "$(dirname "$0")/../.." && pwd)}"
-if [[ $# -ge 1 && -z "$1" ]]; then unable "빈 리비전 인자"; fi
+if [[ $# -gt 1 ]]; then unable "인자는 리비전 하나 — 여러 ref 는 따로 부른다"; fi
+if [[ $# -eq 1 && -z "$1" ]]; then unable "빈 리비전 인자"; fi
 REV="${1:-HEAD}"
 PENDING_FILE=apps/client/app/content/pending.ts
-PENDING_EXPORTS='P9_4_PENDING Pending ContentValue PENDING_LABEL isPending displayValue'
+PENDING_EXPORTS=(
+  "export const P9_4_PENDING = 'P9_4_PENDING' as const"
+  "export type Pending = typeof P9_4_PENDING"
+  "export type ContentValue = string | Pending"
+  "export const PENDING_LABEL = '(확정 전)'"
+  "export function isPending(value: unknown): value is Pending {"
+  "export function displayValue(value: ContentValue): string {"
+)
 
 git -C "$ROOT" rev-parse --verify --quiet "$REV^{commit}" >/dev/null || unable "리비전 $REV 를 찾을 수 없다"
 git -C "$ROOT" cat-file -e "$REV:apps/client/app" 2>/dev/null || unable "$REV 에 apps/client/app 이 없다"
@@ -34,7 +44,7 @@ errf="$(mktemp 2>/dev/null)" || errf=""
 [[ -n "$errf" && -f "$errf" ]] || unable "임시 파일을 만들 수 없다"
 trap 'rm -f "$errf"' EXIT
 
-hits="$(git -C "$ROOT" grep -l --text -F 'P9_4_PENDING' "$REV" -- apps/client \
+hits="$(git -C "$ROOT" grep -l --text -F -e 'P9_4_PENDING' -e 'PENDING_LABEL' -e "'(확정 전)'" -e '"(확정 전)"' -e '`(확정 전)`' "$REV" -- apps/client \
   ":(exclude)$PENDING_FILE" ':(exclude)*.test.ts' ':(exclude)*.md' 2>"$errf")"
 rc=$?
 # git grep 은 객체를 못 읽어도 «못 찾음»(1)으로 끝날 수 있다 — stderr 가 있으면 검사 불가
@@ -44,20 +54,26 @@ if [[ -s "$errf" ]]; then
 fi
 [[ $rc -eq 0 || $rc -eq 1 ]] || unable "git grep 실패(exit $rc)"
 
-# pending.ts 가 정해진 이름만 내보내는가(별칭 · 재수출 금지)
+# pending.ts 의 export 줄이 정해진 목록과 글자 그대로 같은가(별칭 · 쉼표 선언 · 재수출 금지)
 extra=""
 if git -C "$ROOT" cat-file -e "$REV:$PENDING_FILE" 2>/dev/null; then
   pending_src="$(git -C "$ROOT" show "$REV:$PENDING_FILE" 2>"$errf")" || unable "$PENDING_FILE 를 읽을 수 없다"
+  export_lines="$(grep -E '^[[:space:]]*export([[:space:]]|\{|$)' <<<"$pending_src")"
+  grc=$?
+  [[ $grc -le 1 ]] || unable "$PENDING_FILE export 검사 실패(grep exit $grc)"
   while IFS= read -r line; do
-    name="$(sed -nE 's/^export[[:space:]]+(declare[[:space:]]+)?(const|let|var|function|type|interface|enum|class)[[:space:]]+([A-Za-z0-9_$]+).*/\3/p' <<<"$line")"
-    if [[ -z "$name" ]] || ! grep -qw -- "$name" <<<"$PENDING_EXPORTS"; then extra+="    $PENDING_FILE: $line"$'\n'; fi
-  done < <(grep -E '^[[:space:]]*export\b' <<<"$pending_src" || true)
+    [[ -z "$line" ]] && continue
+    trimmed="${line%"${line##*[![:space:]]}"}"
+    allowed=""
+    for want in "${PENDING_EXPORTS[@]}"; do [[ "$trimmed" == "$want" ]] && allowed=1; done
+    [[ -n "$allowed" ]] || extra+="    $PENDING_FILE: $line"$'\n'
+  done <<<"$export_lines"
 fi
 
 if [[ $rc -eq 0 || -n "$extra" ]]; then
   echo "⛔ 확정 전 콘텐츠(P9_4_PENDING)가 남아 있다 — main 머지 불가 (PR 은 draft 로) [$REV @ $ROOT]:"
   [[ $rc -eq 0 ]] && printf '%s\n' "$hits" | sed "s|^$REV:|    |"
-  [[ -n "$extra" ]] && printf '%s' "$extra" && echo "    (pending.ts 는 $PENDING_EXPORTS 만 내보낸다 — 별칭 · 재수출 금지)"
+  [[ -n "$extra" ]] && printf '%s' "$extra" && echo "    (pending.ts 의 export 는 게이트의 PENDING_EXPORTS 목록과 글자 그대로 같아야 한다 — 별칭 · 쉼표 선언 · 재수출 금지)"
   echo "   (값을 다 채웠다면 import 줄의 P9_4_PENDING 도 지워야 한다 — 글자 하나라도 남으면 막힌다)"
   exit 1
 fi

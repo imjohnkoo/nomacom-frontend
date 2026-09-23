@@ -74,7 +74,7 @@ commit "binary attr"
 expect 1 "-diff 속성 파일도 막힘"
 
 # pending.ts 는 정해진 이름만 — 별칭 · 재수출로 비껴가지 않게
-for alias in "export const TBD = P9_4_PENDING" "export { P9_4_PENDING as TBD }" "export default P9_4_PENDING"; do
+for alias in "export const TBD = P9_4_PENDING" "export { P9_4_PENDING as TBD }" "export default P9_4_PENDING" "export const displayValue\$ = P9_4_PENDING" "export  const TBD = 1"; do
   g checkout -q "$CLEAN"
   put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const
 $alias"
@@ -82,6 +82,32 @@ $alias"
   commit "alias: $alias"
   expect 1 "pending.ts 별칭 막힘 — $alias"
 done
+
+# 쉼표 선언으로 허용 줄에 별칭을 붙이면 그 줄이 목록과 달라진다
+g checkout -q "$CLEAN"
+put apps/client/app/content/pending.ts "export const P9_4_PENDING = 'P9_4_PENDING' as const, TBD = P9_4_PENDING"
+put apps/client/app/content/business.ts "export const X = TBD"
+commit "comma alias"
+expect 1 "쉼표 선언 별칭 막힘"
+
+# 글자 P9_4_PENDING 없이 표시 문구로 채우는 우회
+for value in "export const X = PENDING_LABEL" "export const X = '(확정 전)'" 'export const X = "(확정 전)"'; do
+  g checkout -q "$CLEAN"
+  put apps/client/app/content/business.ts "$value"
+  commit "label: $value"
+  expect 1 "표시 문구 우회 막힘 — $value"
+done
+# 주석의 «(확정 전)» 은 세지 않는다
+g checkout -q "$CLEAN"
+put apps/client/app/content/business.ts "/** 확정 전 값은 «(확정 전)» */
+export const X = '확정'"
+commit "comment only"
+expect 0 "주석의 «(확정 전)» 은 통과"
+
+# 여러 인자 → 검사 불가(한 ref 만 보고 통과하지 않게)
+CONTENT_GATE_ROOT="$TMP" bash "$GATE" "$CLEAN" "$PENDING" >/dev/null 2>&1
+got=$?
+if [[ $got -eq 2 ]]; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: 여러 인자 → 검사 불가 (want 2, got $got)"; fi
 
 # 임시 파일을 못 만들면 통과가 아니라 검사 불가
 g checkout -q "$PENDING"

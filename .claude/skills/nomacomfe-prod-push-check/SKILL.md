@@ -34,6 +34,17 @@ Prevent broken/unsafe prod deployments by running a structured pre-flight check.
 ### Phase 1 — Working Tree Hygiene
 
 ```bash
+# 1.0 올릴 SHA 를 먼저 하나로 정하고, **그 SHA 가 체크아웃된 상태에서** 모든 Phase 를 돈다 (W1-2 D-17 · QA ⑥).
+#     build · UI · paths-filter · 시크릿 검사는 HEAD 를, 게이트 · push 는 PROMOTE_SHA 를 보므로 둘이 같아야 한다.
+#     fetch 가 실패하면 멈춘다(오래된 ref 로 판정하지 않는다). 다른 SHA 를 올린다면 여기서 그 SHA 로 바꾼다.
+git fetch origin --quiet || exit 1
+PROMOTE_SHA="$(git rev-parse origin/main)"
+git merge-base --is-ancestor "$PROMOTE_SHA" origin/main || { echo "⛔ origin/main 에 없는 SHA — prod 는 main 의 한 SHA"; exit 1; }
+[ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || { echo "⛔ HEAD ≠ PROMOTE_SHA — git checkout --detach $PROMOTE_SHA 뒤 다시"; exit 1; }
+echo "PROMOTE_SHA=$PROMOTE_SHA"   # 보고 템플릿에 적어 두고, 뒤 Phase 의 셸마다 이 값으로 다시 둔다(셸 변수는 이어지지 않는다)
+```
+
+```bash
 # 1.1 Clean?
 git status --porcelain
 ```
@@ -98,12 +109,9 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
 ```bash
-# client 확정 전 문안(P9_4_PENDING) 0 — **실제로 prod 에 올릴 SHA** 를 본다 (W1-2 D-17).
-# 1) fetch 가 실패하면 멈춘다(오래된 ref 로 판정하지 않는다) 2) 올릴 SHA 를 하나로 정한다 — 보통 origin/main 끝,
-#    다른 SHA 를 올린다면 그 SHA 3) 그 SHA 는 origin/main 에 있어야 한다(prod = main 의 한 SHA) 4) 게이트 · Phase 7 · push 모두 이 SHA
-git fetch origin --quiet || exit 1
-PROMOTE_SHA="$(git rev-parse origin/main)"      # 다른 SHA 를 올리면 여기서 바꾼다
-git merge-base --is-ancestor "$PROMOTE_SHA" origin/main || { echo "⛔ origin/main 에 없는 SHA"; exit 1; }
+# client 확정 전 문안(P9_4_PENDING) 0 — Phase 1.0 의 PROMOTE_SHA 를 본다 (W1-2 D-17).
+PROMOTE_SHA=<Phase 1.0 값>
+[ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || exit 1
 bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
 ```
 
@@ -118,7 +126,7 @@ yarn workspace @imjohnkoo/design-vue run test --run   # DS 변경 시 (17 files 
 yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 ```
 
-> ⚠️ client 는 순수 유닛 277건(2026-09-23 — shell · 흐름 가드 · 콘텐츠 포함), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
+> ⚠️ client 는 순수 유닛 284건(2026-09-23 — shell · 흐름 가드 · 콘텐츠 포함), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
 
 `verification-before-completion` 의 iron law 적용 — 결과를 직접 확인.
 
@@ -177,7 +185,8 @@ git diff origin/prod...HEAD \
 확인할 것은 **prod 가 main 의 조상인가** — 즉 이 push 가 fast-forward 인가다.
 
 ```bash
-git fetch origin --quiet
+git fetch origin --quiet || exit 1
+PROMOTE_SHA=<Phase 1.0 값>          # 다시 구하지 않는다 — 게이트가 본 SHA 그대로
 git log --oneline --graph origin/main origin/prod | head -20
 git merge-base --is-ancestor origin/prod "$PROMOTE_SHA" && echo "✔ fast-forward 가능" || echo "⛔ prod 가 승격 SHA 에 없는 커밋을 갖고 있다 — 되감기 위험, 중단"
 ```
@@ -214,7 +223,7 @@ Paths-filter impact:
 Build:        ✓ yarn turbo run build (admin, client) pass
 Promote SHA:  <PROMOTE_SHA> (origin/main 에 있음 — push 는 `git push origin <PROMOTE_SHA>:prod`, 훅이 막으므로 사용자가)
 Content gate: ✓ content-pending-gate.sh <PROMOTE_SHA> exit 0 (client 확정 전 문안 0)
-Typecheck:    — n/a (admin/client 에 script 없음 — 인프라 갭)
+Typecheck:    ✓ typecheck-gate.sh (admin 0 / client 4 기준선 초과 0)
 Tests:        ✓ design-vue 129 pass  /  — admin·client n/a
 UI manual:    ✓ admin/client golden path 검증 완료 (유일한 기능 검증)
 Migrations:   ✗ none
