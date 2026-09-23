@@ -62,5 +62,11 @@ done
 g checkout -q "$PENDING"
 expect 1 "detached HEAD 도 같은 판정"
 
+# 객체를 못 읽으면(손상 · 누락) «없음» 이 아니라 검사 불가
+g checkout -q "$CLEAN"
+blob="$(git -C "$TMP" rev-parse "$CLEAN:apps/client/app/content/business.ts")"
+rm -f "$TMP/.git/objects/${blob:0:2}/${blob:2}"
+expect 2 "blob 누락 → 검사 불가 (통과 아님)" "$CLEAN"
+
 echo "content-pending-gate: $pass pass · $fail fail"
 [[ $fail -eq 0 ]]

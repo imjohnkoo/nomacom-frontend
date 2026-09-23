@@ -27,6 +27,7 @@ Guide completion of worktree development. **Gate → Verify → options → exec
    - `0` → 계속
    - `1` → 확정 전 문안(`P9_4_PENDING`)이 커밋에 남아 있다. **Step 3 에서 옵션 1(로컬 머지)을 빼고, 옵션 2 는 `--draft` 로만** 연다 (prod 승격에 실려 나가는 것 차단 — client W1-2 spec D-17). CI `content-gate` job 도 빨간불이다
    - `2` → 검사 불가. 통과로 보지 않는다 — 원인을 고치고 다시
+   - spec DoD 에 **머지 선행조건**(예: client-shell 은 P6 #2 — 현재 main 의 prod 승격)이 적혀 있으면 그것도 여기서 확인한다. 미충족이면 게이트 `1` 과 같이 취급
 1. **Tier 확인** — spec/plan 헤더 pill 또는 핸드오프 브리프에서. 기록이 없으면 지금 판정해 plan 헤더에 기록.
    - T2 트리거: 신규 화면/플로우 · 외부연동(Maya·스마트스토어·Cafe24·PG) · Drizzle 스키마 · 과금/PII · 다중 파일 신규 기능 · mobile 신규 화면
    - 버그픽스는 **파일 수 무관 T1**
@@ -110,6 +111,7 @@ git fetch origin
 git checkout main && git pull --ff-only
 git merge --no-ff <feature-branch>
 yarn install && yarn turbo run build --filter=nomacom-admin --filter=nomacom-client
+bash .github/scripts/content-pending-gate.sh HEAD || exit 1   # 머지 결과를 다시 — Step 0 뒤 커밋이 추가됐거나 main 이 이미 오염된 경우
 git push origin main
 ```
 

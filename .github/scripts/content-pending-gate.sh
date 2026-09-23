@@ -26,14 +26,23 @@ if ! git -C "$ROOT" cat-file -e "$REV:apps/client/app" 2>/dev/null; then
   exit 2
 fi
 
+errf="$(mktemp)"
+trap 'rm -f "$errf"' EXIT
 hits="$(git -C "$ROOT" grep -l -I -F 'P9_4_PENDING' "$REV" -- apps/client \
-  ':(exclude)apps/client/app/content/pending.ts' ':(exclude)*.test.ts' ':(exclude)*.md')"
+  ':(exclude)apps/client/app/content/pending.ts' ':(exclude)*.test.ts' ':(exclude)*.md' 2>"$errf")"
 rc=$?
+# git grep 은 객체를 못 읽어도 «못 찾음»(1)으로 끝날 수 있다 — stderr 가 있으면 검사 불가
+if [[ -s "$errf" ]]; then
+  echo "⛔ git grep 오류 — 검사 불가:" >&2
+  sed 's/^/    /' "$errf" >&2
+  exit 2
+fi
 
 case $rc in
   0)
     echo "⛔ 확정 전 콘텐츠(P9_4_PENDING)가 남아 있다 — main 머지 불가 (PR 은 draft 로) [$REV]:"
     printf '%s\n' "$hits" | sed "s|^$REV:|    |"
+    echo "   (값을 다 채웠다면 import 줄의 P9_4_PENDING 도 지워야 한다 — 글자 하나라도 남으면 막힌다)"
     exit 1
     ;;
   1)

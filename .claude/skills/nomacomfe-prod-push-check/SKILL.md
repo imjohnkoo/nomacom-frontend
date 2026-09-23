@@ -98,7 +98,10 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
 ```bash
-bash .github/scripts/content-pending-gate.sh origin/main || exit 1   # client 확정 전 문안(P9_4_PENDING) 0 — 승격 대상 커밋 기준 (W1-2 D-17)
+# client 확정 전 문안(P9_4_PENDING) 0 — **fetch 뒤, 실제로 prod 에 올릴 SHA** 를 본다 (W1-2 D-17).
+# 오래된 origin/main 을 보면 그 사이 UI 로 머지된 자리표시자를 놓친다.
+git fetch origin --quiet
+bash .github/scripts/content-pending-gate.sh "$(git rev-parse origin/main)" || exit 1
 ```
 
 > ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 4건 — 2026-09-23 7 → 4). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
@@ -206,6 +209,7 @@ Paths-filter impact:
   - DS publish: ✗ (prod 브랜치 — publish 는 main 에서만)
 
 Build:        ✓ yarn turbo run build (admin, client) pass
+Content gate: ✓ content-pending-gate.sh <승격 SHA> exit 0 (client 확정 전 문안 0)
 Typecheck:    — n/a (admin/client 에 script 없음 — 인프라 갭)
 Tests:        ✓ design-vue 129 pass  /  — admin·client n/a
 UI manual:    ✓ admin/client golden path 검증 완료 (유일한 기능 검증)
