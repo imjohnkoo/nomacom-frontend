@@ -43,6 +43,7 @@ export default defineNuxtModule({
       COUNTRY_ALIASES,
       POPULAR_COUNTRIES,
       ERROR_ASIA_COUNTRIES,
+      { strict: !catalog.fixture },
     )
   },
 })

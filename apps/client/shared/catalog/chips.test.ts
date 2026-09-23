@@ -5,7 +5,7 @@ import upcomingJson from '~/content/catalog-upcoming.json'
 import { ERROR_ASIA_COUNTRIES } from '~/content/error-page'
 import { POPULAR_COUNTRIES } from '~/content/popular'
 import { errorChipsFromCatalog } from './chips'
-import { activeCatalog } from './test-data'
+import { activeCatalog, fixtureCatalog } from './test-data'
 import { readSource } from './test-source'
 
 /** catalog spec S-7 — 오류 화면 칩은 빌드 때(modules/catalog.ts) K1 에서 골라 앱 설정으로 */
@@ -63,14 +63,32 @@ describe('errorChipsFromCatalog — 빌드 때 칩', () => {
   })
 })
 
+describe('표본 픽스처(개발) — strict: false 면 멈추지 않는다', () => {
+  it('있는 나라만 쓰고(아시아 거의 없음) throw 하지 않는다 · strict 면 멈춘다', () => {
+    const fixture = fixtureCatalog()
+    const args = [
+      fixture,
+      upcoming,
+      COUNTRY_ALIASES,
+      POPULAR_COUNTRIES,
+      ERROR_ASIA_COUNTRIES,
+    ] as const
+    expect(() => errorChipsFromCatalog(...args)).toThrow()
+    const sets = errorChipsFromCatalog(...args, { strict: false })
+    expect(sets.asia.length).toBeLessThan(ERROR_ASIA_COUNTRIES.length)
+    for (const c of [...sets.popular, ...sets.asia])
+      expect(fixture.zones.some((z) => z.countries.some((x) => x.iso3 === c.iso3))).toBe(true)
+  })
+})
+
 describe('modules/catalog.ts 결선 — 앱 설정 errorChips', () => {
-  it('K1 · 준비 중 · 별칭 · 인기 · 아시아 목록으로 errorChipsFromCatalog 결과를 넣는다', () => {
+  it('K1 · 준비 중 · 별칭 · 인기 · 아시아 목록으로 errorChipsFromCatalog 결과를 넣는다 — 표본이면 strict 끔', () => {
     const FILE = fileURLToPath(new URL('../../modules/catalog.ts', import.meta.url))
     const code = readSource(FILE)
       .script.map((t) => t.text)
       .join(' ')
     expect(code).toContain(
-      'nuxt . options . appConfig . errorChips = errorChipsFromCatalog ( catalog , upcoming . countries , COUNTRY_ALIASES , POPULAR_COUNTRIES , ERROR_ASIA_COUNTRIES , )',
+      'nuxt . options . appConfig . errorChips = errorChipsFromCatalog ( catalog , upcoming . countries , COUNTRY_ALIASES , POPULAR_COUNTRIES , ERROR_ASIA_COUNTRIES , { strict : ! catalog . fixture } , )',
     )
   })
 })

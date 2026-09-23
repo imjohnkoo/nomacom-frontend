@@ -35,6 +35,7 @@ export function pickChips(
 
 /**
  * 빌드 때 오류 화면 칩 — 검색 색인과 같은 길로 만든 뒤 고른다. 인기 8 · 아시아 목록 전부가 판매 중이 아니면 throw(빌드가 멈춘다).
+ * `strict: false`(표본 픽스처 — 개발)면 멈추지 않고 있는 나라만 쓴다.
  * 영문 이름은 칩에 쓰지 않으므로 코드 그대로 둔다.
  */
 export function errorChipsFromCatalog(
@@ -43,12 +44,14 @@ export function errorChipsFromCatalog(
   aliases: Record<string, string[]>,
   popular: readonly string[],
   asia: readonly string[],
+  { strict = true }: { strict?: boolean } = {},
 ): ErrorChipSets {
   const sets = pickChips(
     buildSearchIndex(catalog, upcoming, aliases, (iso2) => iso2),
     popular,
     asia,
   )
+  if (!strict) return sets
   if (sets.popular.length !== POPULAR_CHIP_COUNT)
     throw new Error(
       `오류 화면 인기 국가 칩이 ${sets.popular.length}개다 — ${POPULAR_CHIP_COUNT}개가 판매 중이어야 한다(catalog S-7)`,
