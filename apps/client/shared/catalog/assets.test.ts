@@ -56,7 +56,10 @@ describe('자산 매니페스트 ↔ 카탈로그 (spec F-2 · D-14)', () => {
   it('같은 출처로 나가는 SVG(지도 · 국기)에 실행되는 내용이 없다', () => {
     for (const url of [...Object.values(manifest.maps), ...Object.values(manifest.flags)]) {
       const svg = readFileSync(publicFile(url), 'utf8')
-      expect(svg, url).not.toMatch(/<script|\son\w+\s*=|<foreignObject|href\s*=\s*["'](?!#)/i)
+      // 네임스페이스 붙은 script(<h:script>) · SMIL(<set> · <animate>) · javascript: 주소도
+      expect(svg, url).not.toMatch(
+        /<([\w-]+:)?script\b|\son\w+\s*=|<foreignObject|<(set|animate\w*)\b|javascript:|href\s*=\s*["'](?!#)/i,
+      )
     }
   })
 
@@ -168,6 +171,9 @@ describe('optimizeMapSvg', () => {
     ['아래쪽 가장자리에 걸침', 'M40,90L60,90L60,150Z', true],
     ['오른쪽 아래 안쪽', 'M60,60L90,60L90,90Z', true],
     ['오른쪽 밖이지만 여유 안(110~118)', 'M110,40L118,40L118,60Z', true],
+    ['왼쪽 밖이지만 여유 안', 'M-18,40L-10,40L-10,60Z', true],
+    ['위쪽 밖이지만 여유 안', 'M40,-18L60,-18L60,-10Z', true],
+    ['아래쪽 밖이지만 여유 안', 'M40,110L60,110L60,118Z', true],
     ['오른쪽 여유 밖(125~140)', 'M125,40L140,40L140,60Z', false],
     ['왼쪽 여유 밖', 'M-40,40L-25,40L-25,60Z', false],
     ['위쪽 여유 밖', 'M40,-40L60,-40L60,-25Z', false],

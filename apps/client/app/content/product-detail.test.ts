@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { optionLabel, zoneByCode } from '#shared/catalog/derive'
 import { activeCatalog, fixtureCatalog } from '#shared/catalog/test-data'
-import { readSource } from '#shared/catalog/test-source'
+import { readSource, stringsOf } from '#shared/catalog/test-source'
 import type { Kind, ZoneView } from '#shared/catalog/types'
 import * as copy from './product-detail'
 import {
@@ -80,7 +80,7 @@ const APP = fileURLToPath(new URL('../../', import.meta.url))
 const vueParts = (file: string) => {
   const { template, script } = readSource(`${APP}${file}`)
   if (!template) throw new Error(`${file}: <template> 가 없다`)
-  return { template, scriptText: script.strings.join('\n') }
+  return { template, scriptText: stringsOf(script).join('\n') }
 }
 const template = (file: string) => vueParts(file).template
 

@@ -2,29 +2,39 @@
  * 테스트 전용 — 앱 소스를 «글자» 가 아니라 토큰으로 읽는다(앱 코드에서 import 하지 않는다).
  *
  * 정규식으로 주석을 걷으면 문자열 속 `/*`(예: `'/verify/**'`)를 주석 시작으로 읽어 파일 절반을 놓친다.
- * 그래서 TypeScript 스캐너로 주석을 건너뛰고 문자열 · 템플릿 문자열 · 숫자 토큰을 모은다.
- * `.vue` 는 SFC 파서로 `<script>` · `<script setup>` · `<template>` 을 나눈다.
+ * 그래서 TypeScript 스캐너로 주석을 건너뛰고 토큰(문자열 · 템플릿 조각 · 숫자 · 이름 · 기호)을 순서대로 모은다.
+ * `.vue` 는 SFC 파서로 `<script>` · `<script setup>` · `<template>` · `<style>` 을 나눈다.
  */
 import { readFileSync } from 'node:fs'
 import { parse as parseSfc } from '@vue/compiler-sfc'
 import ts from 'typescript'
 
-export interface ScriptTokens {
-  /** 문자열 · 템플릿 문자열 조각의 내용 */
-  strings: string[]
-  /** 숫자 토큰 — 앞 토큰 두 개 · 뒤 토큰 하나와 함께(`amount` `:` 4900 · `formatWon` `(` 4900 · 4900 `}원\``) */
-  numbers: { text: string; before: [string, string]; after: string }[]
+export type TokenKind = 'string' | 'number' | 'ident' | 'punct'
+
+export interface Token {
+  kind: TokenKind
+  /** 원문 글자(`'4,900'` · `4900` · `lowestWon` · `+=`) */
+  text: string
+  /** 문자열 · 템플릿 조각이면 내용, 숫자면 값 글자 */
+  value: string
+  /** 앞에 줄바꿈이 있었나 — 문장 경계를 가늠한다 */
+  newline: boolean
 }
 
-export function scanScript(code: string): ScriptTokens {
+const STRING_KINDS = new Set([
+  ts.SyntaxKind.StringLiteral,
+  ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+  ts.SyntaxKind.TemplateHead,
+  ts.SyntaxKind.TemplateMiddle,
+  ts.SyntaxKind.TemplateTail,
+])
+
+export function scanScript(code: string): Token[] {
   const scanner = ts.createScanner(ts.ScriptTarget.Latest, /* skipTrivia */ true)
   scanner.setText(code)
-  const strings: string[] = []
-  const numbers: ScriptTokens['numbers'] = []
+  const out: Token[] = []
   /** 여는 괄호 종류 — 'b' = 코드 블록 · 객체 `{`, 't' = 템플릿 문자열의 `${` */
   const braces: ('b' | 't')[] = []
-  let prev1 = ''
-  let prev2 = ''
   let token = scanner.scan()
   while (token !== ts.SyntaxKind.EndOfFileToken) {
     if (token === ts.SyntaxKind.OpenBraceToken) braces.push('b')
@@ -35,46 +45,55 @@ export function scanScript(code: string): ScriptTokens {
     if (token === ts.SyntaxKind.TemplateHead || token === ts.SyntaxKind.TemplateMiddle)
       braces.push('t')
     // 값이 올 자리의 `/` 는 정규식이다 — 정규식 안의 따옴표를 문자열 시작으로 읽지 않게
+    const prev = out[out.length - 1]?.text ?? ''
     if (
       (token === ts.SyntaxKind.SlashToken || token === ts.SyntaxKind.SlashEqualsToken) &&
       ['', '(', ',', '=', ':', '[', '!', '&&', '||', '?', '{', '}', ';', 'return', '=>'].includes(
-        prev1,
+        prev,
       )
     )
       token = scanner.reScanSlashToken()
     const text = scanner.getTokenText()
-    const last = numbers[numbers.length - 1]
-    if (last && last.after === '\0') last.after = text
-    switch (token) {
-      case ts.SyntaxKind.StringLiteral:
-      case ts.SyntaxKind.NoSubstitutionTemplateLiteral:
-      case ts.SyntaxKind.TemplateHead:
-      case ts.SyntaxKind.TemplateMiddle:
-      case ts.SyntaxKind.TemplateTail:
-        strings.push(scanner.getTokenValue())
-        break
-      case ts.SyntaxKind.NumericLiteral:
-        numbers.push({ text, before: [prev2, prev1], after: '\0' })
-        break
-    }
-    prev2 = prev1
-    prev1 = text
+    const newline = scanner.hasPrecedingLineBreak()
+    if (STRING_KINDS.has(token))
+      out.push({ kind: 'string', text, value: scanner.getTokenValue(), newline })
+    else if (token === ts.SyntaxKind.NumericLiteral)
+      out.push({ kind: 'number', text, value: scanner.getTokenValue(), newline })
+    else if (
+      token === ts.SyntaxKind.Identifier ||
+      (token >= ts.SyntaxKind.FirstKeyword && token <= ts.SyntaxKind.LastKeyword)
+    )
+      out.push({ kind: 'ident', text, value: text, newline })
+    else if (token !== ts.SyntaxKind.RegularExpressionLiteral)
+      out.push({ kind: 'punct', text, value: text, newline })
     token = scanner.scan()
   }
-  return { strings, numbers }
+  return out
 }
 
 export interface SourceParts {
-  script: ScriptTokens
-  /** `.vue` 의 `<template>` 원문(HTML 주석 제거) — `.ts` 면 '' */
+  script: Token[]
+  /** `.vue` 의 `<template>` 원문(HTML 주석 제거) — 그 밖이면 '' */
   template: string
+  /** `.vue` 의 `<style>` 원문 · `.css` 파일 — 그 밖이면 '' */
+  style: string
 }
 
-export function readSource(file: string): SourceParts {
-  const src = readFileSync(file, 'utf8')
-  if (!file.endsWith('.vue')) return { script: scanScript(src), template: '' }
+/** 파일 내용을 나눠 읽는다 — `readSource` 가 파일에서, 테스트 대조군이 글자에서 같은 길을 탄다 */
+export function parseSource(file: string, src: string): SourceParts {
+  if (file.endsWith('.css')) return { script: [], template: '', style: src }
+  if (!file.endsWith('.vue')) return { script: scanScript(src), template: '', style: '' }
   const { descriptor } = parseSfc(src, { filename: file })
   const code = [descriptor.script?.content ?? '', descriptor.scriptSetup?.content ?? ''].join('\n')
   const template = (descriptor.template?.content ?? '').replace(/<!--[\s\S]*?-->/g, '')
-  return { script: scanScript(code), template }
+  const style = descriptor.styles.map((s) => s.content).join('\n')
+  return { script: scanScript(code), template, style }
 }
+
+export function readSource(file: string): SourceParts {
+  return parseSource(file, readFileSync(file, 'utf8'))
+}
+
+/** 토큰 가운데 문자열 · 템플릿 조각의 내용만 */
+export const stringsOf = (tokens: Token[]) =>
+  tokens.filter((t) => t.kind === 'string').map((t) => t.value)
