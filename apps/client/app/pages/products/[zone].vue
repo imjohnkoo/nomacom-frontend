@@ -47,7 +47,7 @@ if (failed)
     fatal: true,
   })
 
-const zone = data.value
+const zone = data.value! // catalogPageError 가 없는 데이터를 이미 걸렀다
 const multi = zone.countries.length > 1
 
 const sel = ref<Selection>(initialSelection(zone))

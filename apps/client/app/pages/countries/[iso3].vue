@@ -28,7 +28,7 @@ if (failed)
     fatal: true,
   })
 
-const page = data.value
+const page = data.value! // catalogPageError 가 없는 데이터를 이미 걸렀다
 const count = page.single.length + page.multi.length
 useCatalogSeo(
   page.meta,
