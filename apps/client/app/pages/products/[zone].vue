@@ -20,6 +20,7 @@ import {
 import type { Kind, ZoneView } from '#shared/catalog/types'
 import PeriodSelect from '~/components/catalog/PeriodSelect.vue'
 import PlanCards from '~/components/catalog/PlanCards.vue'
+import ProductSections from '~/components/catalog/ProductSections.vue'
 import PurchaseSheet from '~/components/catalog/PurchaseSheet.vue'
 import UnderlineTabs from '~/components/catalog/UnderlineTabs.vue'
 import manifest from '~/content/catalog-assets.json'
@@ -122,7 +123,7 @@ const sheetOpen = ref(false)
       </section>
     </div>
 
-    <!-- 안내 섹션(D-4) — T6 -->
+    <ProductSections :zone="zone" :kind="kind" />
 
     <div class="product__buybar">
       <button type="button" class="product__buy" :disabled="!option" @click="sheetOpen = true">

@@ -7,7 +7,13 @@ import { defineConfig } from 'vitest/config'
 // (그런 테스트가 필요하면 별도 config 로 분리하고 plan 에 "로컬 전용" 으로 표기)
 export default defineConfig({
   // app/ 코드의 `~/…` import (Nuxt srcDir alias) — 미들웨어 테스트가 쓴다
-  resolve: { alias: { '~': fileURLToPath(new URL('./app', import.meta.url)) } },
+  // `#shared/…` — Nuxt 4 의 shared/ 별칭(app 코드 · 콘텐츠 테스트가 쓴다)
+  resolve: {
+    alias: {
+      '~': fileURLToPath(new URL('./app', import.meta.url)),
+      '#shared': fileURLToPath(new URL('./shared', import.meta.url)),
+    },
+  },
   test: {
     environment: 'node',
     include: [
