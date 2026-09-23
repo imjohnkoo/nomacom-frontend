@@ -34,6 +34,17 @@ Prevent broken/unsafe prod deployments by running a structured pre-flight check.
 ### Phase 1 — Working Tree Hygiene
 
 ```bash
+# 1.0 올릴 SHA 를 먼저 하나로 정하고, **그 SHA 가 체크아웃된 상태에서** 모든 Phase 를 돈다 (W1-2 D-17 · QA ⑥).
+#     build · UI · paths-filter · 시크릿 검사는 HEAD 를, 게이트 · push 는 PROMOTE_SHA 를 보므로 둘이 같아야 한다.
+#     fetch 가 실패하면 멈춘다(오래된 ref 로 판정하지 않는다). 다른 SHA 를 올린다면 여기서 그 SHA 로 바꾼다.
+git fetch origin --quiet || exit 1
+PROMOTE_SHA="$(git rev-parse origin/main)"
+git merge-base --is-ancestor "$PROMOTE_SHA" origin/main || { echo "⛔ origin/main 에 없는 SHA — prod 는 main 의 한 SHA"; exit 1; }
+[ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || { echo "⛔ HEAD ≠ PROMOTE_SHA — git checkout --detach $PROMOTE_SHA 뒤 다시"; exit 1; }
+echo "PROMOTE_SHA=$PROMOTE_SHA"   # 보고 템플릿에 적어 두고, 뒤 Phase 의 셸마다 이 값으로 다시 둔다(셸 변수는 이어지지 않는다)
+```
+
+```bash
 # 1.1 Clean?
 git status --porcelain
 ```
@@ -97,7 +108,26 @@ yarn turbo run build --filter=nomacom-admin --filter=nomacom-client || exit 1
 
 **Fail이면 stop**. 빌드 안 되는 코드 prod 금지.
 
-> ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 7건). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
+```bash
+# client 확정 전 문안(P9_4_PENDING) 0 — Phase 1.0 의 PROMOTE_SHA 를 본다 (W1-2 D-17).
+PROMOTE_SHA=<Phase 1.0 값>
+[ "$(git rev-parse HEAD)" = "$PROMOTE_SHA" ] || exit 1
+# 게이트 스크립트가 없는 SHA(도입 전 main)는 «해당 없음» — 단 스크립트만 빠진 경우를 막으려 자리표시자 글자를 직접 찾는다
+if [ -f .github/scripts/content-pending-gate.sh ]; then
+  env -u CONTENT_GATE_ROOT bash .github/scripts/content-pending-gate.sh "$PROMOTE_SHA" || exit 1
+else
+  git grep -q -F -e P9_4_PENDING -e PENDING_LABEL -e '(확정' -e '（확정' "$PROMOTE_SHA" -- apps/client ':(exclude)*.md' ':(exclude)*.test.ts' ':(exclude)apps/client/app/content/pending.ts'
+  case $? in
+    1) echo "content gate: 해당 없음(게이트 도입 전 SHA · 자리표시자 0)" ;;
+    0) echo "⛔ 게이트 스크립트가 없는데 자리표시자가 있다 — 중단"; exit 1 ;;
+    *) echo "⛔ git grep 오류 — 검사 불가, 중단"; exit 1 ;;
+  esac
+fi
+bash .github/scripts/typecheck-gate.sh admin || exit 1
+bash .github/scripts/typecheck-gate.sh client || exit 1
+```
+
+> ✅ **INF-1(2026-09-02) 이후 `yarn turbo run typecheck` 는 실제로 돈다.** admin/client 는 `.github/scripts/typecheck-gate.sh` 를 거쳐 **기준선 초과분만** 실패한다(admin 0 / client 4건 — 2026-09-23 7 → 4). 신규 타입 에러가 있으면 여기서 걸린다 — 반드시 돌릴 것.
 
 ### Phase 4 — 영향 앱 테스트 + UI 검증
 
@@ -108,13 +138,32 @@ yarn workspace @imjohnkoo/design-vue run test --run   # DS 변경 시 (17 files 
 yarn workspace nomacom-mobile run typecheck           # mobile 변경 시
 ```
 
-> ⚠️ client 는 순수 유닛 28건(spark-mapping·verification), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
+> ⚠️ client 는 순수 유닛 284건(2026-09-23 — shell · 흐름 가드 · 콘텐츠 포함), admin 은 아직 0건이다. 테스트가 커버하지 못하는 화면 동작이 많으므로 **UI 수동 검증은 여전히 필수**다 — 생략 금지.
 
 `verification-before-completion` 의 iron law 적용 — 결과를 직접 확인.
 
+**client 가 승격 대상이면 무조건 — 렌더 확인(확정 전 문안 0)** (W1-2 D-17 의 두 번째 겹 — 게이트는 소스 grep 이라 줄바꿈 · 엔티티 · 조립된 문자열을 놓칠 수 있다. `app/content/*.ts` 만 바뀐 P9-4 승격도 여기서 본다). Phase 3 에서 PROMOTE_SHA 로 빌드한 `.output` 을 봉투 prod 서버로 띄우고(`bash .claude/scripts/client-walk-server.sh prod <port>`):
+
+```bash
+BASE=http://127.0.0.1:<port>
+want_build="$(sed -n 's/.*"id":"\([^"]*\)".*/\1/p' apps/client/.output/public/_nuxt/builds/latest.json)"
+[ -n "$want_build" ] || { echo "⛔ 빌드 id 없음 — Phase 3 빌드부터"; exit 1; }
+for p in / /my /my-esim /terms /privacy /refund /business /guide /search /checkout-preview /supported-devices; do
+  html="$(curl -fsS "$BASE$p")" || { echo "⛔ $p 응답 실패 — 중단"; exit 1; }       # 서버가 없거나 4xx · 5xx 면 0건으로 통과하지 않게
+  printf '%s' "$html" | grep -q "buildId:\"$want_build\"" || { echo "⛔ $p 가 이 빌드($want_build)의 응답이 아니다 — 중단"; exit 1; }
+  printf '%s' "$html" | grep -q '704-24-01747' || { echo "⛔ $p 에 푸터 사업자등록번호가 없다(양성 대조 실패) — 중단"; exit 1; }
+  norm="$(printf '%s' "$html" | sed -e 's/&nbsp;/ /g' -e 's/&#160;/ /g' -e 's/&#xa0;/ /g' -e $'s/\xc2\xa0/ /g' | tr -s '[:space:]' ' ')"
+  n=$(printf '%s' "$norm" | grep -o -e '(확정 전)' -e '（확정 전）' -e '문안을 확정하고 있어요' | wc -l | tr -d ' ')
+  [ "$n" -eq 0 ] || { echo "⛔ $p 에 확정 전 문안 ${n}건 — 중단"; exit 1; }
+done
+```
+
+게이트 스크립트 · 봉투가 없는 SHA(도입 전 main — 예: P6 #2)는 봉투가 없으니 이 단계를 «해당 없음(자리표시자 도입 전)» 으로 적는다 — 그 SHA 의 소스에는 자리표시자 자체가 없다(Phase 3 폴백 grep 이 0).
+
 **UI 변경이 포함된 경우** 추가로:
 
-- 영향 앱 dev 서버 띄워서 (`yarn workspace nomacom-admin run dev`) golden path 수동 검증
+- 영향 앱 dev 서버 띄워서 golden path 수동 검증 — admin 은 `yarn workspace nomacom-admin run dev`. **client 는 로컬 walk 안전 봉투로만**(`bash .claude/scripts/client-walk-server.sh dev <port>` → `http://127.0.0.1:<port>` — prod DB · 벤더 키 없이. John 지시 2026-09-23 · client-shell spec D-18). 실발급 · 실주문 경로는 로컬에서 걷지 않고 승격 당일 operator AC 로
+
 - 자동 테스트는 feature correctness 가 아닌 code correctness 만 검증함
 
 ### Phase 5 — 마이그레이션/DB 변경 안전성
@@ -167,9 +216,10 @@ git diff origin/prod...HEAD \
 확인할 것은 **prod 가 main 의 조상인가** — 즉 이 push 가 fast-forward 인가다.
 
 ```bash
-git fetch origin --quiet
+git fetch origin --quiet || exit 1
+PROMOTE_SHA=<Phase 1.0 값>          # 다시 구하지 않는다 — 게이트가 본 SHA 그대로
 git log --oneline --graph origin/main origin/prod | head -20
-git merge-base --is-ancestor origin/prod origin/main && echo "✔ fast-forward 가능" || echo "⛔ prod 가 main 에 없는 커밋을 갖고 있다 — 되감기 위험, 중단"
+git merge-base --is-ancestor origin/prod "$PROMOTE_SHA" && echo "✔ fast-forward 가능" || echo "⛔ prod 가 승격 SHA 에 없는 커밋을 갖고 있다 — 되감기 위험, 중단"
 ```
 
 **prod 에만 있는 커밋이 있으면 중단하고 사용자에게 보고한다.** ref 되감기는 남의 배포를 되돌리고 커밋을 소실시킨다 — `guard-prod-push.sh` 가 force 이동을 차단하는 이유다.
@@ -202,8 +252,10 @@ Paths-filter impact:
   - DS publish: ✗ (prod 브랜치 — publish 는 main 에서만)
 
 Build:        ✓ yarn turbo run build (admin, client) pass
-Typecheck:    — n/a (admin/client 에 script 없음 — 인프라 갭)
-Tests:        ✓ design-vue 129 pass  /  — admin·client n/a
+Promote SHA:  <PROMOTE_SHA> (origin/main 에 있음 — push 는 `git push origin <PROMOTE_SHA>:prod`, 훅이 막으므로 사용자가)
+Content gate: ✓ content-pending-gate.sh <PROMOTE_SHA> exit 0 (client 확정 전 문안 0)
+Typecheck:    ✓ typecheck-gate.sh (admin 0 / client 4 기준선 초과 0)
+Tests:        ✓ design-vue 129 · client <n> pass  /  — admin 0건
 UI manual:    ✓ admin/client golden path 검증 완료 (유일한 기능 검증)
 Migrations:   ✗ none
 DDL:          ✗ none
@@ -223,6 +275,7 @@ READY to push. Proceed?
 - Working tree dirty
 - Secrets/env 파일 variations committed (`.env.local`, `.env.production` 등)
 - Build / Typecheck fail
+- 콘텐츠 자리표시자 게이트 fail (`content-pending-gate.sh` exit 1 · 2 — 확정 전 사업자정보 · 약관 문안이 prod 에 나간다)
 - Test fail
 - UI 변경인데 수동 검증 미완료
 - Migration 있는데 backend / DB 소유자와 합의/적용 계획 없음

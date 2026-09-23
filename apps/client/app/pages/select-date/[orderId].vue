@@ -18,6 +18,7 @@ import { addDays, format } from 'date-fns'
 import { useOrderStore } from '~/stores/order'
 import { useApi } from '~/composables/useApi'
 import type { Order } from '~/types/order'
+import { findProductOrder } from '~/utils/flow-guard'
 
 const route = useRoute()
 const router = useRouter()
@@ -163,11 +164,15 @@ const onConfirm = async () => {
     const { verified, cancelled } = verifyResponse
 
     if (verified && !cancelled) {
+      // 요청한 상품주문번호를 먼저 잡는다 — 발급을 기다리는 동안 다른 상품을 고르면 store 가 바뀐다
+      const requestedProductOrderId = orderStore.singleOrder?.productOrderId
       const activateResponse = await api.activateOrder(orderStore.singleOrder!)
       const { verified: activateVerified, details } = activateResponse
-      if (activateVerified && details) {
+      // 발급한 상품주문을 productOrderId 로 찾는다(D-14 — 위치로 집지 않는다 · flow-guard 순수함수)
+      const issued = findProductOrder(details, requestedProductOrderId)
+      if (activateVerified && issued) {
         isIssueQrCodesVisible.value = false
-        orderStore.setSingleOrder(details[0])
+        orderStore.setSingleOrder(issued)
 
         const updatedOrders = await api.verifyOrder({
           orderId: orderId.value,
@@ -215,18 +220,9 @@ const onConfirm = async () => {
   }
 }
 
-onMounted(() => {
-  if (!order.value) {
-    isNoOrderAlertVisible.value = true
-    setTimeout(() => {
-      isNoOrderAlertVisible.value = false
-      router.push(`/verify/${orderId.value}`)
-    }, 3000)
-  } else if ((order.value.esims?.length ?? 0) >= (order.value.quantity || 1)) {
-    // 전량 발급 완료된 주문만 차단 — 부분 발급 (resume) 은 재진입 허용
-    router.push(`/details/${orderId.value}`)
-  }
-})
+// 진입 가드는 order-flow 미들웨어 — 선택 없음 · 취소 · 전량 발급이면 주문 목록으로, 부분 발급(이어서 발급)은 통과 (K8 · spec S-8)
+// 게스트 발급 4-step 은 헤더 · 하단 탭 없는 flow 레이아웃 (spec D-2)
+definePageMeta({ layout: 'flow', middleware: 'order-flow' })
 </script>
 
 <template>

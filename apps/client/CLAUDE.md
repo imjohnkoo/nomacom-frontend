@@ -1,6 +1,32 @@
 # CLAUDE.md (apps/client)
 
 > ESIMmany (이심마니): eSIM QR code issuance web app for Naver Smart Store customers — **4-step 발급 흐름 완전 복원, prod-ready**
+> 2026-09-23 부터 같은 배포판이 판매 사이트(`esimmany.com`) shell 도 렌더한다 — 아래 «판매 사이트 shell (W1-2)» 와 «4-step 가드 (K8)».
+
+## 판매 사이트 shell (W1-2 · 2026-09-23)
+
+spec `nomacom-wiki wiki/frontend/specs/client/2026-09-23-client-shell.md` · plan 같은 이름 `-plan.md`. 호스트 판정은 없다 — `esimmany.com`(판매) · `app.esimmany.com`(게스트 발급)이 같은 라우트를 렌더한다(Proposal K3 · 301 금지).
+
+- **프레임** (`app/app.vue`) — 뷰포트 < 560px 전폭, ≥ 560px 가운데 440px(`--shell-frame-max`). ⚠️ `.app-bg` · `.app-frame` 과 그 사이 조상에 `overflow` · `transform` · `contain` 을 주지 말 것 — sticky 헤더 · fixed 탭바가 깨진다. DS `NMobileLayout` 은 content 래퍼 `overflow-y:auto` 때문에 쓰지 않는다(수치만 같음).
+- **레이아웃** — `default`(헤더 + 본문 + 푸터 + 하단 탭) · `flow`(헤더·탭 없음 + compact 푸터). 4-step 4페이지와 `/checkout-preview` 가 `flow`. 새 판매 페이지는 기본값(`default`).
+- **쌓임 순서** — 헤더 `--n-z-index-sticky`(1020) < 탭바 `--n-z-index-fixed`(1030) < DS 오버레이(body 포털 1040/1050). 탭바를 1040 이상으로 올리지 말 것.
+- **내비 정의 한 곳** — `app/utils/shell-nav.ts`(탭 4 · 전체 메뉴 · 약관 링크 · 활성 판정). 탭 활성 규칙을 바꾸면 `shell-nav.test.ts` 를 같이 고친다.
+- **사업자정보 · 고객센터 · 법정 문안** — `app/content/{business,support,legal}.ts`. 미확정 값은 `P9_4_PENDING`(화면 «(확정 전)»). ⛔ **main 머지 게이트**: `bash .github/scripts/content-pending-gate.sh` 가 0 — 머지할 **커밋** 기준(미커밋 수정은 통과가 아니다). 부르는 곳: finish-branch Step 0 첫 항목 · prod-push-check · CI `content-gate`(알림 — required check 없음). 환불정책에 «QR 발급 후 수수료 · 공제 · 청약철회 제한» 을 넣으면 `legal.test.ts` 가 막는다(A5).
+- **noindex 목록 한 곳** — `shared/utils/robots.ts` 가 meta(`app.vue`) · `X-Robots-Tag`(`nuxt.config` routeRules) · `/robots.txt`(`server/routes/robots.txt.ts`) 세 출력을 만든다. 4-step 은 `Cache-Control: no-store` 도. `public/robots.txt` 를 다시 만들지 말 것(라우트보다 먼저 잡힌다).
+- **CORS** — `server/utils/cors-origins.ts`. `esimmany.com` · `app.esimmany.com` 둘 다 있어야 각 호스트의 same-origin POST 가 403 을 피한다. `www` 는 없다.
+- **테스트 체크아웃** `/checkout-preview` — PG 심사 캡처 전용. 사이트 어디에서도 링크하지 않는다 · 서버 호출 · 저장 0 · 테스트 채널키만.
+
+## 4-step 가드 (K8 · 2026-09-23)
+
+페이지별 `onMounted` 가드는 없다 — `app/middleware/order-flow.ts` 가 4페이지(`definePageMeta({ middleware: 'order-flow' })`)를 지킨다.
+
+- **흐름 쿠키 `nomacom_flow`** — `{v:1, orderId, fullName, phoneNumber, productOrderId?}` 만. `fullName`·`phoneNumber` 는 verify 에 **사용자가 입력해 통과한 값**(DB 수령인 값 아님). Max-Age 1시간(쓸 때마다 갱신) · SameSite=Lax · Secure(dev 제외) · Path=/ · 호스트 한정 · HttpOnly 아님(클라이언트가 쓴다). 쓰는 곳: verify 통과(`start`) · details 선택 · 취소철회 성공(`select`). ⛔ activationCode · 주문 상세를 넣지 말 것 — 화면 데이터는 늘 서버 verify 로 다시 받는다.
+- **미들웨어 순서** — ① 경로 주문번호가 양의 안전 정수가 아니면 `/my-esim` ② verify 는 통과 ③ store 에 이 주문 목록이 없으면 쿠키(같은 주문번호일 때만)의 이름·전화로 `POST /api/v1/verify` 를 **그대로** 불러 복원 — 실패는 `/verify/{id}?reason=reverify`(verify 거절이면 쿠키도 지움) ④ 선택 상품은 쿠키 productOrderId 로 목록에서 ⑤ `app/utils/flow-guard.ts` 판정표.
+- **초기 진입에서 두 번 돈다** — 서버(SSR, 이동이면 302) + hydration. 서버가 복원한 Pinia 상태가 페이로드로 넘어가므로 두 번째는 복원을 건너뛴다. SSR HTML 에 주문 정보가 실리므로 4-step 응답은 `no-store` 필수.
+- 판정표를 바꾸면 spec §5 S-8 → `flow-guard.test.ts` → 코드 순으로. 복원 결정(`decideRestore`) · 선택(`pickSelection`)도 같은 파일의 순수함수다.
+- **라우터는 대소문자를 구분한다**(`app/router.options.ts` `sensitive: true`) — 끄면 `/View/1` 이 가드 · noindex · `no-store` 를 모두 비껴 간다.
+- **bfcache** — 외부 이동(주문번호 조회 · 결제창) 뒤 뒤로 오면 JS 상태가 살아 있다. 로딩 플래그는 `pageshow`(persisted)에서 되돌린다.
+- **화면 날짜는 `Asia/Seoul` 고정**(`app/utils/date.ts` — `server/utils/date.ts` 의 개통 시각 계산은 고객이 고른 시간대라 건드리지 말 것) — SSR 복원 뒤 서버(UTC)와 브라우저가 다른 날짜를 그리면 hydration mismatch.
 
 ## Current Status (2026-08-18)
 
@@ -21,40 +47,52 @@
 
 ## Tech Stack
 
-| Layer         | Technology                                          | Notes                                                                |
-| ------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
-| Framework     | Nuxt 4.4+                                           | SSR + Nitro. Nuxt 3 → 4 마이그레이션됨 (`app/` srcDir)               |
-| Styling       | Tailwind 4 (`@tailwindcss/vite`)                    | NanumSquareNeo / Pretendard                                          |
+| Layer         | Technology                                          | Notes                                                                    |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| Framework     | Nuxt 4.4+                                           | SSR + Nitro. Nuxt 3 → 4 마이그레이션됨 (`app/` srcDir)                   |
+| Styling       | Tailwind 4 (`@tailwindcss/vite`)                    | NanumSquareNeo / Pretendard                                              |
 | Design System | `@imjohnkoo/design-vue`, `@imjohnkoo/design-tokens` | workspace deps. 페이지는 DS 컴포넌트 (NButton/NAlertDialog 등) 직접 사용 |
-| State         | Pinia (`@pinia/nuxt`)                               | `app/stores/order.ts` — orders / singleOrder                         |
-| DB            | PostgreSQL + Drizzle (`postgres` driver)            | **prod DB 스키마를 backend (NestJS TypeORM) 와 공유** — 아래 주의    |
-| Maya API      | `server/utils/maya-api.ts`                          | Basic auth, `createEsim` 만 사용                                     |
-| Tests         | vitest (server 순수 유틸만)                         | `yarn workspace nomacom-client test`                                 |
-| Deployment    | AWS CodeDeploy + SSM + CloudFront                   | `d3un5i1lmp1eem.cloudfront.net`                                      |
+| State         | Pinia (`@pinia/nuxt`)                               | `app/stores/order.ts` — orders / singleOrder                             |
+| DB            | PostgreSQL + Drizzle (`postgres` driver)            | **prod DB 스키마를 backend (NestJS TypeORM) 와 공유** — 아래 주의        |
+| Maya API      | `server/utils/maya-api.ts`                          | Basic auth, `createEsim` 만 사용                                         |
+| Tests         | vitest (server · app · shared 순수 로직)            | `yarn workspace nomacom-client test`                                     |
+| Deployment    | AWS CodeDeploy + SSM + CloudFront                   | `d3un5i1lmp1eem.cloudfront.net`                                          |
 
 ## Directory Structure
 
 ```
 apps/client/
 ├── app/
-│   ├── app.vue                        # 400px 고정 너비 frame
+│   ├── app.vue                        # 440px 프레임 + useHead(lang · 제목 템플릿 · noindex meta)
 │   ├── assets/css/{main.css, animations.css}
+│   ├── layouts/{default,flow}.vue     # 판매(헤더·탭·푸터) / 4-step·체크아웃(푸터만)
+│   ├── middleware/order-flow.ts       # 4-step 가드 (K8) — 흐름 쿠키 복원 + 판정표
+│   ├── components/shell/              # ShellHeader · ShellMenu · BottomTabBar · SiteFooter
+│   ├── components/{order,legal}/      # OrderLookupForm · LegalDocument
 │   ├── components/popup/              # ⚠️ legacy 9종 — 어느 페이지도 import 안 함 (아래 참고)
 │   ├── composables/useApi.ts          # verifyOrder / activateOrder ($fetch wrapper)
+│   ├── composables/useFlowSession.ts  # 흐름 쿠키 nomacom_flow
+│   ├── content/                       # 사업자정보 · 고객센터 · 법정 문안 (P9_4_PENDING = 확정 전)
 │   ├── pages/
-│   │   ├── index.vue                  # 랜딩
+│   │   ├── index.vue                  # 홈 (판매 사이트 shell — 국가 그리드는 W1-3)
+│   │   ├── my-esim.vue · my.vue       # 내 eSIM(주문번호 → 발급 호스트) · 마이(고객센터 · 약관)
+│   │   ├── terms · privacy · refund · business .vue   # 법정 4종
+│   │   ├── search.vue · guide/index.vue               # 자리 (W1-3 · W1-4)
+│   │   ├── checkout-preview.vue       # PG 심사용 테스트 체크아웃 (링크 0 · noindex)
 │   │   ├── verify/[orderId].vue       # step 1 — 이름 + 전화번호 입력
 │   │   ├── details/[orderId].vue      # step 2 — 주문 (상품) 선택
 │   │   ├── select-date/[orderId].vue  # step 3 — 시작 국가 + 날짜 선택 → 발급
 │   │   └── view/[orderId].vue         # step 4 — QR 표시 (multi-QR accordion)
 │   ├── stores/order.ts                # Pinia
 │   ├── types/{api,order}.ts
-│   └── utils/{date,formatter}.ts      # formatter: 010-XXXX-XXXX 하이픈 포맷
+│   └── utils/                         # date · formatter · shell-nav · order-lookup · flow-session · flow-guard · checkout-preview
+├── shared/utils/robots.ts             # noindex 목록 단일 출처 (meta · X-Robots-Tag · robots.txt)
 ├── server/
 │   ├── api/health.get.ts              # /api/health
-│   ├── api/v1/{verify,activate}.post.ts
+│   ├── api/v1/{verify,activate,withdraw-cancel}.post.ts
 │   ├── db/{index,schema}.ts           # Drizzle (order/esim/plan/plan-type)
-│   ├── middleware/{cors,auth}.ts      # cors: /api/** 화이트리스트, auth: placeholder (토큰 추출만)
+│   ├── middleware/{cors,auth}.ts      # cors: /api/** 화이트리스트(utils/cors-origins.ts), auth: placeholder (토큰 추출만)
+│   ├── routes/robots.txt.ts           # robots.txt (shared/utils/robots.ts 에서 생성)
 │   └── utils/
 │       ├── maya-api.ts                # Maya client
 │       ├── verification.ts            # 수신자 대조 정규화 (+ .test.ts)
@@ -62,7 +100,7 @@ apps/client/
 │       ├── date.ts                    # createUTCDateTime / createLocalDateTime
 │       └── auth.ts, types.ts
 ├── Dockerfile                         # multi-stage (tokens → vue → client)
-├── vitest.config.ts                   # server/**/*.test.ts, node env
+├── vitest.config.ts                   # server · app · shared 의 *.test.ts, node env
 └── nuxt.config.ts                     # runtimeConfig.public.apiBase = '/api/v1'
 ```
 
@@ -73,15 +111,16 @@ apps/client/
 3. **select-date** — 시작 국가 + 날짜 선택 → confirm 모달 → `POST /api/v1/activate`. `startTime: -24` 로 전송 → `timeToBeActivatedInUTC` 가 (선택일 −1일) 00:00 현지시각 = eSIM 사전 활성화 버퍼 (`fa27295`)
 4. **view** — 발급된 eSIM QR 표시. quantity > 1 이면 accordion 으로 다중 QR
 
-esims 보유 여부에 따라 details ↔ select-date ↔ view 간 리다이렉트 가드 있음.
+진입 가드는 `order-flow` 미들웨어 한 곳 — 판정표는 `app/utils/flow-guard.ts`(위 «4-step 가드 (K8)»). 액션 실패 뒤 알림 · 이동은 각 페이지에 그대로 있다.
 
 ## API Endpoints
 
-| 경로              | 메서드 | 동작                                                                                                                                                                         |
-| ----------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/api/health`     | GET    | `{ status: 'ok', app: 'nomacom-client', commit, timestamp }`                                                                                                                  |
-| `/api/v1/verify`  | POST   | 수신자 대조 후 주문 상세 + esims + planType 반환. planTypes 는 `inArray` 일괄 조회 (N+1 없음). `productOrderId` 로 필터 가능                                                  |
-| `/api/v1/activate`| POST   | 수신자 대조 (403) → 부족분만 Maya `createEsim` → esim + plan 쌍 트랜잭션 insert. 전량 발급돼 있으면 기존 상태로 idempotent 성공. 같은 주문의 동시 요청은 in-flight lock 직렬화 |
+| 경로                      | 메서드 | 동작                                                                                                                                                                                                                                                                   |
+| ------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/health`             | GET    | `{ status: 'ok', app: 'nomacom-client', commit, timestamp }`                                                                                                                                                                                                           |
+| `/api/v1/verify`          | POST   | 수신자 대조 후 주문 상세 + esims + planType 반환. planTypes 는 `inArray` 일괄 조회 (N+1 없음). `productOrderId` 로 필터 가능                                                                                                                                           |
+| `/api/v1/activate`        | POST   | 수신자 대조 (403) → 부족분만 발급 — planType `provider` 로 Maya `createEsim`(esim + plan 쌍 트랜잭션 insert) 또는 Spark(`utils/spark-issuance.ts` — 원장 · 동시성 규약). 전량 발급돼 있으면 기존 상태로 idempotent 성공. 같은 주문의 동시 요청은 in-flight lock 직렬화 |
+| `/api/v1/withdraw-cancel` | POST   | 수신자 대조 + 취소요청 상태 사전 체크 후 backend 내부 endpoint 에 위임(Naver 발송처리 · DB 갱신은 backend 소유). 내부 env 없으면 503                                                                                                                                   |
 
 ### activate 신뢰성 설계 (변경 시 유지할 불변식)
 
@@ -99,19 +138,35 @@ esims 보유 여부에 따라 details ↔ select-date ↔ view 간 리다이렉�
 
 ## 환경 변수
 
-| 키                                                              | 용도                                        |
-| --------------------------------------------------------------- | ------------------------------------------- |
-| `DATABASE_URL`                                                  | postgres 연결. prod 는 SSL require          |
-| `MAYA_API_ENDPOINT` / `MAYA_API_CLIENT_ID` / `MAYA_API_CLIENT_SECRET` | Maya B2B API (Basic auth)             |
+| 키                                                                                                            | 용도                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                                                                | postgres 연결. prod 는 SSL require                                                                                                            |
+| `MAYA_API_ENDPOINT` / `MAYA_API_CLIENT_ID` / `MAYA_API_CLIENT_SECRET`                                         | Maya B2B API (Basic auth)                                                                                                                     |
+| `SPARK_API_ENDPOINT` · `SPARK_API_TOKEN` · `SPARK_ACCOUNT_ID` · `SPARK_PROXY_ENDPOINT` · `SPARK_PROXY_SECRET` | Spark 발급 (프록시 = backend 화이트리스트 IP 경유)                                                                                            |
+| `ESIM_MANAGER_INTERNAL_ENDPOINT` · `ESIM_MANAGER_INTERNAL_SECRET`                                             | 취소철회 backend 위임                                                                                                                         |
+| `CORS_EXTRA_ORIGINS`                                                                                          | `/api/**` 허용 origin 추가(쉼표 구분 · `server/utils/cors-origins.ts`). 로컬 walk 는 봉투 스크립트가 `http://127.0.0.1:<port>` 한 값만 넣는다 |
+| `NUXT_PUBLIC_GUEST_APP_ORIGIN`                                                                                | runtimeConfig — 주문번호 조회가 보내는 발급 호스트. 기본 `https://app.esimmany.com`, 로컬은 `http://localhost:3000`                           |
+| `NUXT_PUBLIC_PORTONE_STORE_ID` · `NUXT_PUBLIC_PORTONE_TEST_CHANNEL_KEY`                                       | runtimeConfig — `/checkout-preview` 전용 공개값. SSM `/nomacom/client/` 에 같은 이름(키 끝 토막 = env 이름). ⚠️ 테스트 채널키만               |
 
-`process.env` 직접 참조 (runtimeConfig 아님). prod 는 `/nomacom/shared/maya/*`, `/nomacom/shared/db/*`, `/nomacom/client/*` SSM 경로에서 `after_deploy.sh` 가 주입. 상세는 `.claude/rules/ssm-paths.md`.
+서버 키는 `process.env` 직접 참조, `NUXT_PUBLIC_*` 는 runtimeConfig 런타임 덮어쓰기. prod 는 `/nomacom/shared/maya/*`, `/nomacom/shared/db/*`, `/nomacom/client/*` SSM 경로에서 `after_deploy.sh` 가 주입. 상세는 `.claude/rules/ssm-paths.md`.
 
 ## Key Commands
 
 ```bash
 yarn workspace nomacom-client dev          # dev server (--dotenv .env.local)
-yarn workspace nomacom-client test         # vitest (server utils 유닛)
+yarn workspace nomacom-client test         # vitest — server/** · app/** · shared/** 순수 로직
 yarn turbo run build --filter=nomacom-client
+
+# 로컬 walk(QA ⑦) — ⛔ prod DB 에 붙이지 않는다 · 벤더 · 내부 env 를 넘기지 않는다(John 지시 2026-09-23).
+# 봉투 스크립트가 env -i 허용 목록으로만(yarn 미경유 · 127.0.0.1 · --dotenv /dev/null · CORS 는 자기 포트 값) 띄우고, DB 는 dev 모드의
+# 로컬 합성 DB(postgres://<영숫자>:<영숫자>@127.0.0.1:55432/<영숫자> · 55432 리스너가 로컬 컨테이너일 때)만 받는다.
+# 워크트리의 apps/client/.env(.local) · 루트 .env(.local) 가 있으면 거부 — worktree-setup 이 만든 .env.local 심링크면 **링크만** 지운다
+# (메인 클론 원본은 건드리지 않는다). 브라우저 · curl 은 **http://127.0.0.1:<port>** — localhost 는 ::1 로 먼저 붙어 같은 포트의
+# 봉투 밖 서버에 닿을 수 있다(그래서 포트가 어느 주소든 점유돼 있으면 기동 거부). 회귀: bash .claude/scripts/client-walk-server.test.sh
+bash .claude/scripts/client-walk-server.sh dev  3005                                             # shell · 비-DB 4-step
+bash .claude/scripts/client-walk-server.sh prod 3006                                             # 헤더 · noindex (DB 없음)
+# 합성 DB walk(E2E-3 · 4 · 7)는 아직 준비 명령이 없다 — 스키마 · 시드 명령 추가와 실행 모두 John 승인 대상.
+# ⛔ drizzle-kit push / db:push 금지(drizzle.config 는 셸의 DATABASE_URL 을 쓴다). 실발급 성공 경로는 prod 승격 당일 operator AC.
 
 # Docker
 docker build -f apps/client/Dockerfile -t nomacom-client:test .
