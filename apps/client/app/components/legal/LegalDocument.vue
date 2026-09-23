@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 법정 문서 렌더 — 이용약관 · 개인정보처리방침 · 환불정책 공용.
 // 문단이 P9-4 대기면 «문안을 확정하고 있어요.» 한 줄. 조판: 어절 보존 · 제목 balance · 문단 pretty.
-import type { LegalDocument, LegalSection } from '~/content/legal'
+import { isFullyPending, type LegalDocument, type LegalSection } from '~/content/legal'
 import { displayValue, isPending } from '~/content/pending'
 
 defineProps<{ doc: LegalDocument }>()
@@ -19,8 +19,11 @@ const PENDING_BODY = '문안을 확정하고 있어요.'
     <h1 class="legal-doc__title">{{ doc.title }}</h1>
     <p class="legal-doc__meta">시행일 {{ displayValue(doc.effectiveDate) }}</p>
 
+    <p v-if="isFullyPending(doc)" class="legal-doc__pending legal-doc__pending--doc">
+      {{ PENDING_BODY }}
+    </p>
     <section
-      v-for="section in doc.sections"
+      v-for="section in isFullyPending(doc) ? [] : doc.sections"
       :id="section.key"
       :key="section.key"
       class="legal-doc__section"

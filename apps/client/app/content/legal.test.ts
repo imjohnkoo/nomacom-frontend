@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { LEGAL_DOCUMENTS, PRIVACY, REFUND, TERMS, documentText } from './legal'
+import { LEGAL_DOCUMENTS, PRIVACY, REFUND, TERMS, documentText, isFullyPending } from './legal'
+import { P9_4_PENDING, isPending } from './pending'
 
 describe('환불정책 (A5)', () => {
   const text = documentText(REFUND)
@@ -15,13 +16,29 @@ describe('환불정책 (A5)', () => {
     },
   )
 
+  // A5 — «발급 전 전액 환불» 만 게시한다. 발급 «뒤» 를 다루는 문장은 어떤 표현이든 금지
+  // (4-step 확인창의 «발급 후에는 취소와 환불이 불가해요» 같은 문장이 복사돼 들어오는 것을 막는다)
+  it.each([
+    /발급\s*(후|뒤|이후|한\s*뒤|한\s*후)/,
+    /등록\s*(후|뒤|이후|한\s*뒤|한\s*후)/,
+    /설치\s*(후|뒤|이후|한\s*뒤|한\s*후)/,
+    /불가/,
+    /제한/,
+  ])('발급 뒤를 다루는 표현 %s 가 없다', (pattern) => {
+    expect(text).not.toMatch(pattern)
+  })
+
+  it('신청 방법 절(key how)이 있다 — /refund 가 이 절 아래 고객센터 채널을 붙인다', () => {
+    expect(REFUND.sections.some((section) => section.key === 'how')).toBe(true)
+  })
+
   it('처리 기한은 라이브 스토어 고시와 같은 3영업일', () => {
     expect(text).toContain('3영업일 이내')
   })
 })
 
 describe('개인정보처리방침 뼈대', () => {
-  it('법정 목차 11절', () => {
+  it('법정 목차 12절 (제30조 — 자동 수집 장치 포함)', () => {
     expect(PRIVACY.sections.map((s) => s.heading)).toEqual([
       '1. 개인정보의 처리 목적',
       '2. 처리하는 개인정보의 항목',
@@ -32,8 +49,9 @@ describe('개인정보처리방침 뼈대', () => {
       '7. 개인정보의 파기 절차 및 방법',
       '8. 정보주체와 법정대리인의 권리 · 의무 및 행사 방법',
       '9. 개인정보의 안전성 확보 조치',
-      '10. 개인정보 보호책임자',
-      '11. 개인정보처리방침의 변경',
+      '10. 개인정보 자동 수집 장치(쿠키)의 설치 · 운영 및 거부',
+      '11. 개인정보 보호책임자',
+      '12. 개인정보처리방침의 변경',
     ])
   })
 })
@@ -54,9 +72,31 @@ describe('법정 문서 공통', () => {
     }
   })
 
+  it('시행일은 확정 전이거나 YYYY-MM-DD', () => {
+    for (const doc of LEGAL_DOCUMENTS) {
+      expect(isPending(doc.effectiveDate) || /^\d{4}-\d{2}-\d{2}$/.test(doc.effectiveDate)).toBe(
+        true,
+      )
+    }
+  })
+
   it('모든 절에 문단이 하나 이상', () => {
     for (const doc of [TERMS, PRIVACY, REFUND]) {
       for (const section of doc.sections) expect(section.paragraphs.length).toBeGreaterThan(0)
     }
+  })
+})
+
+describe('isFullyPending', () => {
+  it('모든 문단이 대기면 true — 문서 전체를 한 줄 안내로 (spec S-4)', () => {
+    expect(isFullyPending(TERMS)).toBe(true)
+    expect(isFullyPending(PRIVACY)).toBe(true)
+    expect(isFullyPending(REFUND)).toBe(false)
+    expect(
+      isFullyPending({
+        ...TERMS,
+        sections: [{ key: 'a', heading: 'A', paragraphs: [P9_4_PENDING, '확정'] }],
+      }),
+    ).toBe(false)
   })
 })

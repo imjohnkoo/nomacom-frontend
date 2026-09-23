@@ -60,6 +60,20 @@ describe('businessRows', () => {
     expect(rows.representative).toBe('대표')
   })
 
+  it('라벨과 값이 짝으로 맞다 (행 순서만이 아니라 key ↔ 라벨)', () => {
+    expect(businessRows(FILLED).map((row) => [row.label, row.value])).toEqual([
+      ['상호', '상호'],
+      ['대표자', '대표'],
+      ['사업자등록번호', '704-24-01747'],
+      ['통신판매업 신고번호', '제0000-테스트-0000호'],
+      ['사업장 주소', '주소'],
+      ['고객센터', '070-8064-5232'],
+      ['이메일', 'help@example.com'],
+      ['개인정보보호책임자', '책임자'],
+      ['호스팅 서비스 제공자', '호스팅'],
+    ])
+  })
+
   it('값이 채워지면 자리표시자가 남지 않는다', () => {
     expect(businessRows(FILLED).some((row) => row.value === PENDING_LABEL)).toBe(false)
   })

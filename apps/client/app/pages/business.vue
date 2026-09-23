@@ -70,6 +70,8 @@ const ftcUrl = ftcBusinessCheckUrl()
 
 .business-page__table td {
   color: var(--n-color-neutral-900, #171717);
+  /* 긴 이메일 · 주소가 좁은 화면에서 표를 넘치지 않게 — break-word 는 자동 표 폭 계산에 안 들어간다 */
+  overflow-wrap: anywhere;
 }
 
 .business-page__ftc {

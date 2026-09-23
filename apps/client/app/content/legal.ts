@@ -3,10 +3,10 @@
  *
  * - 약관 · 처리방침 본문은 P9-4 대기 — 처리방침은 법정 목차(개인정보보호법 제30조)만 뼈대로 둔다.
  * - 환불정책은 A5: «발급 전 전액 환불» · 신청 경로 · 처리 기한만.
- *   ⛔ «QR 발급 후 수수료 · 공제» · «등록 뒤 청약철회 제한» 조항을 넣지 않는다 (legal.test.ts 가 막는다).
+ *   ⛔ 발급 뒤를 다루는 문장(환불 불가 · 수수료 · 공제 · 청약철회 제한)을 넣지 않는다 (legal.test.ts 가 막는다).
  *   문구 출처: 2609 상세 13-refund(«발급 전 100% 환불») · 라이브 상품정보제공고시(«3영업일 이내»).
  */
-import { P9_4_PENDING, type ContentValue } from './pending'
+import { P9_4_PENDING, isPending, type ContentValue } from './pending'
 
 export interface LegalSection {
   key: string
@@ -38,6 +38,8 @@ const PRIVACY_HEADINGS: readonly [string, string][] = [
   ['destruction', '개인정보의 파기 절차 및 방법'],
   ['rights', '정보주체와 법정대리인의 권리 · 의무 및 행사 방법'],
   ['safety', '개인정보의 안전성 확보 조치'],
+  // 제30조①7호 — 흐름 쿠키(nomacom_flow)가 이름 · 전화번호를 1시간 담으므로 «해당» (spec S-4)
+  ['cookies', '개인정보 자동 수집 장치(쿠키)의 설치 · 운영 및 거부'],
   ['officer', '개인정보 보호책임자'],
   ['changes', '개인정보처리방침의 변경'],
 ]
@@ -83,4 +85,9 @@ export const LEGAL_DOCUMENTS: readonly LegalDocument[] = [TERMS, PRIVACY, REFUND
 /** 문서 전체 텍스트 — 테스트(금지 조항 검사)용 */
 export function documentText(doc: LegalDocument): string {
   return [doc.title, ...doc.sections.flatMap((s) => [s.heading, ...s.paragraphs])].join('\n')
+}
+
+/** 문서의 모든 문단이 P9-4 대기인가 — 그렇다면 본문 자리에 «문안을 확정하고 있어요.» 한 줄만 (spec S-4 특수 상태) */
+export function isFullyPending(doc: LegalDocument): boolean {
+  return doc.sections.every((section) => section.paragraphs.every((p) => isPending(p)))
 }
