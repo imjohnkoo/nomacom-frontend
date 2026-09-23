@@ -89,5 +89,7 @@ export function documentText(doc: LegalDocument): string {
 
 /** 문서의 모든 문단이 P9-4 대기인가 — 그렇다면 본문 자리에 «문안을 확정하고 있어요.» 한 줄만 (spec S-4 특수 상태) */
 export function isFullyPending(doc: LegalDocument): boolean {
-  return doc.sections.every((section) => section.paragraphs.every((p) => isPending(p)))
+  const paragraphs = doc.sections.flatMap((section) => section.paragraphs)
+  // 절 · 문단이 0 이면 «대기» 가 아니라 빈 문서다 — 대기 한 줄로 가리지 않는다(테스트가 빈 문서를 막는다)
+  return paragraphs.length > 0 && paragraphs.every((p) => isPending(p))
 }

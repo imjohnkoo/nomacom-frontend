@@ -2,8 +2,22 @@ import { describe, expect, it } from 'vitest'
 import { LEGAL_DOCUMENTS, PRIVACY, REFUND, TERMS, documentText, isFullyPending } from './legal'
 import { P9_4_PENDING, isPending } from './pending'
 
+// spec S-4 `/refund` 확정 문구 — 문단은 이 목록과 글자 그대로 같을 때만 통과(허용 목록 · 바꿔 쓴 «발급 뒤» 문장도 막힌다).
+// 문구를 바꾸려면 spec 을 먼저 고치고 이 목록을 따라 고친다.
+const REFUND_APPROVED = [
+  'eSIM 을 발급받기 전에는 단순 변심이라도 100% 환불이 가능합니다.',
+  '주문번호와 함께 아래 고객센터로 요청해 주세요.',
+  '환불은 결제하신 수단으로 처리되며, 환불 사유를 확인한 날부터 3영업일 이내에 조치합니다.',
+]
+
 describe('환불정책 (A5)', () => {
   const text = documentText(REFUND)
+
+  it('모든 문단이 확정 문구(허용 목록) 또는 대기', () => {
+    for (const paragraph of REFUND.sections.flatMap((s) => s.paragraphs)) {
+      expect(isPending(paragraph) || REFUND_APPROVED.includes(paragraph)).toBe(true)
+    }
+  })
 
   it('발급 전 전액 환불 문구가 있다', () => {
     expect(text).toContain('eSIM 을 발급받기 전에는 단순 변심이라도 100% 환불이 가능합니다.')
@@ -80,23 +94,36 @@ describe('법정 문서 공통', () => {
     }
   })
 
-  it('모든 절에 문단이 하나 이상', () => {
+  it('문서마다 절이 하나 이상 · 모든 절에 문단이 하나 이상 (빈 문서로 머지 게이트를 비껴가지 않게)', () => {
     for (const doc of [TERMS, PRIVACY, REFUND]) {
+      expect(doc.sections.length).toBeGreaterThan(0)
       for (const section of doc.sections) expect(section.paragraphs.length).toBeGreaterThan(0)
     }
   })
 })
 
 describe('isFullyPending', () => {
+  // 픽스처 기반 — P9-4 문안이 들어와도 깨지지 않는다
+  const doc = (paragraphs: string[][]) => ({
+    ...TERMS,
+    sections: paragraphs.map((p, i) => ({ key: `s${i}`, heading: `S${i}`, paragraphs: p })),
+  })
+
   it('모든 문단이 대기면 true — 문서 전체를 한 줄 안내로 (spec S-4)', () => {
-    expect(isFullyPending(TERMS)).toBe(true)
-    expect(isFullyPending(PRIVACY)).toBe(true)
+    expect(isFullyPending(doc([[P9_4_PENDING], [P9_4_PENDING, P9_4_PENDING]]))).toBe(true)
+  })
+
+  it('확정 문단이 하나라도 있으면 false', () => {
+    expect(isFullyPending(doc([[P9_4_PENDING, '확정']]))).toBe(false)
+    expect(isFullyPending(doc([[P9_4_PENDING], ['확정']]))).toBe(false)
+  })
+
+  it('절 · 문단이 0 이면 false — 빈 문서를 대기로 가리지 않는다', () => {
+    expect(isFullyPending(doc([]))).toBe(false)
+    expect(isFullyPending(doc([[]]))).toBe(false)
+  })
+
+  it('확정 문구가 있는 환불정책은 대기 한 줄이 아니다', () => {
     expect(isFullyPending(REFUND)).toBe(false)
-    expect(
-      isFullyPending({
-        ...TERMS,
-        sections: [{ key: 'a', heading: 'A', paragraphs: [P9_4_PENDING, '확정'] }],
-      }),
-    ).toBe(false)
   })
 })
