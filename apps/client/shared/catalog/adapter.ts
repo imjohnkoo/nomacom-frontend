@@ -37,10 +37,15 @@ const K = {
 /** 검증에만 쓰는 값을 화면 모델 옆에 붙여 둔다(검증 뒤 버린다) */
 export interface AdaptedOption extends OptionView {
   usable: boolean | undefined
+  /** 옵션 추가금 — 최종가 산식 대조용(판매가 − 즉시할인 + 옵션가) */
+  optionPriceWon: number
 }
 export interface AdaptedProduct extends Omit<ProductView, 'options'> {
   saleStatus: string
   displayStatus: string
+  /** 최종가 산식 대조용 — 화면 모델에는 싣지 않는다(D-2) */
+  salePriceWon: number
+  immediateDiscountWon: number
   options: AdaptedOption[]
 }
 export interface AdaptedZone extends Omit<ZoneView, 'products'> {
@@ -49,6 +54,9 @@ export interface AdaptedZone extends Omit<ZoneView, 'products'> {
 export interface AdaptedCatalog {
   generatedAt: string
   fixture: boolean
+  /** export 가 적은 스키마 · 개수 — 있으면 실제와 대조한다(잘린 export 를 막는다) */
+  schema: string | null
+  counts: { skuCount?: number; zoneCount?: number; cellCount?: number }
   zones: AdaptedZone[]
 }
 
@@ -126,6 +134,7 @@ function adaptOption(r: Reader, raw: unknown, at: string): AdaptedOption {
     name1: r.str(o, 'optionName1', at),
     name2: r.str(o, 'optionName2', at),
     finalWon: r.num(o, 'finalWon', at),
+    optionPriceWon: r.num(o, 'optionPriceWon', at),
     usable: typeof o.usable === 'boolean' ? o.usable : undefined,
   }
 }
@@ -146,6 +155,8 @@ function adaptProduct(r: Reader, raw: unknown, at: string): AdaptedProduct {
     thumb: r.str(images, K.thumb, `${at}.${K.images}`),
     saleStatus: r.str(p, K.saleStatus, at),
     displayStatus: r.str(p, K.displayStatus, at),
+    salePriceWon: r.num(p, 'salePriceWon', at),
+    immediateDiscountWon: r.num(p, 'immediateDiscountWon', at),
     options,
   }
 }
@@ -171,7 +182,8 @@ function adaptPin(r: Reader, raw: unknown, at: string): PinView {
     x: r.num(p, 'x', at),
     y: r.num(p, 'y', at),
     big: r.oneOf(p, 'size', at, ['big', 'normal'] as const) === 'big',
-    labelLeft: r.oneOf(p, 'labelDir', at, ['left', 'right'] as const) === 'left',
+    // labelDir 는 2609 클래스 그대로다(H-002 README): `cv-pin--right` → "right" = 점이 라벨 오른쪽 → 라벨은 점 **왼쪽**
+    labelLeft: r.oneOf(p, 'labelDir', at, ['left', 'right'] as const) === 'right',
     // 보정이 없는 핀은 키가 없다(H-002)
     labelShift:
       p.labelShift === undefined || p.labelShift === null
@@ -206,9 +218,18 @@ export function adaptCatalog(raw: unknown, issues: string[]): AdaptedCatalog {
   const r = new Reader(issues)
   const root = r.rec(raw, 'catalog')
   const meta = r.rec(root[K.meta], `catalog.${K.meta}`)
+  const fixture = meta[K.fixture]
+  const count = (key: string) => (typeof meta[key] === 'number' ? (meta[key] as number) : undefined)
   return {
     generatedAt: r.str(meta, K.generatedAt, 'catalog.meta'),
-    fixture: typeof meta[K.fixture] === 'string' && (meta[K.fixture] as string) !== '',
+    // 표본 표시 — 설명 문자열(비어 있지 않음)이나 true 면 표본이다(경고 · 머지 게이트가 이 값을 본다)
+    fixture: fixture === true || (typeof fixture === 'string' && fixture.trim() !== ''),
+    schema: typeof meta.schema === 'string' ? meta.schema : null,
+    counts: {
+      skuCount: count('skuCount'),
+      zoneCount: count('zoneCount'),
+      cellCount: count('cellCount'),
+    },
     zones: r.arr(root, K.zones, 'catalog').map((z, i) => adaptZone(r, z, `zones[${i}]`)),
   }
 }

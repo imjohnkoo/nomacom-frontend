@@ -10,6 +10,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { defineNuxtModule } from 'nuxt/kit'
+import { CATALOG_DIR, CATALOG_FILES } from '../shared/catalog/files'
 import { checkoutPreviewFromCatalog } from '../shared/catalog/preview'
 import { prerenderRoutes } from '../shared/catalog/seo'
 import { parseCatalog } from '../shared/catalog/validate'
@@ -18,10 +19,8 @@ export default defineNuxtModule({
   meta: { name: 'nomacom-catalog' },
   setup(_options, nuxt) {
     if (nuxt.options._prepare) return
-    const dir = join(nuxt.options.rootDir, 'server/data')
-    const file = ['catalog.json', 'catalog.fixture.json']
-      .map((f) => join(dir, f))
-      .find((f) => existsSync(f))
+    const dir = join(nuxt.options.rootDir, CATALOG_DIR)
+    const file = CATALOG_FILES.map((f) => join(dir, f)).find((f) => existsSync(f))
     if (!file) throw new Error(`카탈로그가 없다 — ${dir}/catalog.json 또는 catalog.fixture.json`)
     const catalog = parseCatalog(JSON.parse(readFileSync(file, 'utf8')))
     if (catalog.fixture) {

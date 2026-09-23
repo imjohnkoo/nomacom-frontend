@@ -13,7 +13,7 @@ import {
   sitemapPaths,
   zoneMeta,
 } from './seo'
-import { fixtureCatalog, fixtureRaw } from './test-data'
+import { fixtureCatalog, fixtureRaw, setFinalWon } from './test-data'
 import { parseCatalog } from './validate'
 
 const catalog = fixtureCatalog()
@@ -70,10 +70,7 @@ describe('메타 문구 (D-15)', () => {
 
   it('«무제한 데이터» 뒤에는 무제한 최저가만 — 종량제가 더 싸도 그 값을 붙이지 않는다', () => {
     const raw = fixtureRaw()
-    const l = raw.zones
-      .flatMap((z: { products: { sku: string }[] }) => z.products)
-      .find((p: { sku: string }) => p.sku === 'CZE00L')
-    l.options[0].finalWon = 300
+    setFinalWon(raw, 'CZE00L01D30V2', 300)
     const cat = parseCatalog(raw)
     expect(countryMeta('체코', zonesOfCountry(cat, 'CZE')).title).toBe(
       '체코 eSIM · 무제한 데이터 900원부터',

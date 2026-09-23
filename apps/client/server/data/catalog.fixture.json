@@ -1,9 +1,11 @@
 {
  "meta": {
+  "schema": "k1-v1",
   "generatedAt": "2026-09-23T00:00:00+09:00",
   "snapshotDir": "nomacom-manager/data/naver-product-backup/2026-09-22_pre-detail-v2",
   "skuCount": 7,
   "zoneCount": 5,
+  "cellCount": 494,
   "excludedZones": [
    "CHN00",
    "JPN00",
@@ -48,14 +50,14 @@
       "x": 39.8,
       "y": 44.9,
       "size": "big",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "체스키크룸로프",
       "x": 38.6,
       "y": 68.0,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      }
     ]
    },
@@ -1261,21 +1263,21 @@
       "x": 49.8,
       "y": 31.6,
       "size": "big",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "니스",
       "x": 70.2,
       "y": 67.6,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "보르도",
       "x": 37.7,
       "y": 59.7,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      }
     ]
    },
@@ -2953,28 +2955,28 @@
       "x": 42.5,
       "y": 57.5,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "로마",
       "x": 52.3,
       "y": 70.5,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "바르셀로나",
       "x": 42.3,
       "y": 71.4,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "right"
      },
      {
       "name": "런던",
       "x": 40.1,
       "y": 52.6,
       "size": "normal",
-      "labelDir": "left",
+      "labelDir": "right",
       "labelShift": "down"
      },
      {
@@ -2982,14 +2984,14 @@
       "x": 58.6,
       "y": 60.0,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "리스본",
       "x": 31.4,
       "y": 76.4,
       "size": "normal",
-      "labelDir": "right",
+      "labelDir": "left",
       "labelShift": "down"
      },
      {
@@ -2997,28 +2999,28 @@
       "x": 68.2,
       "y": 72.1,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "오슬로",
       "x": 50.6,
       "y": 36.9,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "right"
      },
      {
       "name": "코펜하겐",
       "x": 52.3,
       "y": 44.8,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "right"
      },
      {
       "name": "스톡홀름",
       "x": 57.6,
       "y": 38.0,
       "size": "normal",
-      "labelDir": "right",
+      "labelDir": "left",
       "labelShift": "down"
      },
      {
@@ -3026,42 +3028,42 @@
       "x": 64.3,
       "y": 36.5,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "레이캬비크",
       "x": 19.1,
       "y": 29.1,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "바르샤바",
       "x": 60.5,
       "y": 51.2,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "더블린",
       "x": 34.2,
       "y": 49.2,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "right"
      },
      {
       "name": "발레타",
       "x": 54.2,
       "y": 81.6,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "리마솔",
       "x": 72.1,
       "y": 83.8,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      }
     ]
    },
@@ -4281,28 +4283,28 @@
       "x": 67.4,
       "y": 62.6,
       "size": "big",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "밴쿠버",
       "x": 30.0,
       "y": 50.8,
       "size": "big",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "LA",
       "x": 33.7,
       "y": 71.7,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "몬트리올",
       "x": 67.7,
       "y": 56.0,
       "size": "normal",
-      "labelDir": "left"
+      "labelDir": "right"
      }
     ]
    },
@@ -5411,21 +5413,21 @@
       "x": 46.2,
       "y": 46.7,
       "size": "big",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "치앙마이",
       "x": 40.3,
       "y": 23.6,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      },
      {
       "name": "푸껫",
       "x": 38.1,
       "y": 73.7,
       "size": "normal",
-      "labelDir": "right"
+      "labelDir": "left"
      }
     ]
    },

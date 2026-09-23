@@ -21,6 +21,8 @@ const DAILY_DAYS = Array.from({ length: 30 }, (_, i) => i + 1)
 /** 무제한 판매 기간 — 1~30일 · 60 · 90일(D-3) */
 const DAILY_ALLOWED = new Set([...DAILY_DAYS, 60, 90])
 const QUOTA_DAYS = 30
+/** K1 스키마 이름 — export 가 `meta.schema` 에 적는다(H-002). 바뀌면 어댑터를 먼저 맞춘다 */
+const SCHEMA = 'k1-v1'
 /** ISO 8601 날짜 · 시각(시간대 필수) — sitemap lastmod 가 앞 10자를 쓴다 */
 const ISO_DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/
 /** 옵션 코드 `{SKU}{cap}D{dd}V2` — 레지스트리는 cap 2~3자리지만 지금은 2자리만 지원한다(H-002 검증기 계약) */
@@ -55,13 +57,40 @@ function checkCode(
     issues.push(`${at}: 코드(${o.code})와 용량 ${o.cap} · ${o.days}일이 어긋난다`)
 }
 
+/** 달력에 있는 날짜인가 — `Date.parse` 는 2월 30일을 3월 2일로 넘겨 계산한다 */
+function isCalendarDate(iso: string): boolean {
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number) as [number, number, number]
+  const t = new Date(Date.UTC(y, m - 1, d))
+  return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d
+}
+
 function check(c: AdaptedCatalog, issues: string[]) {
   const zones = new Set<string>()
   const skus = new Set<string>()
   /** iso3 → 처음 본 «iso2 이름» — zone 마다 같아야 한다(검색 · 국가 페이지가 서로 다른 zone 값을 쓴다) */
   const countryOf = new Map<string, string>()
-  if (!ISO_DATETIME_RE.test(c.generatedAt) || Number.isNaN(Date.parse(c.generatedAt)))
+  const channelNos = new Map<number, string>()
+  if (
+    !ISO_DATETIME_RE.test(c.generatedAt) ||
+    Number.isNaN(Date.parse(c.generatedAt)) ||
+    !isCalendarDate(c.generatedAt)
+  )
     issues.push(`meta.generatedAt: ISO 8601 날짜 · 시각이 아니다(${c.generatedAt})`)
+  if (c.schema !== null && c.schema !== SCHEMA)
+    issues.push(`meta.schema: ${SCHEMA} 가 아니다(${c.schema}) — 어댑터를 먼저 맞춘다`)
+  const actual = {
+    zoneCount: c.zones.length,
+    skuCount: c.zones.reduce((n, z) => n + z.products.length, 0),
+    cellCount: c.zones.reduce(
+      (n, z) => n + z.products.reduce((m, p) => m + p.options.length, 0),
+      0,
+    ),
+  }
+  for (const key of ['zoneCount', 'skuCount', 'cellCount'] as const) {
+    const said = c.counts[key]
+    if (said !== undefined && said !== actual[key])
+      issues.push(`meta.${key}: export 는 ${said} 인데 실제는 ${actual[key]} — 잘린 export 인가`)
+  }
   if (c.zones.length === 0) issues.push('zones: 비어 있다')
   for (const z of c.zones) {
     const at = `zone ${z.zone || '?'}`
@@ -100,8 +129,16 @@ function check(c: AdaptedCatalog, issues: string[]) {
         issues.push(`${pat}: 판매 ${p.saleStatus} · 전시 ${p.displayStatus} — SALE/ON 만 싣는다`)
       if (!Number.isInteger(p.channelProductNo) || p.channelProductNo <= 0)
         issues.push(`${pat}: 채널상품번호가 없다`)
-      else if (p.naverUrl !== expectedNaverUrl(p.channelProductNo, p.sku))
-        issues.push(`${pat}: naverUrl 이 K2 모양이 아니다(${p.naverUrl})`)
+      else {
+        const other = channelNos.get(p.channelProductNo)
+        if (other)
+          issues.push(
+            `${pat}: 채널상품번호 ${p.channelProductNo} 를 ${other} 도 쓴다 — 구매하기가 다른 상품으로 간다`,
+          )
+        channelNos.set(p.channelProductNo, p.sku)
+        if (p.naverUrl !== expectedNaverUrl(p.channelProductNo, p.sku))
+          issues.push(`${pat}: naverUrl 이 K2 모양이 아니다(${p.naverUrl})`)
+      }
       checkAssetPath(p.thumb, `/catalog/thumbs/${p.sku}.webp`, `${pat}.thumb`, issues)
       if (p.options.length === 0) issues.push(`${pat}: 옵션이 없다`)
       const cells = new Set<string>()
@@ -112,6 +149,10 @@ function check(c: AdaptedCatalog, issues: string[]) {
         cells.add(key)
         if (!Number.isInteger(o.finalWon) || o.finalWon <= 0)
           issues.push(`${oat}: 최종가가 0 이하이거나 정수가 아니다(${o.finalWon})`)
+        else if (o.finalWon !== p.salePriceWon - p.immediateDiscountWon + o.optionPriceWon)
+          issues.push(
+            `${oat}: 최종가 ${o.finalWon} ≠ 판매가 ${p.salePriceWon} − 즉시할인 ${p.immediateDiscountWon} + 옵션가 ${o.optionPriceWon}`,
+          )
         if (!(o.cap > 0)) issues.push(`${oat}: 용량이 0 이하`)
         if (!Number.isInteger(o.days) || o.days <= 0) issues.push(`${oat}: 일수가 0 이하`)
         if (o.usable !== true) issues.push(`${oat}: 판매 가능(usable)이 true 가 아니다`)
@@ -151,10 +192,19 @@ export function parseCatalog(raw: unknown): CatalogView {
     zones: adapted.zones.map(
       (z): ZoneView => ({
         ...z,
-        products: z.products.map(({ saleStatus: _s, displayStatus: _d, options, ...p }) => ({
-          ...p,
-          options: options.map(({ usable: _u, ...o }) => o),
-        })),
+        products: z.products.map(
+          ({
+            saleStatus: _s,
+            displayStatus: _d,
+            salePriceWon: _p,
+            immediateDiscountWon: _i,
+            options,
+            ...p
+          }) => ({
+            ...p,
+            options: options.map(({ usable: _u, optionPriceWon: _o, ...o }) => o),
+          }),
+        ),
       }),
     ),
   }

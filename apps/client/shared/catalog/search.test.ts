@@ -11,7 +11,13 @@ import {
   type SearchEntry,
   type UpcomingCountry,
 } from './search'
-import { ACTIVE_CATALOG_FILE, activeCatalog, fixtureCatalog, fixtureRaw } from './test-data'
+import {
+  ACTIVE_CATALOG_FILE,
+  activeCatalog,
+  fixtureCatalog,
+  fixtureRaw,
+  recount,
+} from './test-data'
 import { parseCatalog } from './validate'
 
 const catalog = fixtureCatalog()
@@ -186,7 +192,7 @@ describe('홈 격자 (spec D-5)', () => {
     const raw = fixtureRaw()
     const cze = raw.zones.find((z: { zone: string }) => z.zone === 'CZE00')
     cze.products = cze.products.filter((p: { kind: string }) => p.kind === 'L')
-    const tile = resolveHome(parseCatalog(raw), ['CZE'], []).popular[0]!
+    const tile = resolveHome(parseCatalog(recount(raw)), ['CZE'], []).popular[0]!
     expect(tile).toMatchObject({ to: '/countries/cze', badge: '종량제', label: '체코' })
   })
 

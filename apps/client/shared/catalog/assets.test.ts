@@ -1,18 +1,13 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 import { describe, expect, it } from 'vitest'
 import { flagUrl, mapUrl, thumbUrl, type AssetManifest } from './assets'
 import { optimizeMapSvg } from './map-svg'
-import { parseCatalog } from './validate'
+import { ACTIVE_CATALOG_FILE, APP_DIR as APP, activeCatalog } from './test-data'
 
-const APP = fileURLToPath(new URL('../../', import.meta.url))
-const real = `${APP}server/data/catalog.json`
-const catalogFile = existsSync(real)
-  ? 'server/data/catalog.json'
-  : 'server/data/catalog.fixture.json'
-const catalog = parseCatalog(JSON.parse(readFileSync(`${APP}${catalogFile}`, 'utf8')))
+const catalogFile = ACTIVE_CATALOG_FILE
+const catalog = activeCatalog()
 const manifest = JSON.parse(
   readFileSync(`${APP}app/content/catalog-assets.json`, 'utf8'),
 ) as AssetManifest

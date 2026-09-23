@@ -11,7 +11,8 @@
  *        · flag-icons(MIT) flags/1x1/{iso2}.svg · app/content/catalog-upcoming.json(준비 중 나라 국기)
  * 출력:  public/catalog/thumbs/{SKU}.{hash8}.webp (400px) · maps/{ZONE}.{hash8}.svg (map-svg.ts 축소)
  *        · flags/{iso2}.{hash8}.svg · flags/LICENSE · app/content/catalog-assets.json(매니페스트)
- * 출력 폴더에서 매니페스트에 없는 옛 파일은 지운다(이 스크립트가 만든 폴더만).
+ * 출력 폴더에서 매니페스트에 없는 옛 파일은 지운다(이 스크립트가 만든 폴더만). 표본 픽스처로는 `--allow-fixture` 일 때만 돈다
+ *   (그렇지 않으면 커밋된 실 자산을 지운다).
  * 원본이 하나라도 없으면 아무것도 쓰지 않고 실패한다.
  */
 import { createHash } from 'node:crypto'
@@ -29,6 +30,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
 import type { AssetManifest } from '../shared/catalog/assets'
+import { CATALOG_DIR, CATALOG_FILES } from '../shared/catalog/files'
 import { optimizeMapSvg } from '../shared/catalog/map-svg'
 import { parseCatalog } from '../shared/catalog/validate'
 
@@ -54,8 +56,8 @@ function hash8(buf: Buffer | string): string {
 }
 
 function loadCatalog() {
-  const real = join(APP, 'server/data/catalog.json')
-  const file = existsSync(real) ? real : join(APP, 'server/data/catalog.fixture.json')
+  const file = CATALOG_FILES.map((f) => join(APP, CATALOG_DIR, f)).find((f) => existsSync(f))
+  if (!file) throw new Error(`카탈로그가 없다 — ${CATALOG_DIR}/${CATALOG_FILES.join(' 또는 ')}`)
   return { file, catalog: parseCatalog(JSON.parse(readFileSync(file, 'utf8'))) }
 }
 
@@ -66,6 +68,11 @@ async function main() {
   const design = resolve(process.env.PROJECT_CWD ?? resolve(APP, '../..'), given)
   if (!existsSync(design)) throw new Error(`--design 폴더가 없다(${design})`)
   const { file, catalog } = loadCatalog()
+  // 표본으로 돌면 커밋된 실 자산(표본 밖 zone)을 옛 파일로 보고 지운다 — 표본은 명시할 때만
+  if (catalog.fixture && !process.argv.includes('--allow-fixture'))
+    throw new Error(
+      '표본 픽스처로는 돌리지 않는다 — server/data/catalog.json(W1-1)을 먼저 두거나 --allow-fixture',
+    )
   const upcoming = JSON.parse(
     readFileSync(join(APP, 'app/content/catalog-upcoming.json'), 'utf8'),
   ) as {

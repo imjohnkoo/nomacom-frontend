@@ -1,3 +1,4 @@
+import { CATALOG_FILES } from '../../shared/catalog/files'
 import type { CatalogView } from '../../shared/catalog/types'
 import { parseCatalog } from '../../shared/catalog/validate'
 
@@ -15,8 +16,11 @@ export function useCatalog(): Promise<CatalogView> {
 
 async function load(): Promise<CatalogView> {
   const storage = useStorage('assets:catalog')
-  const raw =
-    (await storage.getItem('catalog.json')) ?? (await storage.getItem('catalog.fixture.json'))
+  let raw: unknown = null
+  for (const name of CATALOG_FILES) {
+    raw = await storage.getItem(name)
+    if (raw != null) break
+  }
   if (raw == null)
     throw new Error(
       '카탈로그 파일이 없다 — server/data/catalog.json(W1-1) 또는 catalog.fixture.json',

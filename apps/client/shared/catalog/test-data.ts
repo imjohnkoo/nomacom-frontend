@@ -7,15 +7,15 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { CATALOG_DIR, CATALOG_FILES, FIXTURE_CATALOG } from './files'
 import type { CatalogView } from './types'
 import { parseCatalog } from './validate'
 
 export const APP_DIR = fileURLToPath(new URL('../../', import.meta.url))
-export const FIXTURE_CATALOG_FILE = 'server/data/catalog.fixture.json'
-const REAL_CATALOG_FILE = 'server/data/catalog.json'
-export const ACTIVE_CATALOG_FILE = existsSync(`${APP_DIR}${REAL_CATALOG_FILE}`)
-  ? REAL_CATALOG_FILE
-  : FIXTURE_CATALOG_FILE
+export const FIXTURE_CATALOG_FILE = `${CATALOG_DIR}/${FIXTURE_CATALOG}`
+export const ACTIVE_CATALOG_FILE = CATALOG_FILES.map((f) => `${CATALOG_DIR}/${f}`).find((f) =>
+  existsSync(`${APP_DIR}${f}`),
+)!
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 원본 K1 을 그대로 다루는 변이 테스트용
 export type RawCatalog = any
@@ -61,6 +61,7 @@ export function addSynthZone(
   for (const o of product.options) {
     o.code = `${sku}${o.code.slice(sku.length)}`
     o.finalWon += shift
+    o.optionPriceWon += shift // 최종가 = 판매가 − 즉시할인 + 옵션가 를 지킨다
   }
   raw.zones.push({
     zone,
@@ -70,5 +71,30 @@ export function addSynthZone(
     map: { svg: `/catalog/maps/${zone}.svg`, pins: [] },
     products: [product],
   })
+  return recount(raw)
+}
+
+/** 최종가를 바꾼다 — 옵션가도 같이 옮겨 «판매가 − 즉시할인 + 옵션가» 산식을 지킨다 */
+export function setFinalWon(raw: RawCatalog, code: string, won: number): RawCatalog {
+  for (const z of raw.zones)
+    for (const p of z.products)
+      for (const o of p.options)
+        if (o.code === code) {
+          o.optionPriceWon += won - o.finalWon
+          o.finalWon = won
+          return raw
+        }
+  throw new Error(`옵션 ${code} 가 없다`)
+}
+
+/** 상품 · 옵션을 빼거나 더한 뒤 meta 개수를 다시 센다(검증기가 export 의 개수와 실제를 대조한다) */
+export function recount(raw: RawCatalog): RawCatalog {
+  raw.meta.zoneCount = raw.zones.length
+  raw.meta.skuCount = raw.zones.reduce((n: number, z: RawCatalog) => n + z.products.length, 0)
+  raw.meta.cellCount = raw.zones.reduce(
+    (n: number, z: RawCatalog) =>
+      n + z.products.reduce((m: number, p: RawCatalog) => m + p.options.length, 0),
+    0,
+  )
   return raw
 }

@@ -13,7 +13,7 @@ import {
   zoneByCode,
   zonesOfCountry,
 } from './derive'
-import { addSynthZone, fixtureRaw } from './test-data'
+import { ACTIVE_CATALOG_FILE, activeRaw, addSynthZone, fixtureRaw, setFinalWon } from './test-data'
 import { CatalogValidationError, expectedNaverUrl, parseCatalog } from './validate'
 
 // 표본 픽스처 = 스냅샷 2026-09-22 추출(5 zone · 7 SKU). 아래 가격 기대값은 그 스냅샷 값이다.
@@ -143,7 +143,34 @@ describe('parseCatalog — 깨진 입력은 빌드를 멈춘다', () => {
       /네이버 CDN/,
     ],
     // 옵션 코드 ↔ 용량 · 일수 — export 가 코드를 잘못 파싱하면 다른 칸 가격이 뜬다
-    ['코드와 용량이 어긋남', (r) => (productRaw(r, 'CZE00U').options[40].cap = 3), /어긋난다|중복/],
+    // 칸이 겹치지 않게 맞바꾼다 — 코드 대조만 잡을 수 있는 경우(중복 · 빈칸 검사로는 안 걸린다)
+    [
+      '두 옵션의 용량을 맞바꿈(1GB 9일 ↔ 2GB 9일)',
+      (r) => {
+        const opts = productRaw(r, 'CZE00U').options
+        const a = opts.find((o: any) => o.code === 'CZE00U01D09V2')
+        const b = opts.find((o: any) => o.code === 'CZE00U02D09V2')
+        ;[a.cap, b.cap] = [b.cap, a.cap]
+      },
+      /CZE00U01D09V2\)와 용량 2 · 9일이 어긋난다/,
+    ],
+    [
+      '두 옵션의 일수를 맞바꿈(1GB 8일 ↔ 1GB 9일)',
+      (r) => {
+        const opts = productRaw(r, 'CZE00U').options
+        const a = opts.find((o: any) => o.code === 'CZE00U01D08V2')
+        const b = opts.find((o: any) => o.code === 'CZE00U01D09V2')
+        ;[a.days, b.days] = [b.days, a.days]
+      },
+      /CZE00U01D08V2\)와 용량 1 · 9일이 어긋난다/,
+    ],
+    [
+      '일수 한 자리 코드',
+      (r) =>
+        (productRaw(r, 'CZE00U').options.find((o: any) => o.code === 'CZE00U01D07V2').code =
+          'CZE00U01D7V2'),
+      /CZE00U01D7V2\)와 용량 1 · 7일이 어긋난다/,
+    ],
     [
       '코드가 다른 SKU',
       (r) => (productRaw(r, 'CZE00U').options[0].code = 'FRA00U01D01V2'),
@@ -186,7 +213,47 @@ describe('parseCatalog — 깨진 입력은 빌드를 멈춘다', () => {
     ['채널상품번호 0', (r) => (productRaw(r, 'FRA00U').channelProductNo = 0), /채널상품번호/],
     ['옵션 0', (r) => (productRaw(r, 'FRA00U').options = []), /옵션이 없다/],
     ['최종가 소수', (r) => (productRaw(r, 'CZE00U').options[0].finalWon = 900.5), /정수가 아니다/],
-    ['용량 0', (r) => (productRaw(r, 'CZE00L').options[0].cap = 0), /용량이 0 이하|어긋난다/],
+    [
+      '용량 0(코드도 00 — 코드 대조로는 안 걸린다)',
+      (r) => {
+        const o = productRaw(r, 'CZE00L').options[0]
+        o.cap = 0
+        o.code = 'CZE00L00D30V2'
+      },
+      /용량이 0 이하/,
+    ],
+    // 최종가 산식 · 채널상품번호 · meta
+    [
+      '최종가가 산식과 다름(즉시할인 누락)',
+      (r) => (productRaw(r, 'CZE00U').options[6].finalWon += 119000),
+      /≠ 판매가 119900 − 즉시할인 119000 \+ 옵션가/,
+    ],
+    [
+      '채널상품번호를 다른 SKU 와 같이 씀',
+      (r) => {
+        const fra = productRaw(r, 'FRA00U')
+        fra.channelProductNo = productRaw(r, 'CZE00U').channelProductNo
+        fra.naverUrl = expectedNaverUrl(fra.channelProductNo, 'FRA00U')
+      },
+      /채널상품번호 \d+ 를 CZE00U 도 쓴다/,
+    ],
+    [
+      'zone 하나가 빠진 export(개수 불일치)',
+      (r) => r.zones.pop(),
+      /meta\.zoneCount: export 는 5 인데 실제는 4/,
+    ],
+    ['schema 가 k1-v1 이 아님', (r) => (r.meta.schema = 'k1-v2'), /k1-v1 가 아니다/],
+    ['없는 날짜(2월 30일)', (r) => (r.meta.generatedAt = '2026-02-30T00:00:00+09:00'), /ISO 8601/],
+    // 나라 · 코드 모양 · 핀 범위
+    [
+      '같은 나라 iso2 가 zone 마다 다름',
+      (r) => (zoneRaw(r, 'EU340').countries.find((c: any) => c.iso3 === 'FRA').iso2 = 'FX'),
+      /FRA 가 다른 zone 과 다르다/,
+    ],
+    ['iso2 소문자', (r) => (zoneRaw(r, 'THA00').countries[0].iso2 = 'th'), /THA iso2/],
+    ['zone 코드 소문자', (r) => (zoneRaw(r, 'THA00').zone = 'tha00'), /zone 코드 모양/],
+    ['핀 y 100% 밖', (r) => (zoneRaw(r, 'EU340').map.pins[0].y = 100.5), /0~100%/],
+    ['핀 x 음수', (r) => (zoneRaw(r, 'EU340').map.pins[0].x = -0.1), /0~100%/],
     // 무제한 기간 — 1~30 · 60 · 90 만, 용량마다 같게
     [
       '무제한 30일 빈칸(1~29 만)',
@@ -240,18 +307,28 @@ describe('parseCatalog — 어댑터(K1 → 화면 모델)', () => {
     expect(u.at(-1)).toBe('3/90')
   })
 
-  it('meta.fixture 가 없으면 실 카탈로그로 읽는다', () => {
+  it('meta.fixture 가 없으면 실 카탈로그 · 설명 문자열이나 true 면 표본', () => {
     const raw = fresh()
     delete raw.meta.fixture
     expect(parseCatalog(raw).fixture).toBe(false)
+    raw.meta.fixture = true
+    expect(parseCatalog(raw).fixture).toBe(true)
+    raw.meta.fixture = '  '
+    expect(parseCatalog(raw).fixture).toBe(false)
   })
 
-  it('핀 — size big · labelDir left · labelShift 를 그대로 옮긴다(없으면 null)', () => {
+  it(`지금 빌드가 쓰는 카탈로그(${ACTIVE_CATALOG_FILE})는 표본이 아니다 — 표본으로는 머지 불가(spec DoD 4)`, () => {
+    const cat = parseCatalog(activeRaw())
+    expect(cat.fixture).toBe(false)
+    expect(ACTIVE_CATALOG_FILE).toBe('server/data/catalog.json')
+  })
+
+  it('핀 — labelDir 는 2609 클래스 그대로(right = 라벨이 점 왼쪽) · size · labelShift(없으면 null)', () => {
     const raw = fresh()
     const pins = zoneRaw(raw, 'EU340').map.pins
-    pins[0] = { name: '가', x: 10, y: 20, size: 'big', labelDir: 'left', labelShift: 'down' }
-    pins[1] = { name: '나', x: 30, y: 40, size: 'normal', labelDir: 'right' }
-    pins[2] = { name: '다', x: 50, y: 60, size: 'normal', labelDir: 'right', labelShift: 'up' }
+    pins[0] = { name: '가', x: 10, y: 20, size: 'big', labelDir: 'right', labelShift: 'down' }
+    pins[1] = { name: '나', x: 30, y: 40, size: 'normal', labelDir: 'left' }
+    pins[2] = { name: '다', x: 50, y: 60, size: 'normal', labelDir: 'left', labelShift: 'up' }
     const got = zoneByCode(parseCatalog(raw), 'EU340')!.map.pins.slice(0, 3)
     expect(got).toEqual([
       { name: '가', x: 10, y: 20, big: true, labelLeft: true, labelShift: 'down' },
@@ -259,6 +336,21 @@ describe('parseCatalog — 어댑터(K1 → 화면 모델)', () => {
       { name: '다', x: 50, y: 60, big: false, labelLeft: false, labelShift: 'up' },
     ])
   })
+
+  it.each([
+    ['표본', fresh],
+    ['지금 빌드가 쓰는 카탈로그', activeRaw],
+  ])(
+    '%s — 2609 에서 cv-pin--right 인 런던은 라벨이 왼쪽, 클래스 없는 파리는 오른쪽',
+    (_n, load) => {
+      const pins = zoneByCode(parseCatalog(load()), 'EU340')!.map.pins
+      expect(pins.find((p) => p.name === '런던')).toMatchObject({
+        labelLeft: true,
+        labelShift: 'down',
+      })
+      expect(pins.find((p) => p.name === '파리')).toMatchObject({ labelLeft: false })
+    },
+  )
 
   it('통신사 null(미확정)은 null, 빈 배열도 null, 값이 있으면 그대로', () => {
     const raw = fresh()
@@ -306,8 +398,10 @@ describe('파생값', () => {
     expect(optionLabel(optionFor(cze, 'U', 2, 7)!)).toBe('매일 2GB + 소진후 512kbps 무제한 · 7일')
   })
 
-  it('기본 선택 = 무제한 · 매일 1GB · 7일 (D-16)', () => {
+  it('기본 선택 = 무제한 · 매일 1GB · 7일 (D-16) · 종량제만 있으면 가장 작은 용량 · 30일', () => {
     expect(defaultSelection(cze)).toEqual({ kind: 'U', cap: 1, days: 7 })
+    const lOnly = { ...cze, products: cze.products.filter((p) => p.kind === 'L') }
+    expect(defaultSelection(lOnly)).toEqual({ kind: 'L', cap: 1, days: 30 })
   })
 
   it('최저가 — 태국 700원 · 유럽 34개국 1,300원(무제한 1일 1GB)', () => {
@@ -324,9 +418,10 @@ describe('파생값', () => {
   it('D-11 순서 — 국가 수가 가격보다 먼저, 같은 국가 수는 최저가 → zone 코드', () => {
     // 단일국(900원)보다 싼 2개국 zone 을 만들어도 단일국이 먼저다
     const raw = fresh()
-    addSynthZone(raw, { zone: 'EU021', iso3s: ['CZE', 'FRA'], lowestWon: 500 })
-    addSynthZone(raw, { zone: 'EU022', iso3s: ['CZE', 'FRA'], lowestWon: 600 })
+    // 코드 역순으로 넣는다 — 같은 국가 수 · 같은 최저가의 zone 코드 순서를 안정 정렬에 기대지 않고 확인
     addSynthZone(raw, { zone: 'EU023', iso3s: ['CZE', 'FRA'], lowestWon: 500 })
+    addSynthZone(raw, { zone: 'EU022', iso3s: ['CZE', 'FRA'], lowestWon: 600 })
+    addSynthZone(raw, { zone: 'EU021', iso3s: ['CZE', 'FRA'], lowestWon: 500 })
     addSynthZone(raw, { zone: 'EU031', iso3s: ['CZE', 'FRA', 'THA'], lowestWon: 100 })
     expect(zonesOfCountry(parseCatalog(raw), 'CZE').map((z) => z.zone)).toEqual([
       'CZE00',
@@ -340,7 +435,7 @@ describe('파생값', () => {
 
   it('최저가 = 무제한 · 종량제 전 옵션의 최솟값(D-11)', () => {
     const raw = fresh()
-    productRaw(raw, 'CZE00L').options[0].finalWon = 300 // 종량제 1GB 를 무제한 1일보다 싸게
+    setFinalWon(raw, 'CZE00L01D30V2', 300) // 종량제 1GB 를 무제한 1일보다 싸게
     expect(lowestWon(zoneByCode(parseCatalog(raw), 'CZE00')!)).toBe(300)
   })
 

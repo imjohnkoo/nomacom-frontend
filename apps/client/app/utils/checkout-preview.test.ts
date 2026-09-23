@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PREVIEW_OPTION_CODE, checkoutPreviewFromCatalog } from '#shared/catalog/preview'
-import { ACTIVE_CATALOG_FILE, activeRaw, fixtureRaw } from '#shared/catalog/test-data'
+import { ACTIVE_CATALOG_FILE, activeRaw, fixtureRaw, setFinalWon } from '#shared/catalog/test-data'
 import { parseCatalog } from '#shared/catalog/validate'
 import {
   PAYMENT_ID_PATTERN,
@@ -48,8 +48,8 @@ describe('상품 값 (PG 심사 요건 · catalog F-12)', () => {
 
   it('금액 · 옵션명은 카탈로그를 따라간다(값이 바뀌면 표시도 바뀐다 — 코드에 금액을 박지 않는다)', () => {
     const raw = fixtureRaw()
+    setFinalWon(raw, PREVIEW_OPTION_CODE, 5200)
     const o = previewOption(raw)
-    o.finalWon = 5200
     o.optionName1 = '매일 1GB + 소진후 512kbps 무제한(개정)'
     const item = checkoutPreviewFromCatalog(parseCatalog(raw))
     expect(item.amount).toBe(5200)
