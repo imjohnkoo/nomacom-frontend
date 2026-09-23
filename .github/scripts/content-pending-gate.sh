@@ -8,7 +8,8 @@
 #
 # 보는 것: **머지할 커밋**(기본 HEAD)의 apps/client/** — 디스크 파일이 아니다(워크트리에서만 채우고 커밋하지 않은 값은 통과가 아니다).
 #   바이너리 속성(.gitattributes -diff 등)이 붙은 파일도 텍스트로 본다.
-# 찾는 것: `P9_4_PENDING` · `PENDING_LABEL` · 표시 문구 `(확정 전)` — 코드 · 템플릿 · 주석 어디든(주석에도 이 글자를 쓰지 않는다).
+# 찾는 것: `P9_4_PENDING` · `PENDING_LABEL` · 표시 문구의 앞부분 `(확정` · `（확정` — 코드 · 템플릿 · 주석 어디든(주석에도 쓰지 않는다).
+# 위협 모델: 자리표시자가 **실수로** main 에 남는 것. 의도적 우회는 렌더 확인(prod-push-check Phase 4)과 사람 확인이 맡는다.
 # 세지 않는 것: 자리표시자 정의 · 판정 함수 파일(app/content/pending.ts) · 테스트 픽스처(*.test.ts) · 문서(*.md).
 #   대신 pending.ts 는 **파일 전체**를 git blob 해시로 고정한다 — 별칭(여러 줄 · 주석 · 재수출) · 판정 함수 본문 변경으로
 #   게이트를 비껴가지 않게. pending.ts 를 정당하게 고치면 아래 PENDING_BLOB 도 같은 커밋에서 갱신한다
@@ -48,7 +49,9 @@ check_grep() { # git grep 은 객체를 못 읽어도 «못 찾음»(1)으로 �
 }
 
 # 1) 자리표시자 이름 · 표시 문구 — 예외 없이(주석 포함). 주석에 예외를 두면 그 표기가 코드에 들어와도 통과한다
-found="$(git -C "$ROOT" grep -l --text -F -e 'P9_4_PENDING' -e 'PENDING_LABEL' -e '(확정 전)' "$REV" -- apps/client "${EXCLUDES[@]}" 2>"$errf")"
+# 표시 문구는 '(확정' 앞부분만 본다 — prettier 줄바꿈으로 «(확정 / 전)» 이 두 줄로 갈리거나 &nbsp; · NBSP 가 끼어도 잡히게.
+# 전각 괄호 '（확정' 도. 이 게이트가 막는 것은 «실수로 남은 자리표시자» 다 — 렌더 결과 확인은 prod-push-check Phase 4.
+found="$(git -C "$ROOT" grep -l --text -F -e 'P9_4_PENDING' -e 'PENDING_LABEL' -e '(확정' -e '（확정' "$REV" -- apps/client "${EXCLUDES[@]}" 2>"$errf")"
 check_grep $?
 
 # 2) pending.ts 는 파일 전체가 게이트가 아는 판이어야 한다

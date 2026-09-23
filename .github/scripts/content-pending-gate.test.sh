@@ -12,7 +12,9 @@ trap 'rm -rf "$TMP"' EXIT
 pass=0
 fail=0
 
-g() { git -C "$TMP" -c user.name=gate-test -c user.email=gate-test@example.invalid "$@" >/dev/null 2>&1; }
+# git hook 안에서 돌아도 바깥 저장소의 index · git dir 을 건드리지 않게 GIT_* 를 비운다
+g() { env -u GIT_DIR -u GIT_INDEX_FILE -u GIT_WORK_TREE -u GIT_OBJECT_DIRECTORY \
+  git -C "$TMP" -c user.name=gate-test -c user.email=gate-test@example.invalid "$@" >/dev/null 2>&1; }
 commit() { g add -A && g commit -q --allow-empty -m "$1"; }
 put() { mkdir -p "$(dirname "$TMP/$1")" && printf '%s\n' "$2" >"$TMP/$1"; }
 put_real_pending() { mkdir -p "$(dirname "$TMP/$PENDING_FILE")" && cp "$REPO_ROOT/$PENDING_FILE" "$TMP/$PENDING_FILE"; }
@@ -101,7 +103,10 @@ for alias in "${aliases[@]}"; do
 done
 g checkout -q "$CLEAN"
 put_real_pending
-sed -i.orig "s/return value === P9_4_PENDING/return value === P9_4_PENDING || value === '-'/" "$TMP/$PENDING_FILE"
+# 백업 파일을 남기지 않는 치환(perl -pi) — sed -i.orig 의 .orig 가 커밋돼 그것만으로 막혀 테스트가 아무것도 검증하지 못했다
+perl -pi -e "s/return value === P9_4_PENDING/return value === P9_4_PENDING || value === '-'/" "$TMP/$PENDING_FILE"
+grep -q "value === '-'" "$TMP/$PENDING_FILE" || record 0 1 "본문 변경 픽스처가 적용되지 않았다"
+[[ -z "$(find "$TMP/apps" -name '*.orig')" ]] || record 0 1 "본문 변경 픽스처가 백업 파일을 남겼다"
 put apps/client/app/content/business.ts "export const X = '-'"
 commit "body change"
 expect 1 "판정 함수 본문 변경 막힘"
@@ -116,6 +121,8 @@ labels=(
   "apps/client/app/content/business.ts|export const X = '«(확정 전)»'"
   "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 «(확정 전)»</p>"
   "apps/client/app/content/business.ts|/** 확정 전 값은 «(확정 전)» */"
+  "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 (확정&nbsp;전)</p>"
+  "apps/client/app/components/shell/SiteFooter.vue|<p>대표자 （확정 전）</p>"
 )
 for entry in "${labels[@]}"; do
   g checkout -q "$CLEAN"
@@ -123,6 +130,15 @@ for entry in "${labels[@]}"; do
   commit "label: $entry"
   expect 1 "표시 문구 막힘(예외 없음 — 주석 포함) — ${entry#*|}"
 done
+
+# prettier 줄바꿈으로 «(확정 / 전)» 이 두 줄로 갈린 템플릿
+g checkout -q "$CLEAN"
+put apps/client/app/components/shell/SiteFooter.vue "<p>
+  상호 이심마니 · 대표자 홍길동 · 통신판매업 신고번호 (확정
+  전) · 호스팅 서비스 제공자 AWS
+</p>"
+commit "wrapped label"
+expect 1 "줄바꿈으로 갈린 «(확정 / 전)» 도 막힘"
 
 # 바이너리 속성 파일의 표시 문구도 텍스트로 본다
 g checkout -q "$CLEAN"
