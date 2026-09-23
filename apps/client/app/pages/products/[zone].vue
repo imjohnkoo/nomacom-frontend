@@ -38,8 +38,11 @@ if (!isCatalogParam('products', param))
 const { data, error } = await useFetch<ZoneView>(`/api/catalog/zones/${param}`, {
   key: `catalog-zone-${param}`,
 })
-if (error.value || !data.value)
+// 모르는 zone 은 404, 데이터 라우트의 그 밖의 오류는 500 — 서버 오류를 404 로 덮지 않는다(F-10)
+if (error.value?.statusCode === 404 || (!error.value && !data.value))
   throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
+if (error.value || !data.value)
+  throw createError({ statusCode: 500, statusMessage: 'Catalog zone unavailable', fatal: true })
 
 const zone = data.value
 const multi = zone.countries.length > 1

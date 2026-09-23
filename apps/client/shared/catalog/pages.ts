@@ -26,17 +26,17 @@ export interface CountryPageData {
   multi: ZoneCardData[]
 }
 
-const bare = (s: string) => s.replace(/[\s·・,]/g, '')
-
 /**
  * 카드 부제(S-3) — 2~4개국은 나라 나열, 단일국 · 5개국 이상은 썸네일 아랫줄.
- * 라벨이 이미 그 나라 나열이면(«미국·캐나다») 되풀이하지 않고 아랫줄을 쓴다.
+ * 라벨이 이미 나라 나열이면(«·» 로 나눈 칸 수 = 나라 수 — «미국·캐나다» · «터키·그리스») 되풀이하지 않고 아랫줄을 쓴다.
+ * 이름을 글자로 대조하지 않는다 — 라벨은 «터키» 처럼 다른 표기를 쓰기도 한다.
  */
 function cardSub(z: ZoneView): string {
   const n = z.countries.length
   if (n < 2 || n > 4) return z.subtitle
-  const names = z.countries.map((c) => c.nameKr)
-  return bare(z.label) === bare(names.join('')) ? z.subtitle : names.join(' · ')
+  const parts = z.label.split(/[·・,]/).filter((x) => x.trim() !== '')
+  const listed = !z.label.includes('개국') && parts.length === n
+  return listed ? z.subtitle : z.countries.map((c) => c.nameKr).join(' · ')
 }
 
 /** 국가 페이지(spec S-3 · D-11) — 판매하지 않는 나라면 null(→ 404) */

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // 상세 안내 6섹션(catalog spec D-4 · F-7) — 사용일수 · 커버리지 · 이용 방법 · 지원 기기 · 환불(발급 전 전액만) · FAQ.
 // 문안은 app/content/product-detail.ts(금지어 테스트). 리뷰 · 비교표는 보류(D-4).
+// 컴포넌트 테스트(ProductSections.test.ts)가 Nuxt 없이 그린다 — vue 에서 명시 import 한다.
 import { ChevronRightIcon } from '@heroicons/vue/24/outline'
+import { computed } from 'vue'
 import type { Kind, ZoneView } from '#shared/catalog/types'
 import FlagIcon from '~/components/catalog/FlagIcon.vue'
 import ZoneMap from '~/components/catalog/ZoneMap.vue'
@@ -9,11 +11,14 @@ import {
   DEVICES,
   HOW_TO,
   OPERATOR_FALLBACK,
+  OPERATOR_NOTE,
   REFUND,
   USAGE,
   coverageLead,
   coverageTitle,
   faqItems,
+  usageNote,
+  usageTimeline,
 } from '~/content/product-detail'
 
 const props = defineProps<{ zone: ZoneView; kind: Kind }>()
@@ -22,6 +27,8 @@ const countries = computed(() =>
   [...props.zone.countries].sort((a, b) => a.nameKr.localeCompare(b.nameKr, 'ko')),
 )
 const faqs = computed(() => faqItems(props.zone, props.kind))
+const timeline = computed(() => usageTimeline(props.kind))
+const note = computed(() => usageNote(props.kind))
 </script>
 
 <template>
@@ -30,13 +37,14 @@ const faqs = computed(() => faqItems(props.zone, props.kind))
       <h2 id="sec-usage" class="sec__title">{{ USAGE.title }}</h2>
       <p class="sec__text">{{ USAGE.lead }}</p>
       <ol class="sec__timeline">
-        <li v-for="t in USAGE.timeline" :key="t.date">
+        <li v-for="t in timeline" :key="t.date">
           <span class="sec__dot" aria-hidden="true" />
-          <span>{{ t.date }}</span>
-          <span>{{ t.text }}</span>
+          <!-- 두 칸 사이 공백 — 화면낭독기가 «3월 1일오후 3시» 로 붙여 읽지 않게 -->
+          <span>{{ t.date }}</span
+          >{{ ' ' }}<span>{{ t.text }}</span>
         </li>
       </ol>
-      <p class="sec__hint">{{ USAGE.note }}</p>
+      <p class="sec__hint">{{ note }}</p>
     </section>
 
     <section class="sec" aria-labelledby="sec-coverage">
@@ -57,9 +65,8 @@ const faqs = computed(() => faqItems(props.zone, props.kind))
         <li v-for="c in countries" :key="c.iso3" class="sec__country">
           <span v-if="zone.countries.length > 1" class="sec__country-name">
             <FlagIcon :iso2="c.iso2" :size="20" /> {{ c.nameKr }}
-            <span v-if="c.cities.length" class="sec__cities">{{
-              c.cities.slice(0, 3).join('·')
-            }}</span>
+            <!-- 대표 도시 하나 — K1 도시 목록은 검색용이라 같은 도시의 다른 표기(비엔나 · 빈)가 섞여 있다 -->
+            <span v-if="c.cities.length" class="sec__cities">{{ c.cities[0] }}</span>
           </span>
           <span class="sec__ops">
             <span v-for="op in c.operators ?? [OPERATOR_FALLBACK]" :key="op" class="sec__op">{{
@@ -69,6 +76,7 @@ const faqs = computed(() => faqItems(props.zone, props.kind))
           </span>
         </li>
       </ul>
+      <p v-if="!compact" class="sec__hint">{{ OPERATOR_NOTE }}</p>
     </section>
 
     <section class="sec" aria-labelledby="sec-how">
@@ -76,6 +84,9 @@ const faqs = computed(() => faqItems(props.zone, props.kind))
       <ol class="sec__steps">
         <li v-for="s in HOW_TO.steps" :key="s">{{ s }}</li>
       </ol>
+      <ul class="sec__warnings">
+        <li v-for="w in HOW_TO.warnings" :key="w">{{ w }}</li>
+      </ul>
       <p class="sec__hint">{{ HOW_TO.note }}</p>
       <NuxtLink :to="HOW_TO.link.to" class="sec__link">
         {{ HOW_TO.link.label }} <ChevronRightIcon aria-hidden="true" />
@@ -137,6 +148,16 @@ const faqs = computed(() => faqItems(props.zone, props.kind))
   line-height: 1.6;
   color: var(--n-color-neutral-700, #404040);
   text-wrap: pretty;
+}
+
+.sec__warnings {
+  margin: 10px 0 0;
+  padding: 10px 12px 10px 28px;
+  border-radius: 10px;
+  background: var(--n-color-warning-50, #fffbeb);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--n-color-neutral-800, #262626);
 }
 
 .sec__hint {

@@ -89,6 +89,22 @@ describe('선택기 경계', () => {
     expect(withKind(cze, s, 'U')).toBe(s)
   })
 
+  it('매일 3GB 에서 종량제로 바꾸면 30일 · 가장 작은 용량(이전 용량을 끌고 가지 않는다)', () => {
+    const s = withCap(cze, initialSelection(cze), 3)
+    expect(withKind(cze, s, 'L')).toEqual({ kind: 'L', cap: 1, days: 30 })
+  })
+
+  it('그 기간에 남은 용량이 여럿이면 가장 작은 것으로', () => {
+    const z = structuredClone(cze)
+    const u = z.products[0]!
+    u.options = u.options.filter((o) => !(o.cap === 3 && o.days === 60))
+    expect(withDays(z, withCap(z, initialSelection(z), 3), 60)).toEqual({
+      kind: 'U',
+      cap: 1,
+      days: 60,
+    })
+  })
+
   it('없는 종류는 무시한다(무제한만 있는 zone 에서 종량제)', () => {
     const s = initialSelection(fra)
     expect(withKind(fra, s, 'L')).toBe(s)

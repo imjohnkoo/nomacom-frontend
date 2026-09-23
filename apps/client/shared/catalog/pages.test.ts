@@ -63,11 +63,42 @@ describe('countryPageData (catalog spec S-3 · E2E-12)', () => {
     expect(countryPageData(catalog, 'CAN')!.multi[0]!.sub).toBe('뉴욕·LA·밴쿠버·토론토 등 전지역')
   })
 
+  it('나열 판정은 칸 수 = 나라 수 — 다른 표기(«터키») · 다른 순서(«캐나다·미국»)도 나열로 본다', () => {
+    const raw = fixtureRaw()
+    addSynthZone(raw, {
+      zone: 'EU025',
+      iso3s: ['TUR', 'GRC'],
+      lowestWon: 3000,
+      label: '터키·그리스',
+    })
+    addSynthZone(raw, {
+      zone: 'NA023',
+      iso3s: ['CAN', 'USA'],
+      lowestWon: 3000,
+      label: '미국·캐나다',
+    })
+    const cat = parseCatalog(raw)
+    expect(countryPageData(cat, 'TUR')!.multi.find((c) => c.zone === 'EU025')!.sub).toBe(
+      '합성 부제 EU025',
+    )
+    expect(countryPageData(cat, 'CAN')!.multi.find((c) => c.zone === 'NA023')!.sub).toBe(
+      '합성 부제 NA023',
+    )
+  })
+
   it('단일국 zone 이 없는 나라는 single 이 비어 있고, 머리는 그 나라(첫 zone 의 첫 나라가 아니다)', () => {
     const d = countryPageData(catalog, 'DEU')!
     expect(d.country).toEqual({ iso3: 'DEU', iso2: 'DE', nameKr: '독일' })
     expect(d.single).toEqual([])
     expect(d.multi.map((c) => c.zone)).toEqual(['EU340'])
+  })
+
+  it('«{나라}만 가요» 묶음에는 단일국 zone 만, 여러 나라 묶음에는 여러 나라 zone 만', () => {
+    for (const iso3 of ['CZE', 'FRA', 'USA', 'DEU']) {
+      const d = countryPageData(catalog, iso3)!
+      for (const c of d.single) expect(c.countryCount, `${iso3} ${c.zone}`).toBe(1)
+      for (const c of d.multi) expect(c.countryCount, `${iso3} ${c.zone}`).toBeGreaterThan(1)
+    }
   })
 
   it('zonePageData — 모르는 zone 은 null(→ 404), 아는 zone 은 그 zone', () => {

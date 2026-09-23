@@ -31,12 +31,17 @@ function go() {
   window.location.assign(props.naverUrl)
 }
 
-watch(open, (isOpen) => {
-  timer?.stop()
-  timer = undefined
-  going = false
-  if (isOpen) timer = startCountdown(COUNTDOWN_SECONDS, (n) => (remaining.value = n), go)
-})
+// immediate — 열린 채로 마운트돼도 센다
+watch(
+  open,
+  (isOpen) => {
+    timer?.stop()
+    timer = undefined
+    going = false
+    if (isOpen) timer = startCountdown(COUNTDOWN_SECONDS, (n) => (remaining.value = n), go)
+  },
+  { immediate: true },
+)
 
 function onPageShow(e: PageTransitionEvent) {
   if (e.persisted) open.value = false

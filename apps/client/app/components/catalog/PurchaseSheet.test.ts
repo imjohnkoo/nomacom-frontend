@@ -15,8 +15,8 @@ const OPTION = '매일 2GB + 소진후 512kbps 무제한 · 7일'
 type Assign = (url: string | URL) => void
 let assign: ReturnType<typeof vi.fn<Assign>>
 
-function host() {
-  const open = ref(false)
+function host(initial = false) {
+  const open = ref(initial)
   const Host = defineComponent({
     setup: () => () =>
       h(PurchaseSheet, {
@@ -153,6 +153,64 @@ describe('PurchaseSheet (S-5 · F-8 · K2)', () => {
     await nextTick()
     await flushPromises()
     expect(open.value).toBe(false)
+    expect(assign).toHaveBeenCalledTimes(1)
+    w.unmount()
+  })
+
+  it('스토어에 갔다 bfcache 로 돌아와 다시 사면 3초 뒤 다시 한 번 이동한다', async () => {
+    const { w, open } = host()
+    await openSheet(open)
+    button('지금 이동').click()
+    expect(assign).toHaveBeenCalledTimes(1)
+    const back = new Event('pageshow')
+    Object.defineProperty(back, 'persisted', { value: true })
+    window.dispatchEvent(back)
+    await nextTick()
+    expect(open.value).toBe(false)
+    await openSheet(open)
+    expect(text()).toContain('3초 뒤에 이동해요')
+    vi.advanceTimersByTime(3000)
+    expect(assign).toHaveBeenCalledTimes(2)
+    w.unmount()
+  })
+
+  it('«지금 이동» 뒤에는 카운트다운이 되살아나지 않는다', async () => {
+    const { w, open } = host()
+    await openSheet(open)
+    button('지금 이동').click()
+    vi.advanceTimersByTime(1000)
+    await nextTick()
+    expect(text()).toContain('이동하고 있어요')
+    expect(text()).not.toMatch(/초 뒤에 이동해요/)
+    w.unmount()
+  })
+
+  it('bfcache 가 아닌 pageshow(persisted=false)는 시트를 닫지 않는다', async () => {
+    const { w, open } = host()
+    await openSheet(open)
+    const ev = new Event('pageshow')
+    Object.defineProperty(ev, 'persisted', { value: false })
+    window.dispatchEvent(ev)
+    await nextTick()
+    expect(open.value).toBe(true)
+    w.unmount()
+  })
+
+  it('카운트다운 문구는 aria-live="polite" 로 읽힌다', async () => {
+    const { w, open } = host()
+    await openSheet(open)
+    const live = [...document.querySelectorAll('[aria-live]')].find((el) =>
+      el.textContent?.includes('초 뒤에 이동해요'),
+    )
+    expect(live?.getAttribute('aria-live')).toBe('polite')
+    w.unmount()
+  })
+
+  it('열린 채로 마운트돼도 3초 뒤 한 번 이동한다', async () => {
+    const { w } = host(true)
+    await nextTick()
+    await flushPromises()
+    vi.advanceTimersByTime(3000)
     expect(assign).toHaveBeenCalledTimes(1)
     w.unmount()
   })

@@ -19,12 +19,18 @@ if (!isCatalogParam('countries', param))
 const { data, error } = await useFetch<CountryPageData>(`/api/catalog/countries/${param}`, {
   key: `catalog-country-${param}`,
 })
-if (error.value || !data.value)
+// 판매하지 않는 나라는 404, 데이터 라우트의 그 밖의 오류는 500 — 서버 오류를 404 로 덮지 않는다(F-10)
+if (error.value?.statusCode === 404 || (!error.value && !data.value))
   throw createError({ statusCode: 404, statusMessage: 'Not Found', fatal: true })
+if (error.value || !data.value)
+  throw createError({ statusCode: 500, statusMessage: 'Catalog country unavailable', fatal: true })
 
 const page = data.value
 const count = page.single.length + page.multi.length
-useCatalogSeo(page.meta, thumbUrl(manifest as AssetManifest, (page.single[0] ?? page.multi[0])!.thumb))
+useCatalogSeo(
+  page.meta,
+  thumbUrl(manifest as AssetManifest, (page.single[0] ?? page.multi[0])!.thumb),
+)
 </script>
 
 <template>

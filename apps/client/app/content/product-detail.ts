@@ -98,15 +98,28 @@ export function countdownText(remaining: number): string {
 export const USAGE = {
   title: '사용일수는 이렇게 계산해요',
   lead: '현지에서 데이터가 처음 연결된 때부터 24시간마다 하루씩 줄어요.',
-  // 모든 점에 시각을 붙인다 — 날짜만 쓰면 자정에 하루가 넘어가는 것으로 읽힌다(S-4)
-  timeline: [
+} as const
+
+/** 예시 상품 일수 — 무제한 3일 · 종량제 30일(종량제는 30일 상품뿐이다) */
+export const USAGE_EXAMPLE_DAYS = { U: 3, L: 30 } as const
+
+/**
+ * 사용일수 예시 타임라인 — 3월 1일 오후 3시에 처음 연결한 경우. 끝 = 연결 시각 + 일수 × 24시간.
+ * 모든 점에 시각을 붙인다 — 날짜만 쓰면 자정에 하루가 넘어가는 것으로 읽힌다(S-4).
+ */
+export function usageTimeline(kind: Kind): { date: string; text: string }[] {
+  const n = USAGE_EXAMPLE_DAYS[kind]
+  return [
     { date: '3월 1일', text: '오후 3시 연결' },
     { date: '3월 2일', text: '오후 3시 · 2일째' },
-    { date: '3월 3일', text: '오후 3시 · 3일째' },
-    { date: '3월 4일', text: '오후 3시 끝' },
-  ],
-  note: '예) 3일 상품을 3월 1일 오후 3시에 처음 연결한 경우. 발급할 때 고르는 시작 날짜는 안내용이고, 실제 차감은 현지에서 처음 연결될 때 시작돼요.',
-} as const
+    { date: `3월 ${n}일`, text: `오후 3시 · ${n}일째` },
+    { date: `3월 ${n + 1}일`, text: '오후 3시 끝' },
+  ]
+}
+
+export function usageNote(kind: Kind): string {
+  return `예) ${USAGE_EXAMPLE_DAYS[kind]}일 상품을 3월 1일 오후 3시에 처음 연결한 경우. 발급할 때 고르는 시작 날짜는 안내용이고, 실제 차감은 현지에서 처음 연결될 때 시작돼요.`
+}
 
 export function coverageTitle(zone: ZoneView): string {
   const n = zone.countries.length
@@ -120,14 +133,19 @@ export function coverageLead(zone: ZoneView): string {
 }
 
 export const OPERATOR_FALLBACK = '현지 대표 통신사'
+/** 통신사 칩 아래 단서(2609 원문) — 칩의 통신사를 보장하는 것처럼 읽히지 않게 */
+export const OPERATOR_NOTE = '현지 사정에 따라 연결되는 통신사가 달라질 수 있어요.'
 
 export const HOW_TO = {
   title: '이렇게 써요',
   steps: [
     '네이버 스마트스토어에서 결제해요',
     '카카오톡으로 발급 링크를 받아요',
-    '출국 전에 설치해 두고, 도착하면 이 회선을 켜요',
+    '출국 전에 설치하고, 도착할 때까지는 이 회선을 꺼 두세요',
+    '도착하면 한국 회선과 이 회선을 모두 켜요',
   ],
+  /** 요금 위험 경고 두 줄 — 빼지 않는다(카피 규칙 3 · John 2026-09-13) */
+  warnings: ['한국 회선의 데이터 로밍은 꺼 두세요', '셀룰러 데이터 전환 허용은 꺼 두세요'],
   note: '안심번호로는 발급 링크를 받을 수 없어요. 카카오톡을 받는 실제 번호로 주문해 주세요.',
   link: { to: '/guide', label: '설치 가이드 보기' },
 } as const
@@ -155,7 +173,7 @@ export function faqItems(zone: ZoneView, kind: Kind): FaqItem[] {
   const items: FaqItem[] = [
     {
       q: 'eSIM 은 언제 받을 수 있나요?',
-      a: '결제하면 카카오톡으로 1~2분 안에 발급 링크가 와요. 야간 · 주말에도 자동으로 보내 드려요.',
+      a: '결제하면 보통 1~2분 안에 카카오톡으로 발급 링크가 와요. 야간 · 주말에도 자동으로 보내 드려요.',
     },
     kind === 'U'
       ? {
@@ -168,7 +186,7 @@ export function faqItems(zone: ZoneView, kind: Kind): FaqItem[] {
         },
     {
       q: '설치는 언제 하면 되나요?',
-      a: '발급받은 뒤 언제든 설치할 수 있어요. 출국 전에 미리 설치해 두고, 도착하면 이 회선을 켜세요.',
+      a: '발급받은 뒤 언제든 설치할 수 있어요. 출국 전에 미리 설치해 두고, 도착하면 한국 회선과 함께 켜세요. 한국 회선의 데이터 로밍은 꺼 두세요.',
     },
     {
       q: '전화 · 문자도 되나요?',

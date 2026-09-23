@@ -1,5 +1,7 @@
 <script setup lang="ts" generic="K extends string">
 // 밑줄 탭 — 유심사 배치(spec D-3 · D-5). role=tablist · 좌우 화살표로 이동 · 고른 탭만 Tab 초점을 받는다.
+// 컴포넌트 테스트(UnderlineTabs.test.ts)가 Nuxt 없이 그린다 — vue 에서 명시 import 한다.
+import { nextTick, ref } from 'vue'
 const props = defineProps<{ tabs: { key: K; label: string }[]; label: string; idPrefix: string }>()
 const model = defineModel<K>({ required: true })
 const buttons = ref<HTMLButtonElement[]>([])

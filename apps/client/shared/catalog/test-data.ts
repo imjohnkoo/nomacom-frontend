@@ -6,12 +6,15 @@
  *   «목록 코드가 다 있어야 한다» · «전 옵션 대조» 처럼 실데이터에서 돌아야 뜻이 있는 테스트가 쓴다.
  */
 import { existsSync, readFileSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
+import { resolve } from 'node:path'
+import { URL, fileURLToPath } from 'node:url'
 import { CATALOG_DIR, CATALOG_FILES, FIXTURE_CATALOG } from './files'
 import type { CatalogView } from './types'
 import { parseCatalog } from './validate'
 
-export const APP_DIR = fileURLToPath(new URL('../../', import.meta.url))
+// happy-dom 환경에서는 import.meta.url 이 file: 이 아니다 — Vitest 가 채우는 import.meta.dirname 을 먼저 쓴다
+const HERE = import.meta.dirname ?? fileURLToPath(new URL('.', import.meta.url))
+export const APP_DIR = `${resolve(HERE, '../..')}/`
 export const FIXTURE_CATALOG_FILE = `${CATALOG_DIR}/${FIXTURE_CATALOG}`
 export const ACTIVE_CATALOG_FILE = CATALOG_FILES.map((f) => `${CATALOG_DIR}/${f}`).find((f) =>
   existsSync(`${APP_DIR}${f}`),

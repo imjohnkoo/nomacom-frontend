@@ -1,21 +1,31 @@
-import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { optionLabel, zoneByCode } from '#shared/catalog/derive'
-import { fixtureCatalog } from '#shared/catalog/test-data'
+import { activeCatalog, fixtureCatalog } from '#shared/catalog/test-data'
+import { readSource } from '#shared/catalog/test-source'
 import type { Kind, ZoneView } from '#shared/catalog/types'
 import * as copy from './product-detail'
 import {
+  HOW_TO,
   REFUND,
   USAGE,
+  USAGE_EXAMPLE_DAYS,
+  coverageLead,
+  coverageTitle,
   daysPhrase,
   faqItems,
   heroChecks,
   heroLead,
   periodHint,
+  planSub,
   purchaseBody,
+  usageNote,
+  usageTimeline,
 } from './product-detail'
 
 const catalog = fixtureCatalog()
+/** 실제로 나가는 카탈로그 — 문안 함수가 K1 라벨 · 부제 · 나라 이름을 문장에 넣으므로 전 zone 을 본다 */
+const active = activeCatalog()
 
 /** 문자열 · 배열 · 객체 안의 글자를 전부 모은다(링크 경로는 문안이 아니라 뺀다) */
 function strings(v: unknown): string[] {
@@ -38,6 +48,8 @@ const CALLS: Record<string, (zone: ZoneView, kind: Kind) => unknown> = {
   coverageTitle: (z) => copy.coverageTitle(z),
   coverageLead: (z) => copy.coverageLead(z),
   faqItems: (z, k) => faqItems(z, k),
+  usageTimeline: (_z, k) => usageTimeline(k),
+  usageNote: (_z, k) => usageNote(k),
 }
 const optionsOf = (z: ZoneView, k: Kind) => z.products.find((p) => p.kind === k)?.options ?? []
 const capsOf = (z: ZoneView, k: Kind) => [...new Set(optionsOf(z, k).map((o) => o.cap))]
@@ -50,7 +62,7 @@ function allCopy(zone: ZoneView, kind: Kind): string {
   return strings([...constants, ...calls]).join('\n')
 }
 
-/** 카탈로그 화면 .vue 의 <template> 원문(템플릿에 직접 쓴 문구 · 속성 포함) */
+/** 카탈로그 화면 .vue — <template> 원문과 <script> 의 문자열(주석 제외 · test-source.ts) */
 const VUE_FILES = [
   'app/components/catalog/ProductSections.vue',
   'app/components/catalog/PurchaseSheet.vue',
@@ -64,19 +76,23 @@ const VUE_FILES = [
   'app/pages/index.vue',
   'app/pages/search.vue',
 ]
-const template = (file: string) => {
-  const src = readFileSync(new URL(`../../${file}`, import.meta.url), 'utf8')
-  const m = src.match(/<template>([\s\S]*)<\/template>/)
-  if (!m) throw new Error(`${file}: <template> 가 없다`)
-  return m[1]!.replace(/<!--[\s\S]*?-->/g, '')
+const APP = fileURLToPath(new URL('../../', import.meta.url))
+const vueParts = (file: string) => {
+  const { template, script } = readSource(`${APP}${file}`)
+  if (!template) throw new Error(`${file}: <template> 가 없다`)
+  return { template, scriptText: script.strings.join('\n') }
 }
+const template = (file: string) => vueParts(file).template
 
 const BANNED: [RegExp, string][] = [
-  [/자정/, '사용일수는 첫 연결부터 24h rolling'],
+  [/자정|밤 ?12시|(?<!\d)0시|정각|선택(한|하신)? 시각/, '사용일수는 첫 연결부터 24h rolling'],
   [/iPhone/i, '«아이폰»'],
   [/1~90일/, '판매는 1~30 · 60 · 90'],
   [/즉시할인|정가|할인율/, '최종가만(D-2)'],
-  [/재개통|다시 개통|나라마다 (다시 )?설치/, '여러 나라 = 자동 전환'],
+  [
+    /재개통|다시 개통|나라마다 (다시 )?설치|직접 (골라|선택)|수동으로|설정에서 [^.]{0,12}통신사/,
+    '여러 나라 = 자동 전환',
+  ],
   [/최고|최저가 보장|유일|1위/, '근거 없는 최상급'],
   [/500\s?kbps|128\s?kbps/i, '소진 후 속도는 512kbps'],
   [/이어 쓰기|충전/, 'top-up 없음'],
@@ -85,6 +101,7 @@ const BANNED: [RegExp, string][] = [
 const REFUND_BANNED = /수수료|3,500|3500|반품|불가|발급 후|발급 뒤|공제|차감|청약철회/
 
 const cases = catalog.zones.flatMap((z) => z.products.map((p) => [z.zone, p.kind] as const))
+const activeCases = active.zones.flatMap((z) => z.products.map((p) => [z.zone, p.kind] as const))
 
 describe('상세 문안 불변식 (catalog spec 불변식 5 · F-7)', () => {
   it('내보낸 함수를 빠짐없이 검사한다(새 문안 함수는 CALLS 에 넣어야 통과)', () => {
@@ -95,14 +112,49 @@ describe('상세 문안 불변식 (catalog spec 불변식 5 · F-7)', () => {
     expect(fns).toEqual(Object.keys(CALLS).sort())
   })
 
-  it.each(cases)('%s %s — 금지어 없음(상수 · 함수 전부)', (code, kind) => {
+  it('실 카탈로그 전 zone × 종류 — 금지어 없음(상수 · 함수 전부 · K1 라벨 · 부제 · 나라 이름 포함)', () => {
+    const found = activeCases.flatMap(([code, kind]) => {
+      const text = allCopy(zoneByCode(active, code)!, kind)
+      return BANNED.flatMap(([re, why]) => {
+        const m = text.match(re)?.[0]
+        return m ? [`${code} ${kind}: «${m}» — ${why}`] : []
+      })
+    })
+    expect(found).toEqual([])
+  })
+
+  it.each(cases)('표본 %s %s — 금지어 없음', (code, kind) => {
     const text = allCopy(zoneByCode(catalog, code)!, kind)
     for (const [re, why] of BANNED) expect(text.match(re)?.[0] ?? null, why).toBeNull()
   })
 
-  it.each(VUE_FILES)('%s — 템플릿에 직접 쓴 문구에도 금지어 없음', (file) => {
-    const text = template(file)
-    for (const [re, why] of BANNED) expect(text.match(re)?.[0] ?? null, why).toBeNull()
+  it.each(VUE_FILES)('%s — 템플릿 · 스크립트 문자열에 직접 쓴 문구에도 금지어 없음', (file) => {
+    const { template: tpl, scriptText } = vueParts(file)
+    for (const [re, why] of BANNED) {
+      expect(tpl.match(re)?.[0] ?? null, `템플릿 ${why}`).toBeNull()
+      expect(scriptText.match(re)?.[0] ?? null, `스크립트 ${why}`).toBeNull()
+    }
+  })
+
+  it('실 카탈로그 종량제 전부 — 무제한 문구(512kbps · 무제한 · 소진 후)가 없다', () => {
+    const found = activeCases
+      .filter(([, k]) => k === 'L')
+      .flatMap(([code]) => {
+        const z = zoneByCode(active, code)!
+        const text = strings([
+          heroLead(z, 'L'),
+          heroChecks(z, 'L'),
+          periodHint('L', daysOf(z, 'L')),
+          capsOf(z, 'L').map((c) => copy.planTitle('L', c)),
+          copy.planSub('L', '2,200원'),
+          faqItems(z, 'L'),
+          usageTimeline('L'),
+          usageNote('L'),
+        ]).join('\n')
+        const m = text.match(/512kbps|무제한|소진\s?후/)?.[0]
+        return m ? [`${code}: «${m}»`] : []
+      })
+    expect(found).toEqual([])
   })
 
   it.each(cases.filter(([, k]) => k === 'L'))(
@@ -127,7 +179,7 @@ describe('상세 문안 불변식 (catalog spec 불변식 5 · F-7)', () => {
         const faq = faqItems(zoneByCode(catalog, code)!, kind)
           .map((f) => `${f.q} ${f.a}`)
           .join(' ')
-        expect(faq).not.toMatch(/환불|반품|수수료|3,500/)
+        expect(faq).not.toMatch(/환불|반품|수수료|3,500|돌려받을 수 없/)
       }
     }
     expect(REFUND.text).toBe('발급 전이면 전액 환불해 드려요.')
@@ -220,9 +272,57 @@ describe('히어로 문구 (S-4 — 고른 종류를 따른다)', () => {
     expect(periodHint('L', [30])).toContain('처음 연결된 때부터 24시간 단위')
   })
 
-  it('사용일수 예시는 모든 점에 시각이 있다(날짜만이면 자정으로 읽힌다)', () => {
-    for (const t of USAGE.timeline) expect(t.text).toMatch(/오후 3시/)
-    expect(USAGE.note).toContain('시작 날짜') // 발급 화면 이름과 같은 말
+  it.each(['U', 'L'] as const)(
+    '사용일수 예시(%s) — 모든 점에 시각 · 끝 = 연결 + 일수 × 24시간 · «시작 날짜»',
+    (kind) => {
+      const n = USAGE_EXAMPLE_DAYS[kind]
+      const t = usageTimeline(kind)
+      for (const p of t) expect(p.text).toMatch(/오후 3시/)
+      expect(t[0]).toEqual({ date: '3월 1일', text: '오후 3시 연결' })
+      expect(t.at(-1)).toEqual({ date: `3월 ${1 + n}일`, text: '오후 3시 끝' })
+      expect(usageNote(kind)).toContain(`${n}일 상품을 3월 1일 오후 3시에 처음 연결한 경우`)
+      expect(usageNote(kind)).toContain('시작 날짜') // 발급 화면 이름과 같은 말
+    },
+  )
+
+  it('종량제 예시는 30일(종량제는 30일 상품뿐)', () => {
+    expect(USAGE_EXAMPLE_DAYS.L).toBe(30)
+  })
+
+  it('도착 안내 — 두 회선 모두 켜기 + 요금 경고 두 줄(카피 규칙 3 · 빼지 않는다)', () => {
+    expect(HOW_TO.steps.at(-1)).toBe('도착하면 한국 회선과 이 회선을 모두 켜요')
+    expect(HOW_TO.steps).toContain('출국 전에 설치하고, 도착할 때까지는 이 회선을 꺼 두세요')
+    expect(HOW_TO.warnings).toEqual([
+      '한국 회선의 데이터 로밍은 꺼 두세요',
+      '셀룰러 데이터 전환 허용은 꺼 두세요',
+    ])
+  })
+
+  it('커버리지 — 단일국 · 여러 나라 문구(spec S-4 원문)', () => {
+    const eu = zoneByCode(catalog, 'EU340')!
+    const cze = zoneByCode(catalog, 'CZE00')!
+    expect(coverageTitle(eu)).toBe('34개국에서 하나의 eSIM 으로')
+    expect(coverageLead(eu)).toBe(
+      '나라를 옮겨도 같은 eSIM 을 그대로 써요. 폰이 알아서 그 나라 통신사로 바꿔요.',
+    )
+    expect(coverageTitle(cze)).toBe('체코 전 지역에서 써요')
+    expect(coverageLead(cze)).toBe('폰이 알아서 현지 통신사에 연결해요.')
+  })
+
+  it('실 카탈로그 — 여러 나라 zone 은 전부 자동 전환 FAQ 가 있고, 단일국은 없다', () => {
+    for (const z of active.zones)
+      for (const kind of ['U', 'L'] as const) {
+        const has = faqItems(z, kind).some((f) => f.q.includes('나라를 옮기면'))
+        expect(has, `${z.zone} ${kind}`).toBe(z.countries.length > 1)
+      }
+  })
+
+  it('무제한 — 카드 부제 · FAQ 에 512kbps', () => {
+    expect(planSub('U', '700원')).toContain('다 쓰면 512kbps 로 계속')
+    const faq = faqItems(zoneByCode(catalog, 'CZE00')!, 'U').find((f) =>
+      f.q.includes('매일 데이터를 다 쓰면'),
+    )!
+    expect(faq.a).toContain('512kbps')
   })
 
   it('기간 문구', () => {

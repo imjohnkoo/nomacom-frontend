@@ -7,10 +7,14 @@ import SearchField from './SearchField.vue'
  * catalog spec F-4 — 한글 조합 중에도 입력 이벤트의 값으로 바로 거른다.
  * v-model(vModelText)은 compositionstart 뒤 input 을 무시한다 — 그렇게 되돌아가면 이 테스트가 실패한다.
  */
-function setup(initial = '') {
+function setup(initial = '', autofocus = false) {
   const updates: string[] = []
   const w = mount(SearchField, {
-    props: { modelValue: initial, 'onUpdate:modelValue': (v: string) => updates.push(v) },
+    props: {
+      modelValue: initial,
+      autofocus,
+      'onUpdate:modelValue': (v: string) => updates.push(v),
+    },
     attachTo: document.body,
   })
   return { w, updates, input: w.get('input').element as HTMLInputElement }
@@ -34,9 +38,20 @@ describe('SearchField (F-4 · S-2)', () => {
 
   it('영문 입력도 글자마다 올린다', async () => {
     const { w, updates } = setup()
+    await w.get('input').setValue('F')
     await w.get('input').setValue('Fr')
-    expect(updates.at(-1)).toBe('Fr')
+    await w.get('input').setValue('Fra')
+    expect(updates).toEqual(['F', 'Fr', 'Fra'])
     w.unmount()
+  })
+
+  it('autofocus 면 들어오자마자 입력창에 초점(S-2) · 아니면 그대로', () => {
+    const a = setup('', true)
+    expect(document.activeElement).toBe(a.input)
+    a.w.unmount()
+    const b = setup('', false)
+    expect(document.activeElement).not.toBe(b.input)
+    b.w.unmount()
   })
 
   it('지우기 — 값을 비우고 초점을 입력창으로 돌린다(버튼이 사라져도 초점을 잃지 않게)', async () => {
