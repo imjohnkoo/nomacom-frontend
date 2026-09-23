@@ -11,7 +11,7 @@ spec `nomacom-wiki wiki/frontend/specs/client/2026-09-23-client-shell.md` · pla
 - **레이아웃** — `default`(헤더 + 본문 + 푸터 + 하단 탭) · `flow`(헤더·탭 없음 + compact 푸터). 4-step 4페이지와 `/checkout-preview` 가 `flow`. 새 판매 페이지는 기본값(`default`).
 - **쌓임 순서** — 헤더 `--n-z-index-sticky`(1020) < 탭바 `--n-z-index-fixed`(1030) < DS 오버레이(body 포털 1040/1050). 탭바를 1040 이상으로 올리지 말 것.
 - **내비 정의 한 곳** — `app/utils/shell-nav.ts`(탭 4 · 전체 메뉴 · 약관 링크 · 활성 판정). 탭 활성 규칙을 바꾸면 `shell-nav.test.ts` 를 같이 고친다.
-- **사업자정보 · 고객센터 · 법정 문안** — `app/content/{business,support,legal}.ts`. 미확정 값은 `P9_4_PENDING`(화면 «(확정 전)»). ⛔ **main 머지 게이트**: `grep -rln P9_4_PENDING apps/client/app | grep -v -e content/pending.ts -e '.test.ts'` 가 빈 결과. 환불정책에 «QR 발급 후 수수료 · 공제 · 청약철회 제한» 을 넣으면 `legal.test.ts` 가 막는다(A5).
+- **사업자정보 · 고객센터 · 법정 문안** — `app/content/{business,support,legal}.ts`. 미확정 값은 `P9_4_PENDING`(화면 «(확정 전)»). ⛔ **main 머지 게이트**: `bash .github/scripts/content-pending-gate.sh` 가 0(finish-branch Step 0 이 부른다). 환불정책에 «QR 발급 후 수수료 · 공제 · 청약철회 제한» 을 넣으면 `legal.test.ts` 가 막는다(A5).
 - **noindex 목록 한 곳** — `shared/utils/robots.ts` 가 meta(`app.vue`) · `X-Robots-Tag`(`nuxt.config` routeRules) · `/robots.txt`(`server/routes/robots.txt.ts`) 세 출력을 만든다. 4-step 은 `Cache-Control: no-store` 도. `public/robots.txt` 를 다시 만들지 말 것(라우트보다 먼저 잡힌다).
 - **CORS** — `server/utils/cors-origins.ts`. `esimmany.com` · `app.esimmany.com` 둘 다 있어야 각 호스트의 same-origin POST 가 403 을 피한다. `www` 는 없다.
 - **테스트 체크아웃** `/checkout-preview` — PG 심사 캡처 전용. 사이트 어디에서도 링크하지 않는다 · 서버 호출 · 저장 0 · 테스트 채널키만.
@@ -23,7 +23,12 @@ spec `nomacom-wiki wiki/frontend/specs/client/2026-09-23-client-shell.md` · pla
 - **흐름 쿠키 `nomacom_flow`** — `{v:1, orderId, fullName, phoneNumber, productOrderId?}` 만. `fullName`·`phoneNumber` 는 verify 에 **사용자가 입력해 통과한 값**(DB 수령인 값 아님). Max-Age 1시간(쓸 때마다 갱신) · SameSite=Lax · Secure(dev 제외) · Path=/ · 호스트 한정 · HttpOnly 아님(클라이언트가 쓴다). 쓰는 곳: verify 통과(`start`) · details 선택 · 취소철회 성공(`select`). ⛔ activationCode · 주문 상세를 넣지 말 것 — 화면 데이터는 늘 서버 verify 로 다시 받는다.
 - **미들웨어 순서** — ① 경로 주문번호가 양의 안전 정수가 아니면 `/my-esim` ② verify 는 통과 ③ store 에 이 주문 목록이 없으면 쿠키(같은 주문번호일 때만)의 이름·전화로 `POST /api/v1/verify` 를 **그대로** 불러 복원 — 실패는 `/verify/{id}?reason=reverify`(verify 거절이면 쿠키도 지움) ④ 선택 상품은 쿠키 productOrderId 로 목록에서 ⑤ `app/utils/flow-guard.ts` 판정표.
 - **초기 진입에서 두 번 돈다** — 서버(SSR, 이동이면 302) + hydration. 서버가 복원한 Pinia 상태가 페이로드로 넘어가므로 두 번째는 복원을 건너뛴다. SSR HTML 에 주문 정보가 실리므로 4-step 응답은 `no-store` 필수.
-- 판정표를 바꾸면 spec §5 S-8 → `flow-guard.test.ts` → 코드 순으로.
+- 판정표를 바꾸면 spec §5 S-8 → `flow-guard.test.ts` → 코드 순으로. 복원 결정(`decideRestore`) · 선택(`pickSelection`)도 같은 파일의 순수함수다.
+- **라우터는 대소문자를 구분한다**(`app/router.options.ts` `sensitive: true`) — 끄면 `/View/1` 이 가드 · noindex · `no-store` 를 모두 비껴 간다.
+- **bfcache** — 외부 이동(주문번호 조회 · 결제창) 뒤 뒤로 오면 JS 상태가 살아 있다. 로딩 플래그는 `pageshow`(persisted)에서 되돌린다.
+- **날짜는 `Asia/Seoul` 고정**(`utils/date.ts`) — SSR 복원 뒤 서버(UTC)와 브라우저가 다른 날짜를 그리면 hydration mismatch.
+
+## Current Status (2026-08-18)
 
 깡통 단계 종료. 4-step 유저 흐름 (verify → details → select-date → view) 이 토스풍 디자인으로 복원되어 prod-ready 상태 (`9d04e9d` preview seed 제거 완료). 이전 CLAUDE.md 의 "향후 작업 (깡통 복원 단계)" 5단계는 모두 완료됨:
 

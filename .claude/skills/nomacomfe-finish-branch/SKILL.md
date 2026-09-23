@@ -37,6 +37,7 @@ Guide completion of worktree development. **Gate → Verify → options → exec
    - 둘 다 없으면 plan 에 불가 사유 1줄이 있는지 확인. 그것도 없으면 중단하고 확인 요청
 4. **D 트랙** (`design/` 캔버스) — 오너 승인 여부 + **슬라이더 런타임 값이 아니라 소스 기본값에 반영됐는지** 확인
 5. **T0** — 검사 없음, Step 1 로
+6. **콘텐츠 자리표시자 게이트** (client) — `bash .github/scripts/content-pending-gate.sh` 가 0 으로 끝나야 main 머지 옵션을 연다. 1 이면 PR 은 **draft** 로만 열고 머지 옵션을 제시하지 않는다 (확정 전 문안 `P9_4_PENDING` 이 prod 승격에 실려 나가는 것 차단 — client W1-2 spec D-17)
 
 ### Step 1: Verify Build + Affected Apps
 
