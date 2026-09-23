@@ -63,6 +63,18 @@ expect_refuse "포트 형식" dev abc
 expect_refuse "포트 앞자리 0(netstat 검사 우회)" dev 03099
 expect_refuse "unsafe 포트(nuxi 가 다른 포트로 옮긴다)" dev 6666
 expect_refuse "unsafe 포트 10080" dev 10080
+expect_refuse "unsafe 포트 6000(소스에 6e3 로 적혀 있다)" dev 6000
+expect_refuse "특권 포트 1023" dev 1023
+expect_refuse "65535 초과" dev 70000
+# 봉투의 unsafe 목록 = get-port-please 의 isSafePort 가 거부하는 1024~65535 전부(목록이 어긋나면 여기서 잡힌다)
+GPP="$ROOT/node_modules/get-port-please/dist/index.mjs"
+if [[ -f "$GPP" ]]; then
+  want="$(node --input-type=module -e "import { isSafePort } from '$GPP'; const u = []; for (let p = 1024; p <= 65535; p++) if (!isSafePort(p)) u.push(p); console.log(u.join(' '))")"
+  got="$(sed -n 's/^UNSAFE_PORTS=" \(.*\) "$/\1/p' "$S")"
+  [[ -n "$want" && "$want" == "$got" ]] && ok || ng "unsafe 목록이 get-port-please 와 다르다 — want [$want] got [$got]"
+else
+  ng "get-port-please 가 없어 unsafe 목록을 대조할 수 없다"
+fi
 expect_refuse "비로컬 DB" dev 3099 'postgres://u:p@db.example.com:5432/x'
 expect_refuse "로컬 다른 포트" dev 3099 'postgres://u:p@127.0.0.1:5432/x'
 expect_refuse "조각으로 호스트 위장" dev 3099 'postgres://a:b@prod.example.com:5432#@127.0.0.1:55432/x'
